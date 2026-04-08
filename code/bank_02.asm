@@ -5197,10 +5197,11 @@ func_C2498C:
 	beq @lbl_C24ACF
 	cmp.b #$60
 	bne @lbl_C24ADD
-	lda.w $85F0
+	; Shiren's requested move/facing direction is stored in his wCharDir slot.
+	lda.w wCharDir+CharDataShirenIndex
 	sta.b wTemp01
 @lbl_C24ACF:
-	lda.w $85F0
+	lda.w wCharDir+CharDataShirenIndex
 	sta.w $899F
 @lbl_C24AD5:
 	sty.b wTemp00
@@ -5226,8 +5227,9 @@ func_C2498C:
 	tya
 	bit.b #$10
 	beq @lbl_C24B0B
+	; Directions use the 0-7 enum in constants/npc.asm: even = cardinal, odd = diagonal.
 	and.b #$07
-	sta.w $85F0
+	sta.w wCharDir+CharDataShirenIndex
 	jsl.l func_C28FBC
 	lda.b #$02
 	sta.b wTemp00
@@ -5245,9 +5247,9 @@ func_C2498C:
 	sta.w $8977
 	and.b #$07
 @lbl_C24B21:
-	sta.w $85F0
+	sta.w wCharDir+CharDataShirenIndex
 @lbl_C24B24:
-	lda.b #$13
+	lda.b #CharDataShirenIndex
 	sta.b wTemp00
 	call_savebank func_C2785E
 	lda.b wTemp00
@@ -5283,7 +5285,7 @@ func_C2498C:
 @lbl_C24B70:
 	beq @lbl_C24BE8
 @lbl_C24B72:
-	lda.w $85F0
+	lda.w wCharDir+CharDataShirenIndex
 	lsr a
 	bcc @lbl_C24B92
 	and.b #$03
@@ -5298,7 +5300,7 @@ func_C2498C:
 	tax
 	lda.l UNREACH_C24D7B,x
 	bmi @lbl_C24B92
-	sta.w $85F0
+	sta.w wCharDir+CharDataShirenIndex
 	bra @lbl_C24B24
 @lbl_C24B92:
 	bra @lbl_C24BD1
@@ -5315,18 +5317,18 @@ func_C2498C:
 	stz.w $8977
 	txa
 	sta.w $897F
-	lda.w $85F0
+	lda.w wCharDir+CharDataShirenIndex
 	clc
 	adc.b #$04
 	and.b #$07
 	sta.w wCharDir,x
 	phx
-	lda.b #$13
+	lda.b #CharDataShirenIndex
 	sta.b wTemp01
 	stx.b wTemp00
 	jsl.l func_C289F5
 	plx
-	lda.l $7E85F0
+	lda.l wCharDir+CharDataShirenIndex
 	sta.l wCharDir,x
 	jmp.w func_C24DDD
 @lbl_C24BD1:
@@ -5473,7 +5475,7 @@ func_C2498C:
 @lbl_C24D0E:
 	rep #$20 ;A->16
 	pla
-	ldy.b #$13
+	ldy.b #CharDataShirenIndex
 	sty.b wTemp00
 	sta.b wTemp02
 	jsl.l func_C27951
@@ -5649,15 +5651,16 @@ func_C24F17:
 	lda.b wTemp02
 	cmp.b #$B0
 	bne @lbl_C24F93
-	lda.l $7E85F0
+	lda.l wCharDir+CharDataShirenIndex
+	; Bit 0 set means Shiren is facing diagonally.
 	bit.b #$01
 	bne @lbl_C24F93
 	sta.b wTemp00
 	lda.b #$02
 	sta.b wTemp01
-	lda.l $7E85C8
+	lda.l wCharXPos+CharDataShirenIndex
 	sta.b wTemp02
-	lda.l $7E85DC
+	lda.l wCharYPos+CharDataShirenIndex
 	sta.b wTemp03
 	jsl.l func_C32FEE
 	ldx.b wTemp00
@@ -5669,7 +5672,7 @@ func_C24F17:
 	plp
 	rtl
 @lbl_C24F8B:
-	lda.b #$13
+	lda.b #CharDataShirenIndex
 	sta.b wTemp00
 	jsl.l func_C2785E
 @lbl_C24F93:
@@ -5677,7 +5680,7 @@ func_C24F17:
 	and.b #$E0
 	cmp.b #$A0
 	bne @lbl_C24FAF
-	lda.l $7E85F0
+	lda.l wCharDir+CharDataShirenIndex
 	cmp.b #$02
 	bne @lbl_C24FAF
 	lda.b wTemp01
@@ -5735,7 +5738,7 @@ func_C24F17:
 	sta.b wTemp03
 	stx.b wTemp00
 	sty.b wTemp01
-	lda.l $7E85F0
+	lda.l wCharDir+CharDataShirenIndex
 	sta.b wTemp02
 	stz.b wTemp04
 	jsr.w func_C2501C
@@ -6448,11 +6451,11 @@ func_C25C3C:
 	sep #$30 ;AXY->8
 	lda.l $7E8977
 	beq @lbl_C25C8C
-	lda.l $7E85C8
+	lda.l wCharXPos+CharDataShirenIndex
 	sta.b wTemp00
-	lda.l $7E85DC
+	lda.l wCharYPos+CharDataShirenIndex
 	sta.b wTemp01
-	lda.l $7E85F0
+	lda.l wCharDir+CharDataShirenIndex
 	sta.b wTemp02
 	jsl.l func_C359D1
 	lda.b wTemp02
@@ -6460,7 +6463,7 @@ func_C25C3C:
 	and.b wTemp00
 	bit.b #$C7
 	bne @lbl_C25CA0
-	lda.l $7E85F0
+	lda.l wCharDir+CharDataShirenIndex
 	lsr a
 	bcs @lbl_C25C8E
 	lda.b wTemp02

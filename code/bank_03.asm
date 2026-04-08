@@ -11057,6 +11057,7 @@ func_C3E913:
 @lbl_C3E9B8:
 	jsl.l func_C07CC7
 @lbl_C3E9BC:
+	; Poll controller state and derive the next live player action command.
 	jsl.l func_C3F3E7
 	ldx.w #$0000
 	stx.b wTemp00
@@ -11181,6 +11182,7 @@ func_C3E913:
 @lbl_C3EACF:
 	sta.b wTemp00
 	pha
+	; Convert d-pad bit combinations into the 0-7 direction enum from constants/npc.asm.
 	jsl.l func_C3EB4A
 	pla
 	bcs @lbl_C3EA9A
@@ -11208,6 +11210,7 @@ func_C3EB4A:
 	php
 	rep #$30 ;AXY->16
 	restorebank
+	; wTemp00 holds controller direction bits; successful matches return a direction enum in wTemp00.
 	lda.b wTemp00
 	and.w #$1000
 	bne @lbl_C3EB5B
