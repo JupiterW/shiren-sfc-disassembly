@@ -10789,7 +10789,7 @@ func_C48589:
 @lbl_C485AF:
 	sta.w $AC3B,x
 	stx.w $AC3A
-	jsl.l func_C23B89
+	jsl.l GetQuickUseItemIds
 	ldx.b #$03
 @lbl_C485BB:
 	lda.b w7f0000,x

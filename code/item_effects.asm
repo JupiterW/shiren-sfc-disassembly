@@ -368,12 +368,14 @@ func_C30AE5:
 	ldy.b wTemp00
 	ldx.w wItemType,y
 	lda.l DATA8_C341BB,x
+	; Register the selected item into its category shortcut slot:
+	; $03=weapons, $05=shields, $06=armbands, $04=arrows.
 	cmp.b #$03
 	bne @lbl_C30B0D
 	sty.b wTemp00
 	phx
 	phy
-	call_savebank func_C23C02
+	call_savebank ToggleQuickUseItemSlot1
 	ply
 	plx
 	bra @lbl_C30B3E
@@ -383,7 +385,7 @@ func_C30AE5:
 	sty.b wTemp00
 	phx
 	phy
-	call_savebank func_C23C10
+	call_savebank ToggleQuickUseItemSlot2
 	ply
 	plx
 	bra @lbl_C30B3E
@@ -393,7 +395,7 @@ func_C30AE5:
 	sty.b wTemp00
 	phx
 	phy
-	call_savebank func_C23C09
+	call_savebank ToggleQuickUseItemSlot3
 	ply
 	plx
 	bra @lbl_C30B3E
@@ -403,7 +405,7 @@ func_C30AE5:
 	jmp.w func_C30BD3
 @lbl_C30B38:
 	sty.b wTemp00
-	jsl.l func_C23BE1
+	jsl.l ToggleQuickUseItemSlot4
 @lbl_C30B3E:
 	lda.b wTemp00
 	beq @lbl_C30B5D
@@ -1511,7 +1513,7 @@ func_C31B5C:
 	lda.b #$CD
 	sta.b wTemp02
 	call_savebank func_C62565
-	jsl.l func_C23B89
+	jsl.l GetQuickUseItemIds
 	ldx.b wTemp02
 	phx
 	ldx.b wTemp01
@@ -1945,7 +1947,7 @@ func_C31F99:
 ;C321EB  
 	.db $4C,$04,$10
 @lbl_C321EE:
-	jsl.l func_C23B89
+	jsl.l GetQuickUseItemIds
 	ldx.b wTemp02
 	bmi @lbl_C321FC
 	lda.l wItemIsCursed,x
@@ -2593,7 +2595,7 @@ func_C32CFE:
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
 	phx
-	jsl.l func_C23B89
+	jsl.l GetQuickUseItemIds
 	ldx.b wTemp02
 	lda.l wItemType,x
 	plx

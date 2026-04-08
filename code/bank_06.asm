@@ -2978,7 +2978,7 @@ func_C62D0F:
 	jsl.l func_C2338A
 	lda.b wTemp00
 	sta.l $7ED635
-	jsl.l func_C23B89
+	jsl.l GetQuickUseItemIds
 	sep #$20 ;A->8
 	lda.b wTemp00
 	sta.l $7ED637

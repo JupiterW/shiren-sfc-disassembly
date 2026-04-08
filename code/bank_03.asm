@@ -9080,7 +9080,7 @@ Jumptable_C3D555:
 	lda.b #$19
 	sta.b wTemp02
 	jsl.l func_C62550
-	jsl.l func_C23B89
+	jsl.l GetQuickUseItemIds
 	lda.b wTemp01
 	bmi @lbl_C3D63A
 	jsl.l func_C27ECA
@@ -9392,7 +9392,7 @@ DATA8_C3DA1C:
 	.db $01,$00,$01,$FF,$00,$FF,$FF,$FE,$FF,$FF,$FF,$00,$00,$01,$01,$01   ;C3DA1C
 	.db $00,$00                           ;C3DA2C
 	sep #$20 ;A->8
-	jsl.l func_C23B89
+	jsl.l GetQuickUseItemIds
 	lda.b wTemp00
 	bpl @lbl_C3DA5B
 	lda.b wTemp01

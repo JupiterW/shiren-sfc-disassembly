@@ -3656,7 +3656,7 @@ func_C23B7C:
 	plp
 	rtl
 
-func_C23B89:
+GetQuickUseItemIds:
 	php
 	sep #$20 ;A->8
 	lda.l wShirenStatus.quickUseItemIds
@@ -3694,7 +3694,7 @@ func_C23BB7:
 	.db $08,$E2,$30,$A6,$00,$BF,$E9,$88,$7E,$85,$00,$BF,$FD,$88,$7E,$85   ;C23BCE
 	.db $01,$28,$6B                       ;C23BDE  
 
-func_C23BE1:
+ToggleQuickUseItemSlot4:
 	php
 	sep #$20 ;A->8
 	lda.b wTemp00
@@ -3709,23 +3709,23 @@ func_C23BE1:
 	.db $A9,$FF,$8F,$73,$89,$7E,$A9,$01   ;C23BF6
 	.db $85,$00,$28,$6B                   ;C23BFE  
 
-func_C23C02:
+ToggleQuickUseItemSlot1:
 	php
 	sep #$30 ;AXY->8
 	ldx.b #$00
-	bra func_C23C15
+	bra ToggleQuickUseItemSlotByIndex
 
-func_C23C09:
+ToggleQuickUseItemSlot3:
 	php
 	sep #$30 ;AXY->8
 	ldx.b #$02
-	bra func_C23C15
+	bra ToggleQuickUseItemSlotByIndex
 
-func_C23C10:
+ToggleQuickUseItemSlot2:
 	php
 	sep #$30 ;AXY->8
 	ldx.b #$01
-func_C23C15:
+ToggleQuickUseItemSlotByIndex:
 	ldy.b wTemp00
 	lda.l wShirenStatus.quickUseItemIds,x
 	bmi @lbl_C23C42
