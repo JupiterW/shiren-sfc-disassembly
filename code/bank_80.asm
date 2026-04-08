@@ -3406,7 +3406,7 @@ func_809DBC:
 	php
 	rep #$30 ;AXY->16
 	jsr.w func_809D44
-	jsl.l func_C627DB
+	jsl.l Get7ED5EE
 	stz.b wTemp01
 	lda.b wTemp00
 	asl a
@@ -3476,7 +3476,7 @@ func_C09E8B:
 	stz.b wTemp01
 	lda.b wTemp00
 	sta.l $7F046C
-	jsl.l func_C62792
+	jsl.l Get7ED5F9
 	stz.b wTemp01
 	ldx.b wTemp00
 	lda.l UNREACH_C4C250,x
@@ -4206,7 +4206,7 @@ func_80A645:
 	sta.l $7F06B9
 	sta.l $7F06BB
 	sta.l $7F06BD
-	jsl.l func_C627DB
+	jsl.l Get7ED5EE
 	stz.b wTemp01
 	lda.b wTemp00
 	cmp.w #$000A

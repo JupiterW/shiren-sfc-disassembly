@@ -2697,14 +2697,14 @@ Jumptable_C3546C:
 func_C35488:
 	php
 	sep #$30 ;AXY->8
-	jsl.l func_C6275B
+	jsl.l Get7ED5EC
 	lda.b wTemp00
 	bpl @lbl_C3549C
 	.db $38,$E9,$7F,$8F,$95,$C1,$7E,$28   ;C35493
 	.db $6B                               ;C3549B
 @lbl_C3549C:
 	pha
-	jsl.l func_C627DB
+	jsl.l Get7ED5EE
 	lda.b wTemp00
 	cmp.b #$0A
 	bne @lbl_C354DC
@@ -2793,7 +2793,7 @@ func_C35561:
 	lda.l UNREACH_C355BD+1,x
 	sta.b w00aa
 	restorebank
-	jsl.l func_C627DB
+	jsl.l Get7ED5EE
 	lda.b wTemp00
 	cmp.b #$0A
 	bcc @lbl_C35583
@@ -2908,7 +2908,7 @@ func_C3575D:
 @lbl_C3578E:
 	.db $22,$71,$27,$C6,$A5,$00,$C9,$04   ;C3578E  
 	.db $B0,$F3,$CA,$80,$F0               ;C35796  
-	jsl.l func_C627DB
+	jsl.l Get7ED5EE
 	lda.b wTemp00
 	cmp.b #$0A
 	bne @lbl_C357AF
@@ -2931,7 +2931,7 @@ func_C3575D:
 	beq @lbl_C35807
 	jsl.l func_C38981
 	jsl.l func_C389AA
-	jsl.l func_C6275B
+	jsl.l Get7ED5EC
 	lda.b wTemp00
 	cmp.b #$10
 	beq @lbl_C35807
@@ -3420,7 +3420,7 @@ func_C35C9A:
 	sta.w $BE65
 	lda.b #$13
 	sta.b wTemp00
-	call_savebank func_C210AC
+	call_savebank GetCharacterMapInfo
 	rep #$30 ;AXY->16
 	lda.b wTemp00
 	lsr a
@@ -6743,7 +6743,7 @@ func_C3893E:
 	lda.l $7EC179
 	cmp.b #$02
 	bcs @lbl_C38963
-	jsl.l func_C627DB
+	jsl.l Get7ED5EE
 	lda.b wTemp00
 	cmp.b #$08
 	beq @lbl_C3895D
@@ -6751,7 +6751,7 @@ func_C3893E:
 	lda.b wTemp00
 	bne @lbl_C38963
 @lbl_C3895D:
-	jsl.l func_C627B2
+	jsl.l GetTransitionDestX
 	bra @lbl_C38967
 @lbl_C38963:
 	jsl.l func_C3608D
@@ -6985,7 +6985,7 @@ func_C38AD6:
 func_C38B2F:
 	php
 	rep #$30 ;AXY->16
-	jsl.l func_C627DB
+	jsl.l Get7ED5EE
 	lda.b wTemp00
 	and.w #$00FF
 	sec
@@ -7057,11 +7057,11 @@ func_C38B2F:
 func_C38BAE:
 	php
 	sep #$30 ;AXY->8
-	jsl.l func_C627DB
+	jsl.l Get7ED5EE
 	lda.b wTemp00
 	cmp.b #$0A
 	bne @lbl_C38BC5
-	jsl.l func_C6275B
+	jsl.l Get7ED5EC
 	lda.b wTemp00
 	cmp.b #$0A
 	beq @lbl_C38BC7
@@ -7132,7 +7132,7 @@ DATA8_C38C39:
 func_C38C70:
 	php
 	sep #$30 ;AXY->8
-	jsl.l func_C627DB
+	jsl.l Get7ED5EE
 	lda.b wTemp00
 	cmp.b #$0A
 	bne @lbl_C38C9D
@@ -7157,7 +7157,7 @@ func_C38C70:
 func_C38C9F:
 	php
 	rep #$30 ;AXY->16
-	jsl.l func_C627DB
+	jsl.l Get7ED5EE
 	lda.b wTemp00
 	and.w #$00FF
 	sec
@@ -8670,11 +8670,11 @@ func_C3D2CC:
 	php
 	sep #$30 ;AXY->8
 	bankswitch 0x7E
-	jsl.l func_C627DB
+	jsl.l Get7ED5EE
 	lda.b wTemp00
 	cmp.b #$08
 	bne @lbl_C3D309
-	jsl.l func_C6275B
+	jsl.l Get7ED5EC
 	lda.b wTemp00
 	dec a
 	sta.b wTemp00
@@ -8790,7 +8790,7 @@ func_C3D3AB:
 	sep #$30 ;AXY->8
 	lda.b wTemp00
 	pha
-	jsl.l func_C627DB
+	jsl.l Get7ED5EE
 	lda.b wTemp00
 	cmp.b #$00
 	beq @lbl_C3D3FD
@@ -9113,7 +9113,7 @@ Jumptable_C3D555:
 	jsl.l func_C62550
 	ldx.b #$13
 	stx.b wTemp00
-	jsl.l func_C210AC
+	jsl.l GetCharacterMapInfo
 	lda.b wTemp00
 	ldy.b wTemp02
 	pha
@@ -9278,7 +9278,7 @@ func_C3D772:
 	rep #$10 ;XY->16
 	lda.b #$13
 	sta.b wTemp00
-	jsl.l func_C210AC
+	jsl.l GetCharacterMapInfo
 	ldy.b wTemp00
 	lda.b #$1E
 @lbl_C3D8D4:
@@ -9459,7 +9459,7 @@ DATA8_C3DA1C:
 	jsl.l func_C626F6
 	pla
 	sta.b wTemp00
-	jsl.l func_C210AC
+	jsl.l GetCharacterMapInfo
 	ldy.b wTemp00
 	lda.b #$C5
 	sta.b wTemp00
@@ -9514,7 +9514,7 @@ DATA8_C3DA1C:
 @lbl_C3DCAB:
 	lda.b wTemp01,s
 	sta.b wTemp00
-	jsl.l func_C210AC
+	jsl.l GetCharacterMapInfo
 	ldx.b wTemp00
 	lda.b wTemp03
 	cmp.b #$00
@@ -11031,7 +11031,7 @@ func_C3E913:
 @lbl_C3E951:
 	lda.w #$0013
 	sta.b wTemp00
-	jsl.l func_C210AC
+	jsl.l GetCharacterMapInfo
 	jsl.l func_C359AF
 	lda.b wTemp01
 	and.w #$00FF
@@ -11122,7 +11122,7 @@ func_C3E913:
 	pha
 	lda.w #$0013
 	sta.b wTemp00
-	jsl.l func_C210AC
+	jsl.l GetCharacterMapInfo
 	stz.b wTemp03
 	pla
 	cmp.b wTemp02
@@ -11162,7 +11162,7 @@ func_C3E913:
 	beq @lbl_C3EACF
 	lda.w #$0013
 	sta.b wTemp00
-	jsl.l func_C210AC
+	jsl.l GetCharacterMapInfo
 	lda.b wTemp04
 	and.w #$00FF
 	cmp.w #$0037

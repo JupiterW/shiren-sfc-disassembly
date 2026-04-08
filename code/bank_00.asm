@@ -1541,7 +1541,7 @@ func_C07339:
 @lbl_C0735A:
 	lda.w #$0013
 	sta.b wTemp00
-	jsl.l func_C210AC
+	jsl.l GetCharacterMapInfo
 	lda.l $7E81B2
 	beq @lbl_C0738E
 	.db $7B,$8F,$B0,$81,$7E,$AF,$B4,$81,$7E,$E2,$20,$18,$69,$05,$38,$E5   ;C07369
@@ -2202,7 +2202,7 @@ func_C079F6:
 @lbl_C07A09:
 	lda.b #$13
 	sta.b wTemp00
-	jsl.l func_C210AC
+	jsl.l GetCharacterMapInfo
 	lda.b wTemp01
 	pha
 	lda.b wTemp00
@@ -2420,7 +2420,7 @@ func_C07BB3:
 @lbl_C07BD6:
 	lda.b #$13
 	sta.b wTemp00
-	jsl.l func_C210AC
+	jsl.l GetCharacterMapInfo
 	jsr.w func_C07C05
 	rep #$20 ;A->16
 	lda.l $7E80CC

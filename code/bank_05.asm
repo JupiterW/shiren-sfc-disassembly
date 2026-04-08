@@ -77,10 +77,10 @@ DisplayAreaTitle:
 	dex
 	dex
 	bpl @lbl_C5CC83
-	jsl.l func_C62792
+	jsl.l Get7ED5F9
 	stz.b w7f0000+1
 	ldx.b w7f0000
-	lda.l UNREACH_C5CEFA,x
+	lda.l AreaNameIndexByD5F9,x
 	and.w #$00FF
 	sta.b w7f0002
 	asl a
@@ -189,10 +189,10 @@ DisplayAreaTitle:
 	ldx.w #$F5CB
 	stx.b w7f0000
 	jsl.l func_808619
-	jsl.l func_C62792
+	jsl.l Get7ED5F9
 	stz.b w7f0000+1
 	ldx.b w7f0000
-	lda.l UNREACH_C5CEFA,x
+	lda.l AreaNameIndexByD5F9,x
 	and.w #$00FF
 	cmp.w #$001D
 	bne @lbl_C5CD74
@@ -407,7 +407,8 @@ AreaNames:
 	.db $05
 	.db $FD,$FD,$FD,$FD,$FD,$FD,$FD,$F8,$F8
 
-UNREACH_C5CEFA:
+; Maps wd5f9 values to AreaNames indexes.
+AreaNameIndexByD5F9:
 	.db $00,$01,$02,$03,$04,$05,$06,$07,$01,$02,$03,$04,$05,$06,$07,$08   ;C5CEFA
 	.db $08                               ;C5CF0A
 	.db $09                               ;C5CF0B

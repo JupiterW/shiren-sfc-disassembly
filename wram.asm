@@ -1654,11 +1654,11 @@ wd5ef:
 	db
 
 ;d5f0
-wd5f0:
+wTransitionDestX:
 	db
 
 ;d5f1
-wd5f1:
+wTransitionDestY:
 	db
 
 ;d5f2

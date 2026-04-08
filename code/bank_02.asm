@@ -1330,7 +1330,9 @@ func_C20F35:
 	.db $85,$02,$22,$7A,$5B,$C3,$A9,$18,$85,$00,$A9,$01,$85,$01,$22,$67   ;C21098  
 	.db $41,$C2,$28,$6B                   ;C210A8  
 
-func_C210AC:
+; Returns the selected character's X/Y position, direction, type, and appearance
+; in wTemp00-wTemp04.
+GetCharacterMapInfo:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -4770,11 +4772,11 @@ func_C246D2:
 @lbl_C24723:
 	lda.l $7E897E
 	bne @lbl_C24733
-	jsl.l func_C6275B
+	jsl.l Get7ED5EC
 	lda.b wTemp00
 	sta.l $7E897E
 @lbl_C24733:
-	jsl.l func_C627DB
+	jsl.l Get7ED5EE
 	lda.b wTemp00
 	cmp.b #$0A
 	bne @lbl_C24757
@@ -4835,7 +4837,7 @@ func_C246D2:
 @lbl_C247B3:
 	dex
 	bpl @lbl_C2475F
-	jsl.l func_C627DB
+	jsl.l Get7ED5EE
 	lda.b wTemp00
 	cmp.b #8
 	bne @lbl_C247CC
@@ -7829,7 +7831,7 @@ func_C2801B:
 	txa 
 	sta.b wTemp00
 	pha
-	jsl.l func_C210AC
+	jsl.l GetCharacterMapInfo
 	pla
 	rep #$10 ;XY->16
 	ldx.b wTemp00
@@ -7910,7 +7912,7 @@ func_C280D4:
 	sta.l $7E899A
 	stx.b wTemp00
 	phx
-	jsl.l func_C210AC
+	jsl.l GetCharacterMapInfo
 	plx
 	stx.b wTemp05
 	pla
@@ -8514,11 +8516,11 @@ func_C289F5:
 	ldx.b wTemp00
 	ldy.b wTemp01
 	phx
-	jsl.l func_C210AC
+	jsl.l GetCharacterMapInfo
 	lda.b wTemp00
 	pha
 	sty.b wTemp00
-	jsl.l func_C210AC
+	jsl.l GetCharacterMapInfo
 	lda.b wTemp00
 	pha
 	sta.b wTemp02
@@ -9498,7 +9500,7 @@ func_C2CAF4:
 func_C2CB1D:
 	php
 	sep #$30 ;AXY->8
-	jsl.l func_C6275B
+	jsl.l Get7ED5EC
 	lda.b wTemp00
 	cmp.b #$04
 	bcs @lbl_C2CB30

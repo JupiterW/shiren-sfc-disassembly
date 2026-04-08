@@ -510,7 +510,7 @@ func_C30BD3:
 	cmp.l $7E935E
 	bne @lbl_C30C1D
 	sta.b wTemp00
-	call_savebank func_C210AC
+	call_savebank GetCharacterMapInfo
 	lda.b wTemp04
 	cmp.b #$00
 	bne @lbl_C30C1D
@@ -1065,7 +1065,7 @@ func_C312FF:
 	jsl.l func_C62565
 	lda.b #$13
 	sta.b wTemp00
-	jsl.l func_C210AC
+	jsl.l GetCharacterMapInfo
 	lda.b wTemp00
 	pha
 	lda.b wTemp01
@@ -1111,7 +1111,7 @@ func_C312FF:
 	bmi @lbl_C31551
 	stx.b wTemp00
 	phx
-	jsl.l func_C210AC
+	jsl.l GetCharacterMapInfo
 	plx
 	lda.b wTemp04
 	cmp.b #$08
@@ -1352,7 +1352,7 @@ func_C31959:
 @lbl_C31968:
 	lda.b #$13
 	sta.b wTemp00
-	jsl.l func_C210AC
+	jsl.l GetCharacterMapInfo
 	jsl.l func_C359AF
 	lda.b wTemp01
 	sta.b wTemp00
@@ -1593,7 +1593,7 @@ func_C31B5C:
 	pha
 	xba
 	sta.b wTemp00
-	jsl.l func_C210AC
+	jsl.l GetCharacterMapInfo
 	lda.b wTemp00
 	pha
 	lda.b wTemp03,s
@@ -1625,7 +1625,7 @@ func_C31B5C:
 	beq @lbl_C31EB5
 	stx.b wTemp00
 	phx
-	jsl.l func_C210AC
+	jsl.l GetCharacterMapInfo
 	plx
 	ldy.b wTemp03
 	cpy.b #$3C
@@ -1679,7 +1679,7 @@ func_C31B5C:
 @lbl_C31ED4:
 	stx.b wTemp00
 	phx
-	jsl.l func_C210AC
+	jsl.l GetCharacterMapInfo
 	plx
 	ldy.b wTemp04
 	cpy.b #$00
@@ -1833,7 +1833,7 @@ func_C31F99:
 	ldx.b wTemp00
 	phx
 	stx.b wTemp00
-	jsl.l func_C210AC
+	jsl.l GetCharacterMapInfo
 	lda.b #$80
 	sta.b wTemp02
 	jsl.l func_C35B7A
@@ -2354,7 +2354,7 @@ func_C328E9:
 	jsl.l func_C62565
 	lda.b #$13
 	sta.b wTemp00
-	jsl.l func_C210AC
+	jsl.l GetCharacterMapInfo
 	ldy.b wTemp02
 	rep #$20 ;A->16
 	lda.b wTemp00
@@ -2453,7 +2453,7 @@ func_C32AFC:
 @lbl_C32B0B:
 	lda.b #$13
 	sta.b wTemp00
-	jsl.l func_C210AC
+	jsl.l GetCharacterMapInfo
 	rep #$20 ;A->16
 	lda.b wTemp00
 	pha
@@ -3042,7 +3042,7 @@ func_C33382:
 	sep #$20 ;A->8
 	lda.b wTemp04,s
 	sta.b wTemp00
-	jsl.l func_C210AC
+	jsl.l GetCharacterMapInfo
 	lda.b wTemp04
 	cmp.b #$00
 	beq @lbl_C333AD
@@ -3231,7 +3231,7 @@ func_C335FE:
 	php
 	sep #$30 ;AXY->8
 	sty.b wTemp00
-	jsl.l func_C210AC
+	jsl.l GetCharacterMapInfo
 	lda.b wTemp04
 	cmp.b #$08
 	beq @lbl_C33611

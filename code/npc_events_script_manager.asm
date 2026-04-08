@@ -184,7 +184,7 @@ func_C151E9:
 NPCScriptFunction_C15A43:
 	php
 	sep #$20 ;A->8
-	jsl.l func_C627DB
+	jsl.l Get7ED5EE
 	lda.b wTemp00
 	cmp.b #$0C
 	SetCarryIfEqual
@@ -307,7 +307,7 @@ NPCScriptFunction_C15B65:
 NPCScriptFunction_C15B7C:
 	php
 	sep #$20 ;A->8
-	jsl.l func_C627DB
+	jsl.l Get7ED5EE
 	lda.b wTemp00
 	cmp.b #$0A
 	bne @false
@@ -326,7 +326,7 @@ NPCScriptFunction_C15B7C:
 NPCScriptFunction_C15B99:
 	php
 	sep #$20 ;A->8
-	jsl.l func_C627DB
+	jsl.l Get7ED5EE
 	lda.b wTemp00
 	cmp.b #$0A
 	bne @false
@@ -345,7 +345,7 @@ NPCScriptFunction_C15B99:
 NPCScriptFunction_C15BB6:
 	php
 	sep #$20 ;A->8
-	jsl.l func_C627DB
+	jsl.l Get7ED5EE
 	lda.b wTemp00
 	cmp.b #$0A
 	bne @false
@@ -364,7 +364,7 @@ NPCScriptFunction_C15BB6:
 NPCScriptFunction_C15BD3:
 	php
 	sep #$20 ;A->8
-	jsl.l func_C627DB
+	jsl.l Get7ED5EE
 	lda.b wTemp00
 	cmp.b #$0A
 	bne @false
@@ -383,7 +383,7 @@ NPCScriptFunction_C15BD3:
 NPCScriptFunction_C15BF0:
 	php
 	sep #$20 ;A->8
-	jsl.l func_C627DB
+	jsl.l Get7ED5EE
 	lda.b wTemp00
 	cmp.b #$01
 	bne @false
@@ -488,7 +488,7 @@ NPCScriptFunction_C15D28:
 NPCScriptFunction_C15D62:
 	php
 	sep #$20 ;A->8
-	jsl.l func_C627DB
+	jsl.l Get7ED5EE
 	lda.b wTemp00
 	cmp.b #$0A
 	bne @false
@@ -507,7 +507,7 @@ NPCScriptFunction_C15D62:
 NPCScriptFunction_C15D7F:
 	php
 	sep #$20 ;A->8
-	jsl.l func_C627DB
+	jsl.l Get7ED5EE
 	lda.b wTemp00
 	cmp.b #$0A
 	bne @false
@@ -526,7 +526,7 @@ NPCScriptFunction_C15D7F:
 NPCScriptFunction_C15D9C:
 	php
 	sep #$20 ;A->8
-	jsl.l func_C627DB
+	jsl.l Get7ED5EE
 	lda.b wTemp00
 	cmp.b #$0A
 	bne @false
@@ -545,7 +545,7 @@ NPCScriptFunction_C15D9C:
 NPCScriptFunction_C15DB9:
 	php
 	sep #$20 ;A->8
-	jsl.l func_C627DB
+	jsl.l Get7ED5EE
 	lda.b wTemp00
 	cmp.b #$0A
 	bne @false
@@ -564,7 +564,7 @@ NPCScriptFunction_C15DB9:
 NPCScriptFunction_C15DD6:
 	php
 	sep #$20 ;A->8
-	jsl.l func_C627DB
+	jsl.l Get7ED5EE
 	lda.b wTemp00
 	cmp.b #$0A
 	bne @false
@@ -1564,7 +1564,7 @@ NPCScriptFunction_C167F6:
 @lbl_C167FB:
 	stx.b wTemp00
 	phx
-	jsl.l func_C210AC
+	jsl.l GetCharacterMapInfo
 	plx
 	lda.b wTemp00
 	sta.l $7E8579,x
@@ -1593,7 +1593,7 @@ func_C1681A:
 	beq @lbl_C1685B
 	stx.b wTemp00
 	phx
-	jsl.l func_C210AC
+	jsl.l GetCharacterMapInfo
 	plx
 	lda.b wTemp00
 	cmp.l $7E8579,x
@@ -1854,7 +1854,7 @@ DATA8_C16B69:
 func_C16B75:
 	php
 	sep #$30 ;AXY->8
-	jsl.l func_C627DB
+	jsl.l Get7ED5EE
 	lda.b wTemp00
 	cmp.b #$0A
 	beq @lbl_C16B84
@@ -1933,7 +1933,7 @@ DATA8_C16BEC:
 func_C16C7D:
 	php
 	sep #$30 ;AXY->8
-	jsl.l func_C627DB
+	jsl.l Get7ED5EE
 	lda.b wTemp00
 	cmp.b #$0A
 	beq @lbl_C16C8C

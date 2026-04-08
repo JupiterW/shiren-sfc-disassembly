@@ -725,7 +725,32 @@ Data_c3a620:
 	.db $20,$0D,$83
 	.db $FF
 
-DATA8_C3A923:
+WorldProgressTransitionTable:
+	; 8-byte entries used by bank 06 state-transition logic.
+	; Entry format:
+	; [0] = current wd5ee match value
+	; [1] = current wd5ec match value
+	; [2] = optional Shiren X-position match value (-1 = wildcard)
+	; [3] = optional Shiren Y-position match value (-1 = wildcard)
+	; [4] = next wd5ee
+	; [5] = next wd5ec / wShuffleDungeonIndex
+	; [6] = Shiren destination X-position after the transition
+	; [7] = Shiren destination Y-position after the transition
+	; Each row defines a coordinate-triggered world progression transition from one
+	; (wd5ee, wd5ec) state to another. Columns 2/3 match Shiren's current X/Y tile
+	; position unless they are $FF wildcards, and columns 6/7 provide Shiren's
+	; destination X/Y after the transition. Many adjacent row pairs act like
+	; bidirectional map connectors between temporary substates.
+	; Many $0A Kobami rows have both:
+	; - explicit event/trigger-driven detours (specific wTemp00/wTemp01 pairs)
+	; - a default $FF/$FF row that advances to the next broad progression bucket
+	; Early Kobami mini-graph example:
+	; $0A,$01 is the broad "Kobami Valley" bucket.
+	; It can detour to temporary substates $31 and $6A when Shiren reaches specific X/Y coordinates,
+	; then place Shiren at the destination X/Y stored in bytes 6/7 for the new state.
+	; Those substates return to $01 on matching follow-up coordinates.
+	; If no detour-specific coordinate matches, $01/$31/$6A all fall through to $0A,$02,
+	; which is the next broad progression bucket ("Cedar-Lined Road").
 	.db $0B,$01,$FF,$20,$0A,$01,$19,$24
 	.db $0A,$01,$19,$11,$0A,$31,$3A,$12
 	.db $0A,$31,$3A,$13,$0A,$01,$19,$12
@@ -744,18 +769,36 @@ DATA8_C3A923:
 	.db $0A,$03,$FF,$FF,$0A,$04,$00,$00
 	.db $0A,$04,$FF,$FF,$0A,$05,$00,$00
 	.db $0A,$05,$FF,$FF,$0A,$06,$04,$13
+	; Another Kobami mini-graph:
+	; $0A,$06 is the broad "Bamboo Village" bucket.
+	; Specific Shiren X/Y coordinates can detour into temporary substates $69/$6C/$6D/$6E,
+	; and those transitions also carry destination X/Y coordinates for Shiren.
+	; Those substates have matching coordinate rows that return to $06.
+	; If no detour-specific coordinate matches, $06/$69/$6C/$6D/$6E all fall through to $0A,$07,
+	; which is the next broad progression bucket ("Pegasus Valley").
+	; One special coordinate from $06 jumps out of the $0A Kobami progression bucket entirely to $02,$01.
 	.db $0A,$06,$1C,$10,$0A,$69,$07,$0D
 	.db $0A,$69,$07,$0E,$0A,$06,$1C,$11
 	.db $0A,$06,$33,$10,$0A,$6C,$34,$23
 	.db $0A,$6C,$34,$24,$0A,$06,$33,$11
 	.db $0A,$06,$29,$1E,$0A,$6D,$25,$08
 	.db $0A,$6D,$25,$09,$0A,$06,$29,$1F
+	; Confirmed in emulator:
+	; stepping onto ($29,$1E) in $0A,$06 moves Shiren to ($25,$08) in $0A,$6D.
+	; The adjacent reverse row indicates stepping onto ($25,$09) in $0A,$6D returns to ($29,$1F) in $0A,$06.
 	.db $0A,$06,$16,$10,$0A,$6D,$39,$08
 	.db $0A,$6D,$39,$09,$0A,$06,$16,$11
+	; Confirmed in emulator:
+	; stepping onto ($1B,$19) in $0A,$06 moves Shiren to ($06,$24) in $0A,$6D,
+	; and stepping onto ($06,$25) in $0A,$6D returns Shiren to ($1B,$1A) in $0A,$06.
 	.db $0A,$06,$1B,$19,$0A,$6D,$06,$24
 	.db $0A,$6D,$06,$25,$0A,$06,$1B,$1A
 	.db $0A,$06,$0F,$10,$0A,$6E,$30,$08
 	.db $0A,$6E,$30,$09,$0A,$06,$0F,$11
+	; Likely a gated special entrance from Bamboo Village into Kitchen God Shrine.
+	; The trigger tile ($13,$06) is also touched by Bamboo Village NPC/event script
+	; logic at decimal (19,6), with a nearby NPC spawn at decimal (19,7), so this
+	; transition appears to be story/event-gated rather than freely accessible.
 	.db $0A,$06,$13,$06,$02,$01,$00,$00
 	.db $0A,$06,$FF,$FF,$0A,$07,$00,$00
 	.db $0A,$69,$FF,$FF,$0A,$07,$00,$00
@@ -765,6 +808,15 @@ DATA8_C3A923:
 	.db $0A,$07,$FF,$FF,$0A,$08,$00,$00
 	.db $0A,$08,$FF,$FF,$0A,$0D,$00,$00
 	.db $0A,$0D,$FF,$FF,$0A,$0A,$06,$16
+	; Another Kobami mini-graph:
+	; $0A,$0A is the broad "Mountaintop Town" bucket.
+	; Specific Shiren X/Y coordinates can detour into temporary substates $0B/$2E/$2F/$32/$6B,
+	; and those transitions also provide destination X/Y coordinates for where Shiren appears next.
+	; Those substates have matching coordinate rows that return to $0A.
+	; All of $0A/$0B/$2E/$2F/$32/$6B still map to the same wd5f9 $0E area-title bucket.
+	; If no detour-specific coordinate matches, those states default out of the $0A bucket to $01,$01,
+	; which is the next broad progression bucket ("Old Mine").
+	; One special coordinate from $0B jumps out to $03,$01 instead of continuing the Kobami path.
 	.db $0A,$0A,$1C,$21,$0A,$0B,$28,$24
 	.db $0A,$0B,$28,$25,$0A,$0A,$1C,$22
 	.db $0A,$0B,$26,$20,$03,$01,$00,$00
