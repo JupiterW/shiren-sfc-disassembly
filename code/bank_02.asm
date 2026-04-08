@@ -4770,11 +4770,11 @@ func_C246D2:
 @lbl_C24723:
 	lda.l $7E897E
 	bne @lbl_C24733
-	jsl.l func_C6275B
+	jsl.l Get7ED5EC
 	lda.b wTemp00
 	sta.l $7E897E
 @lbl_C24733:
-	jsl.l func_C627DB
+	jsl.l Get7ED5EE
 	lda.b wTemp00
 	cmp.b #$0A
 	bne @lbl_C24757
@@ -4835,7 +4835,7 @@ func_C246D2:
 @lbl_C247B3:
 	dex
 	bpl @lbl_C2475F
-	jsl.l func_C627DB
+	jsl.l Get7ED5EE
 	lda.b wTemp00
 	cmp.b #8
 	bne @lbl_C247CC
@@ -9498,7 +9498,7 @@ func_C2CAF4:
 func_C2CB1D:
 	php
 	sep #$30 ;AXY->8
-	jsl.l func_C6275B
+	jsl.l Get7ED5EC
 	lda.b wTemp00
 	cmp.b #$04
 	bcs @lbl_C2CB30

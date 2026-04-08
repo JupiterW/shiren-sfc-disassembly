@@ -2697,14 +2697,14 @@ Jumptable_C3546C:
 func_C35488:
 	php
 	sep #$30 ;AXY->8
-	jsl.l func_C6275B
+	jsl.l Get7ED5EC
 	lda.b wTemp00
 	bpl @lbl_C3549C
 	.db $38,$E9,$7F,$8F,$95,$C1,$7E,$28   ;C35493
 	.db $6B                               ;C3549B
 @lbl_C3549C:
 	pha
-	jsl.l func_C627DB
+	jsl.l Get7ED5EE
 	lda.b wTemp00
 	cmp.b #$0A
 	bne @lbl_C354DC
@@ -2793,7 +2793,7 @@ func_C35561:
 	lda.l UNREACH_C355BD+1,x
 	sta.b w00aa
 	restorebank
-	jsl.l func_C627DB
+	jsl.l Get7ED5EE
 	lda.b wTemp00
 	cmp.b #$0A
 	bcc @lbl_C35583
@@ -2908,7 +2908,7 @@ func_C3575D:
 @lbl_C3578E:
 	.db $22,$71,$27,$C6,$A5,$00,$C9,$04   ;C3578E  
 	.db $B0,$F3,$CA,$80,$F0               ;C35796  
-	jsl.l func_C627DB
+	jsl.l Get7ED5EE
 	lda.b wTemp00
 	cmp.b #$0A
 	bne @lbl_C357AF
@@ -2931,7 +2931,7 @@ func_C3575D:
 	beq @lbl_C35807
 	jsl.l func_C38981
 	jsl.l func_C389AA
-	jsl.l func_C6275B
+	jsl.l Get7ED5EC
 	lda.b wTemp00
 	cmp.b #$10
 	beq @lbl_C35807
@@ -6743,7 +6743,7 @@ func_C3893E:
 	lda.l $7EC179
 	cmp.b #$02
 	bcs @lbl_C38963
-	jsl.l func_C627DB
+	jsl.l Get7ED5EE
 	lda.b wTemp00
 	cmp.b #$08
 	beq @lbl_C3895D
@@ -6985,7 +6985,7 @@ func_C38AD6:
 func_C38B2F:
 	php
 	rep #$30 ;AXY->16
-	jsl.l func_C627DB
+	jsl.l Get7ED5EE
 	lda.b wTemp00
 	and.w #$00FF
 	sec
@@ -7057,11 +7057,11 @@ func_C38B2F:
 func_C38BAE:
 	php
 	sep #$30 ;AXY->8
-	jsl.l func_C627DB
+	jsl.l Get7ED5EE
 	lda.b wTemp00
 	cmp.b #$0A
 	bne @lbl_C38BC5
-	jsl.l func_C6275B
+	jsl.l Get7ED5EC
 	lda.b wTemp00
 	cmp.b #$0A
 	beq @lbl_C38BC7
@@ -7132,7 +7132,7 @@ DATA8_C38C39:
 func_C38C70:
 	php
 	sep #$30 ;AXY->8
-	jsl.l func_C627DB
+	jsl.l Get7ED5EE
 	lda.b wTemp00
 	cmp.b #$0A
 	bne @lbl_C38C9D
@@ -7157,7 +7157,7 @@ func_C38C70:
 func_C38C9F:
 	php
 	rep #$30 ;AXY->16
-	jsl.l func_C627DB
+	jsl.l Get7ED5EE
 	lda.b wTemp00
 	and.w #$00FF
 	sec
@@ -8670,11 +8670,11 @@ func_C3D2CC:
 	php
 	sep #$30 ;AXY->8
 	bankswitch 0x7E
-	jsl.l func_C627DB
+	jsl.l Get7ED5EE
 	lda.b wTemp00
 	cmp.b #$08
 	bne @lbl_C3D309
-	jsl.l func_C6275B
+	jsl.l Get7ED5EC
 	lda.b wTemp00
 	dec a
 	sta.b wTemp00
@@ -8790,7 +8790,7 @@ func_C3D3AB:
 	sep #$30 ;AXY->8
 	lda.b wTemp00
 	pha
-	jsl.l func_C627DB
+	jsl.l Get7ED5EE
 	lda.b wTemp00
 	cmp.b #$00
 	beq @lbl_C3D3FD

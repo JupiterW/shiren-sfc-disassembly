@@ -76,7 +76,7 @@ func_819038:
 	bra func_81904F
 
 func_819046:
-	jsl.l func_C627DB
+	jsl.l Get7ED5EE
 	php
 	sep #$30 ;AXY->8
 	ldy.b #$00
@@ -4347,7 +4347,7 @@ func_81BF32:
 	cpx.b #$08
 	beq @lbl_81BFAA
 	pha
-	jsl.l func_C627DB
+	jsl.l Get7ED5EE
 	pla
 	ldx.b wTemp00
 	cpx.b #$0A

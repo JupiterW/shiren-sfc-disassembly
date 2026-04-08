@@ -4049,7 +4049,7 @@ func_C14D64:
 	lda.b wTemp00
 	asl a
 	tay
-	jsl.l func_C627DB
+	jsl.l Get7ED5EE
 	lda.b wTemp00
 	cmp.b #$0A
 	bne @lbl_C14DBF

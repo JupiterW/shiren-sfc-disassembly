@@ -1163,7 +1163,17 @@ func_C60AB1:
 	plp
 	rts
 
-;has an entry per map/floor
+; Has an entry per map/floor.
+; Entry format:
+; [0] = wd5ee match value
+; [1] = wd5ec match value
+; [2] = wDungeonID
+; [3] = wFloorNum
+; [4] = wd5f9
+; [5] = wStairsDir
+; [6] = wd5fb
+; [7] = wIsInTown
+; [8] = wIsMapActive
 DATA8_C60B16:
 	.db $0B,$01,DungeonKobamiValley,0,$00,0,0,0,1
 	.db $0A,$01,DungeonKobamiValley,1,$08,2,2,0,0
@@ -2273,10 +2283,11 @@ func_C6274A:
 	plp
 	rtl
 
-func_C6275B:
+; Returns the byte stored at WRAM address $7ED5EC in wTemp00.
+Get7ED5EC:
 	php
 	sep #$20 ;A->8
-	lda.l $7ED5EC
+	lda.l wd5ec
 	sta.b wTemp00
 	plp
 	rtl
@@ -2374,7 +2385,8 @@ func_C627C8:
 	plp
 	rtl
 
-func_C627DB:
+; Returns the byte stored at WRAM address $7ED5EE in wTemp00.
+Get7ED5EE:
 	php
 	sep #$20 ;A->8
 	lda.l wd5ee
@@ -2709,7 +2721,7 @@ func_C62D0F:
 	lda.b wTemp00
 	sta.l $7ED62A
 	rep #$20 ;A->16
-	jsl.l func_C627DB
+	jsl.l Get7ED5EE
 	sep #$20 ;A->8
 	lda.b wTemp00
 	bpl @lbl_C62D37
@@ -2729,7 +2741,7 @@ func_C62D0F:
 	jsl.l _GetEvent
 	.db $80,$04                           ;C62D5F  
 @lbl_C62D61:
-	jsl.l func_C6275B
+	jsl.l Get7ED5EC
 	lda.b wTemp00
 	sta.l $7ED622
 	sep #$20 ;A->8
@@ -7454,7 +7466,7 @@ func_C66C6C:
 	stz.b wTemp01
 	ldx.b wTemp00
 	tdc
-	lda.l UNREACH_C5CEFA,x
+	lda.l AreaNameIndexByD5F9,x
 	rep #$20 ;A->16
 	clc
 	adc.w #$04D4
