@@ -3495,9 +3495,9 @@ func_C23959:
 	plp
 	rtl
 
-; Tentative name: this helper appears to validate the selected item source and
-; insert it into inventory, but some edge-case routing is still unresolved.
-TryAddSelectedItemToInventoryMaybe:
+; Validate the selected item source and insert it into inventory, handling the
+; special blank-scroll rejection path used by jar-related item selection.
+TryAddSelectedItemToInventory:
 	php
 	sep #$30 ;AXY->8
 	ldy.b wTemp00
@@ -6329,7 +6329,7 @@ func_C2598A:
 	sty.b wTemp00
 	pha
 	phy
-	jsl.l TryAddSelectedItemToInventoryMaybe
+	jsl.l TryAddSelectedItemToInventory
 	ply
 	pla
 	ldx.b wTemp00
