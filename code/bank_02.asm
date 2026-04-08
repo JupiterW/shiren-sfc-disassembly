@@ -3796,21 +3796,25 @@ RemoveItemFromCategoryShortcutSlots:
 	plp
 	rtl
 
-func_C23C91:
+HandleCategoryShortcutSelectionAction:
 	php
 	sep #$30 ;AXY->8
 	lda.b wTemp01
 	bpl @lbl_C23C9B
+	; Negative wTemp01 selects a nested/container item path.
 	jmp.w func_C23DCD
 @lbl_C23C9B:
 	bit.b #$40
 	beq @lbl_C23CA2
+	; Bit $40 in wTemp01 selects a special blank-scroll / named-item path,
+	; distinct from the regular inventory, contextual-map-item, and pot-item modes.
 ;C23C9F  
 	.db $4C,$1E,$3D
 @lbl_C23CA2:
 	ldx.b wTemp00
 	cpx.b #$1F
 	beq @lbl_C23CB5
+	; Regular inventory-slot selection.
 	jsl.l func_C14FD0
 	lda.b wTemp02
 	bne @lbl_C23CB3
@@ -3819,6 +3823,8 @@ func_C23C91:
 	plp
 	rtl
 @lbl_C23CB5:
+	; Slot $1F is a contextual map item selection resolved from Shiren's current
+	; position via the map-object lookup helpers below.
 	ldy.b wTemp01
 	lda.l $7E85C8
 	sta.b wTemp00
@@ -5215,7 +5221,7 @@ HandlePlayerActionCommand:
 	sta.w $899F
 @lbl_C24AD5:
 	sty.b wTemp00
-	jsl.l func_C23C91
+	jsl.l HandleCategoryShortcutSelectionAction
 	bra @lbl_C24AF3
 @lbl_C24ADD:
 	cmp.b #$40
