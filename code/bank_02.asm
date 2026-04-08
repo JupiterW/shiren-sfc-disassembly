@@ -3814,8 +3814,7 @@ HandleCategoryShortcutSelectionAction:
 	; distinct from the regular inventory, contextual-map-item, and
 	; nested/container modes. This path shares the cantPickUpItems guard and
 	; blank-scroll validation used by JarUseEffect.
-;C23C9F  
-	.db $4C,$1E,$3D
+	jmp.w @lbl_C23D1E
 @lbl_C23CA2:
 	ldx.b wTemp00
 	cpx.b #$1F
@@ -3885,23 +3884,108 @@ HandleCategoryShortcutSelectionAction:
 	pla
 	plp
 	rtl
-	.db $29,$1F,$85,$00,$AA,$AF,$B6,$89,$7E,$F0,$0E,$A9,$2B,$85,$00,$A9   ;C23D1E
-	.db $01,$85,$01
+@lbl_C23D1E:
+	and.b #$1F
+	sta.b wTemp00
+	tax
+	; This mode needs to take the underfoot item into inventory, so it is blocked
+	; while cantPickUpItems is active.
+	lda.l wShirenStatus.cantPickUpItems
+	beq @lbl_C23D2E
+	lda.b #$2B
+	sta.b wTemp00
+	lda.b #$01
+	sta.b wTemp01
 	jsl.l DisplayMessage
-	.db $28,$6B,$AF,$C8,$85,$7E,$85,$00,$AF   ;C23D2E  
-	.db $DC,$85,$7E,$85,$01,$DA,$22,$AF,$59,$C3,$FA,$A4,$01,$84,$00,$DA   ;C23D3E  
-	.db $5A,$22,$24,$08,$C3,$7A,$FA,$A5,$00,$D0,$0E,$84,$02,$A9,$C6,$85   ;C23D4E
-	.db $00,$64,$01
+	plp
+	rtl
+@lbl_C23D2E:
+	; Resolve the current ground item under Shiren.
+	lda.l wCharXPos+CharDataShirenIndex
+	sta.b wTemp00
+	lda.l wCharYPos+CharDataShirenIndex
+	sta.b wTemp01
+	phx
+	jsl.l func_C359AF
+	plx
+	ldy.b wTemp01
+	sty.b wTemp00
+	phx
+	phy
+	jsl.l func_C30824
+	ply
+	plx
+	lda.b wTemp00
+	bne @lbl_C23D5E
+	; Reject one special blank-scroll case before continuing.
+	sty.b wTemp02
+	lda.b #$C6
+	sta.b wTemp00
+	stz.b wTemp01
 	jsl.l DisplayMessage
-	.db $28,$6B,$BF,$4F,$89,$7E,$48,$86,$00   ;C23D5E
-	.db $DA,$5A,$22,$4D,$3C,$C2,$7A,$FA,$A5,$00,$D0,$03,$68,$28,$6B,$84   ;C23D6E
-	.db $00,$DA,$5A,$22,$23,$08,$C3,$7A,$FA,$AF,$C8,$85,$7E,$85,$00,$AF   ;C23D7E
-	.db $DC,$85,$7E,$85,$01,$A3,$01,$85,$02,$DA,$22,$A2,$5B,$C3,$FA,$68   ;C23D8E  
-	.db $85,$02,$84,$03,$A9,$1D,$85,$00,$64,$01,$DA,$5A
+	plp
+	rtl
+@lbl_C23D5E:
+	; Replace the ground item with the currently selected inventory item.
+	lda.l wShirenStatus.itemAmounts,x
+	pha
+	stx.b wTemp00
+	phx
+	phy
+	jsl.l RemoveItemFromCategoryShortcutSlots
+	ply
+	plx
+	lda.b wTemp00
+	bne @lbl_C23D74
+	pla
+	plp
+	rtl
+@lbl_C23D74:
+	sty.b wTemp00
+	phx
+	phy
+	jsl.l func_C30823
+	ply
+	plx
+	lda.l wCharXPos+CharDataShirenIndex
+	sta.b wTemp00
+	lda.l wCharYPos+CharDataShirenIndex
+	sta.b wTemp01
+	lda.b $01,s
+	sta.b wTemp02
+	phx
+	jsl.l func_C35BA2
+	plx
+	pla
+	sta.b wTemp02
+	sty.b wTemp03
+	lda.b #$1D
+	sta.b wTemp00
+	stz.b wTemp01
+	phx
+	phy
 	jsl.l DisplayMessage
-	.db $7A,$FA,$84,$00,$64,$01,$DA,$5A,$22,$FD,$5A,$C2,$7A,$FA,$CA,$E8   ;C23DAE
-	.db $BF,$4F,$89,$7E,$48,$98,$9F,$4F   ;C23DBE  
-	.db $89,$7E,$7A,$10,$F2,$28,$6B       ;C23DC6
+	ply
+	plx
+	sty.b wTemp00
+	stz.b wTemp01
+	phx
+	phy
+	jsl.l func_C25AFD
+	ply
+	plx
+	dex
+@lbl_C23DB4:
+	; Insert the old ground item into inventory, shifting later entries down.
+	inx
+	lda.l wShirenStatus.itemAmounts,x
+	pha
+	tya
+	sta.l wShirenStatus.itemAmounts,x
+	ply
+	bpl @lbl_C23DB4
+	plp
+	rtl
 
 func_C23DCD:
 	pha
