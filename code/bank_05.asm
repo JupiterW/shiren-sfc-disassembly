@@ -77,7 +77,7 @@ DisplayAreaTitle:
 	dex
 	dex
 	bpl @lbl_C5CC83
-	jsl.l func_C62792
+	jsl.l Get7ED5F9
 	stz.b w7f0000+1
 	ldx.b w7f0000
 	lda.l UNREACH_C5CEFA,x
@@ -189,7 +189,7 @@ DisplayAreaTitle:
 	ldx.w #$F5CB
 	stx.b w7f0000
 	jsl.l func_808619
-	jsl.l func_C62792
+	jsl.l Get7ED5F9
 	stz.b w7f0000+1
 	ldx.b w7f0000
 	lda.l UNREACH_C5CEFA,x

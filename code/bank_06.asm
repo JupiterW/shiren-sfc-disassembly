@@ -2308,28 +2308,57 @@ GetStairsDirection:
 	sta.b wTemp00
 	plp
 	rtl
-	.db $08,$E2,$20,$AF,$FB,$D5,$7E,$85   ;C62787
-	.db $00,$28,$6B                       ;C6278F
 
-func_C62792:
+; Returns the byte stored at WRAM address $7ED5FB in wTemp00.
+Get7ED5FB:
 	php
 	sep #$20 ;A->8
-	lda.l $7ED5F9
+	lda.l wd5fb
 	sta.b wTemp00
 	plp
 	rtl
-	.db $08,$C2,$30,$64,$01,$A5,$00,$0A,$0A,$0A,$65,$00,$AA,$BF,$16,$0B   ;C6279D
-	.db $C6,$85,$00,$28,$6B               ;C627AD  
+
+; Returns the byte stored at WRAM address $7ED5F9 in wTemp00.
+Get7ED5F9:
+	php
+	sep #$20 ;A->8
+	lda.l wd5f9
+	sta.b wTemp00
+	plp
+	rtl
+
+; Returns DATA8_C60B16[wTemp00 * 9] in wTemp00.
+func_C6279D:
+	php
+	rep #$30 ;AXY->16
+	stz.b wTemp01
+	lda.b wTemp00
+	asl a
+	asl a
+	asl a
+	adc.b wTemp00
+	tax
+	lda.l DATA8_C60B16,x
+	sta.b wTemp00
+	plp
+	rtl
 
 func_C627B2:
 	php
 	rep #$20 ;A->16
-	lda.l $7ED5F0
+	lda.l wd5f0
 	sta.b wTemp00
 	plp
 	rtl
-	.db $08,$E2,$20,$AF,$ED,$D5,$7E,$85   ;C627BD
-	.db $00,$28,$6B                       ;C627C5
+
+; Returns the byte stored at WRAM address $7ED5ED in wTemp00.
+Get7ED5ED:
+	php
+	sep #$20 ;A->8
+	lda.l wd5ed
+	sta.b wTemp00
+	plp
+	rtl
 
 func_C627C8:
 	php
@@ -2348,7 +2377,7 @@ func_C627C8:
 func_C627DB:
 	php
 	sep #$20 ;A->8
-	lda.l $7ED5EE
+	lda.l wd5ee
 	sta.b wTemp00
 	plp
 	rtl
@@ -2675,7 +2704,7 @@ func_C62D0F:
 	lda.b wTemp00
 	pha
 	rep #$20 ;A->16
-	jsl.l func_C62792
+	jsl.l Get7ED5F9
 	sep #$20 ;A->8
 	lda.b wTemp00
 	sta.l $7ED62A
