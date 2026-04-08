@@ -3474,7 +3474,7 @@ func_C43EFF:
 	rep #$30 ;AXY->16
 	lda.w #$0000
 	sta.b wTemp00
-	jsl.l func_80DC69
+	jsl.l GetJoypadPressed
 	lda.b wTemp00
 	beq @lbl_C43F11
 	bra @lbl_C43F14
@@ -3496,7 +3496,7 @@ func_C43F17:
 	beq @lbl_C43F3A
 	lda.w #$0000
 	sta.b wTemp00
-	jsl.l func_80DC69
+	jsl.l GetJoypadPressed
 	lda.b wTemp00
 	bne @lbl_C43F3D
 	lda.w #$0001
@@ -12819,7 +12819,7 @@ func_C496CE:
 	jsl.l func_C07C89
 	lda.b #$00
 	sta.b wTemp00
-	jsl.l func_80DC69
+	jsl.l GetJoypadPressed
 	pla
 	ldy.b wTemp00
 	bne @lbl_C4978E
@@ -14547,7 +14547,7 @@ func_C4A93A:
 	pha
 	lda.w #$0000
 	sta.b wTemp00
-	jsl.l func_80DC69
+	jsl.l GetJoypadPressed
 	lda.b wTemp00
 	and.w #$F0F0
 	ora.b wTemp01,s
@@ -17779,7 +17779,7 @@ func_C4C472:
 	sta.b wTemp00
 	phx
 	phy
-	call_savebank func_80DC0C
+	call_savebank GetJoypadState
 	ply
 	plx
 	ldy.b wTemp00
@@ -17789,7 +17789,7 @@ func_C4C472:
 	sta.b wTemp00
 	phx
 	phy
-	call_savebank func_80DC69
+	call_savebank GetJoypadPressed
 	ply
 	plx
 @lbl_C4C499:

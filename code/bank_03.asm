@@ -10455,7 +10455,7 @@ func_C3E571:
 	rep #$20 ;A->16
 	lda.w #$0000
 	sta.b wTemp00
-	jsl.l func_80DC0C
+	jsl.l GetJoypadState
 	lda.b wTemp00
 	bit.w #$0020
 	sep #$20 ;A->8
@@ -10998,7 +10998,7 @@ func_C3E8C7:
 	plp
 	rtl
 
-func_C3E913:
+GetLivePlayerActionCommand:
 	php
 	rep #$30 ;AXY->16
 	tdc
@@ -11062,17 +11062,17 @@ func_C3E913:
 	ldx.w #$0000
 	stx.b wTemp00
 	phx
-	jsl.l func_80DC0C
+	jsl.l GetJoypadState
 	plx
 	ldy.b wTemp00
 	phy
 	stx.b wTemp00
 	bit.w #$4040
 	beq @lbl_C3E9DB
-	jsl.l func_80DC69
+	jsl.l GetJoypadPressed
 	bra @lbl_C3E9DF
 @lbl_C3E9DB:
-	jsl.l func_80DC8F
+	jsl.l GetJoypadHeld
 @lbl_C3E9DF:
 	ply
 	lda.b wTemp00
@@ -11104,7 +11104,7 @@ func_C3E913:
 	beq @lbl_C3E9B8
 	lda.w #$0000
 	sta.b wTemp00
-	jsl.l func_80DC0C
+	jsl.l GetJoypadState
 	lda.l debugMode
 	and.w #$0010
 	eor.w #$FFFF
@@ -11116,7 +11116,7 @@ func_C3E913:
 	bne @lbl_C3EA8D
 	lda.l $7F9CDE
 	sta.b wTemp00
-	jsl.l func_C3EB4A
+	jsl.l MapDPadBitsToDirection
 	ldy.w #$0018
 	bcs @lbl_C3EA8D
 	lda.b wTemp00
@@ -11183,7 +11183,7 @@ func_C3E913:
 	sta.b wTemp00
 	pha
 	; Convert d-pad bit combinations into the 0-7 direction enum from constants/npc.asm.
-	jsl.l func_C3EB4A
+	jsl.l MapDPadBitsToDirection
 	pla
 	bcs @lbl_C3EA9A
 	ldy.w #$0008
@@ -11206,7 +11206,7 @@ func_C3E913:
 	.db $81,$4C,$B8,$E9,$EB,$09,$E1,$00   ;C3EB3E  
 	.db $85,$00,$28,$6B                   ;C3EB46  
 
-func_C3EB4A:
+MapDPadBitsToDirection:
 	php
 	rep #$30 ;AXY->16
 	restorebank
@@ -11861,7 +11861,7 @@ func_C3F3B6:
 	jsl.l func_80854A
 	lda.w #$0000
 	sta.b wTemp00
-	jsl.l func_80DC0C
+	jsl.l GetJoypadState
 	lda.b wTemp00
 	bit.w #$0020
 	bne @lbl_C3F3CD

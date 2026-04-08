@@ -77,7 +77,7 @@ func_C6008C:
 @lbl_C6009D:
 	lda.w #$0000
 	sta.b wTemp00
-	jsl.l func_80DC69
+	jsl.l GetJoypadPressed
 	lda.b wTemp00
 	beq @lbl_C60099
 	lda.w #$0000
@@ -113,7 +113,7 @@ func_C600C7:
 	plp
 	rtl
 
-func_C600E3:
+GetPlayerActionCommand:
 	php
 
 func_C600E4:
@@ -145,7 +145,7 @@ func_C600E4:
 	sta.b wTemp01
 	lda.b #$FF
 	sta.l $7ED60A
-	jsl.l func_C3E913
+	jsl.l GetLivePlayerActionCommand
 	lda.b wTemp02
 	sta.l $7ED60B
 	lda.b #$FF
@@ -243,7 +243,7 @@ func_C601FA:
 	lda.b #$00
 	sta.b wTemp00
 	stz.b wTemp01
-	jsl.l func_80DC69
+	jsl.l GetJoypadPressed
 	lda.b wTemp00
 	ora.b wTemp01
 	bne @lbl_C60246
@@ -762,7 +762,7 @@ func_C606C3:
 ;C606C9  
 	.db $22,$92,$28,$C6
 @lbl_C606CD:
-	jsl.l func_C600E3
+	jsl.l GetPlayerActionCommand
 	lda.b wTemp00
 	cmp.b #$E1
 	bne @lbl_C606DD
@@ -775,7 +775,7 @@ func_C606C3:
 @lbl_C606E4:
 	lda.l $7ED60B
 	sta.b wTemp02
-	jsl.l func_C24965
+	jsl.l DispatchPlayerActionCommand
 	lda.b wTemp00
 	cmp.b #$02
 	bne @lbl_C60708
@@ -852,7 +852,7 @@ func_C60788:
 	txa
 	sta.l $7ED607
 @lbl_C6079D:
-	jsl.l func_C24965
+	jsl.l DispatchPlayerActionCommand
 	lda.b wTemp00
 	cmp.b #$01
 	beq @lbl_C607C5
@@ -2076,7 +2076,7 @@ func_C62456:
 	lda.w #$0000
 	sta.b wTemp00
 	phy
-	jsl.l func_80DC69
+	jsl.l GetJoypadPressed
 	ply
 	lda.b wTemp00
 	bne @lbl_C624D9

@@ -222,7 +222,7 @@ func_C0656C:
 	jsl.l func_808D3D
 	lda.w #$0000
 	sta.b wTemp00
-	jsl.l func_80DC69
+	jsl.l GetJoypadPressed
 	plx
 	lda.b wTemp00
 	bne @lbl_C065E0
@@ -2371,7 +2371,7 @@ func_C07A9C:
 	beq @lbl_C07B9B
 	lda.w #$0000
 	sta.b wTemp00
-	call_savebank func_80DC69
+	call_savebank GetJoypadPressed
 	lda.b wTemp00
 	bit.w #$F0FF
 	beq @lbl_C07B49

@@ -10037,11 +10037,12 @@ func_80DBD1:
 	plp
 	rtl
 
-func_80DC0C:
+GetJoypadState:
 	php
 	rep #$20 ;A->16
 	sep #$10 ;XY->8
 	restorebank
+	; Return the normalized current joypad state for controller slot wTemp00.
 	ldx.b wTemp00
 	lda.w $0BCA,x
 	beq @lbl_80DC62
@@ -10094,13 +10095,14 @@ func_80DC0C:
 	plp
 	rtl
 
-func_80DC69:
+GetJoypadPressed:
 	php
 	rep #$20 ;A->16
 	sep #$10 ;XY->8
+	; Return newly pressed buttons for controller slot wTemp00.
 	ldx.b wTemp00
 	phx
-	jsl.l func_80DC0C
+	jsl.l GetJoypadState
 	plx
 	restorebank
 	lda.w $0BDE,x
@@ -10114,13 +10116,14 @@ func_80DC69:
 	plp
 	rtl
 
-func_80DC8F:
+GetJoypadHeld:
 	php
 	rep #$20 ;A->16
 	sep #$10 ;XY->8
+	; Return held buttons, with d-pad cardinal changes filtered for movement handling.
 	ldx.b wTemp00
 	phx
-	jsl.l func_80DC0C
+	jsl.l GetJoypadState
 	plx
 	restorebank
 	lda.w $0BDE,x
@@ -10148,7 +10151,7 @@ func_80DCC6:
 	sep #$10 ;XY->8
 	ldx.b wTemp00
 	phx
-	jsl.l func_80DC0C
+	jsl.l GetJoypadState
 	plx
 	restorebank
 	lda.w $0BE2,x
@@ -10187,7 +10190,7 @@ func_80DD10:
 	rep #$30 ;AXY->16
 	ldx.b wTemp00
 	phx
-	jsl.l func_80DC69
+	jsl.l GetJoypadPressed
 	plx
 	lda.b wTemp00
 	and.w #$F0F0
@@ -10277,7 +10280,7 @@ func_80DDC5:
 	jsl.l func_80854A
 	stx.b wTemp00
 	phx
-	jsl.l func_80DC69
+	jsl.l GetJoypadPressed
 	plx
 	lda.b wTemp00
 	bne @lbl_80DDE2
@@ -12200,7 +12203,7 @@ func_80ED77:
 	bcs @lbl_80EDDA
 	lda.w #$0000
 	sta.b wTemp00
-	jsl.l func_80DC0C
+	jsl.l GetJoypadState
 	lda.b wTemp00
 	bit.w #$0040
 	beq @lbl_80EDD1
@@ -12253,7 +12256,7 @@ func_80ED77:
 	lda.w #$0000
 	sta.b wTemp00
 	phy
-	jsl.l func_80DC0C
+	jsl.l GetJoypadState
 	ply
 	lda.b wTemp00
 	bit.w #$0040
@@ -12656,7 +12659,7 @@ func_80F14B:
 	lda.w #$0000
 	sta.b w7f0000
 	phx
-	call_savebank func_80DC69
+	call_savebank GetJoypadPressed
 	plx
 	lda.b w7f0000
 	bne @lbl_80F1E5
@@ -12669,7 +12672,7 @@ func_80F14B:
 	lda.w #$0000
 	sta.b w7f0000
 	phx
-	call_savebank func_80DC69
+	call_savebank GetJoypadPressed
 	plx
 	lda.b w7f0000
 	bne @lbl_80F1E2
@@ -12690,7 +12693,7 @@ func_80F14B:
 	pha
 	lda.w #$0000
 	sta.b w7f0000
-	jsl.l func_80DC0C
+	jsl.l GetJoypadState
 	jsl.l func_80F245
 	pla
 	dec a

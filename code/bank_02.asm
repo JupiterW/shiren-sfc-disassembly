@@ -5048,10 +5048,10 @@ func_C248D8:
 	.db $A9,$13,$85,$00,$A9,$10,$85,$02,$22,$F6,$26,$C6,$A9,$13,$85,$00   ;C2494D
 	.db $22,$90,$43,$C2,$64,$00,$28,$6B   ;C2495D  
 
-func_C24965:
+DispatchPlayerActionCommand:
 	php
 	sep #$30 ;AXY->8
-	jsl.l func_C2498C
+	jsl.l HandlePlayerActionCommand
 	lda.l $7E89B3
 	beq @lbl_C2498A
 	lda.b wTemp00
@@ -5069,7 +5069,7 @@ func_C24965:
 	plp
 	rtl
 
-func_C2498C:
+HandlePlayerActionCommand:
 	php
 	sep #$30 ;AXY->8
 	bankswitch 0x7E
@@ -5138,6 +5138,8 @@ func_C2498C:
 	.db $6B                               ;C24A5B
 @lbl_C24A5C:
 	lda.b wTemp00
+	; Fixed commands use dedicated byte values. Other commands use a packed format:
+	; upper 3 bits = action family, lower 5 bits = operand/direction.
 	cmp.b #$1B
 	bne @lbl_C24A6C
 	jsl.l func_C28D24
