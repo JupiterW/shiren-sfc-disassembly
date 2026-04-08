@@ -4632,7 +4632,7 @@ func_C2455F:
 	.db $08,$E2,$30,$A6,$00,$20,$5F,$45,$28,$6B,$08,$E2,$30,$A6,$00,$20   ;C2457A
 	.db $2B,$45,$28,$6B                   ;C2458A
 
-func_C2458E:
+HandleQuickUseItemAction:
 	php
 	sep #$30 ;AXY->8
 	lda.l $7E899B
@@ -5191,7 +5191,7 @@ HandlePlayerActionCommand:
 @lbl_C24AAD:
 	cmp.b #$1D
 	bne @lbl_C24AB7
-	jsl.l func_C2458E
+	jsl.l HandleQuickUseItemAction
 	plp
 	rtl
 @lbl_C24AB7:
