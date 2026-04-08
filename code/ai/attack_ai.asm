@@ -1183,7 +1183,7 @@ DATA8_C21B97:
 	;lda.b wTemp00
 	;pha
 	;stx.b wTemp00
-	;jsl.l func_C23C4D
+	;jsl.l RemoveItemFromCategoryShortcutSlots
 	;pla
 	;beq @lbl_C21CCF
 	;lda.b wTemp01,s
@@ -2893,4 +2893,3 @@ func_C227DD:
 	stz.b wTemp00
 	plp
 	rtl
-

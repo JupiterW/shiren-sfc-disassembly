@@ -436,10 +436,10 @@ DATA8_C20277:
 	stz.w $8993
 	stz.w $8994
 	stz.w $8995
-	sta.w wShirenStatus.quickUseItemIds
-	sta.w wShirenStatus.quickUseItemIds+1
-	sta.w wShirenStatus.quickUseItemIds+2
-	sta.w wShirenStatus.quickUseItemIds+3
+	sta.w wShirenStatus.categoryShortcutItemIds
+	sta.w wShirenStatus.categoryShortcutItemIds+1
+	sta.w wShirenStatus.categoryShortcutItemIds+2
+	sta.w wShirenStatus.categoryShortcutItemIds+3
 	sta.w $897F
 	ldx.b #$20
 @lbl_C2043B:
@@ -3641,7 +3641,7 @@ func_C23B1C:
 	stx.b wTemp00
 	lda.w UNREACH_00894F,x
 	pha
-	jsl.l func_C23C4D
+	jsl.l RemoveItemFromCategoryShortcutSlots
 	pla
 	sta.b wTemp00
 	plp
@@ -3656,16 +3656,16 @@ func_C23B7C:
 	plp
 	rtl
 
-GetQuickUseItemIds:
+GetCategoryShortcutItemIds:
 	php
 	sep #$20 ;A->8
-	lda.l wShirenStatus.quickUseItemIds
+	lda.l wShirenStatus.categoryShortcutItemIds
 	sta.b wTemp00
-	lda.l wShirenStatus.quickUseItemIds+1
+	lda.l wShirenStatus.categoryShortcutItemIds+1
 	sta.b wTemp01
-	lda.l wShirenStatus.quickUseItemIds+2
+	lda.l wShirenStatus.categoryShortcutItemIds+2
 	sta.b wTemp02
-	lda.l wShirenStatus.quickUseItemIds+3
+	lda.l wShirenStatus.categoryShortcutItemIds+3
 	sta.b wTemp03
 	plp
 	rtl
@@ -3694,13 +3694,13 @@ func_C23BB7:
 	.db $08,$E2,$30,$A6,$00,$BF,$E9,$88,$7E,$85,$00,$BF,$FD,$88,$7E,$85   ;C23BCE
 	.db $01,$28,$6B                       ;C23BDE  
 
-ToggleQuickUseItemSlot4:
+ToggleArrowShortcutItem:
 	php
 	sep #$20 ;A->8
 	lda.b wTemp00
-	cmp.l wShirenStatus.quickUseItemIds+3
+	cmp.l wShirenStatus.categoryShortcutItemIds+3
 	beq @lbl_C23BF6
-	sta.l wShirenStatus.quickUseItemIds+3
+	sta.l wShirenStatus.categoryShortcutItemIds+3
 	lda.b #$02
 	sta.b wTemp00
 	plp
@@ -3709,30 +3709,30 @@ ToggleQuickUseItemSlot4:
 	.db $A9,$FF,$8F,$73,$89,$7E,$A9,$01   ;C23BF6
 	.db $85,$00,$28,$6B                   ;C23BFE  
 
-ToggleQuickUseItemSlot1:
+ToggleWeaponShortcutItem:
 	php
 	sep #$30 ;AXY->8
 	ldx.b #$00
-	bra ToggleQuickUseItemSlotByIndex
+	bra ToggleCategoryShortcutItemByIndex
 
-ToggleQuickUseItemSlot3:
+ToggleArmbandShortcutItem:
 	php
 	sep #$30 ;AXY->8
 	ldx.b #$02
-	bra ToggleQuickUseItemSlotByIndex
+	bra ToggleCategoryShortcutItemByIndex
 
-ToggleQuickUseItemSlot2:
+ToggleShieldShortcutItem:
 	php
 	sep #$30 ;AXY->8
 	ldx.b #$01
-ToggleQuickUseItemSlotByIndex:
+ToggleCategoryShortcutItemByIndex:
 	ldy.b wTemp00
-	lda.l wShirenStatus.quickUseItemIds,x
+	lda.l wShirenStatus.categoryShortcutItemIds,x
 	bmi @lbl_C23C42
 	sta.b wTemp00
 	phx
 	phy
-	jsl.l func_C32C90
+	jsl.l TryClearAssignedCategoryItem
 	ply
 	plx
 	lda.b wTemp00
@@ -3741,23 +3741,23 @@ ToggleQuickUseItemSlotByIndex:
 	.db $64,$00,$28,$6B
 @lbl_C23C2F:
 	tya
-	cmp.l wShirenStatus.quickUseItemIds,x
+	cmp.l wShirenStatus.categoryShortcutItemIds,x
 	bne @lbl_C23C42
 	lda.b #$FF
-	sta.l wShirenStatus.quickUseItemIds,x
+	sta.l wShirenStatus.categoryShortcutItemIds,x
 	lda.b #$01
 	sta.b wTemp00
 	plp
 	rtl
 @lbl_C23C42:
 	tya
-	sta.l wShirenStatus.quickUseItemIds,x
+	sta.l wShirenStatus.categoryShortcutItemIds,x
 	lda.b #$02
 	sta.b wTemp00
 	plp
 	rtl
 
-func_C23C4D:
+RemoveItemFromCategoryShortcutSlots:
 	php
 	sep #$30 ;AXY->8
 	bankswitch 0x7E
@@ -3765,7 +3765,7 @@ func_C23C4D:
 	lda.w $894F,y
 	ldx.b #$03
 @lbl_C23C5B:
-	cmp.w wShirenStatus.quickUseItemIds,x
+	cmp.w wShirenStatus.categoryShortcutItemIds,x
 	beq @lbl_C23C65
 	dex
 	bpl @lbl_C23C5B
@@ -3776,7 +3776,7 @@ func_C23C4D:
 	sta.b wTemp00
 	phx
 	phy
-	call_savebank func_C32C90
+	call_savebank TryClearAssignedCategoryItem
 	ply
 	plx
 	lda.b wTemp00
@@ -3785,7 +3785,7 @@ func_C23C4D:
 	.db $64,$00,$28,$6B
 @lbl_C23C7D:
 	lda.b #$FF
-	sta.w wShirenStatus.quickUseItemIds,x
+	sta.w wShirenStatus.categoryShortcutItemIds,x
 @lbl_C23C82:
 	iny
 	lda.w $894F,y
@@ -3814,7 +3814,7 @@ func_C23C91:
 	jsl.l func_C14FD0
 	lda.b wTemp02
 	bne @lbl_C23CB3
-	jsr.w func_C23F30
+	jsr.w AssignSelectedInventoryItemToCategoryShortcut
 @lbl_C23CB3:
 	plp
 	rtl
@@ -3857,7 +3857,7 @@ func_C23C91:
 	plx
 	stx.b wTemp00
 	sty.b wTemp01
-	jsr.w func_C23F30
+	jsr.w AssignSelectedInventoryItemToCategoryShortcut
 	lda.l $7E896E
 	bpl @lbl_C23D0C
 	lda.b #$80
@@ -3940,7 +3940,7 @@ func_C23DCD:
 	sta.b wTemp00
 	lda.l $7E899F
 	sta.b wTemp01
-	jsr.w func_C23F30
+	jsr.w AssignSelectedInventoryItemToCategoryShortcut
 	ply
 	plx
 	jmp.w func_C23E5F
@@ -3979,7 +3979,7 @@ func_C23E5F:
 	.db $BF,$4F,$89,$7E,$10,$F9,$98,$9F   ;C23F21  
 	.db $4F,$89,$7E,$28,$6B,$28,$6B       ;C23F29  
 
-func_C23F30:
+AssignSelectedInventoryItemToCategoryShortcut:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -4007,12 +4007,13 @@ func_C23F30:
 	lda.b #$13
 	sta.b wTemp04
 	phx
+	; Route the selected inventory item into the category-based shortcut/equip path.
 	jsl.l func_C30AE5
 	plx
 	lda.b wTemp00
 	bne @lbl_C23F71
 	stx.b wTemp00
-	jsl.l func_C23C4D
+	jsl.l RemoveItemFromCategoryShortcutSlots
 @lbl_C23F71:
 	dec a
 	bne @lbl_C23F76
@@ -4058,7 +4059,7 @@ func_C23F82:
 	ldy.w $894F,x
 	pha
 	phy
-	call_savebank func_C23C4D
+	call_savebank RemoveItemFromCategoryShortcutSlots
 	ply
 	pla
 	ldx.b wTemp00
@@ -4632,13 +4633,13 @@ func_C2455F:
 	.db $08,$E2,$30,$A6,$00,$20,$5F,$45,$28,$6B,$08,$E2,$30,$A6,$00,$20   ;C2457A
 	.db $2B,$45,$28,$6B                   ;C2458A
 
-HandleQuickUseItemAction:
+HandleArrowShortcutAction:
 	php
 	sep #$30 ;AXY->8
 	lda.l $7E899B
 	bne @lbl_C245C4
-	; L-button action uses the fourth quick-use item slot.
-	lda.l wShirenStatus.quickUseItemIds+3
+	; L-button action uses the arrow shortcut slot.
+	lda.l wShirenStatus.categoryShortcutItemIds+3
 	bpl @lbl_C245B1
 	lda.b #$B5
 	sta.b wTemp00
@@ -4720,7 +4721,7 @@ func_C24671:
 	stx.b wTemp00
 	pha
 	phy
-	jsl.l func_C23C4D
+	jsl.l RemoveItemFromCategoryShortcutSlots
 	ply
 	pla
 	ldx.b wTemp00
@@ -5191,7 +5192,7 @@ HandlePlayerActionCommand:
 @lbl_C24AAD:
 	cmp.b #$1D
 	bne @lbl_C24AB7
-	jsl.l HandleQuickUseItemAction
+	jsl.l HandleArrowShortcutAction
 	plp
 	rtl
 @lbl_C24AB7:

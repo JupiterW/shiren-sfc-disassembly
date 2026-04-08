@@ -370,12 +370,14 @@ func_C30AE5:
 	lda.l DATA8_C341BB,x
 	; Register the selected item into its category shortcut slot:
 	; $03=weapons, $05=shields, $06=armbands, $04=arrows.
+	; For equip categories, assigning the slot also applies the item's effect,
+	; and replacing an occupied slot first tries to clear the previous item.
 	cmp.b #$03
 	bne @lbl_C30B0D
 	sty.b wTemp00
 	phx
 	phy
-	call_savebank ToggleQuickUseItemSlot1
+	call_savebank ToggleWeaponShortcutItem
 	ply
 	plx
 	bra @lbl_C30B3E
@@ -385,7 +387,7 @@ func_C30AE5:
 	sty.b wTemp00
 	phx
 	phy
-	call_savebank ToggleQuickUseItemSlot2
+	call_savebank ToggleShieldShortcutItem
 	ply
 	plx
 	bra @lbl_C30B3E
@@ -395,7 +397,7 @@ func_C30AE5:
 	sty.b wTemp00
 	phx
 	phy
-	call_savebank ToggleQuickUseItemSlot3
+	call_savebank ToggleArmbandShortcutItem
 	ply
 	plx
 	bra @lbl_C30B3E
@@ -405,7 +407,7 @@ func_C30AE5:
 	jmp.w func_C30BD3
 @lbl_C30B38:
 	sty.b wTemp00
-	jsl.l ToggleQuickUseItemSlot4
+	jsl.l ToggleArrowShortcutItem
 @lbl_C30B3E:
 	lda.b wTemp00
 	beq @lbl_C30B5D
@@ -1513,7 +1515,7 @@ func_C31B5C:
 	lda.b #$CD
 	sta.b wTemp02
 	call_savebank func_C62565
-	jsl.l GetQuickUseItemIds
+	jsl.l GetCategoryShortcutItemIds
 	ldx.b wTemp02
 	phx
 	ldx.b wTemp01
@@ -1947,7 +1949,7 @@ func_C31F99:
 ;C321EB  
 	.db $4C,$04,$10
 @lbl_C321EE:
-	jsl.l GetQuickUseItemIds
+	jsl.l GetCategoryShortcutItemIds
 	ldx.b wTemp02
 	bmi @lbl_C321FC
 	lda.l wItemIsCursed,x
@@ -2543,7 +2545,7 @@ func_C32BAD:
 	.db $00,$30,$19,$86,$00,$85,$02,$48,$22,$7A,$5B,$C3,$68,$85,$00,$48   ;C32C70
 	.db $22,$AA,$7F,$C2,$68,$FA,$68,$3A,$10,$C9,$28,$60,$FA,$68,$28,$60   ;C32C80  
 
-func_C32C90:
+TryClearAssignedCategoryItem:
 	php
 	sep #$30 ;AXY->8
 	bankswitch 0x7E
@@ -2595,7 +2597,7 @@ func_C32CFE:
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
 	phx
-	jsl.l GetQuickUseItemIds
+	jsl.l GetCategoryShortcutItemIds
 	ldx.b wTemp02
 	lda.l wItemType,x
 	plx

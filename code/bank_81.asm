@@ -4321,7 +4321,7 @@ func_81BF32:
 	pha
 	bra @lbl_81BFBB
 @lbl_81BF53:
-	jsl.l GetQuickUseItemIds
+	jsl.l GetCategoryShortcutItemIds
 	lda.b wTemp00
 	pha
 	lda.b wTemp01

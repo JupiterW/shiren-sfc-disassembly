@@ -11,7 +11,7 @@ itemAmounts dsb 20 ;894f
 unk8963 dsb 0x0d
 ; Category shortcut slots populated via DATA8_C341BB in item_effects.asm:
 ; [0] weapons, [1] shields, [2] armbands, [3] arrows
-quickUseItemIds dsb 4 ;8970
+categoryShortcutItemIds dsb 4 ;8970
 swordStrength db ;8974
 canSeeInvisibleObjects db ;8975
 unk8976 dsb 2
