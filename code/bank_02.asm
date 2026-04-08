@@ -397,7 +397,7 @@ DATA8_C20277:
 	stz.w $89B2
 	stz.w $89B3
 	stz.w $89B4
-	stz.w $89B6
+	stz.w wShirenStatus.cantPickUpItems
 	stz.w $89BA
 	stz.w $89B7
 	stz.w $89B8
@@ -1155,7 +1155,7 @@ func_C20E89:
 	sta.l $7E8994
 	sta.l $7E8995
 	sta.l $7E8997
-	sta.l $7E89B6
+	sta.l wShirenStatus.cantPickUpItems
 	sta.l $7E89B7
 	sta.l $7E89B8
 	sta.l $7E894D
@@ -1441,7 +1441,7 @@ func_C21184:
 	sep #$20 ;A->8
 	lda.l $7E89B4
 	sta.b wTemp00
-	lda.l $7E89B6
+	lda.l wShirenStatus.cantPickUpItems
 	sta.b wTemp01
 	plp
 	rtl
@@ -3495,7 +3495,9 @@ func_C23959:
 	plp
 	rtl
 
-func_C23A02:
+; Tentative name: this helper appears to validate the selected item source and
+; insert it into inventory, but some edge-case routing is still unresolved.
+TryAddSelectedItemToInventoryMaybe:
 	php
 	sep #$30 ;AXY->8
 	ldy.b wTemp00
@@ -3510,6 +3512,8 @@ func_C23A02:
 @lbl_C23A15:
 	sty.b wTemp00
 	phy
+	; Reject one special blank-scroll case before continuing with the broader
+	; selection flow that this helper feeds.
 	jsl.l func_C30824
 	ply
 	lda.b wTemp00
@@ -3806,8 +3810,10 @@ HandleCategoryShortcutSelectionAction:
 @lbl_C23C9B:
 	bit.b #$40
 	beq @lbl_C23CA2
-	; Bit $40 in wTemp01 selects a special blank-scroll / named-item path,
-	; distinct from the regular inventory, contextual-map-item, and pot-item modes.
+	; Bit $40 in wTemp01 selects a special jar-related item-selection path
+	; distinct from the regular inventory, contextual-map-item, and
+	; nested/container modes. This path shares the cantPickUpItems guard and
+	; blank-scroll validation used by JarUseEffect.
 ;C23C9F  
 	.db $4C,$1E,$3D
 @lbl_C23CA2:
@@ -6226,7 +6232,7 @@ func_C2598A:
 @lbl_C259B1:
 	sep #$20 ;A->8
 	pha
-	lda.l $7E89B6
+	lda.l wShirenStatus.cantPickUpItems
 	tax
 	pla
 	rep #$20 ;A->16
@@ -6239,7 +6245,7 @@ func_C2598A:
 	sty.b wTemp00
 	pha
 	phy
-	jsl.l func_C23A02
+	jsl.l TryAddSelectedItemToInventoryMaybe
 	ply
 	pla
 	ldx.b wTemp00

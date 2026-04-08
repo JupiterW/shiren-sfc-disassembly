@@ -2119,7 +2119,7 @@ JarUseEffect:
 	ldx.b wTemp01
 	cpx.b #$1F
 	bne @lbl_C326C6
-	lda.l $7E89B6
+	lda.l wShirenStatus.cantPickUpItems
 	beq @lbl_C326C6
 	.db $A9,$2B,$85,$00,$A9,$01,$85,$01   ;C326B9
 	jsl.l DisplayMessage
@@ -2164,7 +2164,7 @@ JarUseEffect:
 	phx
 	phy
 	phb
-	jsr.w func_C32AFC
+	jsr.w TryPrepareSelectedItemForJarInsertion
 	plb
 	ply
 	plx
@@ -2446,7 +2446,10 @@ func_C328E9:
 	.db $60,$A9,$FF,$9D,$0C,$8E,$84,$00   ;C32AEF
 	.db $22,$F4,$06,$C3,$60               ;C32AF7  
 
-func_C32AFC:
+; Validates and normalizes the currently selected item source before a jar
+; insertion/use path continues. Handles both ordinary inventory items and the
+; contextual map-item selection mode.
+TryPrepareSelectedItemForJarInsertion:
 	php
 	sep #$30 ;AXY->8
 	lda.b wTemp00
