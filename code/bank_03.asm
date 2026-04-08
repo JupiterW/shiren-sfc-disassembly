@@ -11111,6 +11111,11 @@ GetLivePlayerActionCommand:
 	and.b wTemp00
 	bit.w #$0080
 	beq @lbl_C3EA7A
+	; A-button command path:
+	; A+B yields fixed command $1C.
+	; A alone yields fixed command $18 when there is no new facing direction.
+	; A+dpad with a different direction yields packed direction|$10, which the
+	; action handler treats as a face-only command.
 	ldy.w #$001C
 	bit.w #$0040
 	bne @lbl_C3EA8D
@@ -11140,6 +11145,7 @@ GetLivePlayerActionCommand:
 	plp
 	rtl
 @lbl_C3EA7A:
+	; L yields fixed command $1D. Start yields fixed command $E1.
 	ldy.w #$001D
 	bit.w #$2000
 	bne @lbl_C3EA8D
@@ -11159,6 +11165,8 @@ GetLivePlayerActionCommand:
 @lbl_C3EA9A:
 	jmp.w @lbl_C3E9B8
 @lbl_C3EA9D:
+	; X-button actions go through a context-sensitive resolver that can emit
+	; fixed commands such as $5F based on what Shiren is facing/standing on.
 	bit.w #$8000
 	beq @lbl_C3EACF
 	lda.w #$0013
@@ -11186,6 +11194,8 @@ GetLivePlayerActionCommand:
 	jsl.l MapDPadBitsToDirection
 	pla
 	bcs @lbl_C3EA9A
+	; Directional commands keep the 0-7 direction in the low bits. B adds $08
+	; and Y adds $10 to select alternate movement/action families.
 	ldy.w #$0008
 	bit.w #$0040
 	bne @lbl_C3EAE9

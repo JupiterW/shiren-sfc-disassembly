@@ -2449,7 +2449,7 @@ func_C627FC:
 	lda.w #$001B
 	sta.b wTemp00
 	jsl.l func_C3E1D5
-	jsl.l func_C28D24
+	jsl.l SortShirenInventory
 	plp
 	rtl
 	.db $08,$E2,$30,$AF,$00,$D6,$7E,$F0,$45,$A4,$00,$84,$01,$A9,$E0,$85   ;C6280E

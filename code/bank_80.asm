@@ -10337,6 +10337,9 @@ func_80DDC5:
 	rtl
 
 DATA8_80DE5D:
+	; GetJoypadState normalizes SNES button order to these masks:
+	; Right=$0001 Left=$0002 Down=$0004 Up=$0008 Start=$0010 Select=$0020
+	; B=$0040 A=$0080 R=$1000 L=$2000 Y=$4000 X=$8000
 	.db $40,$00,$00,$40,$20,$00,$10,$00,$08,$00,$04,$00,$02,$00,$01,$00   ;80DE5D
 	.db $80,$00,$00,$80,$00,$20,$00,$10   ;80DE6D
 

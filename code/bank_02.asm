@@ -436,10 +436,10 @@ DATA8_C20277:
 	stz.w $8993
 	stz.w $8994
 	stz.w $8995
-	sta.w $8970
-	sta.w $8971
-	sta.w $8972
-	sta.w $8973
+	sta.w wShirenStatus.quickUseItemIds
+	sta.w wShirenStatus.quickUseItemIds+1
+	sta.w wShirenStatus.quickUseItemIds+2
+	sta.w wShirenStatus.quickUseItemIds+3
 	sta.w $897F
 	ldx.b #$20
 @lbl_C2043B:
@@ -3659,13 +3659,13 @@ func_C23B7C:
 func_C23B89:
 	php
 	sep #$20 ;A->8
-	lda.l $7E8970
+	lda.l wShirenStatus.quickUseItemIds
 	sta.b wTemp00
-	lda.l $7E8971
+	lda.l wShirenStatus.quickUseItemIds+1
 	sta.b wTemp01
-	lda.l $7E8972
+	lda.l wShirenStatus.quickUseItemIds+2
 	sta.b wTemp02
-	lda.l $7E8973
+	lda.l wShirenStatus.quickUseItemIds+3
 	sta.b wTemp03
 	plp
 	rtl
@@ -3698,9 +3698,9 @@ func_C23BE1:
 	php
 	sep #$20 ;A->8
 	lda.b wTemp00
-	cmp.l $7E8973
+	cmp.l wShirenStatus.quickUseItemIds+3
 	beq @lbl_C23BF6
-	sta.l $7E8973
+	sta.l wShirenStatus.quickUseItemIds+3
 	lda.b #$02
 	sta.b wTemp00
 	plp
@@ -3727,7 +3727,7 @@ func_C23C10:
 	ldx.b #$01
 func_C23C15:
 	ldy.b wTemp00
-	lda.l $7E8970,x
+	lda.l wShirenStatus.quickUseItemIds,x
 	bmi @lbl_C23C42
 	sta.b wTemp00
 	phx
@@ -3741,17 +3741,17 @@ func_C23C15:
 	.db $64,$00,$28,$6B
 @lbl_C23C2F:
 	tya
-	cmp.l $7E8970,x
+	cmp.l wShirenStatus.quickUseItemIds,x
 	bne @lbl_C23C42
 	lda.b #$FF
-	sta.l $7E8970,x
+	sta.l wShirenStatus.quickUseItemIds,x
 	lda.b #$01
 	sta.b wTemp00
 	plp
 	rtl
 @lbl_C23C42:
 	tya
-	sta.l $7E8970,x
+	sta.l wShirenStatus.quickUseItemIds,x
 	lda.b #$02
 	sta.b wTemp00
 	plp
@@ -3765,7 +3765,7 @@ func_C23C4D:
 	lda.w $894F,y
 	ldx.b #$03
 @lbl_C23C5B:
-	cmp.w $8970,x
+	cmp.w wShirenStatus.quickUseItemIds,x
 	beq @lbl_C23C65
 	dex
 	bpl @lbl_C23C5B
@@ -3785,7 +3785,7 @@ func_C23C4D:
 	.db $64,$00,$28,$6B
 @lbl_C23C7D:
 	lda.b #$FF
-	sta.w $8970,x
+	sta.w wShirenStatus.quickUseItemIds,x
 @lbl_C23C82:
 	iny
 	lda.w $894F,y
@@ -4637,7 +4637,8 @@ func_C2458E:
 	sep #$30 ;AXY->8
 	lda.l $7E899B
 	bne @lbl_C245C4
-	lda.l $7E8973
+	; L-button action uses the fourth quick-use item slot.
+	lda.l wShirenStatus.quickUseItemIds+3
 	bpl @lbl_C245B1
 	lda.b #$B5
 	sta.b wTemp00
@@ -5140,9 +5141,15 @@ HandlePlayerActionCommand:
 	lda.b wTemp00
 	; Fixed commands use dedicated byte values. Other commands use a packed format:
 	; upper 3 bits = action family, lower 5 bits = operand/direction.
+	; Known fixed-command sources:
+	; $1B = inventory sort action.
+	; $18 = A-button action using the current facing.
+	; $1C = A+B fixed action.
+	; $1D = L-button fixed action.
+	; $5F = context-sensitive X-button action from GetLivePlayerActionCommand.
 	cmp.b #$1B
 	bne @lbl_C24A6C
-	jsl.l func_C28D24
+	jsl.l SortShirenInventory
 	lda.b #$02
 	sta.b wTemp00
 	plp
@@ -5229,6 +5236,7 @@ HandlePlayerActionCommand:
 	tya
 	bit.b #$10
 	beq @lbl_C24B0B
+	; Packed direction|$10 means "change facing only" without committing movement.
 	; Directions use the 0-7 enum in constants/npc.asm: even = cardinal, odd = diagonal.
 	and.b #$07
 	sta.w wCharDir+CharDataShirenIndex
@@ -5246,6 +5254,8 @@ HandlePlayerActionCommand:
 @lbl_C24B18:
 	bit.b #$08
 	beq @lbl_C24B21
+	; Packed direction|$08 stores an alternate movement family in $8977 before
+	; falling through to the normal movement resolution path.
 	sta.w $8977
 	and.b #$07
 @lbl_C24B21:
@@ -8743,10 +8753,12 @@ func_C28CC3:
 	.db $00,$A9,$06,$85,$01,$22,$9F,$F6,$C3,$A5,$00,$80,$02,$A9,$40,$8F   ;C28D0F
 	.db $9C,$89,$7E,$28,$6B               ;C28D1F  
 
-func_C28D24:
+SortShirenInventory:
 	php
 	sep #$30 ;AXY->8
 	restorebank
+	; Reorder Shiren's inventory entries in wShirenStatus.itemAmounts using
+	; item metadata from func_C30710 and the priority table at DATA8_C28E40.
 	lda.b #$00
 	pha
 	pha
