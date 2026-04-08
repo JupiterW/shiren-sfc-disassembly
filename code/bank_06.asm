@@ -1185,6 +1185,15 @@ func_C60AB1:
 ; wd5ec $07/$08/$1F-$22/$33-$40/$86-$87/$9E-$A1/$B2-$BF -> wd5f9 $0C -> "Pegasus Valley"
 ; wd5ec $0D/$60-$68 -> wd5f9 $0D -> "Mountaintop Forest"
 ; wd5ec $0A/$0B/$2E/$2F/$32/$6B/$89-$8A/$AD-$AE/$B1/$EA -> wd5f9 $0E -> "Mountaintop Town"
+; wd5ec $0C/$71/$8B/$F0 -> wd5f9 $17 -> "Cryptic Rock Valley"
+; wd5ec $0E/$23-$27/$41-$44/$8D/$A2-$A6/$C0-$C3 -> wd5f9 $19 -> "Waterfall Marsh"
+; wd5ec $0F/$6F/$70/$8E/$EE/$EF -> wd5f9 $2F -> "Underground Water Village"
+; wd5ec $10/$28-$2B/$8F/$A7-$AA -> wd5f9 $23 -> "Illusion Ghost Valley"
+; wd5ec $11/$90 -> wd5f9 $27 -> "Land of the Sun"
+; wd5ec $12/$15/$91/$94 -> wd5f9 $28 -> "Golden City"
+; wd5ec $13/$92 -> wd5f9 $29 -> "Beneath the Rainbow"
+; wd5ec $14/$93/$AF -> wd5f9 $2A -> "Waterfall Cave"
+; wd5ec $73/$F2 -> wd5f9 $40 -> "Fei's Final Problem"
 ; Entry format:
 ; [0] = wd5ee match value
 ; [1] = wd5ec match value
