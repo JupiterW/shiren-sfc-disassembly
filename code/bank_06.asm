@@ -472,9 +472,9 @@ func_C6037B:
 	sta.l wd5ec
 	sta.l wShuffleDungeonIndex
 	lda.l WorldProgressTransitionTable+6
-	sta.l $7ED5F0
+	sta.l wTransitionDestX
 	lda.l WorldProgressTransitionTable+7
-	sta.l $7ED5F1
+	sta.l wTransitionDestY
 	lda.b #$00
 	sta.l $7ED5ED
 	sta.l wFloorNum
@@ -909,16 +909,16 @@ func_C6080E:
 	jsr.w AdvanceWorldProgressState
 	pla
 	sta.l wShuffleDungeonIndex
-	lda.l $7ED5F0
+	lda.l wTransitionDestX
 	sta.b wTemp00
-	lda.l $7ED5F1
+	lda.l wTransitionDestY
 	sta.b wTemp01
 	jsl.l func_C20DF4
 	lda.b #$13
 	sta.b wTemp00
-	lda.l $7ED5F0
+	lda.l wTransitionDestX
 	sta.b wTemp02
-	lda.l $7ED5F1
+	lda.l wTransitionDestY
 	sta.b wTemp03
 	jsl.l func_C27951
 	jsl.l func_C22D3B
@@ -1100,9 +1100,9 @@ AdvanceWorldProgressState:
 	sta.l wd5ec
 	sta.l wShuffleDungeonIndex
 	lda.l WorldProgressTransitionTable+6,x
-	sta.l $7ED5F0
+	sta.l wTransitionDestX
 	lda.l WorldProgressTransitionTable+7,x
-	sta.l $7ED5F1
+	sta.l wTransitionDestY
 	plp
 	rts
 @lbl_C60A33:
@@ -2386,10 +2386,11 @@ func_C6279D:
 	plp
 	rtl
 
-func_C627B2:
+; Returns the pending world-transition destination X coordinate in wTemp00.
+GetTransitionDestX:
 	php
 	rep #$20 ;A->16
-	lda.l wd5f0
+	lda.l wTransitionDestX
 	sta.b wTemp00
 	plp
 	rtl
@@ -2502,9 +2503,9 @@ func_C629EC:
 	phy
 	jsl.l func_C16C7D
 	pla
-	sta.l $7ED5F0
+	sta.l wTransitionDestX
 	pla
-	sta.l $7ED5F1
+	sta.l wTransitionDestY
 	pla
 	sta.l wd5ee
 	pla

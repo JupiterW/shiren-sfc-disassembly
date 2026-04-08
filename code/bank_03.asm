@@ -6751,7 +6751,7 @@ func_C3893E:
 	lda.b wTemp00
 	bne @lbl_C38963
 @lbl_C3895D:
-	jsl.l func_C627B2
+	jsl.l GetTransitionDestX
 	bra @lbl_C38967
 @lbl_C38963:
 	jsl.l func_C3608D
