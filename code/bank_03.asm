@@ -3420,7 +3420,7 @@ func_C35C9A:
 	sta.w $BE65
 	lda.b #$13
 	sta.b wTemp00
-	call_savebank func_C210AC
+	call_savebank GetCharacterMapInfo
 	rep #$30 ;AXY->16
 	lda.b wTemp00
 	lsr a
@@ -9113,7 +9113,7 @@ Jumptable_C3D555:
 	jsl.l func_C62550
 	ldx.b #$13
 	stx.b wTemp00
-	jsl.l func_C210AC
+	jsl.l GetCharacterMapInfo
 	lda.b wTemp00
 	ldy.b wTemp02
 	pha
@@ -9278,7 +9278,7 @@ func_C3D772:
 	rep #$10 ;XY->16
 	lda.b #$13
 	sta.b wTemp00
-	jsl.l func_C210AC
+	jsl.l GetCharacterMapInfo
 	ldy.b wTemp00
 	lda.b #$1E
 @lbl_C3D8D4:
@@ -9459,7 +9459,7 @@ DATA8_C3DA1C:
 	jsl.l func_C626F6
 	pla
 	sta.b wTemp00
-	jsl.l func_C210AC
+	jsl.l GetCharacterMapInfo
 	ldy.b wTemp00
 	lda.b #$C5
 	sta.b wTemp00
@@ -9514,7 +9514,7 @@ DATA8_C3DA1C:
 @lbl_C3DCAB:
 	lda.b wTemp01,s
 	sta.b wTemp00
-	jsl.l func_C210AC
+	jsl.l GetCharacterMapInfo
 	ldx.b wTemp00
 	lda.b wTemp03
 	cmp.b #$00
@@ -11031,7 +11031,7 @@ func_C3E913:
 @lbl_C3E951:
 	lda.w #$0013
 	sta.b wTemp00
-	jsl.l func_C210AC
+	jsl.l GetCharacterMapInfo
 	jsl.l func_C359AF
 	lda.b wTemp01
 	and.w #$00FF
@@ -11122,7 +11122,7 @@ func_C3E913:
 	pha
 	lda.w #$0013
 	sta.b wTemp00
-	jsl.l func_C210AC
+	jsl.l GetCharacterMapInfo
 	stz.b wTemp03
 	pla
 	cmp.b wTemp02
@@ -11162,7 +11162,7 @@ func_C3E913:
 	beq @lbl_C3EACF
 	lda.w #$0013
 	sta.b wTemp00
-	jsl.l func_C210AC
+	jsl.l GetCharacterMapInfo
 	lda.b wTemp04
 	and.w #$00FF
 	cmp.w #$0037

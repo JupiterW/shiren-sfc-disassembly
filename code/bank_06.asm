@@ -132,7 +132,7 @@ func_C600E4:
 	beq @lbl_C60119
 	lda.b #$13
 	sta.b wTemp00
-	jsl.l func_C210AC
+	jsl.l GetCharacterMapInfo
 	jsl.l func_C359AF
 	lda.b wTemp01
 	cmp.l $7ED604
@@ -931,7 +931,7 @@ func_C6080E:
 	bne @lbl_C60891
 	lda.b #$13
 	sta.b wTemp00
-	jsl.l func_C210AC
+	jsl.l GetCharacterMapInfo
 	jsl.l func_C359AF
 	lda.b wTemp02
 	bne @lbl_C60878
@@ -1071,9 +1071,11 @@ AdvanceWorldProgressState:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
-	lda.b #$13
+	; Use Shiren's current map position as the transition trigger pair.
+	lda.b #CharDataShirenIndex
 	sta.b wTemp00
-	jsl.l func_C210AC
+	jsl.l GetCharacterMapInfo
+	; GetCharacterMapInfo returns the character's X/Y position in wTemp00/wTemp01.
 	ldx.w #0
 	bra @lbl_C60A3B
 @lbl_C609E9:
@@ -2909,7 +2911,7 @@ func_C62D0F:
 	sep #$20 ;A->8
 	lda.b #$13
 	sta.b wTemp00
-	call_savebank func_C210AC
+	call_savebank GetCharacterMapInfo
 	lda.b wTemp04
 	sta.l $7ED629
 	lda.l $7ED623

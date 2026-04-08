@@ -10799,7 +10799,7 @@ func_C48589:
 	stz.w $AC19
 	lda.b #$13
 	sta.b w7f0000
-	call_savebank func_C210AC
+	call_savebank GetCharacterMapInfo
 	jsl.l func_C359AF
 	lda.b w7f0000+1
 	bmi @lbl_C485FA
@@ -10893,7 +10893,7 @@ func_C48674:
 	bankswitch 0x7F
 	lda.b #$13
 	sta.b w7f0000
-	call_savebank func_C210AC
+	call_savebank GetCharacterMapInfo
 	jsl.l func_C359AF
 	lda.b w7f0000+1
 	sta.w $AC3B
@@ -11468,7 +11468,7 @@ func_C48AC9:
 	stz.b wTemp01
 	ldx.b wTemp00
 	tdc
-	lda.l UNREACH_C5CEFA,x
+	lda.l AreaNameIndexByD5F9,x
 	rep #$20 ;A->16
 	clc
 	adc.w #$04D4
@@ -12673,7 +12673,7 @@ func_C49602:
 	bankswitch 0x7F
 	lda.b #$13
 	sta.b w7f0000
-	call_savebank func_C210AC
+	call_savebank GetCharacterMapInfo
 	jsl.l func_C359AF
 	lda.b w7f0000+1
 	sta.w $ABEB

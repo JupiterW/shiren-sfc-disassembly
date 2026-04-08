@@ -1564,7 +1564,7 @@ NPCScriptFunction_C167F6:
 @lbl_C167FB:
 	stx.b wTemp00
 	phx
-	jsl.l func_C210AC
+	jsl.l GetCharacterMapInfo
 	plx
 	lda.b wTemp00
 	sta.l $7E8579,x
@@ -1593,7 +1593,7 @@ func_C1681A:
 	beq @lbl_C1685B
 	stx.b wTemp00
 	phx
-	jsl.l func_C210AC
+	jsl.l GetCharacterMapInfo
 	plx
 	lda.b wTemp00
 	cmp.l $7E8579,x

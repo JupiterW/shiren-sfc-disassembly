@@ -10,7 +10,7 @@ func_C10000:
 	sta.l $7E859F
 	lda.b wTemp00
 	pha
-	jsl.l func_C210AC
+	jsl.l GetCharacterMapInfo
 	ldy.b wTemp04
 	cpy.b wTemp03
 	beq @lbl_C10029
@@ -966,7 +966,7 @@ func_C111EA:
 	jsl.l func_C62405
 	lda.b #$13
 	sta.b wTemp00
-	jsl.l func_C210AC
+	jsl.l GetCharacterMapInfo
 	lda.b wTemp02
 	eor.b #$04
 	sta.b wTemp01
@@ -1587,7 +1587,7 @@ func_C12244:
 	pha
 	lda.b w0008,s
 	sta.b wTemp00
-	jsl.l func_C210AC
+	jsl.l GetCharacterMapInfo
 	lda.b wTemp00
 	pha
 	jsl.l func_C36410
@@ -3432,7 +3432,7 @@ func_C140E5:
 func_C14214:
 	lda.b #$13
 	sta.b wTemp00
-	jsl.l func_C210AC
+	jsl.l GetCharacterMapInfo
 	tdc
 	lda.b wTemp02
 	asl a
