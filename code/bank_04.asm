@@ -15860,7 +15860,9 @@ func_C4B363:
 
 Data_c4b389:
 	.db $0D,$0D,$08,$02,$00,$00
-	.dl func_C4B363-1
+	; WLA-DX 10.6 drops the bank byte for `.dl func_C4B363-1`, producing $00B362.
+	; Encode the intended 24-bit pointer explicitly so modern builds still match.
+	.dl $C4B362
 
 func_C4B392:
 	lda.w $AAA8
