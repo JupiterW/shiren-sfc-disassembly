@@ -725,7 +725,7 @@ Data_c3a620:
 	.db $20,$0D,$83
 	.db $FF
 
-DATA8_C3A923:
+WorldProgressTransitionTable:
 	; 8-byte entries used by bank 06 state-transition logic.
 	; Entry format:
 	; [0] = current wd5ee match value
@@ -736,6 +736,15 @@ DATA8_C3A923:
 	; [5] = next wd5ec / wShuffleDungeonIndex
 	; [6] = next wd5f0
 	; [7] = next wd5f1
+	; Many $0A Kobami rows have both:
+	; - explicit event/trigger-driven detours (specific wTemp00/wTemp01 pairs)
+	; - a default $FF/$FF row that advances to the next broad progression bucket
+	; Early Kobami mini-graph example:
+	; $0A,$01 is the broad "Kobami Valley" bucket.
+	; It can detour to temporary substates $31 and $6A on specific trigger pairs,
+	; then return to $01 on matching follow-up trigger pairs.
+	; If no detour-specific trigger matches, $01/$31/$6A all fall through to $0A,$02,
+	; which is the next broad progression bucket ("Cedar-Lined Road").
 	.db $0B,$01,$FF,$20,$0A,$01,$19,$24
 	.db $0A,$01,$19,$11,$0A,$31,$3A,$12
 	.db $0A,$31,$3A,$13,$0A,$01,$19,$12
@@ -754,6 +763,13 @@ DATA8_C3A923:
 	.db $0A,$03,$FF,$FF,$0A,$04,$00,$00
 	.db $0A,$04,$FF,$FF,$0A,$05,$00,$00
 	.db $0A,$05,$FF,$FF,$0A,$06,$04,$13
+	; Another Kobami mini-graph:
+	; $0A,$06 is the broad "Bamboo Village" bucket.
+	; Specific trigger pairs can detour into temporary substates $69/$6C/$6D/$6E,
+	; and those substates have matching rows that return to $06.
+	; If no detour-specific trigger matches, $06/$69/$6C/$6D/$6E all fall through to $0A,$07,
+	; which is the next broad progression bucket ("Pegasus Valley").
+	; One special trigger from $06 jumps out of the $0A Kobami progression bucket entirely to $02,$01.
 	.db $0A,$06,$1C,$10,$0A,$69,$07,$0D
 	.db $0A,$69,$07,$0E,$0A,$06,$1C,$11
 	.db $0A,$06,$33,$10,$0A,$6C,$34,$23

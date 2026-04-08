@@ -466,14 +466,14 @@ func_C6037B:
 	sep #$20 ;A->8
 	lda.b #$01
 	sta.l wShowMessageEffects
-	lda.l DATA8_C3A923+4
+	lda.l WorldProgressTransitionTable+4
 	sta.l wd5ee
-	lda.l DATA8_C3A923+5
+	lda.l WorldProgressTransitionTable+5
 	sta.l wd5ec
 	sta.l wShuffleDungeonIndex
-	lda.l DATA8_C3A923+6
+	lda.l WorldProgressTransitionTable+6
 	sta.l $7ED5F0
-	lda.l DATA8_C3A923+7
+	lda.l WorldProgressTransitionTable+7
 	sta.l $7ED5F1
 	lda.b #$00
 	sta.l $7ED5ED
@@ -485,7 +485,7 @@ func_C6037B:
 	sta.l $7ED5FC
 	sta.l wIsInTown
 	sta.l wIsMapActive
-	jsr.w func_C60AB1
+	jsr.w ApplyWorldProgressState
 	lda.b #$FF
 	sta.l $7ED5F5
 	sta.l $7ED5F6
@@ -906,7 +906,7 @@ func_C6080E:
 	sep #$30 ;AXY->8
 	lda.l wShuffleDungeonIndex
 	pha
-	jsr.w func_C609D7
+	jsr.w AdvanceWorldProgressState
 	pla
 	sta.l wShuffleDungeonIndex
 	lda.l $7ED5F0
@@ -1041,8 +1041,8 @@ func_C60958:
 	jsr.w func_C609B5
 	jsl.l func_C16C7D
 @lbl_C60962:
-	jsr.w func_C609D7
-	jsr.w func_C60AB1
+	jsr.w AdvanceWorldProgressState
+	jsr.w ApplyWorldProgressState
 	jsr.w func_C6224B
 	bcs @lbl_C60962
 	jsl.l func_C20E89
@@ -1067,7 +1067,7 @@ func_C609B5:
 	plp
 	rts
 
-func_C609D7:
+AdvanceWorldProgressState:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -1079,27 +1079,27 @@ func_C609D7:
 @lbl_C609E9:
 	cmp.l wd5ee
 	bne @lbl_C60A33
-	lda.l DATA8_C3A923+1,x
+	lda.l WorldProgressTransitionTable+1,x
 	cmp.l wd5ec
 	bne @lbl_C60A33
-	lda.l DATA8_C3A923+2,x
+	lda.l WorldProgressTransitionTable+2,x
 	bmi @lbl_C60A03
 	cmp.b wTemp00
 	bne @lbl_C60A33
 @lbl_C60A03:
-	lda.l DATA8_C3A923+3,x
+	lda.l WorldProgressTransitionTable+3,x
 	bmi @lbl_C60A0D
 	cmp.b wTemp01
 	bne @lbl_C60A33
 @lbl_C60A0D:
-	lda.l DATA8_C3A923+4,x
+	lda.l WorldProgressTransitionTable+4,x
 	sta.l wd5ee
-	lda.l DATA8_C3A923+5,x
+	lda.l WorldProgressTransitionTable+5,x
 	sta.l wd5ec
 	sta.l wShuffleDungeonIndex
-	lda.l DATA8_C3A923+6,x
+	lda.l WorldProgressTransitionTable+6,x
 	sta.l $7ED5F0
-	lda.l DATA8_C3A923+7,x
+	lda.l WorldProgressTransitionTable+7,x
 	sta.l $7ED5F1
 	plp
 	rts
@@ -1113,7 +1113,7 @@ func_C609D7:
 	inx
 	inx
 @lbl_C60A3B:
-	lda.l DATA8_C3A923,x
+	lda.l WorldProgressTransitionTable,x
 	bpl @lbl_C609E9
 	.db $AF,$EC,$D5,$7E,$1A,$8F,$EC,$D5,$7E,$8F,$FE,$D5,$7E,$28,$60,$08   ;C60A41  
 	.db $E2,$20,$C2,$10,$A2,$00,$00,$80,$42,$BF,$27,$A9,$C3,$CF,$EE,$D5   ;C60A51
@@ -1123,7 +1123,7 @@ func_C609D7:
 	.db $7E,$28,$60,$E8,$E8,$E8,$E8,$E8,$E8,$E8,$E8,$BF,$23,$A9,$C3,$10   ;C60A91  
 	.db $B8,$AF,$EC,$D5,$7E,$3A,$8F,$EC,$D5,$7E,$8F,$FE,$D5,$7E,$28,$60   ;C60AA1
 
-func_C60AB1:
+ApplyWorldProgressState:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -1133,22 +1133,22 @@ func_C60AB1:
 	;Check if the current entry matches the current map?
 	cmp.l wd5ee
 	bne @skipEntry
-	lda.l DATA8_C60B16+1,x
+	lda.l WorldProgressStateTable+1,x
 	cmp.l wd5ec
 	bne @skipEntry
-	lda.l DATA8_C60B16+2,x
+	lda.l WorldProgressStateTable+2,x
 	sta.l wDungeonID
-	lda.l DATA8_C60B16+3,x
+	lda.l WorldProgressStateTable+3,x
 	sta.l wFloorNum
-	lda.l DATA8_C60B16+4,x
+	lda.l WorldProgressStateTable+4,x
 	sta.l wd5f9
-	lda.l DATA8_C60B16+5,x
+	lda.l WorldProgressStateTable+5,x
 	sta.l wStairsDir
-	lda.l DATA8_C60B16+6,x
+	lda.l WorldProgressStateTable+6,x
 	sta.l wd5fb
-	lda.l DATA8_C60B16+7,x
+	lda.l WorldProgressStateTable+7,x
 	sta.l wIsInTown
-	lda.l DATA8_C60B16+8,x
+	lda.l WorldProgressStateTable+8,x
 	sta.l wIsMapActive
 	plp
 	rts
@@ -1158,7 +1158,7 @@ func_C60AB1:
 		inx
 	.endr
 @checkNextEntry:
-	lda.l DATA8_C60B16,x
+	lda.l WorldProgressStateTable,x
 	bpl @loop ;continue if there's another entry (next byte isn't FF)
 	plp
 	rts
@@ -1204,7 +1204,7 @@ func_C60AB1:
 ; [6] = wd5fb
 ; [7] = wIsInTown
 ; [8] = wIsMapActive
-DATA8_C60B16:
+WorldProgressStateTable:
 	.db $0B,$01,DungeonKobamiValley,0,$00,0,0,0,1
 	.db $0A,$01,DungeonKobamiValley,1,$08,2,2,0,0
 	.db $0A,$31,DungeonKobamiValley,1,$08,2,2,0,0
@@ -2368,7 +2368,7 @@ Get7ED5F9:
 	plp
 	rtl
 
-; Returns DATA8_C60B16[wTemp00 * 9] in wTemp00.
+; Returns WorldProgressStateTable[wTemp00 * 9] in wTemp00.
 func_C6279D:
 	php
 	rep #$30 ;AXY->16
@@ -2379,7 +2379,7 @@ func_C6279D:
 	asl a
 	adc.b wTemp00
 	tax
-	lda.l DATA8_C60B16,x
+	lda.l WorldProgressStateTable,x
 	sta.b wTemp00
 	plp
 	rtl
@@ -2508,7 +2508,7 @@ func_C629EC:
 	pla
 	sta.l wd5ec
 	sta.l wShuffleDungeonIndex
-	jsr.w func_C60AB1
+	jsr.w ApplyWorldProgressState
 	jsl.l func_C20E89
 	rep #$20 ;A->16
 	lda.l wd602
@@ -2522,15 +2522,15 @@ func_C62A23:
 	ldx.w #$0000
 	bra @lbl_C62A53
 @lbl_C62A2D:
-	lda.l DATA8_C3A923+4,x
+	lda.l WorldProgressTransitionTable+4,x
 	cmp.b wTemp00
 	bne @lbl_C62A4B
-	lda.l DATA8_C3A923+5,x
+	lda.l WorldProgressTransitionTable+5,x
 	cmp.b wTemp01
 	bne @lbl_C62A4B
-	lda.l DATA8_C3A923+6,x
+	lda.l WorldProgressTransitionTable+6,x
 	sta.b wTemp02
-	lda.l DATA8_C3A923+7,x
+	lda.l WorldProgressTransitionTable+7,x
 	sta.b wTemp03
 	bra @lbl_C62A5F
 @lbl_C62A4B:
@@ -2543,7 +2543,7 @@ func_C62A23:
 	inx
 	inx
 @lbl_C62A53:
-	lda.l DATA8_C3A923,x
+	lda.l WorldProgressTransitionTable,x
 	bpl @lbl_C62A2D
 ;C62A59
 	.db $A9,$14,$85,$02,$85,$03
