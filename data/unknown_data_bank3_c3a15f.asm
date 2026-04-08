@@ -726,6 +726,16 @@ Data_c3a620:
 	.db $FF
 
 DATA8_C3A923:
+	; 8-byte entries used by bank 06 state-transition logic.
+	; Entry format:
+	; [0] = current wd5ee match value
+	; [1] = current wd5ec match value
+	; [2] = optional wTemp00 match value (-1 = wildcard)
+	; [3] = optional wTemp01 match value (-1 = wildcard)
+	; [4] = next wd5ee
+	; [5] = next wd5ec / wShuffleDungeonIndex
+	; [6] = next wd5f0
+	; [7] = next wd5f1
 	.db $0B,$01,$FF,$20,$0A,$01,$19,$24
 	.db $0A,$01,$19,$11,$0A,$31,$3A,$12
 	.db $0A,$31,$3A,$13,$0A,$01,$19,$12
