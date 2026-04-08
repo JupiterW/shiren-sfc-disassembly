@@ -795,6 +795,10 @@ WorldProgressTransitionTable:
 	.db $0A,$6D,$06,$25,$0A,$06,$1B,$1A
 	.db $0A,$06,$0F,$10,$0A,$6E,$30,$08
 	.db $0A,$6E,$30,$09,$0A,$06,$0F,$11
+	; Likely a gated special entrance from Bamboo Village into Kitchen God Shrine.
+	; The trigger tile ($13,$06) is also touched by Bamboo Village NPC/event script
+	; logic at decimal (19,6), with a nearby NPC spawn at decimal (19,7), so this
+	; transition appears to be story/event-gated rather than freely accessible.
 	.db $0A,$06,$13,$06,$02,$01,$00,$00
 	.db $0A,$06,$FF,$FF,$0A,$07,$00,$00
 	.db $0A,$69,$FF,$FF,$0A,$07,$00,$00
