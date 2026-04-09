@@ -2163,10 +2163,10 @@ ItemUseEffectFunctionTable:
 	.dw MedicinalHerbUseEffect-1 ;MedicinalHerb
 	.dw RestorativeHerbUseEffect-1 ;RestorativeHerb
 	.dw HappinessHerbUseEffect-1 ;HappinessHerb
-	.dw $155C ;SightHerb
+	.dw SightHerbUseEffect-1 ;SightHerb
 	.dw $14BE ;DragonHerb
 	.dw VictoryHerbUseEffect-1 ;VictoryHerb
-	.dw $10C9 ;AngelSeed
+	.dw AngelSeedUseEffect-1 ;AngelSeed
 	.dw $09F0 ;RevivalHerb
 	.dw $2008 ;InvisibilityHerb
 	.dw $10DA ;BitterHerb

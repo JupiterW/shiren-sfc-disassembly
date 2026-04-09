@@ -33,6 +33,7 @@ from safe_item_handler_rename import (
 
 
 DB_TOKEN_RE = re.compile(r"\$([0-9A-F]{2})")
+COMMENT_ADDR_RE = re.compile(r";C?(?P<addr>[0-9A-F]{5,6})\b")
 
 
 def find_item(query: str):
@@ -50,10 +51,51 @@ def format_db_line(bytes_: list[int], addr: int | None = None) -> str:
     return f"\t.db {body}   ;{addr:06X}"
 
 
+def parse_comment_addr(line: str) -> int | None:
+    match = COMMENT_ADDR_RE.search(line)
+    if not match:
+        return None
+    token = match.group("addr")
+    if len(token) == 5:
+        token = f"C{token}"
+    return int(token, 16)
+
+
+def db_line_end_addr(line: str) -> int | None:
+    start = parse_comment_addr(line)
+    if start is None:
+        return None
+    bytes_ = [int(tok.group(1), 16) for tok in DB_TOKEN_RE.finditer(line.split(";")[0])]
+    if not bytes_:
+        return None
+    return start + len(bytes_)
+
+
+def promote_asm_entry(path: Path, entry_addr: int, new_symbol: str, dry_run: bool) -> tuple[int, str]:
+    lines = load_lines(path)
+    for idx, line in enumerate(lines):
+        if db_line_end_addr(line) != entry_addr:
+            continue
+        insert_at = idx + 1
+        while insert_at < len(lines):
+            stripped = lines[insert_at].strip()
+            if not stripped or stripped.startswith(";"):
+                insert_at += 1
+                continue
+            break
+        if insert_at >= len(lines):
+            break
+        lines.insert(insert_at, f"{new_symbol}:")
+        if not dry_run:
+            write_lines(path, lines)
+        return insert_at + 1, "\n".join([f"{new_symbol}:", lines[insert_at + 1]])
+    raise SystemExit(f"no promotable asm entry found at {entry_addr:06X}")
+
+
 def promote_raw_entry(path: Path, entry_addr: int, new_symbol: str, dry_run: bool) -> tuple[int, str]:
     containing = find_containing_region(entry_addr)
     if containing is None:
-        raise SystemExit(f"no raw region found containing {entry_addr:06X}")
+        return promote_asm_entry(path, entry_addr, new_symbol, dry_run)
     regions, index = containing
     region = regions[index]
     offset = entry_addr - region.addr
@@ -108,11 +150,21 @@ def main(argv: list[str]) -> int:
         raise SystemExit(f"unsupported raw handler format: {current_handler}")
 
     containing = find_containing_region(entry_addr)
-    if containing is None:
-        raise SystemExit(f"no raw region found for {current_handler}")
-    regions, index = containing
-    region = regions[index]
-    path = region.path
+    path = None
+    if containing is not None:
+        regions, index = containing
+        region = regions[index]
+        path = region.path
+    else:
+        for candidate in sorted((ROOT / "code").rglob("*.asm")):
+            try:
+                promote_asm_entry(candidate, entry_addr, args.symbol, dry_run=True)
+                path = candidate
+                break
+            except SystemExit:
+                continue
+        if path is None:
+            raise SystemExit(f"no promotable region found for {current_handler}")
 
     line_no, new_chunk = promote_raw_entry(path, entry_addr, args.symbol, args.dry_run)
     table_expr = choose_table_expr(raw_ptr, entry_addr, args.symbol)
