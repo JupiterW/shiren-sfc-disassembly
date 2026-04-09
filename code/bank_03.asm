@@ -2173,7 +2173,7 @@ ItemUseEffectFunctionTable:
 	.dw $10EB ;MisfortuneHerb
 	.dw $1151 ;IllLuckHerb
 	.dw $0A13 ;KignyHerb
-	.dw $0A35 ;AmnesiaHerb
+	.dw AmnesiaHerbUseEffect-1 ;AmnesiaHerb
 	.dw $0A94 ;36
 	.dw LifeHerbUseEffect-1 ;LifeHerb
 	.dw $0A95 ;BigBellySeed

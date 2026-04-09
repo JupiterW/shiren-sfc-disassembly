@@ -268,7 +268,7 @@ func_C30A15:
 	rts
 
 ;c30a36
-func_C30A36:
+AmnesiaHerbUseEffect:
 	sep #$30 ;AXY->8
 	lda.b #$04
 	sta.b wTemp00

@@ -134,6 +134,15 @@ def restore(saved: dict[Path, str]) -> None:
         path.write_text(text, encoding="utf-8")
 
 
+def verify_clean_tree() -> None:
+    subprocess.run(
+        "make -j PYTHON=.venv/bin/python && shasum -c shiren.sha1",
+        shell=True,
+        check=True,
+        cwd=ROOT,
+    )
+
+
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("category", help="category code or name, e.g. herb, jar, 00, 0B")
@@ -168,6 +177,7 @@ def main(argv: list[str]) -> int:
             verify()
         except subprocess.CalledProcessError:
             restore(saved)
+            verify_clean_tree()
             failures.append(item.item_const)
             print(f"revert: {item.item_const} (verify failed)")
             if args.stop_on_fail:
