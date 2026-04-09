@@ -4596,12 +4596,41 @@ func_C335FE:
 	lda.b #$00
 	plp
 	rts
-	.db $E2,$30,$9B,$BF,$8C,$8B,$7E,$AA,$BF,$A3,$42,$C3,$BB,$18,$7F,$8C   ;C3364F
-	.db $8C,$7E,$85,$02,$22,$1A,$2D,$C2,$60,$E2,$30,$9B,$BF,$8C,$8B,$7E   ;C3365F  
-	.db $AA,$BF,$A3,$42,$C3,$BB,$18,$7F,$8C,$8C,$7E,$C2,$10,$A6,$00,$85   ;C3366F
-	.db $01,$85,$00,$3A,$30,$02,$85,$00,$DA,$22,$9F,$F6,$C3,$FA,$A5,$00   ;C3367F  
-	.db $85,$02,$86,$00,$22,$DF,$28,$C2   ;C3368F  
-	.db $60                               ;C33697
+	sep #$30                                ;C3364F
+	txy                                     ;C33651
+	lda $7E8B8C,x                           ;C33652
+	tax                                     ;C33656
+	lda $C342A3,x                           ;C33657
+	tyx                                     ;C3365B
+	clc                                     ;C3365C
+	adc $7E8C8C,x                           ;C3365D
+	sta $02                                 ;C33661
+	jsl $C22D1A                             ;C33663
+	rts                                     ;C33667
+	sep #$30                                ;C33668
+	txy                                     ;C3366A
+	lda $7E8B8C,x                           ;C3366B
+	tax                                     ;C3366F
+	lda $C342A3,x                           ;C33670
+	tyx                                     ;C33674
+	clc                                     ;C33675
+	adc $7E8C8C,x                           ;C33676
+	rep #$10                                ;C3367A
+	ldx $00                                 ;C3367C
+	sta $01                                 ;C3367E
+	sta $00                                 ;C33680
+	dec a                                   ;C33682
+	bmi @lbl_C33687                         ;C33683
+	sta $00                                 ;C33685
+@lbl_C33687:
+	phx                                     ;C33687
+	jsl $C3F69F                             ;C33688
+	plx                                     ;C3368C
+	lda $00                                 ;C3368D
+	sta $02                                 ;C3368F
+	stx $00                                 ;C33691
+	jsl $C228DF                             ;C33693
+	rts                                     ;C33697
 	sep #$30 ;AXY->8
 	lda.b #$05
 @lbl_C3369C:
