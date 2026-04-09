@@ -2599,10 +2599,36 @@ NeedScrollUseEffect:
 @lbl_C3225B:
 	rts
 ExtractionScrollUseEffect:
-	.db $E2,$30,$A5,$01,$85,$00,$20,$59,$19,$A5,$00,$A8,$AA,$BF,$8C,$8B   ;C3225C
-	.db $7E,$AA,$BF,$BB,$41,$C3,$C9,$0B,$D0,$2E,$A9,$13,$85,$00,$A9,$CE   ;C3226C  
-	.db $85,$02,$5A,$22,$65,$25,$C6,$7A,$A9,$13,$85,$00,$22,$AC,$10,$C2   ;C3227C  
-	.db $C2,$20,$A5,$00,$48,$BB,$A9,$F4,$00,$85,$00,$86,$02,$DA
+	sep #$30                                ;C3225C
+	lda $01                                 ;C3225E
+	sta $00                                 ;C32260
+	jsr $1959                               ;C32262
+	lda $00                                 ;C32265
+	tay                                     ;C32267
+	tax                                     ;C32268
+	lda $7E8B8C,x                           ;C32269
+	tax                                     ;C3226D
+	lda $C341BB,x                           ;C3226E
+	cmp #$0B                                ;C32272
+	.db $D0,$2E   ;C32274
+	lda #$13                                ;C32276
+	sta $00                                 ;C32278
+	lda #$CE                                ;C3227A
+	sta $02                                 ;C3227C
+	phy                                     ;C3227E
+	jsl $C62565                             ;C3227F
+	ply                                     ;C32283
+	lda #$13                                ;C32284
+	sta $00                                 ;C32286
+	jsl $C210AC                             ;C32288
+	rep #$20                                ;C3228C
+	lda $00                                 ;C3228E
+	pha                                     ;C32290
+	tyx                                     ;C32291
+	lda #$00F4                              ;C32292
+	sta $00                                 ;C32295
+	stx $02                                 ;C32297
+	phx                                     ;C32299
 	jsl.l DisplayMessage
 	.db $FA,$68,$20,$B2,$31,$60,$E2,$20,$A9,$5C,$85,$00,$64,$01   ;C3229C  
 	jsl.l DisplayMessage
