@@ -71,9 +71,9 @@ Ground-item menu:
 
 Ground-item menu cases currently understood:
 
-- `use`
+- `throw`
   - Direct case from [BuildGroundItemActionCommand](/Users/jupiter.whitworth/Development/new/shiren/code/bank_03.asm#L11321) builds `wTemp00 = $9F`
-  - This routes into [func_C245CC](/Users/jupiter.whitworth/Development/new/shiren/code/bank_02.asm#L4772)
+  - This routes into [HandleThrowItemAction](/Users/jupiter.whitworth/Development/new/shiren/code/bank_02.asm#L4772)
 - `exchange`
   - Direct case builds `wTemp00 = $BF` and sets `wTemp01 |= $40`
   - This routes into the underfoot exchange path in [HandleCategoryShortcutSelectionAction](/Users/jupiter.whitworth/Development/new/shiren/code/bank_02.asm#L3803)
@@ -87,10 +87,9 @@ Ground-item helpers:
 - [DropSelectedInventoryItem](/Users/jupiter.whitworth/Development/new/shiren/code/bank_02.asm#L4128)
   - Drops the selected inventory item onto the ground if the tile is valid
   - Removes category shortcut assignment if needed before placing it
-- [func_C245CC](/Users/jupiter.whitworth/Development/new/shiren/code/bank_02.asm#L4772)
-  - Still intentionally unnamed
-  - Handles a direct ground/inventory item action family
-  - Normal path forwards to [func_C24671](/Users/jupiter.whitworth/Development/new/shiren/code/bank_02.asm#L4795)
+- [HandleThrowItemAction](/Users/jupiter.whitworth/Development/new/shiren/code/bank_02.asm#L4772)
+  - Handles the throw action family for either a selected inventory item or the underfoot item
+  - Normal path forwards to [ThrowSelectedItem](/Users/jupiter.whitworth/Development/new/shiren/code/bank_02.asm#L4795)
   - Special slot `1F` handles the underfoot item directly
 
 Ground-container / pot-specific ground-menu builders:
@@ -148,8 +147,8 @@ Important correction:
 
 These are left unnamed because the behavior boundary is not yet proven tightly enough:
 
-- [func_C245CC](/Users/jupiter.whitworth/Development/new/shiren/code/bank_02.asm#L4772)
-  - direct ground/inventory item action family
+- [HandleThrowItemAction](/Users/jupiter.whitworth/Development/new/shiren/code/bank_02.asm#L4772)
+  - throw action family for inventory and underfoot items
 - [func_C30AE5](/Users/jupiter.whitworth/Development/new/shiren/code/item_effects.asm#L362)
   - shared category-based item assignment/apply routine
 - some raw subcases inside [BuildGroundItemActionCommand](/Users/jupiter.whitworth/Development/new/shiren/code/bank_03.asm#L11321)

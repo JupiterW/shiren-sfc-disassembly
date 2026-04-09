@@ -4759,7 +4759,7 @@ HandleArrowShortcutAction:
 	cmp.l wShirenStatus.itemAmounts,x
 	bne @lbl_C245B3
 	stx.b wTemp00
-	jsl.l func_C24671
+	jsl.l ThrowSelectedItem
 	stz.b wTemp00
 	plp
 	rtl
@@ -4769,13 +4769,13 @@ HandleArrowShortcutAction:
 	plp
 	rtl
 
-func_C245CC:
+HandleThrowItemAction:
 	php
 	sep #$30 ;AXY->8
 	lda.b wTemp00
 	cmp.b #$1F
 	beq @lbl_C245DB
-	jsl.l func_C24671
+	jsl.l ThrowSelectedItem
 	plp
 	rtl
 @lbl_C245DB:
@@ -4792,7 +4792,7 @@ func_C245CC:
 	.db $D0,$10,$A9,$80,$85,$02,$A3,$02,$85,$00,$A3,$01,$85,$01,$22,$A2   ;C2465B  
 	.db $5B,$C3,$68,$68,$28,$6B           ;C2466B
 
-func_C24671:
+ThrowSelectedItem:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -5330,7 +5330,7 @@ HandlePlayerActionCommand:
 	cmp.b #$80
 	bne @lbl_C24AF7
 	sty.b wTemp00
-	jsl.l func_C245CC
+	jsl.l HandleThrowItemAction
 @lbl_C24AF3:
 	stz.b wTemp00
 	plp
