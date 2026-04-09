@@ -102,13 +102,17 @@ def update_table_entry(item_suffix: str, effect: str, new_symbol: str, dry_run: 
     raise SystemExit(f"table entry for {item_suffix} not found in {TABLE_LABELS[effect]}")
 
 
-def rename_label(path: Path, line_no: int, old_label: str, new_label: str, dry_run: bool) -> str:
+def rename_label_and_references(path: Path, line_no: int, old_label: str, new_label: str, dry_run: bool) -> str:
     lines = load_lines(path)
     line = lines[line_no - 1]
     match = LABEL_LINE_RE.match(line)
     if not match or match.group("label") != old_label:
         raise SystemExit(f"label mismatch at {path}:{line_no}")
     lines[line_no - 1] = f"{match.group('indent')}{new_label}:{match.group('rest')}"
+    for idx, text in enumerate(lines):
+        if idx == line_no - 1:
+            continue
+        lines[idx] = text.replace(old_label, new_label)
     if not dry_run:
         write_lines(path, lines)
     return lines[line_no - 1]
@@ -166,7 +170,7 @@ def main(argv: list[str]) -> int:
 
     if label_target is not None and old_symbol != args.symbol:
         path, line_no, label = label_target
-        new_line = rename_label(path, line_no, label, args.symbol, args.dry_run)
+        new_line = rename_label_and_references(path, line_no, label, args.symbol, args.dry_run)
         print(f"label: {path.relative_to(ROOT)}:{line_no}: {label} -> {args.symbol}")
         print(f"       {new_line}")
     else:

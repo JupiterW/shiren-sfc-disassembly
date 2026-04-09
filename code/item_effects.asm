@@ -943,7 +943,7 @@ RestorativeHerbUseEffect:
 	.db $00,$22,$28,$11,$C2,$A5,$01,$C5,$00,$F0,$05,$20,$E9,$28,$80,$03   ;C30FED
 	.db $20,$FD,$0E,$20,$04,$10,$60       ;C30FFD  
 
-func_C31004:
+AntidoteHerbUseEffect:
 	sep #$20 ;A->8
 	jsl.l func_C21167
 	lda.b wTemp01
@@ -1057,7 +1057,7 @@ func_C312DE:
 
 func_C312FF:
 	jsr.w func_C328E9
-	jsr.w func_C31004
+	jsr.w AntidoteHerbUseEffect
 	rtl
 	.db $20,$0A,$13,$6B                   ;C31306  
 	sep #$30 ;AXY->8
@@ -2360,7 +2360,7 @@ JarUseEffect:
 	dec a
 	sta.l wItemModification1,x
 	jsr.w func_C328E9
-	jsr.w func_C31004
+	jsr.w AntidoteHerbUseEffect
 	rts
 @lbl_C328DE:
 	.db $A9,$5C,$85,$00,$64,$01

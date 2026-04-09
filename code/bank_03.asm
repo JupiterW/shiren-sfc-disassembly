@@ -2180,7 +2180,7 @@ ItemUseEffectFunctionTable:
 	.dw $0ABA ;LittleBellySeed
 	.dw $0ADF ;TalkSeed
 	.dw $1021 ;StrengthHerb
-	.dw $1003 ;AntidoteHerb
+	.dw AntidoteHerbUseEffect-1 ;AntidoteHerb
 	.dw $11E2 ;PoisonHerb
 	.dw $1343 ;ConfusionHerb
 	.dw $13A0 ;SleepHerb
