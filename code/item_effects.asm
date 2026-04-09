@@ -2719,10 +2719,29 @@ HandsFullScrollUseEffect:
 	jsl.l DisplayMessage
 	.db $C2,$20,$A9,$0A,$00,$85,$00,$E2,$20,$A9,$01,$85,$02
 	jsl.l DisplayMessage
-	.db $A9,$13,$85,$00,$A9,$FF,$85,$02,$85,$03,$22,$09,$32,$C2   ;C323BC  
-	.db $A9,$13,$85,$00,$A9,$FF,$85,$02,$85,$03,$22,$3C,$32,$C2,$A9,$FF   ;C323CC
-	.db $85,$00,$22,$71,$32,$C2,$A9,$FF,$85,$00,$22,$BF,$32,$C2,$60,$C2   ;C323DC  
-	.db $20,$22,$62,$65,$C3,$A9,$77,$00,$85,$00
+	lda #$13                                ;C323BE
+	sta $00                                 ;C323C0
+	lda #$FF                                ;C323C2
+	sta $02                                 ;C323C4
+	sta $03                                 ;C323C6
+	jsl $C23209                             ;C323C8
+	lda #$13                                ;C323CC
+	sta $00                                 ;C323CE
+	lda #$FF                                ;C323D0
+	sta $02                                 ;C323D2
+	sta $03                                 ;C323D4
+	jsl $C2323C                             ;C323D6
+	lda #$FF                                ;C323DA
+	sta $00                                 ;C323DC
+	jsl $C23271                             ;C323DE
+	lda #$FF                                ;C323E2
+	sta $00                                 ;C323E4
+	jsl $C232BF                             ;C323E6
+	rts                                     ;C323EA
+	rep #$20                                ;C323EB
+	jsl $C36562                             ;C323ED
+	lda #$0077                              ;C323F1
+	sta $00                                 ;C323F4
 	jsl.l DisplayMessage
 	.db $60,$C2   ;C323EC  
 	.db $20,$22,$A2,$65,$C3,$A9,$71,$00,$85,$00
