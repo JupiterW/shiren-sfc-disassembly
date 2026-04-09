@@ -319,7 +319,7 @@ func_C30A95:
 	rts
 
 ;c30a96
-func_C30A96:
+BigBellySeedUseEffect:
 	rep #$20 ;A->16
 	lda.w #$0064
 	sta.b wTemp00
@@ -337,7 +337,7 @@ func_C30A96:
 	rts
 
 ;c30abb
-func_C30ABB:
+LittleBellySeedUseEffect:
 	rep #$20 ;A->16
 	lda.w #$FF9C
 	sta.b wTemp00
@@ -355,7 +355,7 @@ func_C30ABB:
 	rts
 
 ;c30ae0
-func_C30AE0:
+TalkSeedUseEffect:
 	jsl.l func_C286C8
 	rts
 

@@ -2176,9 +2176,9 @@ ItemUseEffectFunctionTable:
 	.dw AmnesiaHerbUseEffect-1 ;AmnesiaHerb
 	.dw $0A94 ;36
 	.dw LifeHerbUseEffect-1 ;LifeHerb
-	.dw $0A95 ;BigBellySeed
-	.dw $0ABA ;LittleBellySeed
-	.dw $0ADF ;TalkSeed
+	.dw BigBellySeedUseEffect-1 ;BigBellySeed
+	.dw LittleBellySeedUseEffect-1 ;LittleBellySeed
+	.dw TalkSeedUseEffect-1 ;TalkSeed
 	.dw $1021 ;StrengthHerb
 	.dw AntidoteHerbUseEffect-1 ;AntidoteHerb
 	.dw $11E2 ;PoisonHerb
