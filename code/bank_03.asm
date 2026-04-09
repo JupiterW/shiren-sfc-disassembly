@@ -2223,7 +2223,7 @@ ItemUseEffectFunctionTable:
 	.dw GreatHallScrollUseEffect-1 ;GreatHallScroll
 	.dw MonsterHouseScrollUseEffect-1 ;MonsterHouseScroll
 	.dw ConfusionScrollUseEffect-1 ;ConfusionScroll
-	.dw $186E ;RemovalScroll
+	.dw RemovalScrollUseEffect-1 ;RemovalScroll
 	.dw BlankScrollUseEffect-1 ;BlankScroll
 	.dw WanderingScrollUseEffect-1 ;WanderingScroll
 	.dw AirBlessScrollUseEffect-1 ;AirBlessScroll
@@ -2313,7 +2313,7 @@ ItemUseEffectFunctionTable:
 	.dw MonsterJarUseEffect-1 ;MonsterJar
 	.dw JarUseEffect-1 ;ChangeJar
 	.dw JarUseEffect-1 ;MeldingJar
-	.dw $2963 ;WalrusJar
+	.dw WalrusJarUseEffect-1 ;WalrusJar
 	.dw JarUseEffect-1 ;GaibarasJar
 	.dw JarUseEffect-1 ;PointlessJar
 	.dw JarUseEffect-1 ;UnbreakableJar

@@ -1382,7 +1382,9 @@ LightScrollUseEffect:
 	rts
 	.db $C2,$20,$A9,$55,$00,$85,$00
 	jsl.l DisplayMessage
-	.db $60,$C2,$20,$A9,$62   ;C31863
+	.db $60   ;C3186E
+RemovalScrollUseEffect:
+	.db $C2,$20,$A9,$62   ;C3186F
 	.db $01,$85,$00
 	jsl.l DisplayMessage
 	.db $60,$C2,$20,$A9,$13,$00,$85,$00,$A9   ;C31873  
@@ -2459,6 +2461,7 @@ func_C328E9:
 	jsl.l DisplayMessage
 @lbl_C32963:
 	rts
+WalrusJarUseEffect:
 	sep #$30 ;AXY->8
 	tyx
 	phx
