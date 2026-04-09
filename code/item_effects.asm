@@ -2818,19 +2818,130 @@ func_C32BAD:
 	plx
 	plp
 	rts
-	.db $08,$E2,$20,$C2,$10,$48,$A9,$13,$85,$00,$22,$AC,$10,$C2,$A6,$00   ;C32BC0
-	.db $68,$48,$DA,$86,$00,$22,$1A,$63,$C3,$A6,$00,$30,$23,$86,$00,$DA   ;C32BD0
-	.db $22,$E7,$0B,$C2,$FA,$A5,$00,$30,$17,$86,$00,$85,$02,$48,$22,$7A   ;C32BE0  
-	.db $5B,$C3,$68,$85,$00,$22,$AA,$7F,$C2,$FA,$68,$3A,$D0,$D3,$28,$60   ;C32BF0
-	.db $FA,$68,$28,$60,$08,$E2,$20,$C2,$10,$A6,$00,$48,$DA,$86,$00,$22   ;C32C00
-	.db $1A,$63,$C3,$A6,$00,$30,$2F,$86,$00,$DA,$22,$E7,$0B,$C2,$FA,$A5   ;C32C10
-	.db $00,$30,$23,$86,$00,$85,$02,$48,$22,$7A,$5B,$C3,$68,$85,$00,$48   ;C32C20
-	.db $22,$AA,$7F,$C2,$68,$85,$00,$A9,$14,$85,$01,$22,$FF,$3F,$C2,$FA   ;C32C30  
-	.db $68,$3A,$D0,$C7,$28,$60,$FA,$68,$28,$60,$08,$E2,$20,$C2,$10,$A6   ;C32C40
-	.db $00,$80,$34,$48,$DA,$86,$00,$22,$1A,$63,$C3,$A6,$00,$30,$2D,$86   ;C32C50
-	.db $00,$A9,$06,$85,$02,$A9,$0A,$85,$03,$DA,$22,$7D,$00,$C2,$FA,$A5   ;C32C60
-	.db $00,$30,$19,$86,$00,$85,$02,$48,$22,$7A,$5B,$C3,$68,$85,$00,$48   ;C32C70
-	.db $22,$AA,$7F,$C2,$68,$FA,$68,$3A,$10,$C9,$28,$60,$FA,$68,$28,$60   ;C32C80  
+	.db $08   ;C32BC0
+	sep #$20                                ;C32BC1
+	rep #$10                                ;C32BC3
+	pha                                     ;C32BC5
+	lda #$13                                ;C32BC6
+	sta $00                                 ;C32BC8
+	jsl $C210AC                             ;C32BCA
+	ldx $00                                 ;C32BCE
+	pla                                     ;C32BD0
+@lbl_C32BD1:
+	pha                                     ;C32BD1
+	phx                                     ;C32BD2
+	stx $00                                 ;C32BD3
+	jsl $C3631A                             ;C32BD5
+	ldx $00                                 ;C32BD9
+	bmi @lbl_C32C00                         ;C32BDB
+	stx $00                                 ;C32BDD
+	phx                                     ;C32BDF
+	jsl $C20BE7                             ;C32BE0
+	plx                                     ;C32BE4
+	lda $00                                 ;C32BE5
+	bmi @lbl_C32C00                         ;C32BE7
+	stx $00                                 ;C32BE9
+	sta $02                                 ;C32BEB
+	pha                                     ;C32BED
+	jsl $C35B7A                             ;C32BEE
+	pla                                     ;C32BF2
+	sta $00                                 ;C32BF3
+	jsl $C27FAA                             ;C32BF5
+	plx                                     ;C32BF9
+	pla                                     ;C32BFA
+	dec a                                   ;C32BFB
+	bne @lbl_C32BD1                         ;C32BFC
+	.db $28   ;C32BFE
+	rts                                     ;C32BFF
+@lbl_C32C00:
+	plx                                     ;C32C00
+	pla                                     ;C32C01
+	.db $28   ;C32C02
+	rts                                     ;C32C03
+	.db $08   ;C32C04
+	sep #$20                                ;C32C05
+	rep #$10                                ;C32C07
+	ldx $00                                 ;C32C09
+@lbl_C32C0B:
+	pha                                     ;C32C0B
+	phx                                     ;C32C0C
+	stx $00                                 ;C32C0D
+	jsl $C3631A                             ;C32C0F
+	ldx $00                                 ;C32C13
+	bmi @lbl_C32C46                         ;C32C15
+	stx $00                                 ;C32C17
+	phx                                     ;C32C19
+	jsl $C20BE7                             ;C32C1A
+	plx                                     ;C32C1E
+	lda $00                                 ;C32C1F
+	bmi @lbl_C32C46                         ;C32C21
+	stx $00                                 ;C32C23
+	sta $02                                 ;C32C25
+	pha                                     ;C32C27
+	jsl $C35B7A                             ;C32C28
+	pla                                     ;C32C2C
+	sta $00                                 ;C32C2D
+	pha                                     ;C32C2F
+	jsl $C27FAA                             ;C32C30
+	pla                                     ;C32C34
+	sta $00                                 ;C32C35
+	lda #$14                                ;C32C37
+	sta $01                                 ;C32C39
+	jsl $C23FFF                             ;C32C3B
+	plx                                     ;C32C3F
+	pla                                     ;C32C40
+	dec a                                   ;C32C41
+	bne @lbl_C32C0B                         ;C32C42
+	.db $28   ;C32C44
+	rts                                     ;C32C45
+@lbl_C32C46:
+	plx                                     ;C32C46
+	pla                                     ;C32C47
+	.db $28   ;C32C48
+	rts                                     ;C32C49
+	.db $08   ;C32C4A
+	sep #$20                                ;C32C4B
+	rep #$10                                ;C32C4D
+	ldx $00                                 ;C32C4F
+	bra @lbl_C32C87                         ;C32C51
+@lbl_C32C53:
+	pha                                     ;C32C53
+	phx                                     ;C32C54
+	stx $00                                 ;C32C55
+	jsl $C3631A                             ;C32C57
+	ldx $00                                 ;C32C5B
+	bmi @lbl_C32C8C                         ;C32C5D
+	stx $00                                 ;C32C5F
+	lda #$06                                ;C32C61
+	sta $02                                 ;C32C63
+	lda #$0A                                ;C32C65
+	sta $03                                 ;C32C67
+	phx                                     ;C32C69
+	jsl $C2007D                             ;C32C6A
+	plx                                     ;C32C6E
+	lda $00                                 ;C32C6F
+	bmi @lbl_C32C8C                         ;C32C71
+	stx $00                                 ;C32C73
+	sta $02                                 ;C32C75
+	pha                                     ;C32C77
+	jsl $C35B7A                             ;C32C78
+	pla                                     ;C32C7C
+	sta $00                                 ;C32C7D
+	pha                                     ;C32C7F
+	jsl $C27FAA                             ;C32C80
+	pla                                     ;C32C84
+	plx                                     ;C32C85
+	pla                                     ;C32C86
+@lbl_C32C87:
+	dec a                                   ;C32C87
+	bpl @lbl_C32C53                         ;C32C88
+	.db $28   ;C32C8A
+	rts                                     ;C32C8B
+@lbl_C32C8C:
+	plx                                     ;C32C8C
+	pla                                     ;C32C8D
+	.db $28   ;C32C8E
+	rts                                     ;C32C8F
 
 TryClearAssignedCategoryItem:
 	php
