@@ -1041,12 +1041,47 @@ MisfortuneHerbUseEffect:
 	jsl $C23209                             ;C3114D
 	rts                                     ;C31151
 IllLuckHerbUseEffect:
-	.db $E2,$20,$A9,$13,$85,$00,$E2,$30,$A6,$00,$DA,$22,$28,$11,$C2,$FA   ;C31152
-	.db $86,$00,$A9,$9D,$85,$01,$DA,$22,$79,$35,$C2,$FA,$86,$00,$A9,$9D   ;C31162  
-	.db $85,$01,$DA,$22,$79,$35,$C2,$FA,$86,$00,$A9,$9D,$85,$01,$DA,$22   ;C31172  
-	.db $79,$35,$C2,$FA,$86,$00,$DA,$22,$28,$11,$C2,$FA,$A9,$00,$EB,$A5   ;C31182  
-	.db $00,$C2,$20,$3A,$49,$FF,$FF,$1A,$85,$02,$86,$00,$22,$09,$32,$C2   ;C31192
-	.db $60
+	sep #$20                                ;C31152
+	lda #$13                                ;C31154
+	sta $00                                 ;C31156
+	sep #$30                                ;C31158
+	ldx $00                                 ;C3115A
+	phx                                     ;C3115C
+	jsl $C21128                             ;C3115D
+	plx                                     ;C31161
+	stx $00                                 ;C31162
+	lda #$9D                                ;C31164
+	sta $01                                 ;C31166
+	phx                                     ;C31168
+	jsl $C23579                             ;C31169
+	plx                                     ;C3116D
+	stx $00                                 ;C3116E
+	lda #$9D                                ;C31170
+	sta $01                                 ;C31172
+	phx                                     ;C31174
+	jsl $C23579                             ;C31175
+	plx                                     ;C31179
+	stx $00                                 ;C3117A
+	lda #$9D                                ;C3117C
+	sta $01                                 ;C3117E
+	phx                                     ;C31180
+	jsl $C23579                             ;C31181
+	plx                                     ;C31185
+	stx $00                                 ;C31186
+	phx                                     ;C31188
+	jsl $C21128                             ;C31189
+	plx                                     ;C3118D
+	lda #$00                                ;C3118E
+	xba                                     ;C31190
+	lda $00                                 ;C31191
+	rep #$20                                ;C31193
+	dec a                                   ;C31195
+	eor #$FFFF                              ;C31196
+	inc a                                   ;C31199
+	sta $02                                 ;C3119A
+	stx $00                                 ;C3119C
+	jsl $C23209                             ;C3119E
+	rts                                     ;C311A2
 LifeHerbUseEffect:
 	; Increase Shiren's max HP by 5, which also heals by the same amount.
 	sep #$20 ;A->8
