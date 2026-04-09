@@ -1343,8 +1343,17 @@ func_C312FF:
 	jsl.l DisplayMessage
 	rts
 ConfusionHerbUseEffect:
-	.db $E2,$20,$A9,$0B,$85,$01,$A9,$13,$85,$00,$22,$FF,$3F,$C2,$A5,$00   ;C31344
-	.db $F0,$0A,$A9,$66,$85,$00,$64,$01
+	sep #$20                                ;C31344
+	lda #$0B                                ;C31346
+	sta $01                                 ;C31348
+	lda #$13                                ;C3134A
+	sta $00                                 ;C3134C
+	jsl $C23FFF                             ;C3134E
+	lda $00                                 ;C31352
+	.db $F0,$0A   ;C31354
+	lda #$66                                ;C31356
+	sta $00                                 ;C31358
+	stz $01                                 ;C3135A
 	jsl.l DisplayMessage
 	.db $60,$E2,$20,$A9   ;C31354  
 	.db $15,$80,$E1,$E2,$30,$A6,$00,$86,$02,$A9,$04,$85,$00,$64,$01,$DA   ;C31364  
@@ -1371,9 +1380,17 @@ ConfusionHerbUseEffect:
 	jsl.l DisplayMessage
 	.db $60   ;C313A0
 SleepHerbUseEffect:
-	.db $E2,$20,$A9   ;C313A1
-	.db $05,$85,$01,$A9,$13,$85,$00,$22,$80,$40,$C2,$A5,$00,$F0,$0A,$A9   ;C313A4  
-	.db $6A,$85,$00,$64,$01
+	sep #$20                                ;C313A1
+	lda #$05                                ;C313A3
+	sta $01                                 ;C313A5
+	lda #$13                                ;C313A7
+	sta $00                                 ;C313A9
+	jsl $C24080                             ;C313AB
+	lda $00                                 ;C313AF
+	.db $F0,$0A   ;C313B1
+	lda #$6A                                ;C313B3
+	sta $00                                 ;C313B5
+	stz $01                                 ;C313B7
 	jsl.l DisplayMessage
 	rts                                     ;C313BD
 	sep #$20                                ;C313BE
@@ -1579,9 +1596,16 @@ SightHerbUseEffect:
 	rts
 	.db $C2,$30,$A9,$4B,$00,$85,$00
 	jsl.l DisplayMessage
-	.db $A9,$D0,$07,$85,$00   ;C3157A
-	.db $22,$BE,$33,$C2,$A2,$32,$00,$20,$DF,$15,$A9,$D0,$07,$85,$00,$22   ;C3158A  
-	.db $BE,$33,$C2,$60                   ;C3159A  
+	lda #$07D0                              ;C31585
+	sta $00                                 ;C31588
+	jsl $C233BE                             ;C3158A
+	ldx #$32                                ;C3158E
+	.db $00   ;C31590
+	jsr $15DF                               ;C31591
+	lda #$07D0                              ;C31594
+	sta $00                                 ;C31597
+	jsl $C233BE                             ;C31599
+	rts                                     ;C3159D
 OnigiriUseEffect:
 	rep #$30 ;AXY->16
 	ldx.w #$000A
@@ -2355,8 +2379,19 @@ BlessingScrollUseEffect:
 	sta $00                                 ;C31CE2
 	stz $01                                 ;C31CE4
 	jsl.l DisplayMessage
-	.db $60,$FA,$30,$1A,$BD,$0C,$8C,$D0,$15,$A9   ;C31CE4  
-	.db $01,$9D,$0C,$8C,$A9,$8D,$85,$00,$64,$01,$86,$02,$5A,$8B
+	rts                                     ;C31CEA
+	plx                                     ;C31CEB
+	.db $30,$1A   ;C31CEC
+	lda $8C0C,x                             ;C31CEE
+	.db $D0,$15   ;C31CF1
+	lda #$01                                ;C31CF3
+	sta $8C0C,x                             ;C31CF5
+	lda #$8D                                ;C31CF8
+	sta $00                                 ;C31CFA
+	stz $01                                 ;C31CFC
+	stx $02                                 ;C31CFE
+	phy                                     ;C31D00
+	phb                                     ;C31D01
 	jsl.l DisplayMessage
 	plb                                     ;C31D06
 	ply                                     ;C31D07
