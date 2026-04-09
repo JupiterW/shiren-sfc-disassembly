@@ -114,7 +114,15 @@ def _emit_decoded_lines(
     for insn in decoded:
         if insn.addr in branch_labels:
             out.append(f"{branch_labels[insn.addr]}:")
-        if insn.text.startswith(".db "):
+        branch_external = False
+        if insn.opcode in SHORT_BRANCH_OPS and insn.size >= 2:
+            disp = data[offset + 1]
+            if disp >= 0x80:
+                disp -= 0x100
+            target = insn.addr + 2 + disp
+            branch_external = target not in branch_labels and not (base_addr <= target < base_addr + len(data))
+
+        if insn.text.startswith(".db ") or branch_external:
             chunk = data[offset : offset + insn.size]
             out.append(format_db_line(chunk, insn.addr))
         else:
