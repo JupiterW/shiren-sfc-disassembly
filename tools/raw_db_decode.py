@@ -84,6 +84,11 @@ def decode_one(data: list[int], i: int, base_addr: int | None, state: DecodeStat
             return 1, f".db ${op:02X}"
         return 2, f"{name} ${b(1):02X}"
 
+    def stack_rel(name: str) -> tuple[int, str]:
+        if b(1) is None:
+            return 1, f".db ${op:02X}"
+        return 2, f"{name} ${b(1):02X},s"
+
     def absolute(name: str) -> tuple[int, str]:
         if b(2) is None:
             return 1, f".db ${op:02X}"
@@ -167,6 +172,7 @@ def decode_one(data: list[int], i: int, base_addr: int | None, state: DecodeStat
         0x1A: (1, "inc a"),
         0x18: (1, "clc"),
         0x38: (1, "sec"),
+        0x28: (1, "plp"),
         0x48: (1, "pha"),
         0x68: (1, "pla"),
         0x5A: (1, "phy"),
@@ -175,6 +181,8 @@ def decode_one(data: list[int], i: int, base_addr: int | None, state: DecodeStat
         0xAB: (1, "plb"),
         0x88: (1, "dey"),
         0x98: (1, "tya"),
+        0x8A: (1, "txa"),
+        0x9B: (1, "txy"),
         0xAA: (1, "tax"),
         0xA8: (1, "tay"),
         0xDA: (1, "phx"),
@@ -190,6 +198,7 @@ def decode_one(data: list[int], i: int, base_addr: int | None, state: DecodeStat
         0xA5: lambda: dp("lda"),
         0xA6: lambda: dp("ldx"),
         0xA4: lambda: dp("ldy"),
+        0xA3: lambda: stack_rel("lda"),
         0xB9: lambda: absolute_y("lda"),
         0xBD: lambda: absolute_x("lda"),
         0xBC: lambda: absolute_x("ldy"),
@@ -197,17 +206,21 @@ def decode_one(data: list[int], i: int, base_addr: int | None, state: DecodeStat
         0x85: lambda: dp("sta"),
         0x86: lambda: dp("stx"),
         0x84: lambda: dp("sty"),
+        0x83: lambda: stack_rel("sta"),
         0x9D: lambda: absolute_x("sta"),
         0x9F: lambda: long_x("sta"),
         0x64: lambda: dp("stz"),
         0xE4: lambda: dp("cpx"),
+        0x24: lambda: dp("bit"),
         0x89: lambda: imm_acc("bit"),
+        0x25: lambda: dp("and"),
         0xC5: lambda: dp("cmp"),
         0xC9: lambda: imm_acc("cmp"),
         0xD9: lambda: absolute_y("cmp"),
         0xDF: lambda: long_x("cmp"),
         0xE9: lambda: imm_acc("sbc"),
         0xFF: lambda: long_x("sbc"),
+        0x63: lambda: stack_rel("adc"),
         0x69: lambda: imm_acc("adc"),
         0x79: lambda: absolute_y("adc"),
         0x7F: lambda: long_x("adc"),
