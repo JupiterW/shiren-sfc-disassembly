@@ -2210,8 +2210,8 @@ ItemUseEffectFunctionTable:
 	.dw IdentityScrollUseEffect-1 ;IdentityScroll
 	.dw LightScrollUseEffect-1 ;LightScroll
 	.dw BigpotScrollUseEffect-1 ;BigpotScroll
-	.dw $189E ;BlastwaveScroll
-	.dw $187A ;SilenceScroll
+	.dw BlastwaveScrollUseEffect-1 ;BlastwaveScroll
+	.dw SilenceScrollUseEffect-1 ;SilenceScroll
 	.dw $1A7A ;5C
 	.dw $17A8 ;TrapScroll
 	.dw NeedScrollUseEffect-1 ;NeedScroll

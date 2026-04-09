@@ -150,8 +150,6 @@ Safe promotions completed:
 
 Known edge cases:
 - SHA drift:
-  - `BlastwaveScrollUseEffect`
-  - `SilenceScrollUseEffect`
   - `TrapScrollUseEffect`
   - `HandsFullScrollUseEffect`
 
@@ -195,6 +193,9 @@ Recent tool improvements resolved cases that originally looked like real edge ca
   - `SwitchingStaffUseEffect`
   - `WalrusJarUseEffect`
   - `RemovalScrollUseEffect`
+- local cluster lift using the raw decoder unlocked:
+  - `SilenceScrollUseEffect`
+  - `BlastwaveScrollUseEffect`
 
 ## Workflow Notes
 

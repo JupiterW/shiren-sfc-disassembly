@@ -1389,14 +1389,29 @@ LightScrollUseEffect:
 	jsl.l DisplayMessage
 	.db $60   ;C3186E
 RemovalScrollUseEffect:
-	.db $C2,$20,$A9,$62   ;C3186F
-	.db $01,$85,$00
+	rep #$20 ;A->16                    ;C3186F
+	lda.w #$0162
+	sta.b wTemp00
 	jsl.l DisplayMessage
-	.db $60,$C2,$20,$A9,$13,$00,$85,$00,$A9   ;C31873  
-	.db $D1,$00,$85,$02,$22,$50,$25,$C6,$A9,$84,$00,$85,$00
+	rts
+SilenceScrollUseEffect:
+	rep #$20 ;A->16                    ;C3187B
+	lda.w #$0013
+	sta.b wTemp00
+	lda.w #$00D1
+	sta.b wTemp02
+	jsl.l func_C62550
+	lda.w #$0084
+	sta.b wTemp00
 	jsl.l DisplayMessage
-	.db $E2,$20,$A9,$01,$85,$00,$22,$5A,$33,$C2,$60,$22,$72,$86,$C2   ;C31893  
-	.db $60   ;C318A3
+	sep #$20 ;A->8
+	lda.b #$01
+	sta.b wTemp00
+	jsl.l $C2335A
+	rts
+BlastwaveScrollUseEffect:
+	jsl.l func_C28672                   ;C3189F
+	rts                                ;C318A3
 HasteScrollUseEffect:
 	.db $22,$6E,$87,$C2,$C2,$20,$A9,$63,$01,$85,$00   ;C318A4
 	jsl.l DisplayMessage
