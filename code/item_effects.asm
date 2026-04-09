@@ -3764,9 +3764,26 @@ TryPrepareSelectedItemForJarInsertion:
 	plp
 	rts
 MonsterJarUseEffect:
-	.db $E2,$30,$BB,$DA,$20,$AD,$2B,$FA,$BF,$8C,$8C,$7E,$DA,$20,$C0,$2B   ;C32B5D
-	.db $FA,$86,$00,$DA,$22,$92,$01,$C3,$FA,$86,$00,$22,$F4,$06,$C3,$68   ;C32B6D
-	.db $68,$64,$00,$28,$6B               ;C32B7D
+	sep #$30                                ;C32B5D
+	tyx                                     ;C32B5F
+	phx                                     ;C32B60
+	jsr $2BAD                               ;C32B61
+	plx                                     ;C32B64
+	lda $7E8C8C,x                           ;C32B65
+	phx                                     ;C32B69
+	jsr $2BC0                               ;C32B6A
+	plx                                     ;C32B6D
+	stx $00                                 ;C32B6E
+	phx                                     ;C32B70
+	jsl $C30192                             ;C32B71
+	plx                                     ;C32B75
+	stx $00                                 ;C32B76
+	jsl $C306F4                             ;C32B78
+	pla                                     ;C32B7C
+	pla                                     ;C32B7D
+	stz $00                                 ;C32B7E
+	plp                                     ;C32B80
+	rtl                                     ;C32B81
 HidingJarUseEffect:
 	sep #$30 ;AXY->8
 	tyx
