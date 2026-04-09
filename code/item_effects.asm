@@ -4484,13 +4484,57 @@ func_C335FE:
 	sta $01                                 ;C3386D
 	sty $02                                 ;C3386F
 	jsl.l DisplayMessage
-	.db $68,$68,$60   ;C33868  
-	.db $C2,$20,$A5,$00,$48,$A9,$01,$02,$85,$00,$22,$9F,$F6,$C3,$A5,$00   ;C33878
-	.db $85,$02,$68,$85,$00,$22,$DF,$28,$C2,$60,$C2,$20,$E2,$10,$A5,$00   ;C33888  
-	.db $48,$22,$AC,$10,$C2,$68,$85,$00,$A6,$03,$E0,$50,$F0,$18,$E0,$23   ;C33898
-	.db $D0,$CE,$48,$22,$28,$11,$C2,$A5,$00,$29,$FF,$00,$85,$02,$68,$85   ;C338A8  
-	.db $00,$22,$DF,$28,$C2,$60,$E2,$30,$A6,$00,$BF,$71,$88,$7E,$C9,$07   ;C338B8
-	.db $D0,$11,$3A,$9F,$71,$88,$7E,$A9,$53,$85,$00,$A9,$07,$85,$01
+	pla                                     ;C33875
+	pla                                     ;C33876
+	rts                                     ;C33877
+@lbl_C33878:
+	rep #$20                                ;C33878
+	lda $00                                 ;C3387A
+	pha                                     ;C3387C
+	lda #$0201                              ;C3387D
+	sta $00                                 ;C33880
+	jsl $C3F69F                             ;C33882
+	lda $00                                 ;C33886
+	sta $02                                 ;C33888
+	pla                                     ;C3388A
+	sta $00                                 ;C3388B
+	jsl $C228DF                             ;C3388D
+	rts                                     ;C33891
+	rep #$20                                ;C33892
+	sep #$10                                ;C33894
+	lda $00                                 ;C33896
+	pha                                     ;C33898
+	jsl $C210AC                             ;C33899
+	pla                                     ;C3389D
+	sta $00                                 ;C3389E
+	ldx $03                                 ;C338A0
+	.db $E0   ;C338A2
+	.db $50   ;C338A3
+	beq @lbl_C338BE                         ;C338A4
+	.db $E0   ;C338A6
+	.db $23   ;C338A7
+	bne @lbl_C33878                         ;C338A8
+	pha                                     ;C338AA
+	jsl $C21128                             ;C338AB
+	lda $00                                 ;C338AF
+	and #$00FF                              ;C338B1
+	sta $02                                 ;C338B4
+	pla                                     ;C338B6
+	sta $00                                 ;C338B7
+	jsl $C228DF                             ;C338B9
+	rts                                     ;C338BD
+@lbl_C338BE:
+	sep #$30                                ;C338BE
+	ldx $00                                 ;C338C0
+	lda $7E8871,x                           ;C338C2
+	cmp #$07                                ;C338C6
+	.db $D0,$11   ;C338C8
+	dec a                                   ;C338CA
+	sta $7E8871,x                           ;C338CB
+	lda #$53                                ;C338CF
+	sta $00                                 ;C338D1
+	lda #$07                                ;C338D3
+	sta $01                                 ;C338D5
 	jsl.l DisplayMessage
 	rts                                     ;C338DB
 	rep #$20                                ;C338DC
