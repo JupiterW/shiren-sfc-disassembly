@@ -1590,8 +1590,17 @@ func_C315DF:
 	clc
 	rts
 @lbl_C315F9:
-	.db $68,$85,$00,$22,$95,$33,$C2,$A9,$0A,$00,$85,$02,$22,$26,$E5,$C3   ;C315F9
-	.db $A5,$00,$29,$FF,$00,$85,$02,$A9,$4E,$00,$85,$00
+	pla                                     ;C315F9
+	sta $00                                 ;C315FA
+	jsl $C23395                             ;C315FC
+	lda #$000A                              ;C31600
+	sta $02                                 ;C31603
+	jsl $C3E526                             ;C31605
+	lda $00                                 ;C31609
+	and #$00FF                              ;C3160B
+	sta $02                                 ;C3160E
+	lda #$004E                              ;C31610
+	sta $00                                 ;C31613
 	jsl.l DisplayMessage
 	.db $A9,$10,$27,$85,$00,$22,$BE,$33,$C2,$38,$60   ;C31619
 SpecialOnigiriUseEffect:
