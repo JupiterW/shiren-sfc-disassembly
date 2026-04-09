@@ -985,9 +985,21 @@ RestorativeHerbUseEffect:
 	.db $68,$F0,$12,$A0,$13,$00,$84,$00,$22,$73,$40   ;C30FCD
 	.db $C2,$A0,$6C,$00,$84,$00
 	jsl.l DisplayMessage
-	.db $60,$E2,$30,$A9,$13,$85   ;C30FDD
-	.db $00,$22,$28,$11,$C2,$A5,$01,$C5,$00,$F0,$05,$20,$E9,$28,$80,$03   ;C30FED
-	.db $20,$FD,$0E,$20,$04,$10,$60       ;C30FFD  
+	rts                                     ;C30FE7
+	sep #$30                                ;C30FE8
+	lda #$13                                ;C30FEA
+	sta $00                                 ;C30FEC
+	jsl $C21128                             ;C30FEE
+	lda $01                                 ;C30FF2
+	cmp $00                                 ;C30FF4
+	beq @lbl_C30FFD                         ;C30FF6
+	jsr $28E9                               ;C30FF8
+	bra @lbl_C31000                         ;C30FFB
+@lbl_C30FFD:
+	jsr $0EFD                               ;C30FFD
+@lbl_C31000:
+	jsr $1004                               ;C31000
+	rts                                     ;C31003
 
 AntidoteHerbUseEffect:
 	sep #$20 ;A->8
