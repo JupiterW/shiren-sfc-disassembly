@@ -2161,7 +2161,7 @@ ItemUseEffectFunctionTable:
 	.dw ShieldUseEffect-1 ;26
 	.dw ShieldUseEffect-1 ;27
 	.dw MedicinalHerbUseEffect-1 ;MedicinalHerb
-	.dw $0EFC ;RestorativeHerb
+	.dw RestorativeHerbUseEffect-1 ;RestorativeHerb
 	.dw $10B8 ;HappinessHerb
 	.dw $155C ;SightHerb
 	.dw $14BE ;DragonHerb
@@ -2175,7 +2175,7 @@ ItemUseEffectFunctionTable:
 	.dw $0A13 ;KignyHerb
 	.dw $0A35 ;AmnesiaHerb
 	.dw $0A94 ;36
-	.dw $11A2 ;LifeHerb
+	.dw LifeHerbUseEffect-1 ;LifeHerb
 	.dw $0A95 ;BigBellySeed
 	.dw $0ABA ;LittleBellySeed
 	.dw $0ADF ;TalkSeed

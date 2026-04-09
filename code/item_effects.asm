@@ -856,6 +856,9 @@ MedicinalHerbUseEffect:
 	jsl.l func_C23209
 @lbl_C30EFC:
 	rts
+RestorativeHerbUseEffect:
+	; Heal up to 100 HP. If Shiren is already at max HP, raise max HP by 2 first.
+	; Then clear confusion and puzzled status if present.
 	.db $E2,$20,$C2,$10,$A9,$13,$85,$00,$22,$28,$11,$C2,$A5,$01,$38,$E5   ;C30EFD
 	.db $00,$F0,$21,$C9,$64,$90,$02,$A9,$64,$85,$02,$A0,$40,$00,$84,$00   ;C30F0D
 	.db $48
@@ -929,7 +932,10 @@ func_C31004:
 	.db $85,$01,$DA,$22,$79,$35,$C2,$FA,$86,$00,$A9,$9D,$85,$01,$DA,$22   ;C31172  
 	.db $79,$35,$C2,$FA,$86,$00,$DA,$22,$28,$11,$C2,$FA,$A9,$00,$EB,$A5   ;C31182  
 	.db $00,$C2,$20,$3A,$49,$FF,$FF,$1A,$85,$02,$86,$00,$22,$09,$32,$C2   ;C31192
-	.db $60,$E2,$20,$A9,$87,$85,$00,$64,$01,$A9,$05,$85,$02
+	.db $60
+LifeHerbUseEffect:
+	; Increase Shiren's max HP by 5, which also heals by the same amount.
+	.db $E2,$20,$A9,$87,$85,$00,$64,$01,$A9,$05,$85,$02
 	jsl.l DisplayMessage
 	.db $A9,$13,$85,$00,$E2,$20,$A9,$05,$85,$02,$64,$03,$22,$3C,$32   ;C311B2  
 	.db $C2,$60,$E2,$20,$A9,$65,$85,$00,$64,$01
