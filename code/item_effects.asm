@@ -1994,9 +1994,28 @@ func_C31B5C:
 	jsl.l func_C234BF
 	rts
 EarthBlessScrollUseEffect:
-	.db $E2,$30,$22,$89,$3B,$C2,$A6,$01,$30,$54,$A9,$13,$85,$00,$A9,$C9   ;C31B7B
-	.db $85,$02,$DA,$8B,$22,$65,$25,$C6,$AB,$FA,$BD,$8C,$8C,$C9,$63,$F0   ;C31B8B  
-	.db $3D,$A9,$AA,$85,$00,$64,$01,$86,$02,$DA,$8B
+	sep #$30                                ;C31B7B
+	jsl $C23B89                             ;C31B7D
+	ldx $01                                 ;C31B81
+	.db $30,$54   ;C31B83
+	lda #$13                                ;C31B85
+	sta $00                                 ;C31B87
+	lda #$C9                                ;C31B89
+	sta $02                                 ;C31B8B
+	phx                                     ;C31B8D
+	phb                                     ;C31B8E
+	jsl $C62565                             ;C31B8F
+	plb                                     ;C31B93
+	plx                                     ;C31B94
+	lda $8C8C,x                             ;C31B95
+	cmp #$63                                ;C31B98
+	.db $F0,$3D   ;C31B9A
+	lda #$AA                                ;C31B9C
+	sta $00                                 ;C31B9E
+	stz $01                                 ;C31BA0
+	stx $02                                 ;C31BA2
+	phx                                     ;C31BA4
+	phb                                     ;C31BA5
 	jsl.l DisplayMessage
 	.db $AB   ;C31B9B  
 	.db $FA,$BD,$8C,$8C,$1A,$9D,$8C,$8C,$A9,$AB,$85,$00,$64,$01,$86,$02   ;C31BAB
