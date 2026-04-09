@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Emit a candidate asm lift for a bounded raw cluster.
+"""Emit or apply a candidate asm lift for a bounded raw cluster.
 
 This is intentionally a review-first helper:
 - find the source lines overlapping a ROM address range
@@ -7,9 +7,11 @@ This is intentionally a review-first helper:
   `raw_db_decode.py`
 - preserve existing non-raw asm lines
 - emit a candidate replacement block to stdout
+- optionally apply the replacement in place
 
 Examples:
   python3 tools/lift_raw_cluster.py --file code/item_effects.asm --start C3186F --end C318A3
+  python3 tools/lift_raw_cluster.py --file code/item_effects.asm --start C3186F --end C318A3 --apply --quiet
   python3 tools/lift_raw_cluster.py --file code/item_effects.asm --start C31649 --end C31657 --m-width 16 --x-width 16 --table16 5
 """
 
@@ -27,6 +29,7 @@ from promote_raw_item_handler_label import (
     load_lines,
     parse_comment_addr,
     parse_label_addr,
+    write_lines,
 )
 from raw_db_decode import DecodeState, decode_one, parse_addr
 
@@ -211,6 +214,8 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--m-width", type=int, choices=(8, 16), default=8, help="initial accumulator width")
     parser.add_argument("--x-width", type=int, choices=(8, 16), default=8, help="initial index width")
     parser.add_argument("--table16", type=int, default=0, help="decode first N words of the first raw segment as .dw jump-table targets")
+    parser.add_argument("--apply", action="store_true", help="rewrite the selected cluster in place")
+    parser.add_argument("--quiet", action="store_true", help="suppress candidate output; useful with --apply")
     args = parser.parse_args(argv)
 
     path = _resolve_file(args.file)
@@ -223,6 +228,18 @@ def main(argv: list[str]) -> int:
         raise SystemExit("start must be <= end")
 
     start_idx, end_idx, out = build_candidate(lines, start_addr, end_addr, args.m_width, args.x_width, args.table16)
+
+    if args.apply:
+        new_lines = lines[:start_idx] + out + lines[end_idx:]
+        write_lines(path, new_lines)
+        if args.quiet:
+            print(f"applied {path.relative_to(ROOT)}:{start_idx + 1}-{end_idx}")
+        else:
+            print(f"; applied lift to {path.relative_to(ROOT)}:{start_idx + 1}-{end_idx}")
+            for line in out:
+                print(line)
+        return 0
+
     print(f"; candidate lift for {path.relative_to(ROOT)}:{start_idx + 1}-{end_idx}")
     for line in out:
         print(line)
