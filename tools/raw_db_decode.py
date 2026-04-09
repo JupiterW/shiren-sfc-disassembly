@@ -10,6 +10,7 @@ Examples:
   python3 tools/raw_db_decode.py 'E2 20 A9 13 85 00 22 79 35 C2 60'
   python3 tools/raw_db_decode.py --addr C31344 'E2 20 A9 0B 85 01'
   python3 tools/raw_db_decode.py --line '	.db $E2,$20,$A9,$13,$85,$00   ;C310EC'
+  python3 tools/raw_db_decode.py --addr C31649 --table16 5 --line '	.db $57,$16,$6D,$16,$83,$16,$99,$16,$BF,$16,$22,$10,$AD,$16,$E2,$20 ;C31649'
 """
 
 from __future__ import annotations
@@ -142,6 +143,12 @@ def main(argv: list[str]) -> int:
     parser.add_argument("bytes", nargs="?", help="raw bytes, e.g. 'E2 20 A9 13'")
     parser.add_argument("--line", help="a literal .db source line")
     parser.add_argument("--addr", help="starting address, e.g. C31344")
+    parser.add_argument(
+        "--table16",
+        type=int,
+        default=0,
+        help="interpret the first N little-endian 16-bit words as local jump-table targets before decoding the remaining bytes as code",
+    )
     args = parser.parse_args(argv)
 
     source = args.line or args.bytes
@@ -151,6 +158,18 @@ def main(argv: list[str]) -> int:
     base = parse_addr(args.addr)
 
     i = 0
+    if args.table16:
+        if len(data) < args.table16 * 2:
+            raise ValueError("not enough bytes for requested --table16 count")
+        bank = (base or 0xC30000) & 0xFF0000
+        for table_index in range(args.table16):
+            word_off = table_index * 2
+            target = data[word_off] | (data[word_off + 1] << 8)
+            chunk = f"{data[word_off]:02X} {data[word_off + 1]:02X}"
+            target_text = f"${bank | target:06X}" if base is not None else f"${target:04X}"
+            print(f"{fmt_addr(base, word_off)}  {chunk:<15}  .dw {target_text}")
+        i = args.table16 * 2
+
     while i < len(data):
         size, text = decode_one(data, i, base)
         chunk = " ".join(f"{b:02X}" for b in data[i : i + size])
