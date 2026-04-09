@@ -3391,15 +3391,79 @@ func_C32CFE:
 	.db $30,$A6,$00,$BF,$8C,$8F,$7E,$89,$08,$F0,$18,$29,$F7,$9F,$8C,$8F   ;C32DDA  
 	.db $7E,$A9,$13,$85,$00,$A9,$01,$85,$01
 	jsl.l DisplayMessage
-	.db $A9,$01,$85   ;C32DEA  
-	.db $00,$28,$6B,$89,$80,$D0,$04,$64,$00,$28,$6B,$DA,$86,$00,$22,$CB   ;C32DFA
-	.db $2C,$C3,$C2,$30,$A5,$00,$85,$06,$A5,$02,$09,$00,$02,$85,$04,$09   ;C32E0A  
-	.db $00,$88,$49,$FF,$FF,$24,$00,$D0,$09,$E2,$30,$FA,$64,$00,$28,$6B   ;C32E1A
-	.db $C2,$30,$A9,$01,$0A,$85,$00,$A5,$04,$48,$A5,$06,$48,$22,$9F,$F6   ;C32E2A
-	.db $C3,$68,$85,$06,$68,$85,$04,$A5,$00,$29,$FF,$00,$AA,$A8,$A9,$01   ;C32E3A  
-	.db $00,$88,$F0,$03,$0A,$80,$FA,$24,$04,$D0,$D7,$85,$02,$49,$FF,$FF   ;C32E4A
-	.db $85,$00,$A5,$06,$24,$02,$F0,$CA,$A5,$06,$25,$00,$48,$8A,$3A,$0A   ;C32E5A  
-	.db $AA,$BF,$B8,$2E,$C3,$85,$00
+	lda #$01                                ;C32DF7
+	sta $00                                 ;C32DF9
+	.db $28   ;C32DFB
+	rtl                                     ;C32DFC
+	bit #$80                                ;C32DFD
+	bne @lbl_C32E05                         ;C32DFF
+	stz $00                                 ;C32E01
+	.db $28   ;C32E03
+	rtl                                     ;C32E04
+@lbl_C32E05:
+	phx                                     ;C32E05
+	stx $00                                 ;C32E06
+	jsl $C32CCB                             ;C32E08
+	rep #$30                                ;C32E0C
+	lda $00                                 ;C32E0E
+	sta $06                                 ;C32E10
+	lda $02                                 ;C32E12
+	ora #$0200                              ;C32E14
+	sta $04                                 ;C32E17
+	ora #$8800                              ;C32E19
+	eor #$FFFF                              ;C32E1C
+	.db $24   ;C32E1F
+	.db $00   ;C32E20
+	bne @lbl_C32E2C                         ;C32E21
+	sep #$30                                ;C32E23
+	plx                                     ;C32E25
+	stz $00                                 ;C32E26
+	.db $28   ;C32E28
+	rtl                                     ;C32E29
+	rep #$30                                ;C32E2A
+@lbl_C32E2C:
+	lda #$0A01                              ;C32E2C
+	sta $00                                 ;C32E2F
+	lda $04                                 ;C32E31
+	pha                                     ;C32E33
+	lda $06                                 ;C32E34
+	pha                                     ;C32E36
+	jsl $C3F69F                             ;C32E37
+	pla                                     ;C32E3B
+	sta $06                                 ;C32E3C
+	pla                                     ;C32E3E
+	sta $04                                 ;C32E3F
+	lda $00                                 ;C32E41
+	and #$00FF                              ;C32E43
+	tax                                     ;C32E46
+	tay                                     ;C32E47
+	lda #$0001                              ;C32E48
+@lbl_C32E4B:
+	dey                                     ;C32E4B
+	beq @lbl_C32E51                         ;C32E4C
+	asl a                                   ;C32E4E
+	bra @lbl_C32E4B                         ;C32E4F
+@lbl_C32E51:
+	.db $24   ;C32E51
+	.db $04   ;C32E52
+	bne @lbl_C32E2C                         ;C32E53
+	sta $02                                 ;C32E55
+	eor #$FFFF                              ;C32E57
+	sta $00                                 ;C32E5A
+	lda $06                                 ;C32E5C
+	.db $24   ;C32E5E
+	.db $02   ;C32E5F
+	beq @lbl_C32E2C                         ;C32E60
+	lda $06                                 ;C32E62
+	.db $25   ;C32E64
+	.db $00   ;C32E65
+	pha                                     ;C32E66
+	.db $8A   ;C32E67
+	dec a                                   ;C32E68
+	asl a                                   ;C32E69
+	tax                                     ;C32E6A
+	lda $C32EB8,x                           ;C32E6B
+	sta $00                                 ;C32E6F
 	jsl.l DisplayMessage
 	.db $68,$E2,$30,$FA,$9B   ;C32E6A
 	.db $9F,$0C,$8F,$7E,$85,$00,$85,$02,$EB,$9F,$8C,$8F,$7E,$85,$01,$29   ;C32E7A  
