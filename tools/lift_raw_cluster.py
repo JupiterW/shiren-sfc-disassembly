@@ -47,8 +47,11 @@ SHORT_BRANCH_OPS = {
     0x90: "bcc",
     0xB0: "bcs",
 }
+LONG_BRANCH_OPS = {
+    0x82: "brl",
+}
 OUT_ADDR_RE = re.compile(r";([0-9A-F]{6})\s*$")
-OUT_BRANCH_RE = re.compile(r"^(\s*)(beq|bne|bpl|bmi|bvs|bra|bcc|bcs)\s+\$([0-9A-F]{5,6})(\s*;[0-9A-F]{6}\s*)$", re.IGNORECASE)
+OUT_BRANCH_RE = re.compile(r"^(\s*)(beq|bne|bpl|bmi|bvs|bra|bcc|bcs|brl)\s+\$([0-9A-F]{5,6})(\s*;[0-9A-F]{6}\s*)$", re.IGNORECASE)
 
 
 @dataclass
@@ -101,12 +104,18 @@ def _emit_decoded_lines(
 
     branch_labels: dict[int, str] = {}
     for insn in decoded:
-        if insn.opcode not in SHORT_BRANCH_OPS or insn.size < 2:
+        if insn.opcode in SHORT_BRANCH_OPS and insn.size >= 2:
+            disp = data[insn.addr - base_addr + 1]
+            if disp >= 0x80:
+                disp -= 0x100
+            target = insn.addr + 2 + disp
+        elif insn.opcode in LONG_BRANCH_OPS and insn.size >= 3:
+            disp = data[insn.addr - base_addr + 1] | (data[insn.addr - base_addr + 2] << 8)
+            if disp >= 0x8000:
+                disp -= 0x10000
+            target = insn.addr + 3 + disp
+        else:
             continue
-        disp = data[insn.addr - base_addr + 1]
-        if disp >= 0x80:
-            disp -= 0x100
-        target = insn.addr + 2 + disp
         if base_addr <= target < base_addr + len(data):
             branch_labels.setdefault(target, f"@lbl_{target:06X}")
 
@@ -120,6 +129,12 @@ def _emit_decoded_lines(
             if disp >= 0x80:
                 disp -= 0x100
             target = insn.addr + 2 + disp
+            branch_external = target not in branch_labels and not (base_addr <= target < base_addr + len(data))
+        elif insn.opcode in LONG_BRANCH_OPS and insn.size >= 3:
+            disp = data[offset + 1] | (data[offset + 2] << 8)
+            if disp >= 0x8000:
+                disp -= 0x10000
+            target = insn.addr + 3 + disp
             branch_external = target not in branch_labels and not (base_addr <= target < base_addr + len(data))
 
         if insn.text.startswith(".db ") or branch_external:
@@ -135,6 +150,14 @@ def _emit_decoded_lines(
                 label = branch_labels.get(target)
                 if label is not None:
                     text = f"{SHORT_BRANCH_OPS[insn.opcode]} {label}"
+            elif insn.opcode in LONG_BRANCH_OPS and insn.size >= 3:
+                disp = data[offset + 1] | (data[offset + 2] << 8)
+                if disp >= 0x8000:
+                    disp -= 0x10000
+                target = insn.addr + 3 + disp
+                label = branch_labels.get(target)
+                if label is not None:
+                    text = f"{LONG_BRANCH_OPS[insn.opcode]} {label}"
             out.append(f"{_fmt_instruction(text):<40} ;{insn.addr:06X}")
         offset += insn.size
 

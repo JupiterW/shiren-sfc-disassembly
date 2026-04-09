@@ -138,6 +138,15 @@ def decode_one(data: list[int], i: int, base_addr: int | None, state: DecodeStat
         src = (base_addr + i) if base_addr is not None else 0
         return 2, f"{name} ${src + 2 + disp:06X}" if base_addr is not None else f"{name} {disp:+d}"
 
+    def branch_long(name: str) -> tuple[int, str]:
+        if b(2) is None:
+            return 1, f".db ${op:02X}"
+        disp = b(1) | (b(2) << 8)
+        if disp >= 0x8000:
+            disp -= 0x10000
+        src = (base_addr + i) if base_addr is not None else 0
+        return 3, f"{name} ${src + 3 + disp:06X}" if base_addr is not None else f"{name} {disp:+d}"
+
     def sep_or_rep(name: str, set_bits: bool) -> tuple[int, str]:
         size, text = imm8(name)
         if size != 2:
@@ -155,6 +164,7 @@ def decode_one(data: list[int], i: int, base_addr: int | None, state: DecodeStat
         0x6B: (1, "rtl"),
         0x0A: (1, "asl a"),
         0x3A: (1, "dec a"),
+        0x1A: (1, "inc a"),
         0x18: (1, "clc"),
         0x38: (1, "sec"),
         0x48: (1, "pha"),
@@ -188,7 +198,9 @@ def decode_one(data: list[int], i: int, base_addr: int | None, state: DecodeStat
         0x86: lambda: dp("stx"),
         0x84: lambda: dp("sty"),
         0x9D: lambda: absolute_x("sta"),
+        0x9F: lambda: long_x("sta"),
         0x64: lambda: dp("stz"),
+        0xE4: lambda: dp("cpx"),
         0x89: lambda: imm_acc("bit"),
         0xC5: lambda: dp("cmp"),
         0xC9: lambda: imm_acc("cmp"),
@@ -213,6 +225,7 @@ def decode_one(data: list[int], i: int, base_addr: int | None, state: DecodeStat
         0x10: lambda: branch("bpl"),
         0x30: lambda: branch("bmi"),
         0x70: lambda: branch("bvs"),
+        0x82: lambda: branch_long("brl"),
         0x80: lambda: branch("bra"),
         0x90: lambda: branch("bcc"),
         0xB0: lambda: branch("bcs"),
