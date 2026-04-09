@@ -4,6 +4,7 @@
 Examples:
   python3 tools/iterative_lift_raw_clusters.py --file code/item_effects.asm --dry-run
   python3 tools/iterative_lift_raw_clusters.py --file code/item_effects.asm --limit 3
+  python3 tools/iterative_lift_raw_clusters.py --file code/item_effects.asm --limit 10 --commit
 """
 
 from __future__ import annotations
@@ -20,6 +21,10 @@ from promote_raw_item_handler_label import estimate_asm_line_size, load_lines
 
 def run(cmd: str) -> subprocess.CompletedProcess[str]:
     return subprocess.run(cmd, shell=True, cwd=ROOT, text=True, capture_output=True)
+
+
+def run_argv(argv: list[str]) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(argv, cwd=ROOT, text=True, capture_output=True)
 
 
 def snapshot(path: Path) -> str:
@@ -97,6 +102,13 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--mode", choices=("cluster", "segment"), default="segment", help="process whole mixed clusters or consecutive raw segments")
     parser.add_argument("--dry-run", action="store_true", help="list planned clusters without applying them")
     parser.add_argument("--stop-on-fail", action="store_true", default=True, help="stop on first failure")
+    parser.add_argument("--verify-cmd", default="make -B -j1 PYTHON=.venv/bin/python && shasum -c shiren.sha1", help="command used to verify a kept lift")
+    parser.add_argument("--commit", action="store_true", help="git add/commit the file after each kept verified lift")
+    parser.add_argument(
+        "--commit-template",
+        default="Lift raw segment {start}-{end} in {file}",
+        help="commit message template for kept lifts",
+    )
     args = parser.parse_args(argv)
 
     path = _resolve_file(args.file)
@@ -162,10 +174,34 @@ def main(argv: list[str]) -> int:
                 print(proc.stdout.strip())
             return 1
 
-        verify = run("make -B -j PYTHON=.venv/bin/python && shasum -c shiren.sha1")
+        verify = run(args.verify_cmd)
         if verify.returncode == 0:
             kept += 1
             baseline = snapshot(path)
+            if args.commit:
+                add_proc = run_argv(["git", "add", str(rel)])
+                if add_proc.returncode != 0:
+                    restore(path, before)
+                    print(f"FAIL  {start_addr:06X}-{end_addr:06X} git-add")
+                    if add_proc.stdout:
+                        print(add_proc.stdout.strip())
+                    if add_proc.stderr:
+                        print(add_proc.stderr.strip())
+                    return 1
+                commit_msg = args.commit_template.format(
+                    start=f"{start_addr:06X}",
+                    end=f"{end_addr:06X}",
+                    file=str(rel),
+                )
+                commit_proc = run_argv(["git", "commit", "-m", commit_msg])
+                if commit_proc.returncode != 0:
+                    restore(path, before)
+                    print(f"FAIL  {start_addr:06X}-{end_addr:06X} git-commit")
+                    if commit_proc.stdout:
+                        print(commit_proc.stdout.strip())
+                    if commit_proc.stderr:
+                        print(commit_proc.stderr.strip())
+                    return 1
             print(f"KEPT  {start_addr:06X}-{end_addr:06X}")
             continue
 
