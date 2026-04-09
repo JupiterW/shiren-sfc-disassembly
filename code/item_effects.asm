@@ -2635,10 +2635,29 @@ NeedScrollUseEffect:
 	ora.b wTemp03
 	ora.b wTemp04
 	bne @lbl_C3224E
-	.db $5A,$22,$F3,$05,$C3,$7A,$A6,$00,$30,$25,$BF,$0C,$8D,$7E,$EB,$BF   ;C3221F
-	.db $8C,$8C,$7E,$C2,$20,$0A,$85,$00,$0A,$0A,$18,$65,$00,$E2,$20,$9F   ;C3222F  
-	.db $8C,$8C,$7E,$EB,$9F,$0C,$8D,$7E   ;C3223F  
-	.db $86,$00,$22,$02,$3A,$C2,$60       ;C32247  
+	phy                                     ;C3221F
+	jsl $C305F3                             ;C32220
+	ply                                     ;C32224
+	ldx $00                                 ;C32225
+	.db $30,$25   ;C32227
+	lda $7E8D0C,x                           ;C32229
+	xba                                     ;C3222D
+	lda $7E8C8C,x                           ;C3222E
+	rep #$20                                ;C32232
+	asl a                                   ;C32234
+	sta $00                                 ;C32235
+	asl a                                   ;C32237
+	asl a                                   ;C32238
+	clc                                     ;C32239
+	.db $65   ;C3223A
+	.db $00   ;C3223B
+	sep #$20                                ;C3223C
+	sta $7E8C8C,x                           ;C3223E
+	xba                                     ;C32242
+	sta $7E8D0C,x                           ;C32243
+	stx $00                                 ;C32247
+	jsl $C23A02                             ;C32249
+	rts                                     ;C3224D
 @lbl_C3224E:
 	tya
 	beq @lbl_C3225B
