@@ -1355,6 +1355,7 @@ func_C315DF:
 	.db $5C,$00,$85,$00
 	jsl.l DisplayMessage
 	.db $60                               ;C31821
+LightScrollUseEffect:
 	rep #$20 ;A->16
 	lda.w #$0013
 	sta.b wTemp00
@@ -1391,6 +1392,7 @@ func_C315DF:
 	.db $60,$22,$6E,$87,$C2,$C2,$20,$A9,$63,$01,$85,$00
 	jsl.l DisplayMessage
 	.db $60                               ;C318B3
+SleepScrollUseEffect:
 	jsl.l func_C28790
 	rts
 	.db $E2,$20,$A9,$1E,$85,$00
@@ -1398,8 +1400,13 @@ func_C315DF:
 	.db $A5,$00,$D0,$0B,$A9,$5C   ;C318B9
 	.db $85,$00,$64,$01
 	jsl.l DisplayMessage
-	.db $60,$22,$51,$88,$C2,$60,$22,$DA   ;C318C9  
-	.db $87,$C2,$60,$22,$A3,$88,$C2,$60   ;C318D9  
+	.db $60,$22,$51,$88,$C2,$60   ;C318D1
+ConfusionScrollUseEffect:
+	.db $22,$DA   ;C318D7
+	.db $87,$C2,$60   ;C318D9
+ExplosionScrollUseEffect:
+	.db $22,$A3,$88,$C2,$60   ;C318DC
+PowerupScrollUseEffect:
 	sep #$20 ;A->8
 	lda.b #$13
 	sta.b wTemp00
@@ -1410,8 +1417,10 @@ func_C315DF:
 	sta.b wTemp00
 	jsl.l func_C28418
 	rts
+MonsterHouseScrollUseEffect:
 	.db $22,$4D,$2B,$C6,$22,$EA,$69,$C3   ;C318F8  
 	.db $60                               ;C31900
+IdentityScrollUseEffect:
 	sep #$30 ;AXY->8
 	ldy.b wTemp01
 	jsl.l GetCurrentDungeon
@@ -1466,7 +1475,9 @@ func_C31959:
 	jsl.l DisplayMessage
 	.db $FA,$A9,$AF,$9F,$8C,$8B,$7E,$A9   ;C319DA
 	.db $00,$9F,$8C,$8D,$7E,$BF,$0C,$8E,$7E,$C9,$FF,$F0,$0C,$85,$00,$A9   ;C319EA
-	.db $FF,$9F,$0C,$8E,$7E,$22,$F4,$06,$C3,$60,$E2,$30,$A6,$01,$86,$00   ;C319FA  
+	.db $FF,$9F,$0C,$8E,$7E,$22,$F4,$06,$C3,$60   ;C319FA
+BigpotScrollUseEffect:
+	.db $E2,$30,$A6,$01,$86,$00   ;C31A04
 	.db $20,$59,$19,$A6,$00,$9B,$BF,$8C,$8B,$7E,$AA,$BF,$BB,$41,$C3,$BB   ;C31A0A  
 	.db $C9,$0B,$D0,$38,$DA,$A0,$FF,$C8,$BF,$0C,$8E,$7E,$AA,$C9,$FF,$D0   ;C31A1A
 	.db $F6,$FA,$98,$18,$7F,$8C,$8C,$7E,$A0,$01,$C9,$0A,$90,$02,$A0,$00   ;C31A2A  
@@ -1518,6 +1529,7 @@ func_C31AB4:
 	sta.b wTemp00
 	jsl.l func_C2342B
 	rts
+AirBlessScrollUseEffect:
 	.db $E2,$30,$22,$89,$3B,$C2,$A6,$00,$30,$54,$A9,$13,$85,$00,$A9,$C8   ;C31ACF
 	.db $85,$02,$DA,$8B,$22,$65,$25,$C6,$AB,$FA,$BD,$8C,$8C,$C9,$63,$F0   ;C31ADF  
 	.db $3D,$A9,$AA,$85,$00,$64,$01,$86,$02,$DA,$8B
@@ -1571,6 +1583,7 @@ func_C31B5C:
 	sta.b wTemp00
 	jsl.l func_C234BF
 	rts
+EarthBlessScrollUseEffect:
 	.db $E2,$30,$22,$89,$3B,$C2,$A6,$01,$30,$54,$A9,$13,$85,$00,$A9,$C9   ;C31B7B
 	.db $85,$02,$DA,$8B,$22,$65,$25,$C6,$AB,$FA,$BD,$8C,$8C,$C9,$63,$F0   ;C31B8B  
 	.db $3D,$A9,$AA,$85,$00,$64,$01,$86,$02,$DA,$8B
@@ -1585,7 +1598,9 @@ func_C31B5C:
 	.db $A9,$01,$80,$97,$A9,$5C   ;C31BCB
 	.db $85,$00,$64,$01
 	jsl.l DisplayMessage
-	.db $60,$E2,$30,$22,$89,$3B,$C2,$A5   ;C31BDB  
+	.db $60   ;C31BE3
+PlatingScrollUseEffect:
+	.db $E2,$30,$22,$89,$3B,$C2,$A5   ;C31BE4
 	.db $00,$25,$01,$30,$75,$A5,$01,$48,$A5,$00,$48,$30,$0C,$A9,$13,$85   ;C31BEB
 	.db $00,$A9,$CA,$85,$02,$22,$65,$25,$C6,$A3,$02,$30,$0C,$A9,$13,$85   ;C31BFB
 	.db $00,$A9,$CB,$85,$02,$22,$65,$25,$C6,$A9,$8E,$85,$00,$64,$01
@@ -1601,6 +1616,7 @@ func_C31B5C:
 	.db $60,$A9,$5C,$85,$00,$64,$01   ;C31C5B  
 	jsl.l DisplayMessage
 	.db $60               ;C31C6B  
+BlessingScrollUseEffect:
 	sep #$30 ;AXY->8
 	lda.b #$13
 	sta.b wTemp00
@@ -1971,13 +1987,16 @@ PainSplitStaffUseEffect:
 	.db $60,$E2,$30,$A4,$00,$A6,$01,$86,$00,$DA,$22,$28,$11,$C2,$FA,$A5   ;C320F7
 	.db $00,$4A,$48,$49,$FF,$1A,$F0,$0E,$85,$02,$A9,$FF,$85,$03,$86,$00   ;C32107
 	.db $5A,$22,$09,$32,$C2,$7A,$68,$85,$02,$64,$03,$84,$00,$22,$09,$32   ;C32117
-	.db $C2,$60,$E2,$20,$22,$DF,$69,$C3,$A5,$00,$D0,$29,$22,$DB,$27,$C6   ;C32127
+	.db $C2,$60   ;C32127
+GreatHallScrollUseEffect:
+	.db $E2,$20,$22,$DF,$69,$C3,$A5,$00,$D0,$29,$22,$DB,$27,$C6   ;C32129
 	.db $A5,$00,$C9,$0A,$F0,$1F,$C9,$0C,$F0,$1B,$A9,$13,$85,$00,$A9,$03   ;C32137  
 	.db $85,$02,$22,$F6,$26,$C6,$22,$F6,$66,$C3,$A9,$E7,$85,$00,$64,$01   ;C32147  
 	jsl.l DisplayMessage
 	.db $60,$A9,$5C,$85,$00,$64,$01
 	jsl.l DisplayMessage
 	.db $60   ;C32157  
+NeedScrollUseEffect:
 	sep #$30 ;AXY->8
 	ldy.b #$01
 	lda.b #$13
@@ -2084,6 +2103,7 @@ PainSplitStaffUseEffect:
 	jsl.l DisplayMessage
 @lbl_C3225B:
 	rts
+ExtractionScrollUseEffect:
 	.db $E2,$30,$A5,$01,$85,$00,$20,$59,$19,$A5,$00,$A8,$AA,$BF,$8C,$8B   ;C3225C
 	.db $7E,$AA,$BF,$BB,$41,$C3,$C9,$0B,$D0,$2E,$A9,$13,$85,$00,$A9,$CE   ;C3226C  
 	.db $85,$02,$5A,$22,$65,$25,$C6,$7A,$A9,$13,$85,$00,$22,$AC,$10,$C2   ;C3227C  

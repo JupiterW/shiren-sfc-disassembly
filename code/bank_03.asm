@@ -2206,30 +2206,30 @@ ItemUseEffectFunctionTable:
 	.dw UnusedItemUseEffect-1
 	.dw UnusedItemUseEffect-1
 	.dw UnusedItemUseEffect-1
-	.dw $1C6F ;BlessingScroll
-	.dw $1900 ;IdentityScroll
-	.dw $1821 ;LightScroll
-	.dw $1A03 ;BigpotScroll
+	.dw BlessingScrollUseEffect-1 ;BlessingScroll
+	.dw IdentityScrollUseEffect-1 ;IdentityScroll
+	.dw LightScrollUseEffect-1 ;LightScroll
+	.dw BigpotScrollUseEffect-1 ;BigpotScroll
 	.dw $189E ;BlastwaveScroll
 	.dw $187A ;SilenceScroll
 	.dw $1A7A ;5C
 	.dw $17A8 ;TrapScroll
-	.dw $2166 ;NeedScroll
+	.dw NeedScrollUseEffect-1 ;NeedScroll
 	.dw $18A3 ;HasteScroll
-	.dw $18B3 ;SleepScroll
-	.dw $18E0 ;PowerupScroll
+	.dw SleepScrollUseEffect-1 ;SleepScroll
+	.dw PowerupScrollUseEffect-1 ;PowerupScroll
 	.dw $18B8 ;62
-	.dw $18DB ;ExplosionScroll
-	.dw $2128 ;GreatHallScroll
-	.dw $18F7 ;MonsterHouseScroll
-	.dw $18D6 ;ConfusionScroll
+	.dw ExplosionScrollUseEffect-1 ;ExplosionScroll
+	.dw GreatHallScrollUseEffect-1 ;GreatHallScroll
+	.dw MonsterHouseScrollUseEffect-1 ;MonsterHouseScroll
+	.dw ConfusionScrollUseEffect-1 ;ConfusionScroll
 	.dw $186E ;RemovalScroll
 	.dw BlankScrollUseEffect-1 ;BlankScroll
 	.dw WanderingScrollUseEffect-1 ;WanderingScroll
-	.dw $1ACE ;AirBlessScroll
-	.dw $1B7A ;EarthBlessScroll
-	.dw $1BE3 ;PlatingScroll
-	.dw $225B ;ExtractionScroll
+	.dw AirBlessScrollUseEffect-1 ;AirBlessScroll
+	.dw EarthBlessScrollUseEffect-1 ;EarthBlessScroll
+	.dw PlatingScrollUseEffect-1 ;PlatingScroll
+	.dw ExtractionScrollUseEffect-1 ;ExtractionScroll
 	.dw $22B0 ;HandsFullScroll
 	.dw UnusedItemUseEffect-1 ;6F
 	.dw $1862 ;70
