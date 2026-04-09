@@ -11656,10 +11656,10 @@ func_C3F126:
 DATA8_C3F142:
 	.db $4D,$F1,$5C,$F1,$65,$F1           ;C3F142
 	.db $6C,$F1,$65,$F1,$55,$F1           ;C3F148  
-	jsl.l func_C3F17D
+	jsl.l BuildGroundContainerInsertCommand
 	bcs func_C3F126
 	bra func_C3F177
-	jsr.w func_C3F1F7
+	jsr.w BuildContainedItemActionCommand
 	bcs func_C3F126
 	.db $80,$1A                           ;C3F15B  
 	lda.b wTemp00
@@ -11681,7 +11681,7 @@ func_C3F17A:
 	sec
 	rtl
 
-func_C3F17D:
+BuildGroundContainerInsertCommand:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -11746,7 +11746,7 @@ func_C3F1F0:
 func_C3F1F3:
 	.db $68,$28,$38,$6B                   ;C3F1F3
 
-func_C3F1F7:
+BuildContainedItemActionCommand:
 	php
 	sep #$30 ;AXY->8
 	lda.b wTemp00
