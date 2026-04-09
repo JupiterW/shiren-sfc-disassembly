@@ -118,7 +118,7 @@ def plan_renames(category: str, effect: str) -> tuple[int, list[PlannedRename], 
 
 def verify() -> None:
     subprocess.run(
-        "make -j PYTHON=.venv/bin/python && shasum -c shiren.sha1",
+        "make -B -j PYTHON=.venv/bin/python && shasum -c shiren.sha1",
         shell=True,
         check=True,
         cwd=ROOT,
@@ -136,7 +136,7 @@ def restore(saved: dict[Path, str]) -> None:
 
 def verify_clean_tree() -> None:
     subprocess.run(
-        "make -j PYTHON=.venv/bin/python && shasum -c shiren.sha1",
+        "make -B -j PYTHON=.venv/bin/python && shasum -c shiren.sha1",
         shell=True,
         check=True,
         cwd=ROOT,
