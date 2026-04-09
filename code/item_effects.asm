@@ -757,8 +757,21 @@ func_C30D11:
 @lbl_C30DE9:
 	lda.w wItemIdentified,x
 	bne @lbl_C30E0C
-	.db $84,$00,$DA,$5A,$8B,$22,$92,$01,$C3,$AB,$7A,$FA,$A9,$C7,$85,$00   ;C30DEE  
-	.db $64,$01,$84,$02,$DA,$5A,$8B
+	sty $00                                 ;C30DEE
+	phx                                     ;C30DF0
+	phy                                     ;C30DF1
+	phb                                     ;C30DF2
+	jsl $C30192                             ;C30DF3
+	plb                                     ;C30DF7
+	ply                                     ;C30DF8
+	plx                                     ;C30DF9
+	lda #$C7                                ;C30DFA
+	sta $00                                 ;C30DFC
+	stz $01                                 ;C30DFE
+	sty $02                                 ;C30E00
+	phx                                     ;C30E02
+	phy                                     ;C30E03
+	phb                                     ;C30E04
 	jsl.l DisplayMessage
 	.db $AB,$7A,$FA           ;C30E06  
 @lbl_C30E0C:
@@ -1014,8 +1027,16 @@ AntidoteHerbUseEffect:
 @lbl_C31021:
 	rts
 StrengthHerbUseEffect:
-	.db $E2,$20,$22,$67,$11,$C2,$A5,$00,$C5,$01,$D0,$1F,$A9,$9F,$85,$00   ;C31022
-	.db $64,$01,$A9,$01,$85,$02
+	sep #$20                                ;C31022
+	jsl $C21167                             ;C31024
+	lda $00                                 ;C31028
+	cmp $01                                 ;C3102A
+	.db $D0,$1F   ;C3102C
+	lda #$9F                                ;C3102E
+	sta $00                                 ;C31030
+	stz $01                                 ;C31032
+	lda #$01                                ;C31034
+	sta $02                                 ;C31036
 	jsl.l DisplayMessage
 	lda #$01                                ;C3103C
 	sta $00                                 ;C3103E
@@ -1223,9 +1244,16 @@ PoisonHerbUseEffect:
 	.db $A0,$13,$84,$00,$22,$D6,$40,$C2,$22,$A2,$5D,$C2,$E2   ;C31222  
 	.db $20,$C2,$10,$A0,$64,$01,$84,$00
 	jsl.l DisplayMessage
-	.db $60,$C2,$20,$E2   ;C31232  
-	.db $10,$A0,$C7,$84,$00,$22,$A6,$3B,$C2,$A9,$3F,$00,$85,$00,$A0,$14   ;C31242  
-	.db $84,$02
+	rts                                     ;C3123E
+	rep #$20                                ;C3123F
+	sep #$10                                ;C31241
+	ldy #$C7                                ;C31243
+	sty $00                                 ;C31245
+	jsl $C23BA6                             ;C31247
+	lda #$003F                              ;C3124B
+	sta $00                                 ;C3124E
+	ldy #$14                                ;C31250
+	sty $02                                 ;C31252
 	jsl.l DisplayMessage
 	lda #$FFEC                              ;C31258
 	sta $02                                 ;C3125B
@@ -1856,8 +1884,15 @@ TrapScrollUseEffect:
 	rts                                 ;C317EF
 	.db $C2,$20,$A9,$97,$00,$85,$00
 	jsl.l DisplayMessage
-	.db $22,$BD,$7F,$C2,$60,$E2,$20,$22,$5A,$7F,$C2,$A5,$00,$F0   ;C317F9  
-	.db $0C,$C2,$20,$A9,$68,$00,$85,$00
+	jsl $C27FBD                             ;C317FA
+	rts                                     ;C317FE
+	sep #$20                                ;C317FF
+	jsl $C27F5A                             ;C31801
+	lda $00                                 ;C31805
+	.db $F0,$0C   ;C31807
+	rep #$20                                ;C31809
+	lda #$0068                              ;C3180B
+	sta $00                                 ;C3180E
 	jsl.l DisplayMessage
 	.db $60,$C2,$20,$A9   ;C31809  
 	.db $5C,$00,$85,$00
@@ -2011,8 +2046,19 @@ func_C31959:
 	sta.b wTemp00
 	plp
 	rts
-	.db $E2,$30,$5A,$A5,$01,$85,$00,$20,$59,$19,$A5,$00,$7A,$C4,$00,$D0   ;C3197A
-	.db $0B,$A9,$5C,$85,$00,$64,$01
+	sep #$30                                ;C3197A
+	phy                                     ;C3197C
+	lda $01                                 ;C3197D
+	sta $00                                 ;C3197F
+	jsr $1959                               ;C31981
+	lda $00                                 ;C31984
+	ply                                     ;C31986
+	.db $C4   ;C31987
+	.db $00   ;C31988
+	.db $D0,$0B   ;C31989
+	lda #$5C                                ;C3198B
+	sta $00                                 ;C3198D
+	stz $01                                 ;C3198F
 	jsl.l DisplayMessage
 	rts                                     ;C31995
 	tax                                     ;C31996
@@ -3178,8 +3224,17 @@ HandsFullScrollUseEffect:
 	.db $C2,$20,$A9,$0B,$00,$85,$00,$E2,$20,$A9,$03,$85   ;C3237C  
 	.db $02
 	jsl.l DisplayMessage
-	.db $60,$E2,$20,$A9,$C8,$85,$00,$22,$A6,$3B,$C2   ;C3238C
-	.db $C2,$20,$A9,$23,$00,$85,$00,$E2,$20,$A9,$13,$85,$02
+	rts                                     ;C32391
+	sep #$20                                ;C32392
+	lda #$C8                                ;C32394
+	sta $00                                 ;C32396
+	jsl $C23BA6                             ;C32398
+	rep #$20                                ;C3239C
+	lda #$0023                              ;C3239E
+	sta $00                                 ;C323A1
+	sep #$20                                ;C323A3
+	lda #$13                                ;C323A5
+	sta $02                                 ;C323A7
 	jsl.l DisplayMessage
 	.db $C2,$20,$A9,$0A,$00,$85,$00,$E2,$20,$A9,$01,$85,$02
 	jsl.l DisplayMessage
@@ -3213,9 +3268,17 @@ HandsFullScrollUseEffect:
 	.db $60,$C2   ;C323FC  
 	.db $20,$22,$89,$0E,$C2,$A9,$78,$00,$85,$00
 	jsl.l DisplayMessage
-	.db $60,$E2   ;C3240C  
-	.db $20,$22,$1C,$3B,$C2,$A5,$00,$30,$1F,$85,$02,$C2,$20,$A9,$0E,$00   ;C3241C  
-	.db $85,$00,$A5,$02,$48
+	rts                                     ;C3241A
+	sep #$20                                ;C3241B
+	jsl $C23B1C                             ;C3241D
+	lda $00                                 ;C32421
+	.db $30,$1F   ;C32423
+	sta $02                                 ;C32425
+	rep #$20                                ;C32427
+	lda #$000E                              ;C32429
+	sta $00                                 ;C3242C
+	lda $02                                 ;C3242E
+	pha                                     ;C32430
 	jsl.l DisplayMessage
 	.db $68,$85,$02,$E2,$20,$A5,$02   ;C3242C  
 	.db $85,$00,$22,$F4,$06,$C3,$80,$0B,$C2,$20,$A9,$5C,$00,$85,$00
@@ -4940,8 +5003,17 @@ func_C33170:
 	plp
 	rtl
 @lbl_C3319B:
-	.db $C2,$20,$86,$00,$A9,$45,$00,$85,$02,$DA,$22,$42,$26,$C6,$FA,$86   ;C3319B
-	.db $00,$22,$F4,$06,$C3,$28,$6B       ;C331AB
+	rep #$20                                ;C3319B
+	stx $00                                 ;C3319D
+	lda #$0045                              ;C3319F
+	sta $02                                 ;C331A2
+	phx                                     ;C331A4
+	jsl $C62642                             ;C331A5
+	plx                                     ;C331A9
+	stx $00                                 ;C331AA
+	jsl $C306F4                             ;C331AC
+	plp                                     ;C331B0
+	rtl                                     ;C331B1
 
 func_C331B2:
 	php
