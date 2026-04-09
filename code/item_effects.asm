@@ -2532,9 +2532,25 @@ PainSplitStaffUseEffect:
 	jsl $C23209                             ;C32124
 	rts                                     ;C32128
 GreatHallScrollUseEffect:
-	.db $E2,$20,$22,$DF,$69,$C3,$A5,$00,$D0,$29,$22,$DB,$27,$C6   ;C32129
-	.db $A5,$00,$C9,$0A,$F0,$1F,$C9,$0C,$F0,$1B,$A9,$13,$85,$00,$A9,$03   ;C32137  
-	.db $85,$02,$22,$F6,$26,$C6,$22,$F6,$66,$C3,$A9,$E7,$85,$00,$64,$01   ;C32147  
+	sep #$20                                ;C32129
+	jsl $C369DF                             ;C3212B
+	lda $00                                 ;C3212F
+	.db $D0,$29   ;C32131
+	jsl $C627DB                             ;C32133
+	lda $00                                 ;C32137
+	cmp #$0A                                ;C32139
+	.db $F0,$1F   ;C3213B
+	cmp #$0C                                ;C3213D
+	.db $F0,$1B   ;C3213F
+	lda #$13                                ;C32141
+	sta $00                                 ;C32143
+	lda #$03                                ;C32145
+	sta $02                                 ;C32147
+	jsl $C626F6                             ;C32149
+	jsl $C366F6                             ;C3214D
+	lda #$E7                                ;C32151
+	sta $00                                 ;C32153
+	stz $01                                 ;C32155
 	jsl.l DisplayMessage
 	.db $60,$A9,$5C,$85,$00,$64,$01
 	jsl.l DisplayMessage
