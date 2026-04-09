@@ -1391,9 +1391,20 @@ SleepHerbUseEffect:
 	sta $00                                 ;C313D6
 	stz $01                                 ;C313D8
 	jsl.l DisplayMessage
-	.db $60,$E2,$30,$A5,$00,$48   ;C313D4
-	.db $22,$E5,$88,$C2,$68,$85,$02,$A9,$3B,$A6,$00,$F0,$02,$A9,$3C,$85   ;C313E4  
-	.db $00,$64,$01
+	rts                                     ;C313DE
+	sep #$30                                ;C313DF
+	lda $00                                 ;C313E1
+	pha                                     ;C313E3
+	jsl $C288E5                             ;C313E4
+	pla                                     ;C313E8
+	sta $02                                 ;C313E9
+	lda #$3B                                ;C313EB
+	ldx $00                                 ;C313ED
+	beq @lbl_C313F3                         ;C313EF
+	lda #$3C                                ;C313F1
+@lbl_C313F3:
+	sta $00                                 ;C313F3
+	stz $01                                 ;C313F5
 	jsl.l DisplayMessage
 	.db $60,$E2,$20,$A9,$95,$85,$00,$64,$01   ;C313F4
 	jsl.l DisplayMessage
