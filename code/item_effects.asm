@@ -3700,13 +3700,52 @@ func_C32CFE:
 	lda $C32FAA,x                           ;C32F5D
 	sta $00                                 ;C32F61
 	jsl.l DisplayMessage
-	.db $68,$E2,$30   ;C32F5A
-	.db $FA,$9B,$9F,$0C,$8F,$7E,$85,$00,$85,$02,$EB,$9F,$8C,$8F,$7E,$85   ;C32F6A
-	.db $01,$29,$77,$85,$03,$BF,$8C,$8B,$7E,$0A,$AA,$C2,$20,$BF,$01,$03   ;C32F7A  
-	.db $C3,$C5,$02,$D0,$0F,$E2,$20,$BB,$BF,$8C,$8F,$7E,$29,$7F,$9F,$8C   ;C32F8A  
-	.db $8F,$7E,$85,$01,$22,$BD,$84,$C2,$E2,$20,$A9,$01,$85,$00,$28,$6B   ;C32F9A  
-	.db $20,$01,$21,$01,$22,$01,$23,$01,$24,$01,$25,$01,$26,$01,$27,$01   ;C32FAA  
-	.db $28,$01,$29,$01,$2A,$01           ;C32FBA
+	pla                                     ;C32F67
+	sep #$30                                ;C32F68
+	plx                                     ;C32F6A
+	txy                                     ;C32F6B
+	sta $7E8F0C,x                           ;C32F6C
+	sta $00                                 ;C32F70
+	sta $02                                 ;C32F72
+	xba                                     ;C32F74
+	sta $7E8F8C,x                           ;C32F75
+	sta $01                                 ;C32F79
+	and #$77                                ;C32F7B
+	sta $03                                 ;C32F7D
+	lda $7E8B8C,x                           ;C32F7F
+	asl a                                   ;C32F83
+	tax                                     ;C32F84
+	rep #$20                                ;C32F85
+	lda $C30301,x                           ;C32F87
+	cmp $02                                 ;C32F8B
+	bne @lbl_C32F9E                         ;C32F8D
+	sep #$20                                ;C32F8F
+	tyx                                     ;C32F91
+	lda $7E8F8C,x                           ;C32F92
+	and #$7F                                ;C32F96
+	sta $7E8F8C,x                           ;C32F98
+	sta $01                                 ;C32F9C
+@lbl_C32F9E:
+	jsl $C284BD                             ;C32F9E
+	sep #$20                                ;C32FA2
+	lda #$01                                ;C32FA4
+	sta $00                                 ;C32FA6
+	plp                                     ;C32FA8
+	rtl                                     ;C32FA9
+	jsr $2101                               ;C32FAA
+	.db $01   ;C32FAD
+	jsl $012301                             ;C32FAE
+	bit $01                                 ;C32FB2
+	and $01                                 ;C32FB4
+	.db $26   ;C32FB6
+	.db $01   ;C32FB7
+	.db $27   ;C32FB8
+	.db $01   ;C32FB9
+	plp                                     ;C32FBA
+	.db $01   ;C32FBB
+	and #$01                                ;C32FBC
+	.db $2A   ;C32FBE
+	.db $01   ;C32FBF
 
 func_C32FC0:
 	php
