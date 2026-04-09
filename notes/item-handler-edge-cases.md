@@ -30,6 +30,8 @@ These should not be renamed as item-specific handlers until the shared behavior 
 
 Current examples:
 - `RevivalHerb` / `Weeds` use shared `$09F0`
+- `BigOnigiri` use `$15AD`
+  - extra jump caller from `MonsterMeatUseEffect`
 
 ### Unknown Item Identity
 
@@ -37,6 +39,10 @@ These should not be named semantically until the item itself is identified.
 
 Current examples:
 - `Item_36` use `$0A94`
+- `Item_B3`
+- `Item_5C`
+- `Item_62`
+- `Item_70`
 
 ### Symbol Address Mismatch
 
@@ -77,6 +83,7 @@ Current examples:
 - `TrapScrollUseEffect`
 - `HasteScrollUseEffect`
 - `HandsFullScrollUseEffect`
+- `HugeOnigiriUseEffect`
 
 Likely meaning:
 - local boundaries or entry assumptions are wrong
@@ -129,6 +136,7 @@ Safe promotions completed:
 - `LightScrollUseEffect`
 - `BigpotScrollUseEffect`
 - `NeedScrollUseEffect`
+- `HasteScrollUseEffect`
 - `SleepScrollUseEffect`
 - `PowerupScrollUseEffect`
 - `ExplosionScrollUseEffect`
@@ -145,7 +153,6 @@ Known edge cases:
   - `BlastwaveScrollUseEffect`
   - `SilenceScrollUseEffect`
   - `TrapScrollUseEffect`
-  - `HasteScrollUseEffect`
   - `HandsFullScrollUseEffect`
 
 Still unnamed raw unique scroll handlers not resolved in this pass:
@@ -162,6 +169,19 @@ Safe promotions completed:
 
 Known edge cases:
 - no unique raw use-handler edge cases remain in the jar family
+
+### Onigiri
+
+Safe promotions completed:
+- `OnigiriUseEffect`
+- `SpoiledOnigiriUseEffect`
+- `SpecialOnigiriUseEffect`
+
+Known edge cases:
+- shared handler:
+  - `BigOnigiri` use `$15AD`
+- SHA drift / boundary issue:
+  - `HugeOnigiriUseEffect`
 
 ## Tool Coverage Wins
 

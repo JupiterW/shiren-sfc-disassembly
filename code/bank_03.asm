@@ -2215,7 +2215,7 @@ ItemUseEffectFunctionTable:
 	.dw $1A7A ;5C
 	.dw $17A8 ;TrapScroll
 	.dw NeedScrollUseEffect-1 ;NeedScroll
-	.dw $18A3 ;HasteScroll
+	.dw HasteScrollUseEffect-1 ;HasteScroll
 	.dw SleepScrollUseEffect-1 ;SleepScroll
 	.dw PowerupScrollUseEffect-1 ;PowerupScroll
 	.dw $18B8 ;62
@@ -2294,11 +2294,11 @@ ItemUseEffectFunctionTable:
 	.dw UnusedItemUseEffect-1
 	.dw UnusedItemUseEffect-1
 	.dw UnusedItemUseEffect-1
-	.dw $159D ;Onigiri
+	.dw OnigiriUseEffect-1 ;Onigiri
 	.dw $15AD ;BigOnigiri
-	.dw $16EB ;SpoiledOnigiri
+	.dw SpoiledOnigiriUseEffect-1 ;SpoiledOnigiri
 	.dw $1579 ;HugeOnigiri
-	.dw $1623 ;SpecialOnigiri
+	.dw SpecialOnigiriUseEffect-1 ;SpecialOnigiri
 	.dw UnusedItemUseEffect-1 ;B3
 	.dw JarUseEffect-1 ;HoldingJar
 	.dw HidingJarUseEffect-1 ;HidingJar
