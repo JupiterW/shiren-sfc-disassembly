@@ -1603,12 +1603,45 @@ func_C31959:
 	.db $E2,$30,$5A,$A5,$01,$85,$00,$20,$59,$19,$A5,$00,$7A,$C4,$00,$D0   ;C3197A
 	.db $0B,$A9,$5C,$85,$00,$64,$01
 	jsl.l DisplayMessage
-	.db $60,$AA,$A9,$00,$9F   ;C3198A
-	.db $0C,$8C,$7E,$22,$89,$3B,$C2,$E4,$00,$D0,$0A,$86,$00,$DA,$22,$02   ;C3199A  
-	.db $3C,$C2,$FA,$80,$26,$E4,$01,$D0,$0A,$86,$00,$DA,$22,$10,$3C,$C2   ;C319AA  
-	.db $FA,$80,$18,$E4,$02,$D0,$0A,$86,$00,$DA,$22,$09,$3C,$C2,$FA,$80   ;C319BA
-	.db $0A,$E4,$03,$D0,$06,$86,$00,$22,$E1,$3B,$C2,$86,$02,$A9,$15,$85   ;C319CA
-	.db $00,$64,$01,$DA
+	rts                                     ;C31995
+	tax                                     ;C31996
+	lda #$00                                ;C31997
+	sta $7E8C0C,x                           ;C31999
+	jsl $C23B89                             ;C3199D
+	cpx $00                                 ;C319A1
+	bne @lbl_C319AF                         ;C319A3
+	stx $00                                 ;C319A5
+	phx                                     ;C319A7
+	jsl $C23C02                             ;C319A8
+	plx                                     ;C319AC
+	bra @lbl_C319D5                         ;C319AD
+@lbl_C319AF:
+	cpx $01                                 ;C319AF
+	bne @lbl_C319BD                         ;C319B1
+	stx $00                                 ;C319B3
+	phx                                     ;C319B5
+	jsl $C23C10                             ;C319B6
+	plx                                     ;C319BA
+	bra @lbl_C319D5                         ;C319BB
+@lbl_C319BD:
+	cpx $02                                 ;C319BD
+	bne @lbl_C319CB                         ;C319BF
+	stx $00                                 ;C319C1
+	phx                                     ;C319C3
+	jsl $C23C09                             ;C319C4
+	plx                                     ;C319C8
+	bra @lbl_C319D5                         ;C319C9
+@lbl_C319CB:
+	cpx $03                                 ;C319CB
+	bne @lbl_C319D5                         ;C319CD
+	stx $00                                 ;C319CF
+	jsl $C23BE1                             ;C319D1
+@lbl_C319D5:
+	stx $02                                 ;C319D5
+	lda #$15                                ;C319D7
+	sta $00                                 ;C319D9
+	stz $01                                 ;C319DB
+	phx                                     ;C319DD
 	jsl.l DisplayMessage
 	.db $FA,$A9,$AF,$9F,$8C,$8B,$7E,$A9   ;C319DA
 	.db $00,$9F,$8C,$8D,$7E,$BF,$0C,$8E,$7E,$C9,$FF,$F0,$0C,$85,$00,$A9   ;C319EA
