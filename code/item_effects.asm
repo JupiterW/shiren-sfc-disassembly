@@ -5038,9 +5038,22 @@ func_C332D7:
 @lbl_C332F6:
 	cmp.b #$BB
 	bne @lbl_C33314
-	.db $DA,$DA,$20,$47,$33,$FA,$DA,$20,$47,$33,$FA,$DA,$20,$47,$33,$FA   ;C332FA
-	.db $BF,$0C,$8E,$7E,$AA,$C9,$FF,$D0   ;C3330A  
-	.db $E8,$FA                           ;C33312
+	phx                                     ;C332FA
+@lbl_C332FB:
+	phx                                     ;C332FB
+	jsr $3347                               ;C332FC
+	plx                                     ;C332FF
+	phx                                     ;C33300
+	jsr $3347                               ;C33301
+	plx                                     ;C33304
+	phx                                     ;C33305
+	jsr $3347                               ;C33306
+	plx                                     ;C33309
+	lda $7E8E0C,x                           ;C3330A
+	tax                                     ;C3330E
+	cmp #$FF                                ;C3330F
+	bne @lbl_C332FB                         ;C33311
+	plx                                     ;C33313
 @lbl_C33314:
 	dex
 	bpl @lbl_C332DC
