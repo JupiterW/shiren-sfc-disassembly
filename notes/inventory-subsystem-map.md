@@ -35,6 +35,12 @@ Reusable helper:
 - [tools/function_xref.py](/Users/jupiter.whitworth/Development/new/shiren/tools/function_xref.py)
   - Query symbol/address definitions, callers, and table references with optional context
   - Useful for tracing unnamed item handlers from raw table entries like `$0EA0`
+- [tools/raw_handler_trace.py](/Users/jupiter.whitworth/Development/new/shiren/tools/raw_handler_trace.py)
+  - Resolve an item or raw `$xxxx` table pointer to the likely handler entry and first helper calls
+  - Useful for answering "where do I even start?" on unnamed item handlers
+- [tools/item_family_report.py](/Users/jupiter.whitworth/Development/new/shiren/tools/item_family_report.py)
+  - Summarize named/raw handler coverage and sharing within a whole item family
+  - Useful for choosing the next highest-value item to decode
 
 1. Item ids / canonical item definitions
 
