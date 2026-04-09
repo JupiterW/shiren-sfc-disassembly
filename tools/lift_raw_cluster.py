@@ -42,12 +42,13 @@ SHORT_BRANCH_OPS = {
     0xD0: "bne",
     0x10: "bpl",
     0x30: "bmi",
+    0x70: "bvs",
     0x80: "bra",
     0x90: "bcc",
     0xB0: "bcs",
 }
 OUT_ADDR_RE = re.compile(r";([0-9A-F]{6})\s*$")
-OUT_BRANCH_RE = re.compile(r"^(\s*)(beq|bne|bpl|bmi|bra|bcc|bcs)\s+\$([0-9A-F]{5,6})(\s*;[0-9A-F]{6}\s*)$", re.IGNORECASE)
+OUT_BRANCH_RE = re.compile(r"^(\s*)(beq|bne|bpl|bmi|bvs|bra|bcc|bcs)\s+\$([0-9A-F]{5,6})(\s*;[0-9A-F]{6}\s*)$", re.IGNORECASE)
 
 
 @dataclass
@@ -66,12 +67,7 @@ def _resolve_file(path_text: str) -> Path:
 
 
 def _fmt_operand(operand: str) -> str:
-    text = operand.strip()
-    if not text:
-        return text
-    if text.startswith("$C"):
-        return f"${text[2:]}"
-    return text
+    return operand.strip()
 
 
 def _fmt_instruction(text: str) -> str:

@@ -2618,21 +2618,115 @@ WalrusJarUseEffect:
 @lbl_C32A1F:
 	.db $FA,$A9,$03,$85,$00,$A9,$01,$85,$01
 	jsl.l DisplayMessage
-	.db $60,$E2,$30   ;C32A1F
-	.db $98,$BB,$A8,$B9,$0C,$8E,$10,$F9,$86,$00,$84,$01,$BE,$8C,$8B,$BF   ;C32A2F
-	.db $BB,$41,$C3,$A4,$00,$BE,$8C,$8B,$DF,$BB,$41,$C3,$F0,$01,$60,$A6   ;C32A3F
-	.db $00,$A4,$01,$C9,$03,$D0,$65,$BD,$0C,$8F,$19,$0C,$8F,$9D,$0C,$8F   ;C32A4F
-	.db $BD,$8C,$8F,$19,$8C,$8F,$09,$80,$9D,$8C,$8F,$BD,$0C,$8C,$19,$0C   ;C32A5F  
-	.db $8C,$9D,$0C,$8C,$A9,$01,$9D,$8C,$8D,$BD,$8C,$8C,$18,$79,$8C,$8C   ;C32A6F  
-	.db $70,$22,$30,$08,$C9,$64,$90,$02,$A9,$63,$80,$16,$5A,$DA,$BC,$8C   ;C32A7F  
-	.db $8B,$BB,$18,$7F,$A3,$42,$C3,$10,$02,$A9,$00,$38,$FF,$A3,$42,$C3   ;C32A8F
-	.db $FA,$7A,$80,$13,$30,$0F,$DA,$BD,$8C,$8B,$AA,$A9,$00,$38,$FF,$A3   ;C32A9F
-	.db $42,$C3,$FA,$80,$02,$A9,$63,$9D,$8C,$8C,$80,$35,$C9,$05,$D0,$24   ;C32AAF
-	.db $BD,$8C,$8F,$19,$8C,$8F,$09,$80,$9D,$8C,$8F,$BD,$0C,$8F,$19,$0C   ;C32ABF  
-	.db $8F,$9D,$0C,$8F,$29,$03,$C9,$03,$D0,$08,$BD,$0C,$8F,$29,$FC,$9D   ;C32ACF  
-	.db $0C,$8F,$80,$87,$C9,$07,$D0,$08,$BD,$8C,$8B,$D9,$8C,$8B,$F0,$84   ;C32ADF  
-	.db $60,$A9,$FF,$9D,$0C,$8E,$84,$00   ;C32AEF
-	.db $22,$F4,$06,$C3,$60               ;C32AF7  
+	rts                                     ;C32A2C
+	sep #$30                                ;C32A2D
+	tya                                     ;C32A2F
+@lbl_C32A30:
+	tyx                                     ;C32A30
+	tay                                     ;C32A31
+	lda $8E0C,y                             ;C32A32
+	bpl @lbl_C32A30                         ;C32A35
+	stx $00                                 ;C32A37
+	sty $01                                 ;C32A39
+	ldx $8B8C,y                             ;C32A3B
+	lda $C341BB,x                           ;C32A3E
+	ldy $00                                 ;C32A42
+	ldx $8B8C,y                             ;C32A44
+	cmp $C341BB,x                           ;C32A47
+	beq @lbl_C32A4E                         ;C32A4B
+	rts                                     ;C32A4D
+@lbl_C32A4E:
+	ldx $00                                 ;C32A4E
+	ldy $01                                 ;C32A50
+	cmp #$03                                ;C32A52
+	bne @lbl_C32ABB                         ;C32A54
+	lda $8F0C,x                             ;C32A56
+	ora $8F0C,y                             ;C32A59
+	sta $8F0C,x                             ;C32A5C
+	lda $8F8C,x                             ;C32A5F
+	ora $8F8C,y                             ;C32A62
+	ora #$80                                ;C32A65
+	sta $8F8C,x                             ;C32A67
+@lbl_C32A6A:
+	lda $8C0C,x                             ;C32A6A
+	ora $8C0C,y                             ;C32A6D
+	sta $8C0C,x                             ;C32A70
+@lbl_C32A73:
+	lda #$01                                ;C32A73
+	sta $8D8C,x                             ;C32A75
+	lda $8C8C,x                             ;C32A78
+	clc                                     ;C32A7B
+	adc $8C8C,y                             ;C32A7C
+	bvs @lbl_C32AA3                         ;C32A7F
+	bmi @lbl_C32A8B                         ;C32A81
+	cmp #$64                                ;C32A83
+	bcc @lbl_C32A89                         ;C32A85
+	lda #$63                                ;C32A87
+@lbl_C32A89:
+	bra @lbl_C32AA1                         ;C32A89
+@lbl_C32A8B:
+	phy                                     ;C32A8B
+	phx                                     ;C32A8C
+	ldy $8B8C,x                             ;C32A8D
+	tyx                                     ;C32A90
+	clc                                     ;C32A91
+	adc $C342A3,x                           ;C32A92
+	bpl @lbl_C32A9A                         ;C32A96
+	lda #$00                                ;C32A98
+@lbl_C32A9A:
+	sec                                     ;C32A9A
+	sbc $C342A3,x                           ;C32A9B
+	plx                                     ;C32A9F
+	ply                                     ;C32AA0
+@lbl_C32AA1:
+	bra @lbl_C32AB6                         ;C32AA1
+@lbl_C32AA3:
+	bmi @lbl_C32AB4                         ;C32AA3
+	phx                                     ;C32AA5
+	lda $8B8C,x                             ;C32AA6
+	tax                                     ;C32AA9
+	lda #$00                                ;C32AAA
+	sec                                     ;C32AAC
+	sbc $C342A3,x                           ;C32AAD
+	plx                                     ;C32AB1
+	bra @lbl_C32AB6                         ;C32AB2
+@lbl_C32AB4:
+	lda #$63                                ;C32AB4
+@lbl_C32AB6:
+	sta $8C8C,x                             ;C32AB6
+	bra @lbl_C32AF0                         ;C32AB9
+@lbl_C32ABB:
+	cmp #$05                                ;C32ABB
+	bne @lbl_C32AE3                         ;C32ABD
+	lda $8F8C,x                             ;C32ABF
+	ora $8F8C,y                             ;C32AC2
+	ora #$80                                ;C32AC5
+	sta $8F8C,x                             ;C32AC7
+	lda $8F0C,x                             ;C32ACA
+	ora $8F0C,y                             ;C32ACD
+	sta $8F0C,x                             ;C32AD0
+	and #$03                                ;C32AD3
+	cmp #$03                                ;C32AD5
+	bne @lbl_C32AE1                         ;C32AD7
+	lda $8F0C,x                             ;C32AD9
+	and #$FC                                ;C32ADC
+	sta $8F0C,x                             ;C32ADE
+@lbl_C32AE1:
+	bra @lbl_C32A6A                         ;C32AE1
+@lbl_C32AE3:
+	cmp #$07                                ;C32AE3
+	bne @lbl_C32AEF                         ;C32AE5
+	lda $8B8C,x                             ;C32AE7
+	cmp $8B8C,y                             ;C32AEA
+	beq @lbl_C32A73                         ;C32AED
+@lbl_C32AEF:
+	rts                                     ;C32AEF
+@lbl_C32AF0:
+	lda #$FF                                ;C32AF0
+	sta $8E0C,x                             ;C32AF2
+	sty $00                                 ;C32AF5
+	jsl $C306F4                             ;C32AF7
+	rts                                     ;C32AFB
 
 ; Validates and normalizes the currently selected item source before a jar
 ; insertion/use path continues. Handles both ordinary inventory items and the

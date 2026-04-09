@@ -84,6 +84,21 @@ def decode_one(data: list[int], i: int, base_addr: int | None, state: DecodeStat
             return 1, f".db ${op:02X}"
         return 2, f"{name} ${b(1):02X}"
 
+    def absolute(name: str) -> tuple[int, str]:
+        if b(2) is None:
+            return 1, f".db ${op:02X}"
+        return 3, f"{name} ${b(1) | (b(2) << 8):04X}"
+
+    def absolute_x(name: str) -> tuple[int, str]:
+        if b(2) is None:
+            return 1, f".db ${op:02X}"
+        return 3, f"{name} ${b(1) | (b(2) << 8):04X},x"
+
+    def absolute_y(name: str) -> tuple[int, str]:
+        if b(2) is None:
+            return 1, f".db ${op:02X}"
+        return 3, f"{name} ${b(1) | (b(2) << 8):04X},y"
+
     def long_call(name: str) -> tuple[int, str]:
         if b(3) is None:
             return 1, f".db ${op:02X}"
@@ -94,8 +109,7 @@ def decode_one(data: list[int], i: int, base_addr: int | None, state: DecodeStat
         if b(2) is None:
             return 1, f".db ${op:02X}"
         target = b(1) | (b(2) << 8)
-        bank = (base_addr or 0xC30000) & 0xFF0000
-        return 3, f"{name} ${bank | target:06X}"
+        return 3, f"{name} ${target:04X}"
 
     def abs_x_indirect(name: str) -> tuple[int, str]:
         if b(2) is None:
@@ -141,13 +155,22 @@ def decode_one(data: list[int], i: int, base_addr: int | None, state: DecodeStat
         0x6B: (1, "rtl"),
         0x0A: (1, "asl a"),
         0x3A: (1, "dec a"),
+        0x18: (1, "clc"),
+        0x38: (1, "sec"),
         0x48: (1, "pha"),
         0x68: (1, "pla"),
+        0x5A: (1, "phy"),
+        0x7A: (1, "ply"),
+        0x8B: (1, "phb"),
+        0xAB: (1, "plb"),
+        0x88: (1, "dey"),
+        0x98: (1, "tya"),
         0xAA: (1, "tax"),
         0xA8: (1, "tay"),
         0xDA: (1, "phx"),
         0xFA: (1, "plx"),
         0xBB: (1, "tyx"),
+        0xEB: (1, "xba"),
         0xE2: lambda: sep_or_rep("sep", True),
         0xC2: lambda: sep_or_rep("rep", False),
         0xA9: lambda: imm_acc("lda"),
@@ -156,17 +179,29 @@ def decode_one(data: list[int], i: int, base_addr: int | None, state: DecodeStat
         0xAF: lambda: long_addr("lda"),
         0xA5: lambda: dp("lda"),
         0xA6: lambda: dp("ldx"),
+        0xA4: lambda: dp("ldy"),
+        0xB9: lambda: absolute_y("lda"),
+        0xBD: lambda: absolute_x("lda"),
+        0xBC: lambda: absolute_x("ldy"),
+        0xBE: lambda: absolute_y("ldx"),
         0x85: lambda: dp("sta"),
         0x86: lambda: dp("stx"),
         0x84: lambda: dp("sty"),
+        0x9D: lambda: absolute_x("sta"),
         0x64: lambda: dp("stz"),
         0x89: lambda: imm_acc("bit"),
         0xC5: lambda: dp("cmp"),
         0xC9: lambda: imm_acc("cmp"),
+        0xD9: lambda: absolute_y("cmp"),
+        0xDF: lambda: long_x("cmp"),
         0xE9: lambda: imm_acc("sbc"),
+        0xFF: lambda: long_x("sbc"),
         0x69: lambda: imm_acc("adc"),
+        0x79: lambda: absolute_y("adc"),
+        0x7F: lambda: long_x("adc"),
         0x49: lambda: imm_acc("eor"),
         0x09: lambda: imm_acc("ora"),
+        0x19: lambda: absolute_y("ora"),
         0x29: lambda: imm_acc("and"),
         0xBF: lambda: long_x("lda"),
         0x22: lambda: long_call("jsl"),
@@ -177,6 +212,7 @@ def decode_one(data: list[int], i: int, base_addr: int | None, state: DecodeStat
         0xD0: lambda: branch("bne"),
         0x10: lambda: branch("bpl"),
         0x30: lambda: branch("bmi"),
+        0x70: lambda: branch("bvs"),
         0x80: lambda: branch("bra"),
         0x90: lambda: branch("bcc"),
         0xB0: lambda: branch("bcs"),
