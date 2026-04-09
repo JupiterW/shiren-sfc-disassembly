@@ -99,15 +99,25 @@ def promote_raw_entry(path: Path, entry_addr: int, new_symbol: str, dry_run: boo
     regions, index = containing
     region = regions[index]
     offset = entry_addr - region.addr
-    if offset <= 0 or offset >= len(region.bytes_):
-        raise SystemExit(
-            f"entry {entry_addr:06X} is not in the middle of a raw region that needs splitting"
-        )
-
     lines = load_lines(path)
     old_line = lines[region.line_no - 1]
     if not old_line.strip().startswith(".db") and ".db " not in old_line:
         raise SystemExit(f"expected .db line at {path}:{region.line_no}")
+
+    if offset == 0:
+        replacement = [
+            f"{new_symbol}:",
+            old_line,
+        ]
+        lines[region.line_no - 1 : region.line_no] = replacement
+        if not dry_run:
+            write_lines(path, lines)
+        return region.line_no, "\n".join(replacement)
+
+    if offset < 0 or offset >= len(region.bytes_):
+        raise SystemExit(
+            f"entry {entry_addr:06X} is not inside a promotable raw region"
+        )
 
     prefix = region.bytes_[:offset]
     suffix = region.bytes_[offset:]

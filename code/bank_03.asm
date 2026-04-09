@@ -2168,10 +2168,10 @@ ItemUseEffectFunctionTable:
 	.dw VictoryHerbUseEffect-1 ;VictoryHerb
 	.dw AngelSeedUseEffect-1 ;AngelSeed
 	.dw $09F0 ;RevivalHerb
-	.dw $2008 ;InvisibilityHerb
-	.dw $10DA ;BitterHerb
-	.dw $10EB ;MisfortuneHerb
-	.dw $1151 ;IllLuckHerb
+	.dw InvisibilityHerbUseEffect-1 ;InvisibilityHerb
+	.dw BitterHerbUseEffect-1 ;BitterHerb
+	.dw MisfortuneHerbUseEffect-1 ;MisfortuneHerb
+	.dw IllLuckHerbUseEffect-1 ;IllLuckHerb
 	.dw KignyHerbUseEffect ;KignyHerb
 	.dw AmnesiaHerbUseEffect-1 ;AmnesiaHerb
 	.dw $0A94 ;36
@@ -2179,10 +2179,10 @@ ItemUseEffectFunctionTable:
 	.dw BigBellySeedUseEffect-1 ;BigBellySeed
 	.dw LittleBellySeedUseEffect-1 ;LittleBellySeed
 	.dw TalkSeedUseEffect-1 ;TalkSeed
-	.dw $1021 ;StrengthHerb
+	.dw StrengthHerbUseEffect-1 ;StrengthHerb
 	.dw AntidoteHerbUseEffect-1 ;AntidoteHerb
-	.dw $11E2 ;PoisonHerb
-	.dw $1343 ;ConfusionHerb
+	.dw PoisonHerbUseEffect-1 ;PoisonHerb
+	.dw ConfusionHerbUseEffect-1 ;ConfusionHerb
 	.dw $13A0 ;SleepHerb
 	.dw $09F0 ;Weeds
 	.dw UnusedItemUseEffect-1
