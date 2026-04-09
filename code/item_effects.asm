@@ -1927,10 +1927,33 @@ EarthBlessScrollUseEffect:
 	jsl.l DisplayMessage
 	.db $60   ;C31BE3
 PlatingScrollUseEffect:
-	.db $E2,$30,$22,$89,$3B,$C2,$A5   ;C31BE4
-	.db $00,$25,$01,$30,$75,$A5,$01,$48,$A5,$00,$48,$30,$0C,$A9,$13,$85   ;C31BEB
-	.db $00,$A9,$CA,$85,$02,$22,$65,$25,$C6,$A3,$02,$30,$0C,$A9,$13,$85   ;C31BFB
-	.db $00,$A9,$CB,$85,$02,$22,$65,$25,$C6,$A9,$8E,$85,$00,$64,$01
+	sep #$30                                ;C31BE4
+	jsl $C23B89                             ;C31BE6
+	lda $00                                 ;C31BEA
+	and $01                                 ;C31BEC
+	.db $30,$75   ;C31BEE
+	lda $01                                 ;C31BF0
+	pha                                     ;C31BF2
+	lda $00                                 ;C31BF3
+	pha                                     ;C31BF5
+	bmi @lbl_C31C04                         ;C31BF6
+	lda #$13                                ;C31BF8
+	sta $00                                 ;C31BFA
+	lda #$CA                                ;C31BFC
+	sta $02                                 ;C31BFE
+	jsl $C62565                             ;C31C00
+@lbl_C31C04:
+	lda $02,s                               ;C31C04
+	bmi @lbl_C31C14                         ;C31C06
+	lda #$13                                ;C31C08
+	sta $00                                 ;C31C0A
+	lda #$CB                                ;C31C0C
+	sta $02                                 ;C31C0E
+	jsl $C62565                             ;C31C10
+@lbl_C31C14:
+	lda #$8E                                ;C31C14
+	sta $00                                 ;C31C16
+	stz $01                                 ;C31C18
 	jsl.l DisplayMessage
 	.db $FA,$30,$20,$BF,$8C,$8F,$7E,$09,$08,$9F,$8C,$8F,$7E   ;C31C1B  
 	.db $BF,$0C,$8C,$7E,$F0,$10,$A9,$00,$9F,$0C,$8C,$7E,$A9,$52,$85,$00   ;C31C2B  
