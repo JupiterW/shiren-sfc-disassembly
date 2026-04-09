@@ -62,6 +62,10 @@ class DecodedInsn:
     opcode: int
 
 
+INLINE_TABLE_LOAD_RE = re.compile(r"^lda \$([0-9A-F]{4,6}),x$", re.IGNORECASE)
+IMM_RE = re.compile(r"#\$([0-9A-F]+)", re.IGNORECASE)
+
+
 def _resolve_file(path_text: str) -> Path:
     path = Path(path_text)
     if not path.is_absolute():
@@ -99,8 +103,51 @@ def _emit_decoded_lines(
     decoded: list[DecodedInsn] = []
     while i < len(data):
         size, text = decode_one(data, i, base_addr, state)
-        decoded.append(DecodedInsn(addr=base_addr + i, size=max(size, 1), text=text, opcode=data[i]))
-        i += max(size, 1)
+        insn = DecodedInsn(addr=base_addr + i, size=max(size, 1), text=text, opcode=data[i])
+        decoded.append(insn)
+        i += insn.size
+
+        if len(decoded) < 3:
+            continue
+        if decoded[-1].opcode != 0x60 or decoded[-2].opcode != 0x48:
+            continue
+
+        load_insn = decoded[-3]
+        load_match = INLINE_TABLE_LOAD_RE.match(load_insn.text)
+        if load_match is None:
+            continue
+
+        table_start = insn.addr + insn.size
+        load_target = int(load_match.group(1), 16)
+        if load_target not in {table_start, table_start & 0xFFFF}:
+            continue
+
+        table_count: int | None = None
+        for prev in reversed(decoded[:-3]):
+            if prev.opcode != 0xC9:
+                continue
+            imm_match = IMM_RE.search(prev.text)
+            if imm_match is None:
+                continue
+            table_count = int(imm_match.group(1), 16)
+            break
+        if table_count is None or table_count <= 0 or table_count > 32:
+            continue
+        if i + table_count * 2 > len(data):
+            continue
+
+        for idx in range(table_count):
+            entry_off = i + idx * 2
+            target = data[entry_off] | (data[entry_off + 1] << 8)
+            decoded.append(
+                DecodedInsn(
+                    addr=base_addr + entry_off,
+                    size=2,
+                    text=f".dw ${target:04X}",
+                    opcode=-1,
+                )
+            )
+        i += table_count * 2
 
     branch_labels: dict[int, str] = {}
     for insn in decoded:

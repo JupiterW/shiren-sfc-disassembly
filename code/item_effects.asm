@@ -1473,25 +1473,88 @@ SpecialOnigiriUseEffect:
 	.db $68,$85,$02,$64,$03,$A9,$13,$85,$00,$22,$09   ;C316D9
 	.db $32,$C2,$60   ;C316E9
 SpoiledOnigiriUseEffect:
-	.db $C2,$20,$E2,$10,$A0,$C6,$84,$00,$22,$A6,$3B,$C2,$A9   ;C316EC
-	.db $2C,$01,$85,$00,$22,$BE,$33,$C2,$A9,$4C,$00,$85,$00
+	rep #$20                                ;C316EC
+	sep #$10                                ;C316EE
+	ldy #$C6                                ;C316F0
+	sty $00                                 ;C316F2
+	jsl $C23BA6                             ;C316F4
+	lda #$012C                              ;C316F8
+	sta $00                                 ;C316FB
+	jsl $C233BE                             ;C316FD
+	lda #$004C                              ;C31701
+	sta $00                                 ;C31704
 	jsl.l DisplayMessage
-	.db $A9,$3F,$00,$85,$00,$A0,$05,$84,$02
+	lda #$003F                              ;C3170A
+	sta $00                                 ;C3170D
+	ldy #$05                                ;C3170F
+	sty $02                                 ;C31711
 	jsl.l DisplayMessage
-	.db $A9,$FB   ;C31709  
-	.db $FF,$85,$02,$A0,$13,$84,$00,$22,$09,$32,$C2,$E2,$20,$22,$5F,$F6   ;C31719  
-	.db $C3,$A5,$00,$29,$07,$C9,$06,$B0,$F4,$0A,$AA,$C2,$20,$BF,$3C,$17   ;C31729  
-	.db $C3,$48,$60,$47,$17,$43,$13,$67,$14,$10,$14,$A0,$13,$DA,$10,$C2   ;C31739  
-	.db $20,$E2,$10,$A9,$FD,$FF,$85,$00,$22,$71,$32,$C2,$A4,$00,$F0,$0B   ;C31749  
-	.db $A9,$A0,$00,$85,$00,$84,$02
+	lda #$FFFB                              ;C31717
+	sta $02                                 ;C3171A
+	ldy #$13                                ;C3171C
+	sty $00                                 ;C3171E
+	jsl $C23209                             ;C31720
+	sep #$20                                ;C31724
+@lbl_C31726:
+	jsl $C3F65F                             ;C31726
+	lda $00                                 ;C3172A
+	and #$07                                ;C3172C
+	cmp #$06                                ;C3172E
+	bcs @lbl_C31726                         ;C31730
+	asl a                                   ;C31732
+	tax                                     ;C31733
+	rep #$20                                ;C31734
+	lda $C3173C,x                           ;C31736
+	pha                                     ;C3173A
+	rts                                     ;C3173B
+	.dw $1747                               ;C3173C
+	.dw $1343                               ;C3173E
+	.dw $1467                               ;C31740
+	.dw $1410                               ;C31742
+	.dw $13A0                               ;C31744
+	.dw $10DA                               ;C31746
+	rep #$20                                ;C31748
+	sep #$10                                ;C3174A
+	lda #$FFFD                              ;C3174C
+	sta $00                                 ;C3174F
+	jsl $C23271                             ;C31751
+	ldy $00                                 ;C31755
+	.db $F0,$0B   ;C31757
+	lda #$00A0                              ;C31759
+	sta $00                                 ;C3175C
+	sty $02                                 ;C3175E
 	jsl.l DisplayMessage
-	.db $60,$C2,$20,$A9,$7C   ;C31759
-	.db $00,$85,$00
+	rts                                     ;C31764
+	rep #$20                                ;C31765
+	lda #$007C                              ;C31767
+	sta $00                                 ;C3176A
 	jsl.l DisplayMessage
-	.db $E2,$20,$C2,$10,$A9,$13,$85,$00,$22   ;C31769
-	.db $AC,$10,$C2,$22,$1A,$63,$C3,$A6,$00,$30,$24,$22,$71,$27,$C6,$A5   ;C31779  
-	.db $00,$86,$00,$85,$02,$DA,$22,$E7,$0B,$C2,$FA,$A5,$00,$30,$10,$86   ;C31789
-	.db $00,$85,$02,$48,$22,$7A,$5B,$C3,$68,$85,$00,$22,$AA,$7F,$C2,$60   ;C31799
+	sep #$20                                ;C31770
+	rep #$10                                ;C31772
+	lda #$13                                ;C31774
+	sta $00                                 ;C31776
+	jsl $C210AC                             ;C31778
+	jsl $C3631A                             ;C3177C
+	ldx $00                                 ;C31780
+	bmi @lbl_C317A8                         ;C31782
+	jsl $C62771                             ;C31784
+	lda $00                                 ;C31788
+	stx $00                                 ;C3178A
+	sta $02                                 ;C3178C
+	phx                                     ;C3178E
+	jsl $C20BE7                             ;C3178F
+	plx                                     ;C31793
+	lda $00                                 ;C31794
+	bmi @lbl_C317A8                         ;C31796
+	stx $00                                 ;C31798
+	sta $02                                 ;C3179A
+	pha                                     ;C3179C
+	jsl $C35B7A                             ;C3179D
+	pla                                     ;C317A1
+	sta $00                                 ;C317A2
+	jsl $C27FAA                             ;C317A4
+@lbl_C317A8:
+	rts                                     ;C317A8
 TrapScrollUseEffect:
 	sep #$20 ;A->8                       ;C317A9
 	rep #$10 ;XY->16                    ;C317AB
