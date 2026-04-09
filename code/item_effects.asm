@@ -1921,9 +1921,28 @@ func_C31AB4:
 	jsl.l func_C2342B
 	rts
 AirBlessScrollUseEffect:
-	.db $E2,$30,$22,$89,$3B,$C2,$A6,$00,$30,$54,$A9,$13,$85,$00,$A9,$C8   ;C31ACF
-	.db $85,$02,$DA,$8B,$22,$65,$25,$C6,$AB,$FA,$BD,$8C,$8C,$C9,$63,$F0   ;C31ADF  
-	.db $3D,$A9,$AA,$85,$00,$64,$01,$86,$02,$DA,$8B
+	sep #$30                                ;C31ACF
+	jsl $C23B89                             ;C31AD1
+	ldx $00                                 ;C31AD5
+	.db $30,$54   ;C31AD7
+	lda #$13                                ;C31AD9
+	sta $00                                 ;C31ADB
+	lda #$C8                                ;C31ADD
+	sta $02                                 ;C31ADF
+	phx                                     ;C31AE1
+	phb                                     ;C31AE2
+	jsl $C62565                             ;C31AE3
+	plb                                     ;C31AE7
+	plx                                     ;C31AE8
+	lda $8C8C,x                             ;C31AE9
+	cmp #$63                                ;C31AEC
+	.db $F0,$3D   ;C31AEE
+	lda #$AA                                ;C31AF0
+	sta $00                                 ;C31AF2
+	stz $01                                 ;C31AF4
+	stx $02                                 ;C31AF6
+	phx                                     ;C31AF8
+	phb                                     ;C31AF9
 	jsl.l DisplayMessage
 	.db $AB   ;C31AEF  
 	.db $FA,$BD,$8C,$8C,$1A,$9D,$8C,$8C,$A9,$AB,$85,$00,$64,$01,$86,$02   ;C31AFF
