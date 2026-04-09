@@ -4884,9 +4884,19 @@ func_C331B2:
 	lda.l wItemType,x
 	cmp.b #$BE
 	bne @lbl_C331DE
-	.db $C2,$20,$A3,$01,$85,$00,$E2,$20,$DA,$BF,$8C,$8C,$7E,$20,$04,$2C   ;C331C3
-	.db $FA,$86,$00,$DA,$22,$92,$01,$C3   ;C331D3
-	.db $FA,$80,$44                       ;C331DB
+	rep #$20                                ;C331C3
+	lda $01,s                               ;C331C5
+	sta $00                                 ;C331C7
+	sep #$20                                ;C331C9
+	phx                                     ;C331CB
+	lda $7E8C8C,x                           ;C331CC
+	jsr $2C04                               ;C331D0
+	plx                                     ;C331D3
+	stx $00                                 ;C331D4
+	phx                                     ;C331D6
+	jsl $C30192                             ;C331D7
+	plx                                     ;C331DB
+	.db $80,$44   ;C331DC
 @lbl_C331DE:
 	cmp.b #$BD
 	bne @lbl_C331F1
