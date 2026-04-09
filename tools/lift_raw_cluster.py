@@ -22,7 +22,6 @@ from pathlib import Path
 
 from promote_raw_item_handler_label import (
     _db_bytes_from_line,
-    db_line_end_addr,
     estimate_asm_line_size,
     format_db_line,
     load_lines,
@@ -59,9 +58,10 @@ def _fmt_instruction(text: str) -> str:
     return f"\t{op} { _fmt_operand(operand) }".rstrip()
 
 
-def _emit_decoded_lines(data: list[int], base_addr: int, m_width: int, x_width: int, table16: int) -> list[str]:
+def _emit_decoded_lines(
+    data: list[int], base_addr: int, state: DecodeState, table16: int
+) -> list[str]:
     out: list[str] = []
-    state = DecodeState(m_width=m_width, x_width=x_width)
     i = 0
 
     if table16:
@@ -87,44 +87,69 @@ def _emit_decoded_lines(data: list[int], base_addr: int, m_width: int, x_width: 
     return out
 
 
-def _line_start_addr(lines: list[str], idx: int) -> int | None:
-    line = lines[idx]
-    comment_addr = parse_comment_addr(line)
-    if comment_addr is not None:
-        return comment_addr
-    label_addr = parse_label_addr(line)
-    if label_addr is not None:
-        return label_addr
-
+def _compute_line_starts(lines: list[str]) -> list[int | None]:
+    starts: list[int | None] = []
     current_addr: int | None = None
-    for prev in range(idx - 1, -1, -1):
-        prev_line = lines[prev]
-        prev_comment = parse_comment_addr(prev_line)
-        if prev_comment is not None:
-            current_addr = prev_comment
-        prev_label = parse_label_addr(prev_line)
-        if prev_label is not None and (current_addr is None or prev_label >= current_addr):
-            current_addr = prev_label
+
+    for line in lines:
+        label_addr = parse_label_addr(line)
+        comment_addr = parse_comment_addr(line)
+
         if current_addr is None:
-            continue
-        size = estimate_asm_line_size(prev_line.strip())
-        if size is None:
-            continue
-        if size == 0:
-            return current_addr
-        return current_addr + size
-    return None
+            if label_addr is not None:
+                current_addr = label_addr
+            elif comment_addr is not None:
+                current_addr = comment_addr
+        else:
+            if label_addr is not None and label_addr >= current_addr:
+                current_addr = label_addr
+            elif comment_addr is not None and comment_addr >= current_addr:
+                current_addr = comment_addr
+
+        starts.append(current_addr)
+
+        size = estimate_asm_line_size(line.strip())
+        if current_addr is not None and size is not None and size > 0:
+            current_addr += size
+
+    return starts
+
+
+def _advance_state_from_asm_line(stripped: str, state: DecodeState) -> None:
+    if not stripped or stripped.startswith(";") or stripped.endswith(":"):
+        return
+    parts = stripped.split(None, 1)
+    op = parts[0].lower()
+    arg = parts[1] if len(parts) > 1 else ""
+    if op not in {"rep", "sep"}:
+        return
+    if "#" not in arg:
+        return
+    token = arg.split("#", 1)[1].strip()
+    token = token.removeprefix("$").split()[0]
+    try:
+        mask = int(token, 16)
+    except ValueError:
+        return
+    if mask & 0x20:
+        state.m_width = 8 if op == "sep" else 16
+    if mask & 0x10:
+        state.x_width = 8 if op == "sep" else 16
 
 
 def build_candidate(lines: list[str], start_addr: int, end_addr: int, m_width: int, x_width: int, table16: int) -> tuple[int, int, list[str]]:
     start_idx: int | None = None
     end_idx: int | None = None
     out: list[str] = []
+    line_starts = _compute_line_starts(lines)
+    state = DecodeState(m_width=m_width, x_width=x_width)
+    used_table16 = False
 
     for idx, line in enumerate(lines):
         stripped = line.strip()
-        line_start = _line_start_addr(lines, idx)
-        line_end = db_line_end_addr(line)
+        line_start = line_starts[idx]
+        line_size = estimate_asm_line_size(stripped)
+        line_end = None if line_start is None or line_size in (None, 0) else line_start + line_size - 1
 
         if start_idx is None and line_start is not None and line_start <= start_addr <= (line_end or line_start):
             start_idx = idx
@@ -145,7 +170,7 @@ def build_candidate(lines: list[str], start_addr: int, end_addr: int, m_width: i
             if not bytes_:
                 out.append(line.rstrip("\n"))
                 continue
-            raw_start = parse_comment_addr(line)
+            raw_start = line_start
             if raw_start is None:
                 out.append(line.rstrip("\n"))
                 continue
@@ -156,15 +181,18 @@ def build_candidate(lines: list[str], start_addr: int, end_addr: int, m_width: i
             seg_start = max(start_addr, raw_start)
             seg_end = min(end_addr, raw_end)
             prefix = bytes_[: seg_start - raw_start]
-            middle = bytes_[seg_start - raw_start : seg_end - raw_start + 1]
             suffix = bytes_[seg_end - raw_start + 1 :]
             if prefix:
                 out.append(format_db_line(prefix, raw_start))
-            out.extend(_emit_decoded_lines(middle, seg_start, m_width, x_width, table16 if seg_start == start_addr else 0))
+            middle = bytes_[seg_start - raw_start : seg_end - raw_start + 1]
+            out.extend(_emit_decoded_lines(middle, seg_start, state, table16 if not used_table16 and seg_start == start_addr else 0))
+            if table16 and seg_start == start_addr:
+                used_table16 = True
             if suffix:
                 out.append(format_db_line(suffix, seg_end + 1))
             continue
 
+        _advance_state_from_asm_line(stripped, state)
         out.append(line.rstrip("\n"))
 
     if start_idx is None:
