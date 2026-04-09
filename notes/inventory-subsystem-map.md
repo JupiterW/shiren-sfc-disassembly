@@ -77,6 +77,9 @@ Ground-item menu cases currently understood:
 - `pick up`
   - One fallback case builds fixed command `$5F`
   - This routes into [HandleUnderfootItemPickupAction](/Users/jupiter.whitworth/Development/new/shiren/code/bank_02.asm#L5104)
+- `examine`
+  - One direct case toggles [ToggleGroundItemDetailsView](/Users/jupiter.whitworth/Development/new/shiren/code/bank_03.asm#L11843)
+  - This is a UI/details toggle rather than an item mutation path
 - `exchange`
   - Direct case builds `wTemp00 = $BF` and sets `wTemp01 |= $40`
   - This routes into the underfoot exchange path in [HandleCategoryShortcutSelectionAction](/Users/jupiter.whitworth/Development/new/shiren/code/bank_02.asm#L3803)

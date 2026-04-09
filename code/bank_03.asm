@@ -11363,7 +11363,8 @@ BuildGroundItemActionCommand:
 	lda.w #$005F
 	sta.b wTemp00
 	jmp.w func_C3EBE6
-	jsl.l func_C3F387
+	; Toggle the ground-item details display.
+	jsl.l ToggleGroundItemDetailsView
 	jmp.w func_C3EBF9
 	lda.w #$00F0
 	sta.b wTemp00
@@ -11840,7 +11841,7 @@ func_C3F336:
 	plp
 	rtl
 
-func_C3F387:
+ToggleGroundItemDetailsView:
 	php
 	rep #$20 ;A->16
 	lda.l $7F9CE2
