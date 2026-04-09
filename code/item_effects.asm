@@ -2710,8 +2710,19 @@ MisfortuneStaffUseEffect:
 	jsl $C23FFF                             ;C32004
 	rts                                     ;C32008
 InvisibilityHerbUseEffect:
-	.db $E2,$20,$A9,$13,$85,$00,$A9,$15,$85,$01,$A5,$00,$48   ;C32009
-	.db $22,$F8,$82,$C2,$68,$85,$02,$C2,$20,$A9,$5D,$01,$85,$00
+	sep #$20                                ;C32009
+	lda #$13                                ;C3200B
+	sta $00                                 ;C3200D
+	lda #$15                                ;C3200F
+	sta $01                                 ;C32011
+	lda $00                                 ;C32013
+	pha                                     ;C32015
+	jsl $C282F8                             ;C32016
+	pla                                     ;C3201A
+	sta $02                                 ;C3201B
+	rep #$20                                ;C3201D
+	lda #$015D                              ;C3201F
+	sta $00                                 ;C32022
 	jsl.l DisplayMessage
 	.db $60,$E2,$20,$A9,$15,$85,$01,$A5,$00,$22,$F8,$82,$C2,$A9   ;C32026  
 	.db $01,$85,$02,$22,$50,$25,$C6,$60   ;C32036
