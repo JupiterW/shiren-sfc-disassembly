@@ -3796,15 +3796,84 @@ func_C335FE:
 	.db $A9,$87,$85,$00,$A9   ;C337D8
 	.db $03,$85,$02
 	jsl.l _SetEvent
-	.db $7A,$60,$E2,$30,$A5,$00,$C9,$13,$F0   ;C337E8  
-	.db $03,$4C,$78,$38,$A5,$00,$48,$A5,$01,$48,$A2,$00,$80,$2A,$DA,$AA   ;C337F8  
-	.db $BF,$8C,$8C,$7E,$F0,$20,$BF,$8C,$8B,$7E,$C9,$B4,$F0,$29,$C9,$B6   ;C33808  
-	.db $F0,$25,$C9,$B7,$F0,$21,$C9,$B8,$F0,$1D,$C9,$BB,$F0,$19,$C9,$C0   ;C33818  
-	.db $F0,$15,$C9,$BF,$F0,$11,$FA,$E8,$BF,$4F,$89,$7E,$10,$D0,$68,$85   ;C33828  
-	.db $01,$68,$85,$00,$4C,$78,$38,$68,$BF,$8C,$8C,$7E,$3A,$9F,$8C,$8C   ;C33838  
-	.db $7E,$9B,$80,$01,$AA,$BF,$0C,$8E,$7E,$10,$F9,$A9,$40,$85,$00,$DA   ;C33848  
-	.db $5A,$22,$5D,$03,$C3,$7A,$FA,$A5,$00,$30,$12,$9F,$0C,$8E,$7E,$A9   ;C33858
-	.db $0D,$85,$00,$A9,$01,$85,$01,$84,$02
+	ply                                     ;C337EF
+	rts                                     ;C337F0
+	sep #$30                                ;C337F1
+	lda $00                                 ;C337F3
+	cmp #$13                                ;C337F5
+	beq @lbl_C337FC                         ;C337F7
+	jmp $3878                               ;C337F9
+@lbl_C337FC:
+	lda $00                                 ;C337FC
+	pha                                     ;C337FE
+	lda $01                                 ;C337FF
+	pha                                     ;C33801
+	ldx #$00                                ;C33802
+	bra @lbl_C33830                         ;C33804
+@lbl_C33806:
+	phx                                     ;C33806
+	tax                                     ;C33807
+	lda $7E8C8C,x                           ;C33808
+	beq @lbl_C3382E                         ;C3380C
+	lda $7E8B8C,x                           ;C3380E
+	cmp #$B4                                ;C33812
+	beq @lbl_C3383F                         ;C33814
+	cmp #$B6                                ;C33816
+	beq @lbl_C3383F                         ;C33818
+	cmp #$B7                                ;C3381A
+	beq @lbl_C3383F                         ;C3381C
+	cmp #$B8                                ;C3381E
+	beq @lbl_C3383F                         ;C33820
+	cmp #$BB                                ;C33822
+	beq @lbl_C3383F                         ;C33824
+	cmp #$C0                                ;C33826
+	beq @lbl_C3383F                         ;C33828
+	cmp #$BF                                ;C3382A
+	beq @lbl_C3383F                         ;C3382C
+@lbl_C3382E:
+	plx                                     ;C3382E
+	.db $E8   ;C3382F
+@lbl_C33830:
+	lda $7E894F,x                           ;C33830
+	bpl @lbl_C33806                         ;C33834
+	pla                                     ;C33836
+	sta $01                                 ;C33837
+	pla                                     ;C33839
+	sta $00                                 ;C3383A
+	jmp $3878                               ;C3383C
+@lbl_C3383F:
+	pla                                     ;C3383F
+	lda $7E8C8C,x                           ;C33840
+	dec a                                   ;C33844
+	.db $9F   ;C33845
+	.db $8C   ;C33846
+	.db $8C   ;C33847
+	.db $7E   ;C33848
+	.db $9B   ;C33849
+	bra @lbl_C3384D                         ;C3384A
+@lbl_C3384C:
+	tax                                     ;C3384C
+@lbl_C3384D:
+	lda $7E8E0C,x                           ;C3384D
+	bpl @lbl_C3384C                         ;C33851
+	lda #$40                                ;C33853
+	sta $00                                 ;C33855
+	phx                                     ;C33857
+	phy                                     ;C33858
+	jsl $C3035D                             ;C33859
+	ply                                     ;C3385D
+	plx                                     ;C3385E
+	lda $00                                 ;C3385F
+	.db $30,$12   ;C33861
+	.db $9F   ;C33863
+	.db $0C   ;C33864
+	.db $8E   ;C33865
+	.db $7E   ;C33866
+	lda #$0D                                ;C33867
+	sta $00                                 ;C33869
+	lda #$01                                ;C3386B
+	sta $01                                 ;C3386D
+	sty $02                                 ;C3386F
 	jsl.l DisplayMessage
 	.db $68,$68,$60   ;C33868  
 	.db $C2,$20,$A5,$00,$48,$A9,$01,$02,$85,$00,$22,$9F,$F6,$C3,$A5,$00   ;C33878
