@@ -1710,11 +1710,42 @@ func_C31959:
 	.db $00,$9F,$8C,$8D,$7E,$BF,$0C,$8E,$7E,$C9,$FF,$F0,$0C,$85,$00,$A9   ;C319EA
 	.db $FF,$9F,$0C,$8E,$7E,$22,$F4,$06,$C3,$60   ;C319FA
 BigpotScrollUseEffect:
-	.db $E2,$30,$A6,$01,$86,$00   ;C31A04
-	.db $20,$59,$19,$A6,$00,$9B,$BF,$8C,$8B,$7E,$AA,$BF,$BB,$41,$C3,$BB   ;C31A0A  
-	.db $C9,$0B,$D0,$38,$DA,$A0,$FF,$C8,$BF,$0C,$8E,$7E,$AA,$C9,$FF,$D0   ;C31A1A
-	.db $F6,$FA,$98,$18,$7F,$8C,$8C,$7E,$A0,$01,$C9,$0A,$90,$02,$A0,$00   ;C31A2A  
-	.db $84,$03,$5A,$A9,$12,$85,$00,$64,$01,$86,$02,$DA
+	sep #$30                                ;C31A04
+	ldx $01                                 ;C31A06
+	stx $00                                 ;C31A08
+	jsr $1959                               ;C31A0A
+	ldx $00                                 ;C31A0D
+	txy                                     ;C31A0F
+	lda $7E8B8C,x                           ;C31A10
+	tax                                     ;C31A14
+	lda $C341BB,x                           ;C31A15
+	tyx                                     ;C31A19
+	cmp #$0B                                ;C31A1A
+	.db $D0,$38   ;C31A1C
+	phx                                     ;C31A1E
+	ldy #$FF                                ;C31A1F
+@lbl_C31A21:
+	.db $C8   ;C31A21
+	lda $7E8E0C,x                           ;C31A22
+	tax                                     ;C31A26
+	cmp #$FF                                ;C31A27
+	bne @lbl_C31A21                         ;C31A29
+	plx                                     ;C31A2B
+	tya                                     ;C31A2C
+	clc                                     ;C31A2D
+	adc $7E8C8C,x                           ;C31A2E
+	ldy #$01                                ;C31A32
+	cmp #$0A                                ;C31A34
+	bcc @lbl_C31A3A                         ;C31A36
+	ldy #$00                                ;C31A38
+@lbl_C31A3A:
+	sty $03                                 ;C31A3A
+	phy                                     ;C31A3C
+	lda #$12                                ;C31A3D
+	sta $00                                 ;C31A3F
+	stz $01                                 ;C31A41
+	stx $02                                 ;C31A43
+	phx                                     ;C31A45
 	jsl.l DisplayMessage
 	.db $FA,$68,$18,$7F,$8C,$8C,$7E,$9F,$8C,$8C,$7E,$60,$A9,$5C,$85,$00   ;C31A4A
 	.db $64,$01
