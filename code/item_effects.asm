@@ -1716,15 +1716,73 @@ BlessingScrollUseEffect:
 	.db $60,$FA,$30,$1A,$BD,$0C,$8C,$D0,$15,$A9   ;C31CE4  
 	.db $01,$9D,$0C,$8C,$A9,$8D,$85,$00,$64,$01,$86,$02,$5A,$8B
 	jsl.l DisplayMessage
-	.db $AB,$7A,$88,$D0,$E0,$60,$E2,$30,$A9,$01,$A6,$00,$D0,$02   ;C31D04  
-	.db $A9,$00,$85,$00,$22,$09,$33,$C2,$60,$E2,$30,$A9,$01,$A6,$00,$D0   ;C31D14
-	.db $02,$A9,$00,$85,$00,$22,$14,$33,$C2,$60,$E2,$30,$A9,$01,$A6,$00   ;C31D24
-	.db $D0,$02,$A9,$00,$85,$00,$22,$23,$33,$C2,$60,$E2,$30,$A9,$01,$A6   ;C31D34  
-	.db $00,$D0,$02,$A9,$00,$85,$00,$22,$44,$33,$C2,$60,$E2,$30,$B9,$8C   ;C31D44
-	.db $8C,$A6,$00,$D0,$03,$49,$FF,$1A,$C9,$00,$30,$0F,$85,$00,$48,$22   ;C31D54  
-	.db $BF,$32,$C2,$68,$85,$00,$22,$71,$32,$C2,$60,$85,$00,$48,$22,$71   ;C31D64  
-	.db $32,$C2,$68,$85,$00,$22,$BF,$32   ;C31D74  
-	.db $C2,$60,$22,$B3,$83,$C2,$60       ;C31D7C
+	plb                                     ;C31D06
+	ply                                     ;C31D07
+	dey                                     ;C31D08
+	.db $D0,$E0   ;C31D09
+	rts                                     ;C31D0B
+	sep #$30                                ;C31D0C
+	lda #$01                                ;C31D0E
+	ldx $00                                 ;C31D10
+	bne @lbl_C31D16                         ;C31D12
+	lda #$00                                ;C31D14
+@lbl_C31D16:
+	sta $00                                 ;C31D16
+	jsl $C23309                             ;C31D18
+	rts                                     ;C31D1C
+	sep #$30                                ;C31D1D
+	lda #$01                                ;C31D1F
+	ldx $00                                 ;C31D21
+	bne @lbl_C31D27                         ;C31D23
+	lda #$00                                ;C31D25
+@lbl_C31D27:
+	sta $00                                 ;C31D27
+	jsl $C23314                             ;C31D29
+	rts                                     ;C31D2D
+	sep #$30                                ;C31D2E
+	lda #$01                                ;C31D30
+	ldx $00                                 ;C31D32
+	bne @lbl_C31D38                         ;C31D34
+	lda #$00                                ;C31D36
+@lbl_C31D38:
+	sta $00                                 ;C31D38
+	jsl $C23323                             ;C31D3A
+	rts                                     ;C31D3E
+	sep #$30                                ;C31D3F
+	lda #$01                                ;C31D41
+	ldx $00                                 ;C31D43
+	bne @lbl_C31D49                         ;C31D45
+	lda #$00                                ;C31D47
+@lbl_C31D49:
+	sta $00                                 ;C31D49
+	jsl $C23344                             ;C31D4B
+	rts                                     ;C31D4F
+	sep #$30                                ;C31D50
+	lda $8C8C,y                             ;C31D52
+	ldx $00                                 ;C31D55
+	bne @lbl_C31D5C                         ;C31D57
+	eor #$FF                                ;C31D59
+	.db $1A   ;C31D5B
+@lbl_C31D5C:
+	cmp #$00                                ;C31D5C
+	bmi @lbl_C31D6F                         ;C31D5E
+	sta $00                                 ;C31D60
+	pha                                     ;C31D62
+	jsl $C232BF                             ;C31D63
+	pla                                     ;C31D67
+	sta $00                                 ;C31D68
+	jsl $C23271                             ;C31D6A
+	rts                                     ;C31D6E
+@lbl_C31D6F:
+	sta $00                                 ;C31D6F
+	pha                                     ;C31D71
+	jsl $C23271                             ;C31D72
+	pla                                     ;C31D76
+	sta $00                                 ;C31D77
+	jsl $C232BF                             ;C31D79
+	rts                                     ;C31D7D
+	jsl $C283B3                             ;C31D7E
+	rts                                     ;C31D82
 	sep #$30 ;AXY->8
 	jsl.l func_C283D2
 	rts
