@@ -2246,8 +2246,8 @@ ItemUseEffectFunctionTable:
 	.dw UnusedItemUseEffect-1
 	.dw SlothStaffUseEffect-1 ;SlothStaff
 	.dw KnockbackStaffUseEffect-1 ;KnockbackStaff
-	.dw $1F58 ;HappinessStaff
-	.dw $1F98 ;MisfortuneStaff
+	.dw HappinessStaffUseEffect-1 ;HappinessStaff
+	.dw MisfortuneStaffUseEffect-1 ;MisfortuneStaff
 	.dw DoppelgangerStaffUseEffect-1 ;DoppelgangerStaff
 	.dw $1E1B ;SwitchingStaff
 	.dw $1E5D ;BufusStaff

@@ -1858,7 +1858,7 @@ Jumptable_C31F29:
 	.dw $1FCC
 	.dw $0000
 	.dw $0000
-	.dw func_C31F99
+	.dw MisfortuneStaffUseEffect
 	.dw $1E00
 	.dw $1DF2
 	.dw $1E5E
@@ -1866,6 +1866,7 @@ Jumptable_C31F29:
 	.dw $1E11
 	.dw $0000
 	.dw $0000
+HappinessStaffUseEffect:
 	.dw $30E2
 	.dw $00A5
 	.dw $13C9
@@ -1899,7 +1900,7 @@ Jumptable_C31F29:
 	.dw $262B
 	.dw $60C6
 
-func_C31F99:
+MisfortuneStaffUseEffect:
 	sep #$20 ;A->8
 	jsl.l func_C625CE
 	lda.b #$FF
