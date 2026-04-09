@@ -4905,9 +4905,19 @@ func_C331B2:
 @lbl_C331F1:
 	cmp.b #$C1
 	bne @lbl_C33210
-	.db $C2,$20,$A3,$01,$85,$00,$E2,$20,$DA,$BF,$8C,$8C,$7E,$20,$4A,$2C   ;C331F5
-	.db $FA,$86,$00,$DA,$22,$92,$01,$C3   ;C33205
-	.db $FA,$80,$12                       ;C3320D
+	rep #$20                                ;C331F5
+	lda $01,s                               ;C331F7
+	sta $00                                 ;C331F9
+	sep #$20                                ;C331FB
+	phx                                     ;C331FD
+	lda $7E8C8C,x                           ;C331FE
+	jsr $2C4A                               ;C33202
+	plx                                     ;C33205
+	stx $00                                 ;C33206
+	phx                                     ;C33208
+	jsl $C30192                             ;C33209
+	plx                                     ;C3320D
+	.db $80,$12   ;C3320E
 @lbl_C33210:
 	cmp.b #$C5
 	bne @lbl_C33222
