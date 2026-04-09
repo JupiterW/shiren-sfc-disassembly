@@ -1045,7 +1045,7 @@ func_C33A21:
 	plp
 	rtl
 
-func_C33A50:
+PrepareSelectedThrowableItem:
 	php
 	sep #$30 ;AXY->8
 	bankswitch 0x7E
@@ -1058,6 +1058,8 @@ func_C33A50:
 	dec a
 	beq @lbl_C33A8E
 	sta.w wItemModification1,y
+	; Split an arrow stack into a temporary single-arrow item for the common
+	; throw-effect pipeline.
 	stx.w $8C0B
 	lda.w wItemIsCursed,y
 	sta.w $8C8B

@@ -4806,7 +4806,7 @@ ThrowSelectedItem:
 	sta.b wTemp00
 	phx
 	phy
-	jsl.l func_C33A50
+	jsl.l PrepareSelectedThrowableItem
 	ply
 	plx
 	lda.b wTemp00

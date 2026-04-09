@@ -90,6 +90,7 @@ Ground-item helpers:
 - [HandleThrowItemAction](/Users/jupiter.whitworth/Development/new/shiren/code/bank_02.asm#L4772)
   - Handles the throw action family for either a selected inventory item or the underfoot item
   - Normal path forwards to [ThrowSelectedItem](/Users/jupiter.whitworth/Development/new/shiren/code/bank_02.asm#L4795)
+  - [PrepareSelectedThrowableItem](/Users/jupiter.whitworth/Development/new/shiren/code/bank_03.asm#L1048) splits arrow stacks into a temporary single-arrow item when needed
   - Special slot `1F` handles the underfoot item directly
 
 Ground-container / pot-specific ground-menu builders:
