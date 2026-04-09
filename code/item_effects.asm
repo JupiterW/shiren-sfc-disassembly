@@ -4638,13 +4638,45 @@ func_C335FE:
 	jsl.l DisplayMessage
 	.db $A2,$A4,$06,$86,$00
 	jsl.l DisplayMessage
-	.db $22   ;C33768  
-	.db $37,$24,$C6,$60,$E2,$20,$C2,$10,$A4,$00,$5A,$DA,$22,$AC,$10,$C2   ;C33778  
-	.db $FA,$A5,$03,$C9,$44,$D0,$0D,$A4,$00,$84,$02,$86,$00,$22,$70,$31   ;C33788
-	.db $C3,$4C,$B9,$37,$7A,$84,$00,$4C,$F3,$36,$E2,$20,$C2,$10,$A4,$00   ;C33798  
-	.db $5A,$22,$AC,$10,$C2,$A5,$03,$C9,$44,$F0,$06,$7A,$84,$00,$4C,$78   ;C337A8
-	.db $38,$A3,$01,$85,$00,$22,$9E,$15,$C2,$22,$05,$24,$C6,$A0,$64,$07   ;C337B8
-	.db $84,$00
+	jsl $C62437                             ;C33777
+	rts                                     ;C3377B
+	sep #$20                                ;C3377C
+	rep #$10                                ;C3377E
+	ldy $00                                 ;C33780
+	phy                                     ;C33782
+	phx                                     ;C33783
+	jsl $C210AC                             ;C33784
+	plx                                     ;C33788
+	lda $03                                 ;C33789
+	cmp #$44                                ;C3378B
+	bne @lbl_C3379C                         ;C3378D
+	ldy $00                                 ;C3378F
+	sty $02                                 ;C33791
+	stx $00                                 ;C33793
+	jsl $C33170                             ;C33795
+	jmp $37B9                               ;C33799
+@lbl_C3379C:
+	ply                                     ;C3379C
+	sty $00                                 ;C3379D
+	jmp $36F3                               ;C3379F
+	sep #$20                                ;C337A2
+	rep #$10                                ;C337A4
+	ldy $00                                 ;C337A6
+	phy                                     ;C337A8
+	jsl $C210AC                             ;C337A9
+	lda $03                                 ;C337AD
+	cmp #$44                                ;C337AF
+	beq @lbl_C337B9                         ;C337B1
+	ply                                     ;C337B3
+	sty $00                                 ;C337B4
+	jmp $3878                               ;C337B6
+@lbl_C337B9:
+	lda $01,s                               ;C337B9
+	sta $00                                 ;C337BB
+	jsl $C2159E                             ;C337BD
+	jsl $C62405                             ;C337C1
+	ldy #$0764                              ;C337C5
+	sty $00                                 ;C337C8
 	jsl.l DisplayMessage
 	.db $A0,$22,$09,$84,$00
 	jsl.l DisplayMessage
