@@ -3520,14 +3520,66 @@ func_C32CFE:
 	lda $C32EB8,x                           ;C32E6B
 	sta $00                                 ;C32E6F
 	jsl.l DisplayMessage
-	.db $68,$E2,$30,$FA,$9B   ;C32E6A
-	.db $9F,$0C,$8F,$7E,$85,$00,$85,$02,$EB,$9F,$8C,$8F,$7E,$85,$01,$29   ;C32E7A  
-	.db $77,$85,$03,$BF,$8C,$8B,$7E,$0A,$AA,$C2,$20,$BF,$01,$03,$C3,$C5   ;C32E8A  
-	.db $02,$D0,$0F,$E2,$20,$BB,$BF,$8C,$8F,$7E,$29,$7F,$9F,$8C,$8F,$7E   ;C32E9A
-	.db $85,$01,$22,$B2,$84,$C2,$E2,$20,$A9,$01,$85,$00,$28,$6B,$15,$01   ;C32EAA  
-	.db $16,$01,$17,$01,$18,$01,$19,$01,$1A,$01,$1B,$01,$1C,$01,$1D,$01   ;C32EBA  
-	.db $08,$E2,$30,$A6,$00,$BF,$8C,$8F,$7E,$89,$08,$F0,$18,$29,$F7,$9F   ;C32ECA
-	.db $8C,$8F,$7E,$A9,$1E,$85,$00,$A9,$01,$85,$01
+	pla                                     ;C32E75
+	sep #$30                                ;C32E76
+	plx                                     ;C32E78
+	.db $9B   ;C32E79
+	sta $7E8F0C,x                           ;C32E7A
+	sta $00                                 ;C32E7E
+	sta $02                                 ;C32E80
+	xba                                     ;C32E82
+	sta $7E8F8C,x                           ;C32E83
+	sta $01                                 ;C32E87
+	and #$77                                ;C32E89
+	sta $03                                 ;C32E8B
+	lda $7E8B8C,x                           ;C32E8D
+	asl a                                   ;C32E91
+	tax                                     ;C32E92
+	rep #$20                                ;C32E93
+	lda $C30301,x                           ;C32E95
+	cmp $02                                 ;C32E99
+	bne @lbl_C32EAC                         ;C32E9B
+	sep #$20                                ;C32E9D
+	tyx                                     ;C32E9F
+	lda $7E8F8C,x                           ;C32EA0
+	and #$7F                                ;C32EA4
+	sta $7E8F8C,x                           ;C32EA6
+	sta $01                                 ;C32EAA
+@lbl_C32EAC:
+	jsl $C284B2                             ;C32EAC
+	sep #$20                                ;C32EB0
+	lda #$01                                ;C32EB2
+	sta $00                                 ;C32EB4
+	.db $28   ;C32EB6
+	rtl                                     ;C32EB7
+	.db $15   ;C32EB8
+	.db $01   ;C32EB9
+	.db $16   ;C32EBA
+	.db $01   ;C32EBB
+	.db $17   ;C32EBC
+	.db $01   ;C32EBD
+	clc                                     ;C32EBE
+	.db $01   ;C32EBF
+	ora $1A01,y                             ;C32EC0
+	.db $01   ;C32EC3
+	.db $1B   ;C32EC4
+	.db $01   ;C32EC5
+	.db $1C   ;C32EC6
+	.db $01   ;C32EC7
+	.db $1D   ;C32EC8
+	.db $01   ;C32EC9
+	.db $08   ;C32ECA
+	sep #$30                                ;C32ECB
+	ldx $00                                 ;C32ECD
+	lda $7E8F8C,x                           ;C32ECF
+	bit #$08                                ;C32ED3
+	.db $F0,$18   ;C32ED5
+	and #$F7                                ;C32ED7
+	sta $7E8F8C,x                           ;C32ED9
+	lda #$1E                                ;C32EDD
+	sta $00                                 ;C32EDF
+	lda #$01                                ;C32EE1
+	sta $01                                 ;C32EE3
 	jsl.l DisplayMessage
 	.db $A9   ;C32EDA  
 	.db $01,$85,$00,$28,$6B,$89,$80,$D0,$04,$64,$00,$28,$6B,$DA,$86,$00   ;C32EEA  
