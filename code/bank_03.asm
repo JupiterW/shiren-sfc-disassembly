@@ -1045,7 +1045,7 @@ func_C33A21:
 	plp
 	rtl
 
-func_C33A50:
+PrepareSelectedThrowableItem:
 	php
 	sep #$30 ;AXY->8
 	bankswitch 0x7E
@@ -1058,6 +1058,8 @@ func_C33A50:
 	dec a
 	beq @lbl_C33A8E
 	sta.w wItemModification1,y
+	; Split an arrow stack into a temporary single-arrow item for the common
+	; throw-effect pipeline.
 	stx.w $8C0B
 	lda.w wItemIsCursed,y
 	sta.w $8C8B
@@ -1132,7 +1134,7 @@ func_C33AE2:
 	plp
 	rtl
 
-func_C33AEF:
+GetContainedItemByIndex:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -1145,7 +1147,7 @@ func_C33AEF:
 	plp
 	rtl
 
-func_C33B01:
+RemoveContainedItemByIndex:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -1173,7 +1175,7 @@ func_C33B01:
 	plp
 	rtl
 
-func_C33B35:
+InsertContainedItemByIndex:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -9080,7 +9082,7 @@ Jumptable_C3D555:
 	lda.b #$19
 	sta.b wTemp02
 	jsl.l func_C62550
-	jsl.l func_C23B89
+	jsl.l GetCategoryShortcutItemIds
 	lda.b wTemp01
 	bmi @lbl_C3D63A
 	jsl.l func_C27ECA
@@ -9392,7 +9394,7 @@ DATA8_C3DA1C:
 	.db $01,$00,$01,$FF,$00,$FF,$FF,$FE,$FF,$FF,$FF,$00,$00,$01,$01,$01   ;C3DA1C
 	.db $00,$00                           ;C3DA2C
 	sep #$20 ;A->8
-	jsl.l func_C23B89
+	jsl.l GetCategoryShortcutItemIds
 	lda.b wTemp00
 	bpl @lbl_C3DA5B
 	lda.b wTemp01
@@ -10455,7 +10457,7 @@ func_C3E571:
 	rep #$20 ;A->16
 	lda.w #$0000
 	sta.b wTemp00
-	jsl.l func_80DC0C
+	jsl.l GetJoypadState
 	lda.b wTemp00
 	bit.w #$0020
 	sep #$20 ;A->8
@@ -10998,7 +11000,7 @@ func_C3E8C7:
 	plp
 	rtl
 
-func_C3E913:
+GetLivePlayerActionCommand:
 	php
 	rep #$30 ;AXY->16
 	tdc
@@ -11057,21 +11059,22 @@ func_C3E913:
 @lbl_C3E9B8:
 	jsl.l func_C07CC7
 @lbl_C3E9BC:
+	; Poll controller state and derive the next live player action command.
 	jsl.l func_C3F3E7
 	ldx.w #$0000
 	stx.b wTemp00
 	phx
-	jsl.l func_80DC0C
+	jsl.l GetJoypadState
 	plx
 	ldy.b wTemp00
 	phy
 	stx.b wTemp00
 	bit.w #$4040
 	beq @lbl_C3E9DB
-	jsl.l func_80DC69
+	jsl.l GetJoypadPressed
 	bra @lbl_C3E9DF
 @lbl_C3E9DB:
-	jsl.l func_80DC8F
+	jsl.l GetJoypadHeld
 @lbl_C3E9DF:
 	ply
 	lda.b wTemp00
@@ -11103,19 +11106,24 @@ func_C3E913:
 	beq @lbl_C3E9B8
 	lda.w #$0000
 	sta.b wTemp00
-	jsl.l func_80DC0C
+	jsl.l GetJoypadState
 	lda.l debugMode
 	and.w #$0010
 	eor.w #$FFFF
 	and.b wTemp00
 	bit.w #$0080
 	beq @lbl_C3EA7A
+	; A-button command path:
+	; A+B yields fixed command $1C.
+	; A alone yields fixed command $18 when there is no new facing direction.
+	; A+dpad with a different direction yields packed direction|$10, which the
+	; action handler treats as a face-only command.
 	ldy.w #$001C
 	bit.w #$0040
 	bne @lbl_C3EA8D
 	lda.l $7F9CDE
 	sta.b wTemp00
-	jsl.l func_C3EB4A
+	jsl.l MapDPadBitsToDirection
 	ldy.w #$0018
 	bcs @lbl_C3EA8D
 	lda.b wTemp00
@@ -11139,6 +11147,7 @@ func_C3E913:
 	plp
 	rtl
 @lbl_C3EA7A:
+	; L yields fixed command $1D. Start yields fixed command $E1.
 	ldy.w #$001D
 	bit.w #$2000
 	bne @lbl_C3EA8D
@@ -11158,6 +11167,8 @@ func_C3E913:
 @lbl_C3EA9A:
 	jmp.w @lbl_C3E9B8
 @lbl_C3EA9D:
+	; X-button actions go through a context-sensitive resolver that can emit
+	; fixed commands such as $5F based on what Shiren is facing/standing on.
 	bit.w #$8000
 	beq @lbl_C3EACF
 	lda.w #$0013
@@ -11181,9 +11192,12 @@ func_C3E913:
 @lbl_C3EACF:
 	sta.b wTemp00
 	pha
-	jsl.l func_C3EB4A
+	; Convert d-pad bit combinations into the 0-7 direction enum from constants/npc.asm.
+	jsl.l MapDPadBitsToDirection
 	pla
 	bcs @lbl_C3EA9A
+	; Directional commands keep the 0-7 direction in the low bits. B adds $08
+	; and Y adds $10 to select alternate movement/action families.
 	ldy.w #$0008
 	bit.w #$0040
 	bne @lbl_C3EAE9
@@ -11204,10 +11218,11 @@ func_C3E913:
 	.db $81,$4C,$B8,$E9,$EB,$09,$E1,$00   ;C3EB3E  
 	.db $85,$00,$28,$6B                   ;C3EB46  
 
-func_C3EB4A:
+MapDPadBitsToDirection:
 	php
 	rep #$30 ;AXY->16
 	restorebank
+	; wTemp00 holds controller direction bits; successful matches return a direction enum in wTemp00.
 	lda.b wTemp00
 	and.w #$1000
 	bne @lbl_C3EB5B
@@ -11257,7 +11272,7 @@ func_C3EBAD:
 	jsl.l func_C4854E
 	lda.l $7F9CE0
 	beq func_C3EBBE
-	jmp.w func_C3EC29
+	jmp.w BuildGroundItemActionCommand
 func_C3EBBE:
 	lda.l $7F9CE0
 	bne func_C3EBF9
@@ -11305,21 +11320,23 @@ func_C3EBF9:
 	.db $22,$9D,$A2,$C4,$A5,$00,$29,$FF,$00,$F0,$02,$80,$9C,$A2,$1A,$00   ;C3EC15  
 	.db $86,$00,$80,$BD                   ;C3EC25  
 
-func_C3EC29:
-	jsl.l func_C49AF0
+BuildGroundItemActionCommand:
+	jsl.l OpenGroundItemActionMenu
 	bcs func_C3EBBE
 	lda.b wTemp02
 	bne @lbl_C3EC40
+	; Ground-container special case: choose an item to put inside the container.
 	.db $A9,$1F,$00,$85,$00,$22,$7D,$F1   ;C3EC33
 	.db $C3,$90,$A8,$80,$E9               ;C3EC3B  
 @lbl_C3EC40:
 	dec a
 	bne @lbl_C3EC4A
-;C3EC43
+	; Direct throw action for the underfoot item.
 	.db $A9,$9F,$00,$85,$00,$80,$9C
 @lbl_C3EC4A:
 	dec a
 	bne @lbl_C3EC77
+	; Exchange the selected inventory item with the underfoot item.
 	.db $E2,$20,$64,$00,$22,$7C,$3B,$C2,$A5,$00,$C2,$20,$30,$CE,$A9,$1F   ;C3EC4D
 	.db $00,$85,$00,$22,$B1,$A0,$C4,$B0,$C3,$E2,$20,$A5,$00,$09,$40,$85   ;C3EC5D
 	.db $01,$A9,$BF,$85,$00,$C2,$20,$4C   ;C3EC6D  
@@ -11327,6 +11344,7 @@ func_C3EC29:
 @lbl_C3EC77:
 	dec a
 	bne @lbl_C3EC91
+	; Name/read the underfoot item (blank-scroll-specific path included here).
 	.db $A9,$13,$00,$85,$00,$22,$AC,$10,$C2,$22,$AF,$59,$C3,$A5,$01,$85   ;C3EC7A
 	.db $00,$22,$36,$F3,$C3,$80,$98       ;C3EC8A
 @lbl_C3EC91:
@@ -11337,13 +11355,16 @@ func_C3EC29:
 @lbl_C3EC96:
 	dec a
 	bne @lbl_C3ECA6
+	; Ground-container special case: choose an item inside the container.
 	.db $A9,$1F,$00,$85,$00,$20,$F7,$F1   ;C3EC99
 	.db $B0,$86,$4C,$E6,$EB               ;C3ECA1  
 @lbl_C3ECA6:
+	; Fall back to the context-sensitive underfoot pickup action ($5F).
 	lda.w #$005F
 	sta.b wTemp00
 	jmp.w func_C3EBE6
-	jsl.l func_C3F387
+	; Toggle the ground-item details display.
+	jsl.l ToggleGroundItemDetailsView
 	jmp.w func_C3EBF9
 	lda.w #$00F0
 	sta.b wTemp00
@@ -11643,10 +11664,10 @@ func_C3F126:
 DATA8_C3F142:
 	.db $4D,$F1,$5C,$F1,$65,$F1           ;C3F142
 	.db $6C,$F1,$65,$F1,$55,$F1           ;C3F148  
-	jsl.l func_C3F17D
+	jsl.l BuildGroundContainerInsertCommand
 	bcs func_C3F126
 	bra func_C3F177
-	jsr.w func_C3F1F7
+	jsr.w BuildContainedItemActionCommand
 	bcs func_C3F126
 	.db $80,$1A                           ;C3F15B  
 	lda.b wTemp00
@@ -11668,7 +11689,7 @@ func_C3F17A:
 	sec
 	rtl
 
-func_C3F17D:
+BuildGroundContainerInsertCommand:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -11733,7 +11754,7 @@ func_C3F1F0:
 func_C3F1F3:
 	.db $68,$28,$38,$6B                   ;C3F1F3
 
-func_C3F1F7:
+BuildContainedItemActionCommand:
 	php
 	sep #$30 ;AXY->8
 	lda.b wTemp00
@@ -11820,7 +11841,7 @@ func_C3F336:
 	plp
 	rtl
 
-func_C3F387:
+ToggleGroundItemDetailsView:
 	php
 	rep #$20 ;A->16
 	lda.l $7F9CE2
@@ -11858,7 +11879,7 @@ func_C3F3B6:
 	jsl.l func_80854A
 	lda.w #$0000
 	sta.b wTemp00
-	jsl.l func_80DC0C
+	jsl.l GetJoypadState
 	lda.b wTemp00
 	bit.w #$0020
 	bne @lbl_C3F3CD

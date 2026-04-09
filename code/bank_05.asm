@@ -474,7 +474,7 @@ func_C5CF82:
 	jsl.l func_80854A
 	lda.w #$0000
 	sta.b w7f0000
-	jsl.l func_80DC69
+	jsl.l GetJoypadPressed
 	plx
 	lda.b w7f0000
 	bne @lbl_C5CFF4

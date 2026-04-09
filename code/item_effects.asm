@@ -359,7 +359,7 @@ func_C30AE0:
 	jsl.l func_C286C8
 	rts
 
-func_C30AE5:
+ExecuteSelectedItemActionByCategory:
 	php
 	sep #$30 ;AXY->8
 	bankswitch 0x7E
@@ -368,12 +368,16 @@ func_C30AE5:
 	ldy.b wTemp00
 	ldx.w wItemType,y
 	lda.l DATA8_C341BB,x
+	; Register the selected item into its category shortcut slot:
+	; $03=weapons, $05=shields, $06=armbands, $04=arrows.
+	; For equip categories, assigning the slot also applies the item's effect,
+	; and replacing an occupied slot first tries to clear the previous item.
 	cmp.b #$03
 	bne @lbl_C30B0D
 	sty.b wTemp00
 	phx
 	phy
-	call_savebank func_C23C02
+	call_savebank ToggleWeaponShortcutItem
 	ply
 	plx
 	bra @lbl_C30B3E
@@ -383,7 +387,7 @@ func_C30AE5:
 	sty.b wTemp00
 	phx
 	phy
-	call_savebank func_C23C10
+	call_savebank ToggleShieldShortcutItem
 	ply
 	plx
 	bra @lbl_C30B3E
@@ -393,7 +397,7 @@ func_C30AE5:
 	sty.b wTemp00
 	phx
 	phy
-	call_savebank func_C23C09
+	call_savebank ToggleArmbandShortcutItem
 	ply
 	plx
 	bra @lbl_C30B3E
@@ -403,7 +407,7 @@ func_C30AE5:
 	jmp.w func_C30BD3
 @lbl_C30B38:
 	sty.b wTemp00
-	jsl.l func_C23BE1
+	jsl.l ToggleArrowShortcutItem
 @lbl_C30B3E:
 	lda.b wTemp00
 	beq @lbl_C30B5D
@@ -1511,7 +1515,7 @@ func_C31B5C:
 	lda.b #$CD
 	sta.b wTemp02
 	call_savebank func_C62565
-	jsl.l func_C23B89
+	jsl.l GetCategoryShortcutItemIds
 	ldx.b wTemp02
 	phx
 	ldx.b wTemp01
@@ -1945,7 +1949,7 @@ func_C31F99:
 ;C321EB  
 	.db $4C,$04,$10
 @lbl_C321EE:
-	jsl.l func_C23B89
+	jsl.l GetCategoryShortcutItemIds
 	ldx.b wTemp02
 	bmi @lbl_C321FC
 	lda.l wItemIsCursed,x
@@ -2115,7 +2119,7 @@ JarUseEffect:
 	ldx.b wTemp01
 	cpx.b #$1F
 	bne @lbl_C326C6
-	lda.l $7E89B6
+	lda.l wShirenStatus.cantPickUpItems
 	beq @lbl_C326C6
 	.db $A9,$2B,$85,$00,$A9,$01,$85,$01   ;C326B9
 	jsl.l DisplayMessage
@@ -2160,7 +2164,7 @@ JarUseEffect:
 	phx
 	phy
 	phb
-	jsr.w func_C32AFC
+	jsr.w TryPrepareSelectedItemForJarInsertion
 	plb
 	ply
 	plx
@@ -2442,7 +2446,10 @@ func_C328E9:
 	.db $60,$A9,$FF,$9D,$0C,$8E,$84,$00   ;C32AEF
 	.db $22,$F4,$06,$C3,$60               ;C32AF7  
 
-func_C32AFC:
+; Validates and normalizes the currently selected item source before a jar
+; insertion/use path continues. Handles both ordinary inventory items and the
+; contextual map-item selection mode.
+TryPrepareSelectedItemForJarInsertion:
 	php
 	sep #$30 ;AXY->8
 	lda.b wTemp00
@@ -2541,7 +2548,7 @@ func_C32BAD:
 	.db $00,$30,$19,$86,$00,$85,$02,$48,$22,$7A,$5B,$C3,$68,$85,$00,$48   ;C32C70
 	.db $22,$AA,$7F,$C2,$68,$FA,$68,$3A,$10,$C9,$28,$60,$FA,$68,$28,$60   ;C32C80  
 
-func_C32C90:
+TryClearAssignedCategoryItem:
 	php
 	sep #$30 ;AXY->8
 	bankswitch 0x7E
@@ -2593,7 +2600,7 @@ func_C32CFE:
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
 	phx
-	jsl.l func_C23B89
+	jsl.l GetCategoryShortcutItemIds
 	ldx.b wTemp02
 	lda.l wItemType,x
 	plx
@@ -3023,7 +3030,7 @@ func_C332D7:
 	.db $30,$05,$3A,$9F,$8C,$8C,$7E,$28   ;C33379  
 	.db $60                               ;C33381
 
-func_C33382:
+ExecutePreparedThrowEffect:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp05

@@ -2032,7 +2032,7 @@ func_C12ABD:
 	lda.l wShirenStatus.itemAmounts,x
 	stx.b wTemp00
 	pha
-	jsl.l func_C23C4D
+	jsl.l RemoveItemFromCategoryShortcutSlots
 	pla
 	sta.b wTemp00
 	jsl.l func_C306F4
@@ -2533,7 +2533,7 @@ func_C13304:
 	stx.b wTemp00
 	lda.l wShirenStatus.itemAmounts,x
 	pha
-	jsl.l func_C23C4D
+	jsl.l RemoveItemFromCategoryShortcutSlots
 	lda.b wTemp00
 	bne @lbl_C13474
 ;C13470
