@@ -2616,9 +2616,11 @@ TryPrepareSelectedItemForJarInsertion:
 	stx.b wTemp00
 	plp
 	rts
+MonsterJarUseEffect:
 	.db $E2,$30,$BB,$DA,$20,$AD,$2B,$FA,$BF,$8C,$8C,$7E,$DA,$20,$C0,$2B   ;C32B5D
 	.db $FA,$86,$00,$DA,$22,$92,$01,$C3,$FA,$86,$00,$22,$F4,$06,$C3,$68   ;C32B6D
 	.db $68,$64,$00,$28,$6B               ;C32B7D
+HidingJarUseEffect:
 	sep #$30 ;AXY->8
 	tyx
 	phx

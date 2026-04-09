@@ -2301,7 +2301,7 @@ ItemUseEffectFunctionTable:
 	.dw $1623 ;SpecialOnigiri
 	.dw UnusedItemUseEffect-1 ;B3
 	.dw JarUseEffect-1 ;HoldingJar
-	.dw $2B81 ;HidingJar
+	.dw HidingJarUseEffect-1 ;HidingJar
 	.dw JarUseEffect-1 ;DivisionJar
 	.dw JarUseEffect-1 ;StrengtheningJar
 	.dw JarUseEffect-1 ;IdentityJar
@@ -2310,7 +2310,7 @@ ItemUseEffectFunctionTable:
 	.dw JarUseEffect-1 ;WeakeningJar
 	.dw JarUseEffect-1 ;BC
 	.dw JarUseEffect-1 ;BottomlessJar
-	.dw $2B5C ;MonsterJar
+	.dw MonsterJarUseEffect-1 ;MonsterJar
 	.dw JarUseEffect-1 ;ChangeJar
 	.dw JarUseEffect-1 ;MeldingJar
 	.dw $2963 ;WalrusJar
