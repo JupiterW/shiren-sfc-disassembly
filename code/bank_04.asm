@@ -13026,7 +13026,7 @@ func_C49AE8:
 	rep #$10 ;XY->16
 	jmp.w func_C49B5D
 
-func_C49AF0:
+OpenGroundItemActionMenu:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16

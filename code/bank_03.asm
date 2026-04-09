@@ -11270,7 +11270,7 @@ func_C3EBAD:
 	jsl.l func_C4854E
 	lda.l $7F9CE0
 	beq func_C3EBBE
-	jmp.w func_C3EC29
+	jmp.w BuildGroundItemActionCommand
 func_C3EBBE:
 	lda.l $7F9CE0
 	bne func_C3EBF9
@@ -11318,8 +11318,8 @@ func_C3EBF9:
 	.db $22,$9D,$A2,$C4,$A5,$00,$29,$FF,$00,$F0,$02,$80,$9C,$A2,$1A,$00   ;C3EC15  
 	.db $86,$00,$80,$BD                   ;C3EC25  
 
-func_C3EC29:
-	jsl.l func_C49AF0
+BuildGroundItemActionCommand:
+	jsl.l OpenGroundItemActionMenu
 	bcs func_C3EBBE
 	lda.b wTemp02
 	bne @lbl_C3EC40
