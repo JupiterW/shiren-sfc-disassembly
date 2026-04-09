@@ -811,6 +811,8 @@ func_C30E71:
 	sta.b wTemp00
 	plp
 	rtl
+MedicinalHerbUseEffect:
+	; Heal up to 25 HP. If Shiren is already at max HP, raise max HP by 1 first.
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
 	lda.b #$13

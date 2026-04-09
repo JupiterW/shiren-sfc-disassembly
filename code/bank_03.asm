@@ -2160,7 +2160,7 @@ ItemUseEffectFunctionTable:
 	.dw ShieldUseEffect-1 ;Stormward
 	.dw ShieldUseEffect-1 ;26
 	.dw ShieldUseEffect-1 ;27
-	.dw $0EA0 ;MedicinalHerb
+	.dw MedicinalHerbUseEffect-1 ;MedicinalHerb
 	.dw $0EFC ;RestorativeHerb
 	.dw $10B8 ;HappinessHerb
 	.dw $155C ;SightHerb
