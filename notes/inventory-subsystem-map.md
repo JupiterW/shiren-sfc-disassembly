@@ -23,6 +23,49 @@ Fixed inventory-related commands currently understood:
 - command family `$40` -> [DropSelectedInventoryItem](/Users/jupiter.whitworth/Development/new/shiren/code/bank_02.asm#L4128)
 - command families `$60/$80/$A0/$C0/$E0` feed item-selection and ground/container action paths
 
+## Where Item Data Lives
+
+There are three main layers to item data in this codebase:
+
+1. Item ids / canonical item definitions
+
+- [constants/items.asm](/Users/jupiter.whitworth/Development/new/shiren/constants/items.asm)
+  - Defines the canonical item ids like `Item_Cudgel`, `Item_WoodArrow`, `Item_BlankScroll`, `Item_HoldingJar`, etc.
+  - This is the stable "what item type is this?" layer.
+
+2. Live item-instance storage in WRAM
+
+- [ShirenStatus.itemAmounts](/Users/jupiter.whitworth/Development/new/shiren/structs/structs.asm#L10)
+  - Shiren's inventory list: 20 item-slot ids/references at `7E:894F`.
+- [wItemType](/Users/jupiter.whitworth/Development/new/shiren/wram.asm#L1547)
+  - Item type/id for each live item instance.
+- [wItemModification1](/Users/jupiter.whitworth/Development/new/shiren/wram.asm#L1555)
+- [wItemModification2](/Users/jupiter.whitworth/Development/new/shiren/wram.asm#L1559)
+- [wItemPotNextItem](/Users/jupiter.whitworth/Development/new/shiren/wram.asm#L1567)
+- [wItemGoods](/Users/jupiter.whitworth/Development/new/shiren/wram.asm#L1571)
+  - These arrays hold per-instance state such as stack/count-like values, curse/identify-related state, linked-list membership for container contents, and item-specific parameters.
+
+3. Decoded item metadata / behavior dispatch
+
+- [func_C30710](/Users/jupiter.whitworth/Development/new/shiren/code/bank_03.asm#L852)
+  - Central item metadata decoder.
+  - Input: item instance index in `wTemp00`
+  - Output: decoded item properties in temp vars such as:
+    - `wTemp00` category from [DATA8_C341BB](/Users/jupiter.whitworth/Development/new/shiren/code/bank_03.asm#L1881)
+    - `wTemp01` item type/id
+    - `wTemp02/wTemp03` modification bytes
+    - `wTemp04` derived item-strength/value-style byte
+    - `wTemp05` resolved display/name id
+    - `wTemp06` item state/flags
+    - `wTemp07` curse flag
+
+Item behavior then dispatches primarily through:
+
+- [ItemUseEffectFunctionTable](/Users/jupiter.whitworth/Development/new/shiren/code/bank_03.asm#L2122)
+- [ItemThrowEffectFunctionTable](/Users/jupiter.whitworth/Development/new/shiren/code/bank_03.asm#L2357)
+
+Those tables are where item-specific functions live for most "use" and "throw" behavior.
+
 ## Category Shortcut / Equip State
 
 Structure and slot meanings:
