@@ -370,7 +370,7 @@ func_C215AB:
 	;sta.b wTemp03
 	;stx.b wTemp04
 	;stz.b wTemp05
-	;jsl.l func_C33382
+	;jsl.l ExecutePreparedThrowEffect
 	;stz.b wTemp00
 	;plp
 	;rtl
@@ -1132,7 +1132,7 @@ DATA8_C21B97:
 	lda.l wShirenStatus.pitchersArmband
 	sta.b wTemp05
 @lbl_C21C5B:
-	jsl.l func_C33382
+	jsl.l ExecutePreparedThrowEffect
 @lbl_C21C5F:
 	stz.b wTemp00
 	plp
@@ -1205,7 +1205,7 @@ DATA8_C21B97:
 	;sta.b wTemp03
 	;stx.b wTemp04
 	;stz.b wTemp05
-	;jsl.l func_C33382
+	;jsl.l ExecutePreparedThrowEffect
 	;stz.b wTemp00
 	;plp
 	;rtl
@@ -2141,7 +2141,7 @@ DATA8_C21B97:
 	sta.b wTemp03
 	stx.b wTemp04
 	stz.b wTemp05
-	jsl.l func_C33382
+	jsl.l ExecutePreparedThrowEffect
 @lbl_C22361:
 	stz.b wTemp00
 	plp

@@ -3030,7 +3030,7 @@ func_C332D7:
 	.db $30,$05,$3A,$9F,$8C,$8C,$7E,$28   ;C33379  
 	.db $60                               ;C33381
 
-func_C33382:
+ExecutePreparedThrowEffect:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp05

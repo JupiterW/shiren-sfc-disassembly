@@ -4839,7 +4839,7 @@ ThrowSelectedItem:
 	sty.b wTemp01
 	lda.l $7E898A
 	sta.b wTemp05
-	jsl.l func_C33382
+	jsl.l ExecutePreparedThrowEffect
 @lbl_C246CB:
 	plp
 	rtl
@@ -9586,7 +9586,7 @@ func_C2942A:
 	sta.b wTemp03
 	stx.b wTemp04
 	stz.b wTemp05
-	jsl.l func_C33382
+	jsl.l ExecutePreparedThrowEffect
 	plp
 	rtl
 

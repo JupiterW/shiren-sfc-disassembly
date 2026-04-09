@@ -11325,16 +11325,18 @@ BuildGroundItemActionCommand:
 	bcs func_C3EBBE
 	lda.b wTemp02
 	bne @lbl_C3EC40
+	; Ground-container special case: choose an item to put inside the container.
 	.db $A9,$1F,$00,$85,$00,$22,$7D,$F1   ;C3EC33
 	.db $C3,$90,$A8,$80,$E9               ;C3EC3B  
 @lbl_C3EC40:
 	dec a
 	bne @lbl_C3EC4A
-;C3EC43
+	; Direct throw action for the underfoot item.
 	.db $A9,$9F,$00,$85,$00,$80,$9C
 @lbl_C3EC4A:
 	dec a
 	bne @lbl_C3EC77
+	; Exchange the selected inventory item with the underfoot item.
 	.db $E2,$20,$64,$00,$22,$7C,$3B,$C2,$A5,$00,$C2,$20,$30,$CE,$A9,$1F   ;C3EC4D
 	.db $00,$85,$00,$22,$B1,$A0,$C4,$B0,$C3,$E2,$20,$A5,$00,$09,$40,$85   ;C3EC5D
 	.db $01,$A9,$BF,$85,$00,$C2,$20,$4C   ;C3EC6D  
@@ -11342,6 +11344,7 @@ BuildGroundItemActionCommand:
 @lbl_C3EC77:
 	dec a
 	bne @lbl_C3EC91
+	; Name/read the underfoot item (blank-scroll-specific path included here).
 	.db $A9,$13,$00,$85,$00,$22,$AC,$10,$C2,$22,$AF,$59,$C3,$A5,$01,$85   ;C3EC7A
 	.db $00,$22,$36,$F3,$C3,$80,$98       ;C3EC8A
 @lbl_C3EC91:
@@ -11352,6 +11355,7 @@ BuildGroundItemActionCommand:
 @lbl_C3EC96:
 	dec a
 	bne @lbl_C3ECA6
+	; Ground-container special case: choose an item inside the container.
 	.db $A9,$1F,$00,$85,$00,$20,$F7,$F1   ;C3EC99
 	.db $B0,$86,$4C,$E6,$EB               ;C3ECA1  
 @lbl_C3ECA6:
