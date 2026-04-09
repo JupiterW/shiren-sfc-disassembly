@@ -1862,9 +1862,20 @@ func_C31959:
 	stz $01                                 ;C319DB
 	phx                                     ;C319DD
 	jsl.l DisplayMessage
-	.db $FA,$A9,$AF,$9F,$8C,$8B,$7E,$A9   ;C319DA
-	.db $00,$9F,$8C,$8D,$7E,$BF,$0C,$8E,$7E,$C9,$FF,$F0,$0C,$85,$00,$A9   ;C319EA
-	.db $FF,$9F,$0C,$8E,$7E,$22,$F4,$06,$C3,$60   ;C319FA
+	plx                                     ;C319E1
+	lda #$AF                                ;C319E2
+	sta $7E8B8C,x                           ;C319E4
+	lda #$00                                ;C319E8
+	sta $7E8D8C,x                           ;C319EA
+	lda $7E8E0C,x                           ;C319EE
+	cmp #$FF                                ;C319F2
+	beq @lbl_C31A02                         ;C319F4
+	sta $00                                 ;C319F6
+	lda #$FF                                ;C319F8
+	sta $7E8E0C,x                           ;C319FA
+	jsl $C306F4                             ;C319FE
+@lbl_C31A02:
+	rts                                     ;C31A02
 BigpotScrollUseEffect:
 	sep #$30                                ;C31A04
 	ldx $01                                 ;C31A06
