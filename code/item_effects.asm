@@ -3926,13 +3926,57 @@ func_C331B2:
 	.db $DA,$22,$F7,$D9,$C3,$FA           ;C3321C
 @lbl_C33222:
 	bra @lbl_C33280
-	.db $E2,$20,$A3,$04,$AA,$BF,$8C,$8C,$7E,$1A,$9F,$8C,$8C,$7E,$A0,$00   ;C33224
-	.db $FA,$BF,$0C,$8E,$7E,$48,$C9,$FF,$F0,$07,$C8,$A9,$FF,$9F,$0C,$8E   ;C33234
-	.db $7E,$C2,$20,$86,$00,$A3,$02,$85,$02,$DA,$5A,$22,$D1,$30,$C3,$7A   ;C33244  
-	.db $FA,$A5,$00,$30,$1E,$85,$06,$A3,$02,$85,$04,$86,$00,$BF,$8C,$8B   ;C33254
-	.db $7E,$AA,$BF,$BB,$41,$C3,$85,$01,$A9,$40,$02,$85,$02,$5A,$22,$CA   ;C33264  
-	.db $26,$C6,$7A,$C0,$01,$F0,$A9,$FA   ;C33274  
-	.db $E2,$20,$80,$13                   ;C3327C
+@lbl_C33224:
+	sep #$20                                ;C33224
+	.db $A3   ;C33226
+	.db $04   ;C33227
+	tax                                     ;C33228
+	lda $7E8C8C,x                           ;C33229
+	inc a                                   ;C3322D
+	sta $7E8C8C,x                           ;C3322E
+	ldy #$00                                ;C33232
+	plx                                     ;C33234
+	lda $7E8E0C,x                           ;C33235
+	pha                                     ;C33239
+	cmp #$FF                                ;C3323A
+	beq @lbl_C33245                         ;C3323C
+	.db $C8   ;C3323E
+	lda #$FF                                ;C3323F
+	sta $7E8E0C,x                           ;C33241
+@lbl_C33245:
+	rep #$20                                ;C33245
+	stx $00                                 ;C33247
+	.db $A3   ;C33249
+	.db $02   ;C3324A
+	sta $02                                 ;C3324B
+	phx                                     ;C3324D
+	phy                                     ;C3324E
+	jsl $C330D1                             ;C3324F
+	ply                                     ;C33253
+	plx                                     ;C33254
+	lda $00                                 ;C33255
+	bmi @lbl_C33277                         ;C33257
+	sta $06                                 ;C33259
+	.db $A3   ;C3325B
+	.db $02   ;C3325C
+	sta $04                                 ;C3325D
+	stx $00                                 ;C3325F
+	lda $7E8B8C,x                           ;C33261
+	tax                                     ;C33265
+	lda $C341BB,x                           ;C33266
+	sta $01                                 ;C3326A
+	lda #$0240                              ;C3326C
+	sta $02                                 ;C3326F
+	phy                                     ;C33271
+	jsl $C626CA                             ;C33272
+	ply                                     ;C33276
+@lbl_C33277:
+	.db $C0   ;C33277
+	.db $01   ;C33278
+	beq @lbl_C33224                         ;C33279
+	plx                                     ;C3327B
+	sep #$20                                ;C3327C
+	.db $80,$13   ;C3327E
 @lbl_C33280:
 	sep #$20 ;A->8
 	lda.l wItemPotNextItem,x
