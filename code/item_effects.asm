@@ -4506,9 +4506,19 @@ func_C32FC0:
 	lda.l wItemFuseAbility2,x
 	bit.b #$01
 	beq @lbl_C32FEC
-	.db $DA,$22,$10,$07,$C3,$FA,$A5,$04,$F0,$15,$BF,$8C,$8C,$7E,$3A,$9F   ;C32FCD
-	.db $8C,$8C,$7E,$A9,$13,$85,$00,$A9   ;C32FDD  
-	.db $FF,$85,$01,$22,$BF,$34,$C2       ;C32FE5  
+	phx                                     ;C32FCD
+	jsl $C30710                             ;C32FCE
+	plx                                     ;C32FD2
+	lda $04                                 ;C32FD3
+	.db $F0,$15   ;C32FD5
+	lda $7E8C8C,x                           ;C32FD7
+	dec a                                   ;C32FDB
+	sta $7E8C8C,x                           ;C32FDC
+	lda #$13                                ;C32FE0
+	sta $00                                 ;C32FE2
+	lda #$FF                                ;C32FE4
+	sta $01                                 ;C32FE6
+	jsl $C234BF                             ;C32FE8
 @lbl_C32FEC:
 	plp
 	rtl
