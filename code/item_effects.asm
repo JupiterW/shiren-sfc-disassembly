@@ -234,7 +234,7 @@ func_C309F1:
 	rts
 
 ;c309fe
-func_C309FE:
+VictoryHerbUseEffect:
 	sep #$30 ;AXY->8
 	lda.b #$14
 	sta.b wTemp00
@@ -245,7 +245,7 @@ func_C309FE:
 	jsl.l DisplayMessage
 
 ;c30a14
-func_C30A14:
+KignyHerbUseEffect:
 	rts
 
 ;c30a15
@@ -268,7 +268,7 @@ func_C30A15:
 	rts
 
 ;c30a36
-func_C30A36:
+AmnesiaHerbUseEffect:
 	sep #$30 ;AXY->8
 	lda.b #$04
 	sta.b wTemp00
@@ -319,7 +319,7 @@ func_C30A95:
 	rts
 
 ;c30a96
-func_C30A96:
+BigBellySeedUseEffect:
 	rep #$20 ;A->16
 	lda.w #$0064
 	sta.b wTemp00
@@ -337,7 +337,7 @@ func_C30A96:
 	rts
 
 ;c30abb
-func_C30ABB:
+LittleBellySeedUseEffect:
 	rep #$20 ;A->16
 	lda.w #$FF9C
 	sta.b wTemp00
@@ -355,7 +355,7 @@ func_C30ABB:
 	rts
 
 ;c30ae0
-func_C30AE0:
+TalkSeedUseEffect:
 	jsl.l func_C286C8
 	rts
 
@@ -811,6 +811,8 @@ func_C30E71:
 	sta.b wTemp00
 	plp
 	rtl
+MedicinalHerbUseEffect:
+	; Heal up to 25 HP. If Shiren is already at max HP, raise max HP by 1 first.
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
 	lda.b #$13
@@ -854,22 +856,80 @@ func_C30E71:
 	jsl.l func_C23209
 @lbl_C30EFC:
 	rts
-	.db $E2,$20,$C2,$10,$A9,$13,$85,$00,$22,$28,$11,$C2,$A5,$01,$38,$E5   ;C30EFD
-	.db $00,$F0,$21,$C9,$64,$90,$02,$A9,$64,$85,$02,$A0,$40,$00,$84,$00   ;C30F0D
-	.db $48
+RestorativeHerbUseEffect:
+	; Heal up to 100 HP. If Shiren is already at max HP, raise max HP by 2 first.
+	; Then clear confusion and puzzled status if present.
+	sep #$20 ;A->8
+	rep #$10 ;XY->16
+	lda.b #$13
+	sta.b wTemp00
+	jsl.l func_C21128
+	lda.b wTemp01
+	sec
+	sbc.b wTemp00
+	beq @lbl_C30F31
+	cmp.b #$64
+	bcc @lbl_C30F16
+	lda.b #$64
+@lbl_C30F16:
+	sta.b wTemp02
+	ldy.w #$0040
+	sty.b wTemp00
+	pha
 	jsl.l DisplayMessage
-	.db $68,$85,$02,$64,$03,$A9,$13,$85,$00,$22,$09   ;C30F1D
-	.db $32,$C2,$80,$27,$A0,$87,$00,$84,$00,$A9,$02,$85,$02
+	pla
+	sta.b wTemp02
+	stz.b wTemp03
+	lda.b #$13
+	sta.b wTemp00
+	jsl.l func_C23209
+	bra @lbl_C30F58
+@lbl_C30F31:
+	ldy.w #$0087
+	sty.b wTemp00
+	lda.b #$02
+	sta.b wTemp02
 	jsl.l DisplayMessage
-	.db $A9,$13,$85,$00,$A0,$02,$00,$84,$02,$22,$3C,$32,$C2,$A9,$13   ;C30F3D  
-	.db $85,$00,$A0,$02,$00,$84,$02,$22,$09,$32,$C2,$E2,$20,$C2,$10,$A9   ;C30F4D  
-	.db $13,$85,$00,$22,$A2,$85,$C2,$A5,$01,$48,$A5,$03,$48,$68,$F0,$12   ;C30F5D  
-	.db $A0,$13,$00,$84,$00,$22,$FF,$3F,$C2,$A0,$67,$00,$84,$00
+	lda.b #$13
+	sta.b wTemp00
+	ldy.w #$0002
+	sty.b wTemp02
+	jsl.l func_C2323C
+	lda.b #$13
+	sta.b wTemp00
+	ldy.w #$0002
+	sty.b wTemp02
+	jsl.l func_C23209
+@lbl_C30F58:
+	sep #$20 ;A->8
+	rep #$10 ;XY->16
+	lda.b #$13
+	sta.b wTemp00
+	jsl.l func_C285A2
+	lda.b wTemp01
+	pha
+	lda.b wTemp03
+	pha
+	pla
+	beq @lbl_C30F7F
+	ldy.w #$0013
+	sty.b wTemp00
+	jsl.l func_C23FFF
+	ldy.w #$0067
+	sty.b wTemp00
 	jsl.l DisplayMessage
-	.db $68,$F0,$12,$A0,$13,$00,$84,$00,$22,$73,$40,$C2,$A0,$6C   ;C30F7D  
-	.db $00,$84,$00
+@lbl_C30F7F:
+	pla
+	beq @lbl_C30F94
+	ldy.w #$0013
+	sty.b wTemp00
+	jsl.l func_C24073
+	ldy.w #$006C
+	sty.b wTemp00
 	jsl.l DisplayMessage
-	.db $60,$E2,$20,$C2,$10,$A9,$13,$85,$00   ;C30F8D
+@lbl_C30F94:
+	rts
+	.db $E2,$20,$C2,$10,$A9,$13,$85,$00   ;C30F95
 	.db $22,$A2,$85,$C2,$A5,$01,$48,$A5,$03,$48,$A5,$00,$F0,$12,$A0,$13   ;C30F9D  
 	.db $00,$84,$00,$22,$A7,$40,$C2,$A0,$9B,$00,$84,$00
 	jsl.l DisplayMessage
@@ -883,7 +943,7 @@ func_C30E71:
 	.db $00,$22,$28,$11,$C2,$A5,$01,$C5,$00,$F0,$05,$20,$E9,$28,$80,$03   ;C30FED
 	.db $20,$FD,$0E,$20,$04,$10,$60       ;C30FFD  
 
-func_C31004:
+AntidoteHerbUseEffect:
 	sep #$20 ;A->8
 	jsl.l func_C21167
 	lda.b wTemp01
@@ -895,6 +955,7 @@ func_C31004:
 	jsl.l DisplayMessage
 @lbl_C31021:
 	rts
+StrengthHerbUseEffect:
 	.db $E2,$20,$22,$67,$11,$C2,$A5,$00,$C5,$01,$D0,$1F,$A9,$9F,$85,$00   ;C31022
 	.db $64,$01,$A9,$01,$85,$02
 	jsl.l DisplayMessage
@@ -912,29 +973,55 @@ func_C31004:
 	.db $85,$00,$64,$01,$A5,$02,$48
 	jsl.l DisplayMessage
 	.db $68,$85,$02,$A5,$02   ;C310A2  
-	.db $85,$00,$22,$71,$32,$C2,$60,$E2,$20,$A9,$13,$85,$00,$E2,$20,$A9   ;C310B2  
-	.db $01,$85,$01,$22,$79,$35,$C2,$60,$E2,$20,$A9,$13,$85,$00,$E2,$20   ;C310C2  
-	.db $A9,$05,$85,$01,$22,$79,$35,$C2,$60,$E2,$20,$A9,$13,$85,$00,$E2   ;C310D2
-	.db $20,$A9,$FF,$85,$01,$22,$79,$35,$C2,$60,$E2,$20,$A9,$13,$85,$00   ;C310E2  
+	.db $85,$00,$22,$71,$32,$C2,$60   ;C310B2
+HappinessHerbUseEffect:
+	.db $E2,$20,$A9,$13,$85,$00,$E2,$20,$A9   ;C310B9
+	.db $01,$85,$01,$22,$79,$35,$C2,$60   ;C310C2
+AngelSeedUseEffect:
+	.db $E2,$20,$A9,$13,$85,$00,$E2,$20   ;C310CA
+	.db $A9,$05,$85,$01,$22,$79,$35,$C2,$60   ;C310D2
+BitterHerbUseEffect:
+	.db $E2,$20,$A9,$13,$85,$00,$E2   ;C310DB
+	.db $20,$A9,$FF,$85,$01,$22,$79,$35,$C2,$60   ;C310E2
+MisfortuneHerbUseEffect:
+	.db $E2,$20,$A9,$13,$85,$00   ;C310EC
 	.db $E2,$20,$A9,$FD,$85,$01,$22,$79,$35,$C2,$60,$E2,$20,$A9,$13,$85   ;C310F2
 	.db $00,$E2,$30,$A6,$00,$DA,$22,$28,$11,$C2,$FA,$A5,$00,$48,$A5,$01   ;C31102
 	.db $48,$86,$00,$A5,$05,$3A,$49,$FF,$1A,$85,$01,$DA,$22,$79,$35,$C2   ;C31112
 	.db $FA,$86,$00,$DA,$22,$28,$11,$C2,$FA,$68,$38,$E5,$01,$85,$02,$64   ;C31122
 	.db $03,$86,$00,$DA,$22,$3C,$32,$C2,$FA,$86,$00,$DA,$22,$28,$11,$C2   ;C31132  
 	.db $FA,$68,$38,$E5,$00,$85,$02,$64,$03,$86,$00,$22,$09,$32,$C2,$60   ;C31142
+IllLuckHerbUseEffect:
 	.db $E2,$20,$A9,$13,$85,$00,$E2,$30,$A6,$00,$DA,$22,$28,$11,$C2,$FA   ;C31152
 	.db $86,$00,$A9,$9D,$85,$01,$DA,$22,$79,$35,$C2,$FA,$86,$00,$A9,$9D   ;C31162  
 	.db $85,$01,$DA,$22,$79,$35,$C2,$FA,$86,$00,$A9,$9D,$85,$01,$DA,$22   ;C31172  
 	.db $79,$35,$C2,$FA,$86,$00,$DA,$22,$28,$11,$C2,$FA,$A9,$00,$EB,$A5   ;C31182  
 	.db $00,$C2,$20,$3A,$49,$FF,$FF,$1A,$85,$02,$86,$00,$22,$09,$32,$C2   ;C31192
-	.db $60,$E2,$20,$A9,$87,$85,$00,$64,$01,$A9,$05,$85,$02
+	.db $60
+LifeHerbUseEffect:
+	; Increase Shiren's max HP by 5, which also heals by the same amount.
+	sep #$20 ;A->8
+	lda.b #$87
+	sta.b wTemp00
+	stz.b wTemp01
+	lda.b #$05
+	sta.b wTemp02
 	jsl.l DisplayMessage
-	.db $A9,$13,$85,$00,$E2,$20,$A9,$05,$85,$02,$64,$03,$22,$3C,$32   ;C311B2  
-	.db $C2,$60,$E2,$20,$A9,$65,$85,$00,$64,$01
+	lda.b #$13
+	sta.b wTemp00
+	sep #$20 ;A->8
+	lda.b #$05
+	sta.b wTemp02
+	stz.b wTemp03
+	jsl.l func_C2323C
+	rts
+	.db $E2,$20,$A9,$65,$85,$00,$64,$01   ;C311C3
 	jsl.l DisplayMessage
 	.db $22,$A2   ;C311C2
 	.db $5D,$C2,$A9,$13,$85,$00,$E2,$20,$A9,$0B,$85,$01,$22,$BC,$40,$C2   ;C311D2  
-	.db $60,$C2,$20,$E2,$10,$A0,$C7,$84,$00,$22,$A6,$3B,$C2,$C2,$20,$E2   ;C311E2
+	.db $60   ;C311E2
+PoisonHerbUseEffect:
+	.db $C2,$20,$E2,$10,$A0,$C7,$84,$00,$22,$A6,$3B,$C2,$C2,$20,$E2   ;C311E3
 	.db $10,$A9,$3F,$00,$85,$00,$A0,$05,$84,$02
 	jsl.l DisplayMessage
 	.db $A9,$FB   ;C311F2  
@@ -982,7 +1069,7 @@ func_C312DE:
 
 func_C312FF:
 	jsr.w func_C328E9
-	jsr.w func_C31004
+	jsr.w AntidoteHerbUseEffect
 	rtl
 	.db $20,$0A,$13,$6B                   ;C31306  
 	sep #$30 ;AXY->8
@@ -1014,6 +1101,7 @@ func_C312FF:
 	sty.b wTemp00
 	jsl.l DisplayMessage
 	rts
+ConfusionHerbUseEffect:
 	.db $E2,$20,$A9,$0B,$85,$01,$A9,$13,$85,$00,$22,$FF,$3F,$C2,$A5,$00   ;C31344
 	.db $F0,$0A,$A9,$66,$85,$00,$64,$01
 	jsl.l DisplayMessage
@@ -1024,7 +1112,9 @@ func_C312FF:
 	.db $E2,$30,$A5,$00,$48,$22,$29,$89,$C2,$68,$85,$02,$A9,$04,$A6,$00   ;C31384
 	.db $F0,$02,$A9,$05,$85,$00,$64,$01
 	jsl.l DisplayMessage
-	.db $60,$E2,$20,$A9   ;C31394  
+	.db $60   ;C313A0
+SleepHerbUseEffect:
+	.db $E2,$20,$A9   ;C313A1
 	.db $05,$85,$01,$A9,$13,$85,$00,$22,$80,$40,$C2,$A5,$00,$F0,$0A,$A9   ;C313A4  
 	.db $6A,$85,$00,$64,$01
 	jsl.l DisplayMessage
@@ -1061,6 +1151,7 @@ func_C312FF:
 	.db $A9,$36,$85,$00,$64,$01
 	jsl.l DisplayMessage
 	.db $60                       ;C314BC  
+DragonHerbUseEffect:
 	sep #$30 ;AXY->8
 	lda.b #$13
 	sta.b wTemp00
@@ -1138,6 +1229,7 @@ func_C312FF:
 @lbl_C31552:
 	.db $86,$00,$A9,$01,$85,$01,$22,$79   ;C31552  
 	.db $35,$C2,$60                       ;C3155A  
+SightHerbUseEffect:
 	rep #$20 ;A->16
 	lda.w #$0075
 	sta.b wTemp00
@@ -1153,6 +1245,7 @@ func_C312FF:
 	.db $A9,$D0,$07,$85,$00   ;C3157A
 	.db $22,$BE,$33,$C2,$A2,$32,$00,$20,$DF,$15,$A9,$D0,$07,$85,$00,$22   ;C3158A  
 	.db $BE,$33,$C2,$60                   ;C3159A  
+OnigiriUseEffect:
 	rep #$30 ;AXY->16
 	ldx.w #$000A
 	jsr.w func_C315DF
@@ -1206,7 +1299,9 @@ func_C315DF:
 	.db $68,$85,$00,$22,$95,$33,$C2,$A9,$0A,$00,$85,$02,$22,$26,$E5,$C3   ;C315F9
 	.db $A5,$00,$29,$FF,$00,$85,$02,$A9,$4E,$00,$85,$00
 	jsl.l DisplayMessage
-	.db $A9,$10,$27,$85,$00,$22,$BE,$33,$C2,$38,$60,$C2,$30,$A2,$0A,$00   ;C31619
+	.db $A9,$10,$27,$85,$00,$22,$BE,$33,$C2,$38,$60   ;C31619
+SpecialOnigiriUseEffect:
+	.db $C2,$30,$A2,$0A,$00   ;C31624
 	.db $20,$DF,$15,$B0,$06,$A9,$2C,$01,$20,$BC,$15,$E2,$30,$22,$5F,$F6   ;C31629  
 	.db $C3,$A5,$00,$29,$07,$C9,$07,$B0,$F4,$0A,$AA,$C2,$20,$7C,$49,$16   ;C31639  
 	.db $57,$16,$6D,$16,$83,$16,$99,$16,$BF,$16,$22,$10,$AD,$16,$E2,$20   ;C31649  
@@ -1229,7 +1324,9 @@ func_C315DF:
 	.db $48
 	jsl.l DisplayMessage
 	.db $68,$85,$02,$64,$03,$A9,$13,$85,$00,$22,$09   ;C316D9
-	.db $32,$C2,$60,$C2,$20,$E2,$10,$A0,$C6,$84,$00,$22,$A6,$3B,$C2,$A9   ;C316E9  
+	.db $32,$C2,$60   ;C316E9
+SpoiledOnigiriUseEffect:
+	.db $C2,$20,$E2,$10,$A0,$C6,$84,$00,$22,$A6,$3B,$C2,$A9   ;C316EC
 	.db $2C,$01,$85,$00,$22,$BE,$33,$C2,$A9,$4C,$00,$85,$00
 	jsl.l DisplayMessage
 	.db $A9,$3F,$00,$85,$00,$A0,$05,$84,$02
@@ -1248,13 +1345,42 @@ func_C315DF:
 	.db $AC,$10,$C2,$22,$1A,$63,$C3,$A6,$00,$30,$24,$22,$71,$27,$C6,$A5   ;C31779  
 	.db $00,$86,$00,$85,$02,$DA,$22,$E7,$0B,$C2,$FA,$A5,$00,$30,$10,$86   ;C31789
 	.db $00,$85,$02,$48,$22,$7A,$5B,$C3,$68,$85,$00,$22,$AA,$7F,$C2,$60   ;C31799
-	.db $E2,$20,$C2,$10,$A2,$8C,$00,$86,$00
+TrapScrollUseEffect:
+	sep #$20 ;A->8                       ;C317A9
+	rep #$10 ;XY->16                    ;C317AB
+	ldx.w #$008C                        ;C317AD
+	stx.b wTemp00                       ;C317B0
 	jsl.l DisplayMessage
-	.db $A9,$1E,$48   ;C317A9
-	.db $22,$87,$62,$C3,$A6,$00,$30,$1E,$22,$71,$27,$C6,$A5,$00,$86,$00   ;C317B9  
-	.db $85,$02,$DA,$22,$AB,$D3,$C3,$FA,$A5,$00,$30,$0A,$86,$00,$09,$C0   ;C317C9  
-	.db $85,$02,$22,$A2,$5B,$C3,$68,$3A,$D0,$D5,$AF,$75,$89,$7E,$89,$01   ;C317D9  
-	.db $F0,$04,$22,$A2,$5F,$C3,$60,$C2,$20,$A9,$97,$00,$85,$00
+	lda.b #$1E                          ;C317B6
+@lbl_C317B8:
+	pha                                 ;C317B8
+	jsl.l func_C36287                   ;C317B9
+	ldx.b wTemp00                       ;C317BD
+	bmi @lbl_C317DF                     ;C317BF
+	jsl.l $C62771                       ;C317C1
+	lda.b wTemp00                       ;C317C5
+	stx.b wTemp00                       ;C317C7
+	sta.b wTemp02                       ;C317C9
+	phx                                 ;C317CB
+	jsl.l func_C3D3AB                   ;C317CC
+	plx                                 ;C317D0
+	lda.b wTemp00                       ;C317D1
+	bmi @lbl_C317DF                     ;C317D3
+	stx.b wTemp00                       ;C317D5
+	ora.b #$C0                          ;C317D7
+	sta.b wTemp02                       ;C317D9
+	jsl.l func_C35BA2                   ;C317DB
+@lbl_C317DF:
+	pla                                 ;C317DF
+	dec a                               ;C317E0
+	bne @lbl_C317B8                     ;C317E1
+	lda.l $7E8975                       ;C317E3
+	bit.b #$01                          ;C317E7
+	beq @lbl_C317EF                     ;C317E9
+	jsl.l func_C35FA2                   ;C317EB
+@lbl_C317EF:
+	rts                                 ;C317EF
+	.db $C2,$20,$A9,$97,$00,$85,$00
 	jsl.l DisplayMessage
 	.db $22,$BD,$7F,$C2,$60,$E2,$20,$22,$5A,$7F,$C2,$A5,$00,$F0   ;C317F9  
 	.db $0C,$C2,$20,$A9,$68,$00,$85,$00
@@ -1263,6 +1389,7 @@ func_C315DF:
 	.db $5C,$00,$85,$00
 	jsl.l DisplayMessage
 	.db $60                               ;C31821
+LightScrollUseEffect:
 	rep #$20 ;A->16
 	lda.w #$0013
 	sta.b wTemp00
@@ -1289,16 +1416,36 @@ func_C315DF:
 	rts
 	.db $C2,$20,$A9,$55,$00,$85,$00
 	jsl.l DisplayMessage
-	.db $60,$C2,$20,$A9,$62   ;C31863
-	.db $01,$85,$00
+	.db $60   ;C3186E
+RemovalScrollUseEffect:
+	rep #$20 ;A->16                    ;C3186F
+	lda.w #$0162
+	sta.b wTemp00
 	jsl.l DisplayMessage
-	.db $60,$C2,$20,$A9,$13,$00,$85,$00,$A9   ;C31873  
-	.db $D1,$00,$85,$02,$22,$50,$25,$C6,$A9,$84,$00,$85,$00
+	rts
+SilenceScrollUseEffect:
+	rep #$20 ;A->16                    ;C3187B
+	lda.w #$0013
+	sta.b wTemp00
+	lda.w #$00D1
+	sta.b wTemp02
+	jsl.l func_C62550
+	lda.w #$0084
+	sta.b wTemp00
 	jsl.l DisplayMessage
-	.db $E2,$20,$A9,$01,$85,$00,$22,$5A,$33,$C2,$60,$22,$72,$86,$C2   ;C31893  
-	.db $60,$22,$6E,$87,$C2,$C2,$20,$A9,$63,$01,$85,$00
+	sep #$20 ;A->8
+	lda.b #$01
+	sta.b wTemp00
+	jsl.l $C2335A
+	rts
+BlastwaveScrollUseEffect:
+	jsl.l func_C28672                   ;C3189F
+	rts                                ;C318A3
+HasteScrollUseEffect:
+	.db $22,$6E,$87,$C2,$C2,$20,$A9,$63,$01,$85,$00   ;C318A4
 	jsl.l DisplayMessage
 	.db $60                               ;C318B3
+SleepScrollUseEffect:
 	jsl.l func_C28790
 	rts
 	.db $E2,$20,$A9,$1E,$85,$00
@@ -1306,8 +1453,13 @@ func_C315DF:
 	.db $A5,$00,$D0,$0B,$A9,$5C   ;C318B9
 	.db $85,$00,$64,$01
 	jsl.l DisplayMessage
-	.db $60,$22,$51,$88,$C2,$60,$22,$DA   ;C318C9  
-	.db $87,$C2,$60,$22,$A3,$88,$C2,$60   ;C318D9  
+	.db $60,$22,$51,$88,$C2,$60   ;C318D1
+ConfusionScrollUseEffect:
+	.db $22,$DA   ;C318D7
+	.db $87,$C2,$60   ;C318D9
+ExplosionScrollUseEffect:
+	.db $22,$A3,$88,$C2,$60   ;C318DC
+PowerupScrollUseEffect:
 	sep #$20 ;A->8
 	lda.b #$13
 	sta.b wTemp00
@@ -1318,8 +1470,10 @@ func_C315DF:
 	sta.b wTemp00
 	jsl.l func_C28418
 	rts
+MonsterHouseScrollUseEffect:
 	.db $22,$4D,$2B,$C6,$22,$EA,$69,$C3   ;C318F8  
 	.db $60                               ;C31900
+IdentityScrollUseEffect:
 	sep #$30 ;AXY->8
 	ldy.b wTemp01
 	jsl.l GetCurrentDungeon
@@ -1374,7 +1528,9 @@ func_C31959:
 	jsl.l DisplayMessage
 	.db $FA,$A9,$AF,$9F,$8C,$8B,$7E,$A9   ;C319DA
 	.db $00,$9F,$8C,$8D,$7E,$BF,$0C,$8E,$7E,$C9,$FF,$F0,$0C,$85,$00,$A9   ;C319EA
-	.db $FF,$9F,$0C,$8E,$7E,$22,$F4,$06,$C3,$60,$E2,$30,$A6,$01,$86,$00   ;C319FA  
+	.db $FF,$9F,$0C,$8E,$7E,$22,$F4,$06,$C3,$60   ;C319FA
+BigpotScrollUseEffect:
+	.db $E2,$30,$A6,$01,$86,$00   ;C31A04
 	.db $20,$59,$19,$A6,$00,$9B,$BF,$8C,$8B,$7E,$AA,$BF,$BB,$41,$C3,$BB   ;C31A0A  
 	.db $C9,$0B,$D0,$38,$DA,$A0,$FF,$C8,$BF,$0C,$8E,$7E,$AA,$C9,$FF,$D0   ;C31A1A
 	.db $F6,$FA,$98,$18,$7F,$8C,$8C,$7E,$A0,$01,$C9,$0A,$90,$02,$A0,$00   ;C31A2A  
@@ -1426,6 +1582,7 @@ func_C31AB4:
 	sta.b wTemp00
 	jsl.l func_C2342B
 	rts
+AirBlessScrollUseEffect:
 	.db $E2,$30,$22,$89,$3B,$C2,$A6,$00,$30,$54,$A9,$13,$85,$00,$A9,$C8   ;C31ACF
 	.db $85,$02,$DA,$8B,$22,$65,$25,$C6,$AB,$FA,$BD,$8C,$8C,$C9,$63,$F0   ;C31ADF  
 	.db $3D,$A9,$AA,$85,$00,$64,$01,$86,$02,$DA,$8B
@@ -1479,6 +1636,7 @@ func_C31B5C:
 	sta.b wTemp00
 	jsl.l func_C234BF
 	rts
+EarthBlessScrollUseEffect:
 	.db $E2,$30,$22,$89,$3B,$C2,$A6,$01,$30,$54,$A9,$13,$85,$00,$A9,$C9   ;C31B7B
 	.db $85,$02,$DA,$8B,$22,$65,$25,$C6,$AB,$FA,$BD,$8C,$8C,$C9,$63,$F0   ;C31B8B  
 	.db $3D,$A9,$AA,$85,$00,$64,$01,$86,$02,$DA,$8B
@@ -1493,7 +1651,9 @@ func_C31B5C:
 	.db $A9,$01,$80,$97,$A9,$5C   ;C31BCB
 	.db $85,$00,$64,$01
 	jsl.l DisplayMessage
-	.db $60,$E2,$30,$22,$89,$3B,$C2,$A5   ;C31BDB  
+	.db $60   ;C31BE3
+PlatingScrollUseEffect:
+	.db $E2,$30,$22,$89,$3B,$C2,$A5   ;C31BE4
 	.db $00,$25,$01,$30,$75,$A5,$01,$48,$A5,$00,$48,$30,$0C,$A9,$13,$85   ;C31BEB
 	.db $00,$A9,$CA,$85,$02,$22,$65,$25,$C6,$A3,$02,$30,$0C,$A9,$13,$85   ;C31BFB
 	.db $00,$A9,$CB,$85,$02,$22,$65,$25,$C6,$A9,$8E,$85,$00,$64,$01
@@ -1509,6 +1669,7 @@ func_C31B5C:
 	.db $60,$A9,$5C,$85,$00,$64,$01   ;C31C5B  
 	jsl.l DisplayMessage
 	.db $60               ;C31C6B  
+BlessingScrollUseEffect:
 	sep #$30 ;AXY->8
 	lda.b #$13
 	sta.b wTemp00
@@ -1584,13 +1745,16 @@ func_C31B5C:
 	rts
 	.db $E2,$20,$A9,$06,$85,$01,$22,$80   ;C31E00
 	.db $40,$C2,$60,$60                   ;C31E08
+KnockbackStaffUseEffect:
 	jsl.l func_C2444B
 	rts
+DoppelgangerStaffUseEffect:
 	sep #$20 ;A->8
 	lda.b #$32
 	sta.b wTemp01
 	jsl.l func_C2402A
 	rts
+SwitchingStaffUseEffect:
 	rep #$20 ;A->16
 	sep #$10 ;XY->8
 	lda.b wTemp00
@@ -1622,6 +1786,7 @@ func_C31B5C:
 	sta.b wTemp00
 	jsl.l func_C289F5
 	rts
+BufusStaffUseEffect:
 	rep #$20 ;A->16
 	sep #$10 ;XY->8
 	ldx.b wTemp00
@@ -1671,6 +1836,7 @@ func_C31B5C:
 @lbl_C31EB5:
 	.db $22,$3A,$43,$C2,$A9,$01,$00,$85   ;C31EB5  
 	.db $02,$22,$E5,$25,$C6,$60           ;C31EBD
+SkullStaffUseEffect:
 	rep #$20 ;A->16
 	sep #$10 ;XY->8
 	lda.b wTemp00
@@ -1747,7 +1913,7 @@ Jumptable_C31F29:
 	.dw $1FCC
 	.dw $0000
 	.dw $0000
-	.dw func_C31F99
+	.dw MisfortuneStaffUseEffect
 	.dw $1E00
 	.dw $1DF2
 	.dw $1E5E
@@ -1755,6 +1921,7 @@ Jumptable_C31F29:
 	.dw $1E11
 	.dw $0000
 	.dw $0000
+HappinessStaffUseEffect:
 	.dw $30E2
 	.dw $00A5
 	.dw $13C9
@@ -1788,7 +1955,7 @@ Jumptable_C31F29:
 	.dw $262B
 	.dw $60C6
 
-func_C31F99:
+MisfortuneStaffUseEffect:
 	sep #$20 ;A->8
 	jsl.l func_C625CE
 	lda.b #$FF
@@ -1809,12 +1976,17 @@ func_C31F99:
 	.db $C0,$13,$F0,$23,$C4,$00,$F0,$17,$A6,$00,$E0,$FF,$F0,$0A,$A9,$02   ;C31FD6
 	.db $85,$02,$5A,$22,$50,$25,$C6,$7A,$84,$00,$22,$B9,$25,$C6,$60,$A9   ;C31FE6  
 	.db $01,$85,$02,$22,$50,$25,$C6,$60,$E2,$20,$A9,$0B,$85,$01,$22,$FF   ;C31FF6  
-	.db $3F,$C2,$60,$E2,$20,$A9,$13,$85,$00,$A9,$15,$85,$01,$A5,$00,$48   ;C32006  
+	.db $3F,$C2,$60   ;C32006
+InvisibilityHerbUseEffect:
+	.db $E2,$20,$A9,$13,$85,$00,$A9,$15,$85,$01,$A5,$00,$48   ;C32009
 	.db $22,$F8,$82,$C2,$68,$85,$02,$C2,$20,$A9,$5D,$01,$85,$00
 	jsl.l DisplayMessage
 	.db $60,$E2,$20,$A9,$15,$85,$01,$A5,$00,$22,$F8,$82,$C2,$A9   ;C32026  
-	.db $01,$85,$02,$22,$50,$25,$C6,$60,$22,$05,$83,$C2,$60,$22,$50,$83   ;C32036  
+	.db $01,$85,$02,$22,$50,$25,$C6,$60   ;C32036
+SlothStaffUseEffect:
+	.db $22,$05,$83,$C2,$60,$22,$50,$83   ;C3203E
 	.db $C2,$60                           ;C32046
+ParalysisStaffUseEffect:
 	sep #$20 ;A->8
 	lda.b #$03
 	sta.b wTemp02
@@ -1833,6 +2005,7 @@ func_C31F99:
 	jsl.l func_C62550
 	jsl.l func_C625CE
 	rts
+PostponeStaffUseEffect:
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
 	phx
@@ -1860,6 +2033,7 @@ func_C31F99:
 	rts
 @lbl_C320A8:
 	.db $FA,$86,$00,$22,$90,$43,$C2,$60   ;C320A8
+PainSplitStaffUseEffect:
 	sep #$30 ;AXY->8
 	jsl.l func_C28451
 	rts
@@ -1870,13 +2044,16 @@ func_C31F99:
 	.db $60,$E2,$30,$A4,$00,$A6,$01,$86,$00,$DA,$22,$28,$11,$C2,$FA,$A5   ;C320F7
 	.db $00,$4A,$48,$49,$FF,$1A,$F0,$0E,$85,$02,$A9,$FF,$85,$03,$86,$00   ;C32107
 	.db $5A,$22,$09,$32,$C2,$7A,$68,$85,$02,$64,$03,$84,$00,$22,$09,$32   ;C32117
-	.db $C2,$60,$E2,$20,$22,$DF,$69,$C3,$A5,$00,$D0,$29,$22,$DB,$27,$C6   ;C32127
+	.db $C2,$60   ;C32127
+GreatHallScrollUseEffect:
+	.db $E2,$20,$22,$DF,$69,$C3,$A5,$00,$D0,$29,$22,$DB,$27,$C6   ;C32129
 	.db $A5,$00,$C9,$0A,$F0,$1F,$C9,$0C,$F0,$1B,$A9,$13,$85,$00,$A9,$03   ;C32137  
 	.db $85,$02,$22,$F6,$26,$C6,$22,$F6,$66,$C3,$A9,$E7,$85,$00,$64,$01   ;C32147  
 	jsl.l DisplayMessage
 	.db $60,$A9,$5C,$85,$00,$64,$01
 	jsl.l DisplayMessage
 	.db $60   ;C32157  
+NeedScrollUseEffect:
 	sep #$30 ;AXY->8
 	ldy.b #$01
 	lda.b #$13
@@ -1983,6 +2160,7 @@ func_C31F99:
 	jsl.l DisplayMessage
 @lbl_C3225B:
 	rts
+ExtractionScrollUseEffect:
 	.db $E2,$30,$A5,$01,$85,$00,$20,$59,$19,$A5,$00,$A8,$AA,$BF,$8C,$8B   ;C3225C
 	.db $7E,$AA,$BF,$BB,$41,$C3,$C9,$0B,$D0,$2E,$A9,$13,$85,$00,$A9,$CE   ;C3226C  
 	.db $85,$02,$5A,$22,$65,$25,$C6,$7A,$A9,$13,$85,$00,$22,$AC,$10,$C2   ;C3227C  
@@ -1990,11 +2168,20 @@ func_C31F99:
 	jsl.l DisplayMessage
 	.db $FA,$68,$20,$B2,$31,$60,$E2,$20,$A9,$5C,$85,$00,$64,$01   ;C3229C  
 	jsl.l DisplayMessage
-	.db $60,$C2,$20,$A9,$13,$00,$85,$00,$A9,$CF,$00,$85   ;C322AC  
-	.db $02,$22,$50,$25,$C6,$A9,$05,$01,$85,$00
+	.db $60   ;C322B0
+HandsFullScrollUseEffect:
+	rep #$20 ;A->16                      ;C322B1
+	lda.w #$0013
+	sta.b wTemp00
+	lda.w #$00CF
+	sta.b wTemp02
+	jsl.l func_C62550
+	lda.w #$0105
+	sta.b wTemp00
 	jsl.l DisplayMessage
-	.db $22,$72   ;C322BC
-	.db $84,$C2,$60,$08,$C2,$30,$22,$5F,$F6,$C3,$A5,$00,$29,$0F,$00,$C9   ;C322CC  
+	jsl.l $C28472                         ;C322CA
+	rts                                  ;C322CE
+	.db $08,$C2,$30,$22,$5F,$F6,$C3,$A5,$00,$29,$0F,$00,$C9   ;C322CF  
 	.db $08,$00,$B0,$F2,$0A,$AA,$BF,$ED,$22,$C3,$F4,$EA,$22,$48,$60,$28   ;C322DC
 	.db $6B,$FC,$22,$40,$23,$EA,$23,$0A,$24,$A2,$24,$A8,$24,$B4,$24,$E8   ;C322EC
 	.db $24,$C2,$20,$22,$45,$25,$C3,$22,$45,$25,$C3,$22,$45,$25,$C3,$A9   ;C322FC  
@@ -2285,7 +2472,7 @@ JarUseEffect:
 	dec a
 	sta.l wItemModification1,x
 	jsr.w func_C328E9
-	jsr.w func_C31004
+	jsr.w AntidoteHerbUseEffect
 	rts
 @lbl_C328DE:
 	.db $A9,$5C,$85,$00,$64,$01
@@ -2337,6 +2524,7 @@ func_C328E9:
 	jsl.l DisplayMessage
 @lbl_C32963:
 	rts
+WalrusJarUseEffect:
 	sep #$30 ;AXY->8
 	tyx
 	phx
@@ -2495,9 +2683,11 @@ TryPrepareSelectedItemForJarInsertion:
 	stx.b wTemp00
 	plp
 	rts
+MonsterJarUseEffect:
 	.db $E2,$30,$BB,$DA,$20,$AD,$2B,$FA,$BF,$8C,$8C,$7E,$DA,$20,$C0,$2B   ;C32B5D
 	.db $FA,$86,$00,$DA,$22,$92,$01,$C3,$FA,$86,$00,$22,$F4,$06,$C3,$68   ;C32B6D
 	.db $68,$64,$00,$28,$6B               ;C32B7D
+HidingJarUseEffect:
 	sep #$30 ;AXY->8
 	tyx
 	phx

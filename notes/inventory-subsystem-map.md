@@ -23,6 +23,64 @@ Fixed inventory-related commands currently understood:
 - command family `$40` -> [DropSelectedInventoryItem](/Users/jupiter.whitworth/Development/new/shiren/code/bank_02.asm#L4128)
 - command families `$60/$80/$A0/$C0/$E0` feed item-selection and ground/container action paths
 
+## Where Item Data Lives
+
+There are three main layers to item data in this codebase:
+
+Reusable helper:
+
+- [tools/item_pipeline.py](/Users/jupiter.whitworth/Development/new/shiren/tools/item_pipeline.py)
+  - Query `item -> category -> use handler -> throw handler`
+  - Supports direct item lookup plus reverse lookup by handler substring
+- [tools/function_xref.py](/Users/jupiter.whitworth/Development/new/shiren/tools/function_xref.py)
+  - Query symbol/address definitions, callers, and table references with optional context
+  - Useful for tracing unnamed item handlers from raw table entries like `$0EA0`
+- [tools/raw_handler_trace.py](/Users/jupiter.whitworth/Development/new/shiren/tools/raw_handler_trace.py)
+  - Resolve an item or raw `$xxxx` table pointer to the likely handler entry and first helper calls
+  - Useful for answering "where do I even start?" on unnamed item handlers
+- [tools/item_family_report.py](/Users/jupiter.whitworth/Development/new/shiren/tools/item_family_report.py)
+  - Summarize named/raw handler coverage and sharing within a whole item family
+  - Useful for choosing the next highest-value item to decode
+
+1. Item ids / canonical item definitions
+
+- [constants/items.asm](/Users/jupiter.whitworth/Development/new/shiren/constants/items.asm)
+  - Defines the canonical item ids like `Item_Cudgel`, `Item_WoodArrow`, `Item_BlankScroll`, `Item_HoldingJar`, etc.
+  - This is the stable "what item type is this?" layer.
+
+2. Live item-instance storage in WRAM
+
+- [ShirenStatus.itemAmounts](/Users/jupiter.whitworth/Development/new/shiren/structs/structs.asm#L10)
+  - Shiren's inventory list: 20 item-slot ids/references at `7E:894F`.
+- [wItemType](/Users/jupiter.whitworth/Development/new/shiren/wram.asm#L1547)
+  - Item type/id for each live item instance.
+- [wItemModification1](/Users/jupiter.whitworth/Development/new/shiren/wram.asm#L1555)
+- [wItemModification2](/Users/jupiter.whitworth/Development/new/shiren/wram.asm#L1559)
+- [wItemPotNextItem](/Users/jupiter.whitworth/Development/new/shiren/wram.asm#L1567)
+- [wItemGoods](/Users/jupiter.whitworth/Development/new/shiren/wram.asm#L1571)
+  - These arrays hold per-instance state such as stack/count-like values, curse/identify-related state, linked-list membership for container contents, and item-specific parameters.
+
+3. Decoded item metadata / behavior dispatch
+
+- [func_C30710](/Users/jupiter.whitworth/Development/new/shiren/code/bank_03.asm#L852)
+  - Central item metadata decoder.
+  - Input: item instance index in `wTemp00`
+  - Output: decoded item properties in temp vars such as:
+    - `wTemp00` category from [DATA8_C341BB](/Users/jupiter.whitworth/Development/new/shiren/code/bank_03.asm#L1881)
+    - `wTemp01` item type/id
+    - `wTemp02/wTemp03` modification bytes
+    - `wTemp04` derived item-strength/value-style byte
+    - `wTemp05` resolved display/name id
+    - `wTemp06` item state/flags
+    - `wTemp07` curse flag
+
+Item behavior then dispatches primarily through:
+
+- [ItemUseEffectFunctionTable](/Users/jupiter.whitworth/Development/new/shiren/code/bank_03.asm#L2122)
+- [ItemThrowEffectFunctionTable](/Users/jupiter.whitworth/Development/new/shiren/code/bank_03.asm#L2357)
+
+Those tables are where item-specific functions live for most "use" and "throw" behavior.
+
 ## Category Shortcut / Equip State
 
 Structure and slot meanings:
@@ -182,3 +240,23 @@ Unsafe unless tested one at a time:
 
 - operand form rewrites
 - local blob-to-assembly lifts combined with additional semantic cleanup in the same pass
+
+## Herb Rename Caveat
+
+Some old `func_C...` labels do not match their actual assembled address exactly.
+
+Confirmed example:
+
+- `KignyHerb` uses table entry `$0A13`
+- the lifted source label is named `func_C30A14`
+- but [shiren.sym](/Users/jupiter.whitworth/Development/new/shiren/shiren.sym) shows the symbol is actually assembled at `c3:0a13`
+
+Why this matters:
+
+- a blind rewrite from `.dw $0A13` to `KignyHerbUseEffect-1` changes the ROM byte to `$0A12`
+- that breaks SHA even though the label name looks like it should correspond to `$0A14`
+
+Rule:
+
+- when a raw table pointer targets an old lifted `func_C...` label, trust the assembled address in `shiren.sym`, not the label text alone
+- this is why iterative rename verification is still required even for apparently safe lifted labels
