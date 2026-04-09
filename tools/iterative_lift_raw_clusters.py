@@ -51,6 +51,48 @@ def apply_lift(rel: Path, start_addr: int, end_addr: int) -> subprocess.Complete
     return subprocess.run(cmd, cwd=ROOT, text=True, capture_output=True)
 
 
+def preview_lift(rel: Path, start_addr: int, end_addr: int) -> subprocess.CompletedProcess[str]:
+    cmd = [
+        sys.executable,
+        "tools/lift_raw_cluster.py",
+        "--file",
+        str(rel),
+        "--start",
+        f"{start_addr:06X}",
+        "--end",
+        f"{end_addr:06X}",
+    ]
+    return subprocess.run(cmd, cwd=ROOT, text=True, capture_output=True)
+
+
+def is_data_like_candidate(candidate: str) -> bool:
+    lines = [line.rstrip() for line in candidate.splitlines()]
+    content = [line.strip() for line in lines if line.strip() and not line.lstrip().startswith(";")]
+    if not content:
+        return False
+
+    first = content[0]
+    if not first.endswith(":") or not first.startswith("DATA"):
+        return False
+
+    db_like = 0
+    opcode_like = 0
+    for line in content[1:]:
+        if line.endswith(":"):
+            continue
+        if line.startswith(".db") or line.startswith(".dw"):
+            db_like += 1
+            continue
+        if line.startswith("@lbl_"):
+            continue
+        if line.startswith("."):
+            db_like += 1
+            continue
+        opcode_like += 1
+
+    return db_like >= 3 and db_like >= opcode_like * 4
+
+
 def commit_if_needed(rel: Path, message: str) -> tuple[bool, str | None]:
     add_proc = run_argv(["git", "add", str(rel)])
     if add_proc.returncode != 0:
@@ -206,6 +248,13 @@ def main(argv: list[str]) -> int:
         nonlocal baseline, kept
         if not items:
             return True
+
+        if len(items) == 1:
+            start_addr, end_addr = items[0]
+            preview = preview_lift(rel, start_addr, end_addr)
+            if preview.returncode == 0 and is_data_like_candidate(preview.stdout):
+                print(f"SKIP  {start_addr:06X}-{end_addr:06X} data-like")
+                return True
 
         before = baseline
         for start_addr, end_addr in items:
