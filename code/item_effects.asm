@@ -2168,11 +2168,20 @@ ExtractionScrollUseEffect:
 	jsl.l DisplayMessage
 	.db $FA,$68,$20,$B2,$31,$60,$E2,$20,$A9,$5C,$85,$00,$64,$01   ;C3229C  
 	jsl.l DisplayMessage
-	.db $60,$C2,$20,$A9,$13,$00,$85,$00,$A9,$CF,$00,$85   ;C322AC  
-	.db $02,$22,$50,$25,$C6,$A9,$05,$01,$85,$00
+	.db $60   ;C322B0
+HandsFullScrollUseEffect:
+	rep #$20 ;A->16                      ;C322B1
+	lda.w #$0013
+	sta.b wTemp00
+	lda.w #$00CF
+	sta.b wTemp02
+	jsl.l func_C62550
+	lda.w #$0105
+	sta.b wTemp00
 	jsl.l DisplayMessage
-	.db $22,$72   ;C322BC
-	.db $84,$C2,$60,$08,$C2,$30,$22,$5F,$F6,$C3,$A5,$00,$29,$0F,$00,$C9   ;C322CC  
+	jsl.l $C28472                         ;C322CA
+	rts                                  ;C322CE
+	.db $08,$C2,$30,$22,$5F,$F6,$C3,$A5,$00,$29,$0F,$00,$C9   ;C322CF  
 	.db $08,$00,$B0,$F2,$0A,$AA,$BF,$ED,$22,$C3,$F4,$EA,$22,$48,$60,$28   ;C322DC
 	.db $6B,$FC,$22,$40,$23,$EA,$23,$0A,$24,$A2,$24,$A8,$24,$B4,$24,$E8   ;C322EC
 	.db $24,$C2,$20,$22,$45,$25,$C3,$22,$45,$25,$C3,$22,$45,$25,$C3,$A9   ;C322FC  

@@ -2230,7 +2230,7 @@ ItemUseEffectFunctionTable:
 	.dw EarthBlessScrollUseEffect-1 ;EarthBlessScroll
 	.dw PlatingScrollUseEffect-1 ;PlatingScroll
 	.dw ExtractionScrollUseEffect-1 ;ExtractionScroll
-	.dw $22B0 ;HandsFullScroll
+	.dw HandsFullScrollUseEffect-1 ;HandsFullScroll
 	.dw UnusedItemUseEffect-1 ;6F
 	.dw $1862 ;70
 	.dw UnusedItemUseEffect-1

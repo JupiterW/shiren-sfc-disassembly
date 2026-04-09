@@ -109,6 +109,12 @@ def decode_one(data: list[int], i: int, base_addr: int | None, state: DecodeStat
         target = b(1) | (b(2) << 8) | (b(3) << 16)
         return 4, f"{name} ${target:06X},x"
 
+    def long_addr(name: str) -> tuple[int, str]:
+        if b(3) is None:
+            return 1, f".db ${op:02X}"
+        target = b(1) | (b(2) << 8) | (b(3) << 16)
+        return 4, f"{name} ${target:06X}"
+
     def branch(name: str) -> tuple[int, str]:
         if b(1) is None:
             return 1, f".db ${op:02X}"
@@ -134,6 +140,7 @@ def decode_one(data: list[int], i: int, base_addr: int | None, state: DecodeStat
         0x60: (1, "rts"),
         0x6B: (1, "rtl"),
         0x0A: (1, "asl a"),
+        0x3A: (1, "dec a"),
         0x48: (1, "pha"),
         0x68: (1, "pla"),
         0xAA: (1, "tax"),
@@ -146,12 +153,14 @@ def decode_one(data: list[int], i: int, base_addr: int | None, state: DecodeStat
         0xA9: lambda: imm_acc("lda"),
         0xA2: lambda: imm_idx("ldx"),
         0xA0: lambda: imm_idx("ldy"),
+        0xAF: lambda: long_addr("lda"),
         0xA5: lambda: dp("lda"),
         0xA6: lambda: dp("ldx"),
         0x85: lambda: dp("sta"),
         0x86: lambda: dp("stx"),
         0x84: lambda: dp("sty"),
         0x64: lambda: dp("stz"),
+        0x89: lambda: imm_acc("bit"),
         0xC5: lambda: dp("cmp"),
         0xC9: lambda: imm_acc("cmp"),
         0xE9: lambda: imm_acc("sbc"),
