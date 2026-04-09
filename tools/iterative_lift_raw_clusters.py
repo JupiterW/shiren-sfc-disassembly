@@ -184,6 +184,28 @@ def format_batch_message(template: str, rel: Path, items: list[tuple[int, int]])
     )
 
 
+def parse_skip_range(text: str) -> tuple[int, int]:
+    token = text.strip().upper()
+    if "-" not in token:
+        raise argparse.ArgumentTypeError("skip range must look like START-END")
+    start_text, end_text = token.split("-", 1)
+    try:
+        start = int(start_text, 16)
+        end = int(end_text, 16)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError(f"invalid hex skip range: {text}") from exc
+    if start > end:
+        raise argparse.ArgumentTypeError("skip range start must be <= end")
+    return start, end
+
+
+def overlaps_any_skip(start_addr: int, end_addr: int, skip_ranges: list[tuple[int, int]]) -> bool:
+    for skip_start, skip_end in skip_ranges:
+        if start_addr <= skip_end and end_addr >= skip_start:
+            return True
+    return False
+
+
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--file", required=True, help="asm file to process")
@@ -196,6 +218,7 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--dry-run", action="store_true", help="list planned clusters without applying them")
     parser.add_argument("--stop-on-fail", action="store_true", help="stop on first failure")
     parser.add_argument("--verify-cmd", default="make -B -j1 PYTHON=.venv/bin/python && shasum -c shiren.sha1", help="command used to verify a kept lift")
+    parser.add_argument("--skip-range", action="append", type=parse_skip_range, default=[], help="skip any candidate range overlapping START-END hex ROM addresses")
     parser.add_argument("--commit", action="store_true", help="git add/commit the file after each kept verified lift")
     parser.add_argument(
         "--commit-template",
@@ -243,6 +266,7 @@ def main(argv: list[str]) -> int:
         if args.mode == "segment"
         else [(c.start_addr, c.end_addr) for c in clusters]
     )
+    work_items = [item for item in work_items if not overlaps_any_skip(item[0], item[1], args.skip_range)]
 
     def process_batch(items: list[tuple[int, int]]) -> bool:
         nonlocal baseline, kept

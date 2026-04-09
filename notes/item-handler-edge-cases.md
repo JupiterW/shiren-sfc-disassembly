@@ -109,6 +109,10 @@ Likely meaning:
 - unresolved:
   - `Item_36` use `$0A94`
   - shared `RevivalHerb` / `Weeds` use `$09F0`
+  - `PoisonHerbUseEffect`
+    - current raw-lift tooling should skip `C311E3-C312DD` for now
+    - source-driven and ROM-backed full-function lifts both still drift SHA
+    - next likely fix is regenerating the whole function from ROM bytes with exact byte-equivalent instruction forms instead of preserving any mixed source inside the range
 
 ### Staffs
 
@@ -202,4 +206,5 @@ Recent tool improvements resolved cases that originally looked like real edge ca
 - Run `make clean` before git commands.
 - Prefer tool-driven promotion over manual raw `.db` edits.
 - For auto-renames, trust verification more than assumptions.
+- For iterative raw lifts, use `--skip-range START-END` to park known hard cases like `C311E3-C312DD` and keep the batch loop moving.
 - When promotion fails, classify the failure into one of the edge case classes above before adding more special-case code.
