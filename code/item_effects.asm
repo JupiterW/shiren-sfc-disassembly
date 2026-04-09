@@ -1727,9 +1727,30 @@ IdentityScrollUseEffect:
 	jsl.l func_C324F9
 	rts
 @lbl_C31927:
-	.db $A0,$00,$84,$00,$5A,$22,$7C,$3B,$C2,$7A,$A5,$00,$30,$09,$5A,$22   ;C31927
-	.db $92,$01,$C3,$7A,$C8,$80,$EB,$A0,$1F,$84,$00,$20,$59,$19,$A4,$00   ;C31937  
-	.db $30,$04,$22,$92,$01,$C3,$C2,$20,$A9,$B4,$00,$85,$00
+	ldy #$00                                ;C31927
+@lbl_C31929:
+	sty $00                                 ;C31929
+	phy                                     ;C3192B
+	jsl $C23B7C                             ;C3192C
+	ply                                     ;C31930
+	lda $00                                 ;C31931
+	bmi @lbl_C3193E                         ;C31933
+	phy                                     ;C31935
+	jsl $C30192                             ;C31936
+	ply                                     ;C3193A
+	.db $C8   ;C3193B
+	bra @lbl_C31929                         ;C3193C
+@lbl_C3193E:
+	ldy #$1F                                ;C3193E
+	sty $00                                 ;C31940
+	jsr $1959                               ;C31942
+	ldy $00                                 ;C31945
+	bmi @lbl_C3194D                         ;C31947
+	jsl $C30192                             ;C31949
+@lbl_C3194D:
+	rep #$20                                ;C3194D
+	lda #$00B4                              ;C3194F
+	sta $00                                 ;C31952
 	jsl.l DisplayMessage
 	.db $60                           ;C31957  
 
