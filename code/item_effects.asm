@@ -962,9 +962,22 @@ RestorativeHerbUseEffect:
 	jsl.l DisplayMessage
 @lbl_C30F94:
 	rts
-	.db $E2,$20,$C2,$10,$A9,$13,$85,$00   ;C30F95
-	.db $22,$A2,$85,$C2,$A5,$01,$48,$A5,$03,$48,$A5,$00,$F0,$12,$A0,$13   ;C30F9D  
-	.db $00,$84,$00,$22,$A7,$40,$C2,$A0,$9B,$00,$84,$00
+	sep #$20                                ;C30F95
+	rep #$10                                ;C30F97
+	lda #$13                                ;C30F99
+	sta $00                                 ;C30F9B
+	jsl $C285A2                             ;C30F9D
+	lda $01                                 ;C30FA1
+	pha                                     ;C30FA3
+	lda $03                                 ;C30FA4
+	pha                                     ;C30FA6
+	lda $00                                 ;C30FA7
+	.db $F0,$12   ;C30FA9
+	ldy #$0013                              ;C30FAB
+	sty $00                                 ;C30FAE
+	jsl $C240A7                             ;C30FB0
+	ldy #$009B                              ;C30FB4
+	sty $00                                 ;C30FB7
 	jsl.l DisplayMessage
 	.db $68,$F0,$12,$A0,$13,$00,$84,$00,$22,$FF,$3F,$C2,$A0,$67,$00,$84   ;C30FBD
 	.db $00
