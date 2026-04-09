@@ -4834,11 +4834,38 @@ DATA8_C334CD:
 	sta $02                                 ;C335BB
 	phy                                     ;C335BD
 	jsl.l DisplayMessage
-	.db $7A,$84,$00,$A3,$06,$85,$01,$A3,$08   ;C335BB  
-	.db $A8,$A3,$07,$C2,$30,$29,$FF,$00,$0A,$AA,$F4,$F2,$35,$BF,$2B,$47   ;C335CB
-	.db $C3,$C9,$7B,$37,$F0,$0A,$C9,$16,$37,$F0,$05,$C9,$F2,$36,$D0,$03   ;C335DB  
-	.db $A9,$77,$38,$48,$E2,$10,$BB,$60,$E2,$30,$86,$00,$22,$1C,$2C,$C2   ;C335EB
-	.db $4C,$4D,$35                       ;C335FB  
+	ply                                     ;C335C1
+	sty $00                                 ;C335C2
+	lda $06,s                               ;C335C4
+	sta $01                                 ;C335C6
+	lda $08,s                               ;C335C8
+	tay                                     ;C335CA
+	lda $07,s                               ;C335CB
+	rep #$30                                ;C335CD
+	and #$00FF                              ;C335CF
+	asl a                                   ;C335D2
+	tax                                     ;C335D3
+	.db $F4   ;C335D4
+	.db $F2   ;C335D5
+	.db $35   ;C335D6
+	lda $C3472B,x                           ;C335D7
+	cmp #$377B                              ;C335DB
+	beq @lbl_C335EA                         ;C335DE
+	cmp #$3716                              ;C335E0
+	beq @lbl_C335EA                         ;C335E3
+	cmp #$36F2                              ;C335E5
+	bne @lbl_C335ED                         ;C335E8
+@lbl_C335EA:
+	lda #$3877                              ;C335EA
+@lbl_C335ED:
+	pha                                     ;C335ED
+	sep #$10                                ;C335EE
+	tyx                                     ;C335F0
+	rts                                     ;C335F1
+	sep #$30                                ;C335F2
+	stx $00                                 ;C335F4
+	jsl $C22C1C                             ;C335F6
+	jmp $354D                               ;C335FA
 
 func_C335FE:
 	php
