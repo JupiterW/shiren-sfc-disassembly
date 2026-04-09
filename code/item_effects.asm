@@ -2060,11 +2060,33 @@ BlessingScrollUseEffect:
 	sep #$30 ;AXY->8
 	jsl.l func_C283D2
 	rts
-	.db $E2,$30,$22,$E1,$83,$C2,$60,$E2,$30,$22,$EC,$83,$C2,$60,$E2,$30   ;C31D8A
-	.db $22,$F7,$83,$C2,$60,$E2,$30,$22,$02,$84,$C2,$60,$E2,$30,$22,$0D   ;C31D9A  
-	.db $84,$C2,$60,$E2,$30,$22,$5C,$84,$C2,$60,$E2,$30,$22,$67,$84,$C2   ;C31DAA  
-	.db $60,$E2,$30,$22,$7D,$84,$C2,$60   ;C31DBA
-	.db $E2,$30,$22,$97,$84,$C2,$60       ;C31DC2
+	sep #$30                                ;C31D8A
+	jsl $C283E1                             ;C31D8C
+	rts                                     ;C31D90
+	sep #$30                                ;C31D91
+	jsl $C283EC                             ;C31D93
+	rts                                     ;C31D97
+	sep #$30                                ;C31D98
+	jsl $C283F7                             ;C31D9A
+	rts                                     ;C31D9E
+	sep #$30                                ;C31D9F
+	jsl $C28402                             ;C31DA1
+	rts                                     ;C31DA5
+	sep #$30                                ;C31DA6
+	jsl $C2840D                             ;C31DA8
+	rts                                     ;C31DAC
+	sep #$30                                ;C31DAD
+	jsl $C2845C                             ;C31DAF
+	rts                                     ;C31DB3
+	sep #$30                                ;C31DB4
+	jsl $C28467                             ;C31DB6
+	rts                                     ;C31DBA
+	sep #$30                                ;C31DBB
+	jsl $C2847D                             ;C31DBD
+	rts                                     ;C31DC1
+	sep #$30                                ;C31DC2
+	jsl $C28497                             ;C31DC4
+	rts                                     ;C31DC8
 	rts
 	.db $E2,$30,$A4,$00,$A6,$01,$A9,$12,$85,$00,$A9,$16,$85,$01,$DA,$5A   ;C31DCA
 	.db $22,$9F,$F6,$C3,$7A,$FA,$A5,$00,$85,$02,$86,$01,$84,$00,$22,$DF   ;C31DDA  
