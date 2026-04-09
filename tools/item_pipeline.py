@@ -178,6 +178,35 @@ def match_query(info: ItemInfo, query: str) -> bool:
     )
 
 
+def is_raw_handler(handler: str) -> bool:
+    return bool(re.fullmatch(r"\$[0-9A-Fa-f]{4}", handler))
+
+
+def parse_category_arg(raw: str) -> int:
+    token = raw.strip().lower()
+    aliases = {name.lower(): code for code, name in CATEGORY_NAMES.items()}
+    aliases["herb"] = 0x00
+    aliases["grass"] = 0x00
+    aliases["herbs"] = 0x00
+    aliases["grasses"] = 0x00
+    aliases["scrolls"] = 0x01
+    aliases["onigiri"] = 0x02
+    aliases["weapons"] = 0x03
+    aliases["arrows"] = 0x04
+    aliases["shields"] = 0x05
+    aliases["armbands"] = 0x06
+    aliases["staffs"] = 0x07
+    aliases["staves"] = 0x07
+    aliases["meat"] = 0x09
+    aliases["jars"] = 0x0B
+    aliases["misc"] = 0x0D
+    if token in aliases:
+        return aliases[token]
+    if token.startswith("$"):
+        return int(token[1:], 16)
+    return int(token, 16 if re.fullmatch(r"[0-9a-f]{1,2}", token) else 10)
+
+
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("query", nargs="?", help="item id, constant name, or substring")
@@ -186,9 +215,34 @@ def main(argv: list[str]) -> int:
         "--handler",
         help="list all items whose use or throw handler contains this substring",
     )
+    parser.add_argument(
+        "--category",
+        help="filter by category code or name (examples: 00, $00, herb, grass, jar)",
+    )
+    parser.add_argument(
+        "--raw-only",
+        action="store_true",
+        help="with --category or --handler, only show entries that still use raw $xxxx handlers",
+    )
     args = parser.parse_args(argv)
 
     infos = build_item_infos()
+
+    if args.category:
+        category_code = parse_category_arg(args.category)
+        matches = [info for info in infos if info.category_code == category_code]
+        if args.raw_only:
+            matches = [
+                info
+                for info in matches
+                if is_raw_handler(info.use_handler) or is_raw_handler(info.throw_handler)
+            ]
+        for info in matches:
+            print(
+                f"{info.const_name} (${info.item_id:02X}): "
+                f"use={info.use_handler}, throw={info.throw_handler}"
+            )
+        return 0 if matches else 1
 
     if args.handler:
         needle = args.handler.lower()
@@ -197,6 +251,12 @@ def main(argv: list[str]) -> int:
             for info in infos
             if needle in info.use_handler.lower() or needle in info.throw_handler.lower()
         ]
+        if args.raw_only:
+            matches = [
+                info
+                for info in matches
+                if is_raw_handler(info.use_handler) or is_raw_handler(info.throw_handler)
+            ]
         for info in matches:
             print(
                 f"{info.const_name} (${info.item_id:02X}): "
