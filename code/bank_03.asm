@@ -2165,7 +2165,7 @@ ItemUseEffectFunctionTable:
 	.dw $10B8 ;HappinessHerb
 	.dw $155C ;SightHerb
 	.dw $14BE ;DragonHerb
-	.dw $09FD ;VictoryHerb
+	.dw VictoryHerbUseEffect-1 ;VictoryHerb
 	.dw $10C9 ;AngelSeed
 	.dw $09F0 ;RevivalHerb
 	.dw $2008 ;InvisibilityHerb

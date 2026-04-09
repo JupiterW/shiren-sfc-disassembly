@@ -234,7 +234,7 @@ func_C309F1:
 	rts
 
 ;c309fe
-func_C309FE:
+VictoryHerbUseEffect:
 	sep #$30 ;AXY->8
 	lda.b #$14
 	sta.b wTemp00
