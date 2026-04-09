@@ -2326,11 +2326,40 @@ MisfortuneStaffUseEffect:
 	.db $E2,$20,$22,$6C,$81,$C2,$A5,$00,$D0,$0B,$C2,$20,$A9,$5C,$00,$85   ;C31FB6
 	.db $00
 	jsl.l DisplayMessage
-	.db $60,$E2,$30,$A4,$00,$5A,$22,$1B,$80,$C2,$7A   ;C31FC6
-	.db $C0,$13,$F0,$23,$C4,$00,$F0,$17,$A6,$00,$E0,$FF,$F0,$0A,$A9,$02   ;C31FD6
-	.db $85,$02,$5A,$22,$50,$25,$C6,$7A,$84,$00,$22,$B9,$25,$C6,$60,$A9   ;C31FE6  
-	.db $01,$85,$02,$22,$50,$25,$C6,$60,$E2,$20,$A9,$0B,$85,$01,$22,$FF   ;C31FF6  
-	.db $3F,$C2,$60   ;C32006
+	rts                                     ;C31FCB
+	sep #$30                                ;C31FCC
+	ldy $00                                 ;C31FCE
+	phy                                     ;C31FD0
+	jsl $C2801B                             ;C31FD1
+	ply                                     ;C31FD5
+	.db $C0   ;C31FD6
+	.db $13   ;C31FD7
+	beq @lbl_C31FFD                         ;C31FD8
+	.db $C4   ;C31FDA
+	.db $00   ;C31FDB
+	beq @lbl_C31FF5                         ;C31FDC
+	ldx $00                                 ;C31FDE
+	.db $E0   ;C31FE0
+	sbc $A90AF0,x                           ;C31FE1
+	.db $02   ;C31FE5
+	sta $02                                 ;C31FE6
+	phy                                     ;C31FE8
+	jsl $C62550                             ;C31FE9
+	ply                                     ;C31FED
+	sty $00                                 ;C31FEE
+	jsl $C625B9                             ;C31FF0
+	rts                                     ;C31FF4
+@lbl_C31FF5:
+	lda #$01                                ;C31FF5
+	sta $02                                 ;C31FF7
+	jsl $C62550                             ;C31FF9
+@lbl_C31FFD:
+	rts                                     ;C31FFD
+	sep #$20                                ;C31FFE
+	lda #$0B                                ;C32000
+	sta $01                                 ;C32002
+	jsl $C23FFF                             ;C32004
+	rts                                     ;C32008
 InvisibilityHerbUseEffect:
 	.db $E2,$20,$A9,$13,$85,$00,$A9,$15,$85,$01,$A5,$00,$48   ;C32009
 	.db $22,$F8,$82,$C2,$68,$85,$02,$C2,$20,$A9,$5D,$01,$85,$00
