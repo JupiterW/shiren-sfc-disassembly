@@ -2144,9 +2144,18 @@ PlatingScrollUseEffect:
 	sta $00                                 ;C31C16
 	stz $01                                 ;C31C18
 	jsl.l DisplayMessage
-	.db $FA,$30,$20,$BF,$8C,$8F,$7E,$09,$08,$9F,$8C,$8F,$7E   ;C31C1B  
-	.db $BF,$0C,$8C,$7E,$F0,$10,$A9,$00,$9F,$0C,$8C,$7E,$A9,$52,$85,$00   ;C31C2B  
-	.db $64,$01
+	plx                                     ;C31C1E
+	.db $30,$20   ;C31C1F
+	lda $7E8F8C,x                           ;C31C21
+	ora #$08                                ;C31C25
+	sta $7E8F8C,x                           ;C31C27
+	lda $7E8C0C,x                           ;C31C2B
+	.db $F0,$10   ;C31C2F
+	lda #$00                                ;C31C31
+	sta $7E8C0C,x                           ;C31C33
+	lda #$52                                ;C31C37
+	sta $00                                 ;C31C39
+	stz $01                                 ;C31C3B
 	jsl.l DisplayMessage
 	.db $FA,$30,$20,$BF,$8C,$8F,$7E,$09,$08,$9F   ;C31C3B  
 	.db $8C,$8F,$7E,$BF,$0C,$8C,$7E,$F0,$10,$A9,$00,$9F,$0C,$8C,$7E,$A9   ;C31C4B  
