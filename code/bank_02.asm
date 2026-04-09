@@ -5101,7 +5101,7 @@ func_C248B2:
 	plp
 	rtl
 
-func_C248D8:
+HandleUnderfootItemPickupAction:
 	php
 	sep #$30 ;AXY->8
 	lda.l $7E85DC
@@ -5249,7 +5249,7 @@ HandlePlayerActionCommand:
 	; $18 = A-button action using the current facing.
 	; $1C = A+B fixed action.
 	; $1D = L-button fixed action.
-	; $5F = context-sensitive X-button action from GetLivePlayerActionCommand.
+	; $5F = context-sensitive underfoot-item pickup action from the X-button path.
 	cmp.b #$1B
 	bne @lbl_C24A6C
 	jsl.l SortShirenInventory
@@ -5273,7 +5273,7 @@ HandlePlayerActionCommand:
 @lbl_C24A84:
 	cmp.b #$5F
 	bne @lbl_C24A8E
-	jsl.l func_C248D8
+	jsl.l HandleUnderfootItemPickupAction
 	plp
 	rtl
 @lbl_C24A8E:

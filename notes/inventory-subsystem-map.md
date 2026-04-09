@@ -74,6 +74,9 @@ Ground-item menu cases currently understood:
 - `throw`
   - Direct case from [BuildGroundItemActionCommand](/Users/jupiter.whitworth/Development/new/shiren/code/bank_03.asm#L11321) builds `wTemp00 = $9F`
   - This routes into [HandleThrowItemAction](/Users/jupiter.whitworth/Development/new/shiren/code/bank_02.asm#L4772)
+- `pick up`
+  - One fallback case builds fixed command `$5F`
+  - This routes into [HandleUnderfootItemPickupAction](/Users/jupiter.whitworth/Development/new/shiren/code/bank_02.asm#L5104)
 - `exchange`
   - Direct case builds `wTemp00 = $BF` and sets `wTemp01 |= $40`
   - This routes into the underfoot exchange path in [HandleCategoryShortcutSelectionAction](/Users/jupiter.whitworth/Development/new/shiren/code/bank_02.asm#L3803)

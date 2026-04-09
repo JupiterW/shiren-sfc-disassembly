@@ -11359,6 +11359,7 @@ BuildGroundItemActionCommand:
 	.db $A9,$1F,$00,$85,$00,$20,$F7,$F1   ;C3EC99
 	.db $B0,$86,$4C,$E6,$EB               ;C3ECA1  
 @lbl_C3ECA6:
+	; Fall back to the context-sensitive underfoot pickup action ($5F).
 	lda.w #$005F
 	sta.b wTemp00
 	jmp.w func_C3EBE6
