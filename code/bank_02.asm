@@ -3806,7 +3806,7 @@ HandleCategoryShortcutSelectionAction:
 	lda.b wTemp01
 	bpl @lbl_C23C9B
 	; Negative wTemp01 selects a nested/container item path.
-	jmp.w func_C23DCD
+	jmp.w HandleContainedItemSelectionAction
 @lbl_C23C9B:
 	bit.b #$40
 	beq @lbl_C23CA2
@@ -3987,7 +3987,7 @@ HandleCategoryShortcutSelectionAction:
 	plp
 	rtl
 
-func_C23DCD:
+HandleContainedItemSelectionAction:
 	pha
 	ldx.b wTemp00
 	cpx.b #$1F
@@ -4010,6 +4010,12 @@ func_C23DCD:
 	.db $68,$4C,$2E,$3F
 @lbl_C23DFF:
 	lda.b wTemp01,s
+	; For contained items, the low 5 bits select the linked-list entry inside the
+	; container and bits 5-6 select the action family:
+	;   $00 = route into category shortcut/equip handling
+	;   $20 = use the contained item
+	;   $40 = place the contained item on the ground
+	;   $60 = move the contained item into inventory
 	and.b #$1F
 	tay
 	pla
@@ -4022,14 +4028,14 @@ func_C23DCD:
 	sty.b wTemp01
 	phx
 	phy
-	jsl.l func_C33AEF
+	jsl.l GetContainedItemByIndex
 	ply
 	plx
 	stx.b wTemp00
 	sty.b wTemp01
 	phx
 	phy
-	jsl.l func_C33B01
+	jsl.l RemoveContainedItemByIndex
 	lda.b wTemp00
 	sta.l $7E896E
 	lda.b #$1F
@@ -4050,7 +4056,7 @@ func_C23E5F:
 	stx.b wTemp00
 	sty.b wTemp01
 	sta.b wTemp02
-	jsl.l func_C33B35
+	jsl.l InsertContainedItemByIndex
 @lbl_C23E6F:
 	plp
 	rtl
@@ -4119,7 +4125,7 @@ AssignSelectedInventoryItemToCategoryShortcut:
 	.db $86,$00,$22,$4D,$3C,$C2,$22,$CF   ;C23F76  
 	.db $22,$C3,$28,$60                   ;C23F7E  
 
-func_C23F82:
+DropSelectedInventoryItem:
 	php
 	sep #$30 ;AXY->8
 	bankswitch 0x7E
@@ -5317,7 +5323,7 @@ HandlePlayerActionCommand:
 	cmp.b #$40
 	bne @lbl_C24AE9
 	sty.b wTemp00
-	jsl.l func_C23F82
+	jsl.l DropSelectedInventoryItem
 	plp
 	rtl
 @lbl_C24AE9:

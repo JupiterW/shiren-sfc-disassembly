@@ -1132,7 +1132,7 @@ func_C33AE2:
 	plp
 	rtl
 
-func_C33AEF:
+GetContainedItemByIndex:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -1145,7 +1145,7 @@ func_C33AEF:
 	plp
 	rtl
 
-func_C33B01:
+RemoveContainedItemByIndex:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -1173,7 +1173,7 @@ func_C33B01:
 	plp
 	rtl
 
-func_C33B35:
+InsertContainedItemByIndex:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
