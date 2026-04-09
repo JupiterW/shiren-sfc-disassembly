@@ -2095,14 +2095,69 @@ PainSplitStaffUseEffect:
 	sep #$30 ;AXY->8
 	jsl.l func_C28451
 	rts
-	.db $E2,$30,$A4,$00,$A6,$01,$DA,$22,$28,$11,$C2,$FA,$A5,$00,$C9,$01   ;C320B7
-	.db $F0,$12,$49,$FF,$1A,$1A,$85,$02,$A9,$FF,$85,$03,$84,$00,$DA,$22   ;C320C7  
-	.db $09,$32,$C2,$FA,$86,$00,$DA,$22,$28,$11,$C2,$FA,$A5,$00,$4A,$49   ;C320D7
-	.db $FF,$1A,$F0,$0C,$85,$02,$A9,$FF,$85,$03,$86,$00,$22,$09,$32,$C2   ;C320E7  
-	.db $60,$E2,$30,$A4,$00,$A6,$01,$86,$00,$DA,$22,$28,$11,$C2,$FA,$A5   ;C320F7
-	.db $00,$4A,$48,$49,$FF,$1A,$F0,$0E,$85,$02,$A9,$FF,$85,$03,$86,$00   ;C32107
-	.db $5A,$22,$09,$32,$C2,$7A,$68,$85,$02,$64,$03,$84,$00,$22,$09,$32   ;C32117
-	.db $C2,$60   ;C32127
+	sep #$30                                ;C320B7
+	ldy $00                                 ;C320B9
+	ldx $01                                 ;C320BB
+	phx                                     ;C320BD
+	jsl $C21128                             ;C320BE
+	plx                                     ;C320C2
+	lda $00                                 ;C320C3
+	cmp #$01                                ;C320C5
+	beq @lbl_C320DB                         ;C320C7
+	eor #$FF                                ;C320C9
+	inc a                                   ;C320CB
+	inc a                                   ;C320CC
+	sta $02                                 ;C320CD
+	lda #$FF                                ;C320CF
+	sta $03                                 ;C320D1
+	sty $00                                 ;C320D3
+	phx                                     ;C320D5
+	jsl $C23209                             ;C320D6
+	plx                                     ;C320DA
+@lbl_C320DB:
+	stx $00                                 ;C320DB
+	phx                                     ;C320DD
+	jsl $C21128                             ;C320DE
+	plx                                     ;C320E2
+	lda $00                                 ;C320E3
+	.db $4A   ;C320E5
+	eor #$FF                                ;C320E6
+	inc a                                   ;C320E8
+	beq @lbl_C320F7                         ;C320E9
+	sta $02                                 ;C320EB
+	lda #$FF                                ;C320ED
+	sta $03                                 ;C320EF
+	stx $00                                 ;C320F1
+	jsl $C23209                             ;C320F3
+@lbl_C320F7:
+	rts                                     ;C320F7
+	sep #$30                                ;C320F8
+	ldy $00                                 ;C320FA
+	ldx $01                                 ;C320FC
+	stx $00                                 ;C320FE
+	phx                                     ;C32100
+	jsl $C21128                             ;C32101
+	plx                                     ;C32105
+	lda $00                                 ;C32106
+	.db $4A   ;C32108
+	pha                                     ;C32109
+	eor #$FF                                ;C3210A
+	inc a                                   ;C3210C
+	beq @lbl_C3211D                         ;C3210D
+	sta $02                                 ;C3210F
+	lda #$FF                                ;C32111
+	sta $03                                 ;C32113
+	stx $00                                 ;C32115
+	phy                                     ;C32117
+	jsl $C23209                             ;C32118
+	ply                                     ;C3211C
+@lbl_C3211D:
+	pla                                     ;C3211D
+	sta $02                                 ;C3211E
+	stz $03                                 ;C32120
+	sty $00                                 ;C32122
+	jsl $C23209                             ;C32124
+	rts                                     ;C32128
 GreatHallScrollUseEffect:
 	.db $E2,$20,$22,$DF,$69,$C3,$A5,$00,$D0,$29,$22,$DB,$27,$C6   ;C32129
 	.db $A5,$00,$C9,$0A,$F0,$1F,$C9,$0C,$F0,$1B,$A9,$13,$85,$00,$A9,$03   ;C32137  
