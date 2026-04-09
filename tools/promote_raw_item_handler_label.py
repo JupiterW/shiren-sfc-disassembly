@@ -131,6 +131,7 @@ def estimate_asm_line_size(stripped: str) -> int | None:
     op = stripped.split()[0]
     rest = stripped[len(op):].strip()
     op = op.lower()
+    op_base = op.split(".", 1)[0]
 
     one_byte = {
         "pha",
@@ -162,17 +163,17 @@ def estimate_asm_line_size(stripped: str) -> int | None:
         "inc",
         "dec",
     }
-    if op in one_byte and (not rest or rest == "a"):
+    if op_base in one_byte and (not rest or rest == "a"):
         return 1
-    if op in {"sep", "rep"}:
+    if op_base in {"sep", "rep"}:
         return 2
-    if op in {"bra", "bcc", "bcs", "beq", "bmi", "bne", "bpl", "bvc", "bvs"}:
+    if op_base in {"bra", "bcc", "bcs", "beq", "bmi", "bne", "bpl", "bvc", "bvs"}:
         return 2
-    if op in {"jsl", "jsl.l"}:
+    if op_base == "jsl":
         return 4
-    if op in {"jsr", "jsr.w", "jmp", "jmp.w"}:
+    if op_base in {"jsr", "jmp"}:
         return 3
-    if op == "call_savebank":
+    if op_base == "call_savebank":
         return 4
 
     if "#" in rest:
@@ -188,7 +189,7 @@ def estimate_asm_line_size(stripped: str) -> int | None:
         return 3
     if ".l" in op:
         return 4
-    if op in {"lda", "sta", "ldx", "stx", "ldy", "sty", "cmp", "cpx", "cpy", "adc", "sbc", "eor", "and", "ora", "bit", "stz"}:
+    if op_base in {"lda", "sta", "ldx", "stx", "ldy", "sty", "cmp", "cpx", "cpy", "adc", "sbc", "eor", "and", "ora", "bit", "stz"}:
         return 2
     return None
 
