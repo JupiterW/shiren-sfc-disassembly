@@ -3189,8 +3189,17 @@ HandsFullScrollUseEffect:
 	lda #$005C                              ;C32498
 	sta $00                                 ;C3249B
 	jsl.l DisplayMessage
-	.db $60,$C2,$20,$22,$AE,$2A,$C6,$C2,$20,$A9   ;C3249C  
-	.db $13,$03,$85,$00,$22,$79,$35,$C2,$60,$C2,$20,$A9,$C4,$00,$85,$00   ;C324AC  
+	rts                                     ;C324A1
+	rep #$20                                ;C324A2
+	jsl $C62AAE                             ;C324A4
+	rep #$20                                ;C324A8
+	lda #$0313                              ;C324AA
+	sta $00                                 ;C324AD
+	jsl $C23579                             ;C324AF
+	rts                                     ;C324B3
+	rep #$20                                ;C324B4
+	lda #$00C4                              ;C324B6
+	sta $00                                 ;C324B9
 	jsl.l DisplayMessage
 	lda #$03E8                              ;C324C0
 	sta $00                                 ;C324C3
