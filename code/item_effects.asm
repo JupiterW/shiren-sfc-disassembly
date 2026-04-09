@@ -1676,8 +1676,10 @@ func_C31B5C:
 	rts
 	.db $E2,$20,$A9,$06,$85,$01,$22,$80   ;C31E00
 	.db $40,$C2,$60,$60                   ;C31E08
+KnockbackStaffUseEffect:
 	jsl.l func_C2444B
 	rts
+DoppelgangerStaffUseEffect:
 	sep #$20 ;A->8
 	lda.b #$32
 	sta.b wTemp01
@@ -1763,6 +1765,7 @@ func_C31B5C:
 @lbl_C31EB5:
 	.db $22,$3A,$43,$C2,$A9,$01,$00,$85   ;C31EB5  
 	.db $02,$22,$E5,$25,$C6,$60           ;C31EBD
+SkullStaffUseEffect:
 	rep #$20 ;A->16
 	sep #$10 ;XY->8
 	lda.b wTemp00
@@ -1907,8 +1910,11 @@ InvisibilityHerbUseEffect:
 	.db $22,$F8,$82,$C2,$68,$85,$02,$C2,$20,$A9,$5D,$01,$85,$00
 	jsl.l DisplayMessage
 	.db $60,$E2,$20,$A9,$15,$85,$01,$A5,$00,$22,$F8,$82,$C2,$A9   ;C32026  
-	.db $01,$85,$02,$22,$50,$25,$C6,$60,$22,$05,$83,$C2,$60,$22,$50,$83   ;C32036  
+	.db $01,$85,$02,$22,$50,$25,$C6,$60   ;C32036
+SlothStaffUseEffect:
+	.db $22,$05,$83,$C2,$60,$22,$50,$83   ;C3203E
 	.db $C2,$60                           ;C32046
+ParalysisStaffUseEffect:
 	sep #$20 ;A->8
 	lda.b #$03
 	sta.b wTemp02
@@ -1954,6 +1960,7 @@ InvisibilityHerbUseEffect:
 	rts
 @lbl_C320A8:
 	.db $FA,$86,$00,$22,$90,$43,$C2,$60   ;C320A8
+PainSplitStaffUseEffect:
 	sep #$30 ;AXY->8
 	jsl.l func_C28451
 	rts

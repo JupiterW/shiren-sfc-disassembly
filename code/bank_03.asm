@@ -2244,17 +2244,17 @@ ItemUseEffectFunctionTable:
 	.dw UnusedItemUseEffect-1
 	.dw UnusedItemUseEffect-1
 	.dw UnusedItemUseEffect-1
-	.dw $203D ;SlothStaff
-	.dw $1E0B ;KnockbackStaff
+	.dw SlothStaffUseEffect-1 ;SlothStaff
+	.dw KnockbackStaffUseEffect-1 ;KnockbackStaff
 	.dw $1F58 ;HappinessStaff
 	.dw $1F98 ;MisfortuneStaff
-	.dw $1E10 ;DoppelgangerStaff
+	.dw DoppelgangerStaffUseEffect-1 ;DoppelgangerStaff
 	.dw $1E1B ;SwitchingStaff
 	.dw $1E5D ;BufusStaff
-	.dw $1EC2 ;SkullStaff
-	.dw $2047 ;ParalysisStaff
+	.dw SkullStaffUseEffect-1 ;SkullStaff
+	.dw ParalysisStaffUseEffect-1 ;ParalysisStaff
 	.dw $206E ;PostponeStaff
-	.dw $20AF ;PainSplitStaff
+	.dw PainSplitStaffUseEffect-1 ;PainSplitStaff
 	.dw UnusedItemUseEffect-1
 	.dw UnusedItemUseEffect-1
 	.dw UnusedItemUseEffect-1
