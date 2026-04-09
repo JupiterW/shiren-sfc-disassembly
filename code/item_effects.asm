@@ -2148,9 +2148,26 @@ BlessingScrollUseEffect:
 	dey
 	bne @lbl_C31CA5
 	rts
-	.db $E2,$30,$22,$89,$3B,$C2,$A6,$02,$DA,$A6,$01,$DA,$A6,$00,$DA,$A0   ;C31CC4
-	.db $03,$FA,$30,$05,$BD,$0C,$8C,$F0,$16,$88,$D0,$F5,$A9,$5C,$85,$00   ;C31CD4  
-	.db $64,$01
+	sep #$30                                ;C31CC4
+	jsl $C23B89                             ;C31CC6
+	ldx $02                                 ;C31CCA
+	phx                                     ;C31CCC
+	ldx $01                                 ;C31CCD
+	phx                                     ;C31CCF
+	ldx $00                                 ;C31CD0
+	phx                                     ;C31CD2
+	ldy #$03                                ;C31CD3
+@lbl_C31CD5:
+	plx                                     ;C31CD5
+	bmi @lbl_C31CDD                         ;C31CD6
+	lda $8C0C,x                             ;C31CD8
+	.db $F0,$16   ;C31CDB
+@lbl_C31CDD:
+	dey                                     ;C31CDD
+	bne @lbl_C31CD5                         ;C31CDE
+	lda #$5C                                ;C31CE0
+	sta $00                                 ;C31CE2
+	stz $01                                 ;C31CE4
 	jsl.l DisplayMessage
 	.db $60,$FA,$30,$1A,$BD,$0C,$8C,$D0,$15,$A9   ;C31CE4  
 	.db $01,$9D,$0C,$8C,$A9,$8D,$85,$00,$64,$01,$86,$02,$5A,$8B
