@@ -32,6 +32,9 @@ Reusable helper:
 - [tools/item_pipeline.py](/Users/jupiter.whitworth/Development/new/shiren/tools/item_pipeline.py)
   - Query `item -> category -> use handler -> throw handler`
   - Supports direct item lookup plus reverse lookup by handler substring
+- [tools/function_xref.py](/Users/jupiter.whitworth/Development/new/shiren/tools/function_xref.py)
+  - Query symbol/address definitions, callers, and table references with optional context
+  - Useful for tracing unnamed item handlers from raw table entries like `$0EA0`
 
 1. Item ids / canonical item definitions
 
