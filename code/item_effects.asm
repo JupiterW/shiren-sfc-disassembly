@@ -359,7 +359,7 @@ func_C30AE0:
 	jsl.l func_C286C8
 	rts
 
-func_C30AE5:
+ExecuteSelectedItemActionByCategory:
 	php
 	sep #$30 ;AXY->8
 	bankswitch 0x7E

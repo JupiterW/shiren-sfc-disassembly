@@ -56,9 +56,9 @@ Selection / assignment:
 
 Shared category application logic:
 
-- [func_C30AE5](/Users/jupiter.whitworth/Development/new/shiren/code/item_effects.asm#L362)
-  - Still unnamed on purpose.
-  - Shared category-based item assignment/apply routine used by both player-side flows and AI-related callers.
+- [ExecuteSelectedItemActionByCategory](/Users/jupiter.whitworth/Development/new/shiren/code/item_effects.asm#L362)
+  - Shared category-based item action routine used by both player-side flows and AI-related callers
+  - Handles category shortcut/equip categories first, then falls through to broader category-specific item-use behavior
 
 ## Underfoot Ground Item Actions
 

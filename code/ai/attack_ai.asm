@@ -1449,7 +1449,7 @@ DATA8_C21B97:
 	lda.l wCharYPos,x
 	sta.b wTemp03
 	stx.b wTemp04
-	jsl.l func_C30AE5
+	jsl.l ExecuteSelectedItemActionByCategory
 @lbl_C21EA7:
 	stz.b wTemp00
 	plp

@@ -4110,7 +4110,7 @@ AssignSelectedInventoryItemToCategoryShortcut:
 	sta.b wTemp04
 	phx
 	; Route the selected inventory item into the category-based shortcut/equip path.
-	jsl.l func_C30AE5
+	jsl.l ExecuteSelectedItemActionByCategory
 	plx
 	lda.b wTemp00
 	bne @lbl_C23F71
