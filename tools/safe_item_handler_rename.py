@@ -25,10 +25,12 @@ from item_pipeline import ROOT, BANK03_PATH, build_item_infos, match_query
 
 
 ASM_PATHS = sorted((ROOT / "code").rglob("*.asm"))
+SYM_PATH = ROOT / "shiren.sym"
 TABLE_LABELS = {"use": "ItemUseEffectFunctionTable", "throw": "ItemThrowEffectFunctionTable"}
 TABLE_COMMENT_RE = re.compile(r"^(?P<prefix>\s*\.dw\s+)(?P<target>[^;]+?)(?P<suffix>\s*;\s*(?P<label>.*))?$")
 LABEL_LINE_RE = re.compile(r"^(?P<indent>\s*)(?P<label>[A-Za-z0-9_@.]+):(?P<rest>\s*)$")
 FUNC_ADDR_RE = re.compile(r"^func_C([0-9A-F]{5,6})$")
+SYM_LINE_RE = re.compile(r"^(?P<bank>[0-9a-fA-F]+):(?P<addr>[0-9a-fA-F]+)\s+(?P<label>\S+)$")
 
 
 def load_lines(path: Path) -> list[str]:
@@ -50,12 +52,95 @@ def raw_to_entry_addr(raw: str, bank: int = 0xC3) -> int | None:
     return None
 
 
+def parse_table_target_value(target: str, symbol_addrs: dict[str, int]) -> int | None:
+    token = target.strip()
+    if token.startswith("$"):
+        try:
+            return int(token[1:], 16)
+        except ValueError:
+            return None
+    if token.endswith("-1"):
+        base = token[:-2]
+        if base in symbol_addrs:
+            return (symbol_addrs[base] - 1) & 0xFFFF
+        return None
+    if token in symbol_addrs:
+        return symbol_addrs[token] & 0xFFFF
+    return None
+
+
+def choose_table_expr(original_value: int, symbol_addr: int, symbol: str) -> str:
+    symbol_value = symbol_addr & 0xFFFF
+    if symbol_value == original_value:
+        return symbol
+    if ((symbol_value - 1) & 0xFFFF) == original_value:
+        return f"{symbol}-1"
+    raise SystemExit(
+        f"cannot preserve original table value ${original_value:04X} with symbol {symbol} at ${symbol_value:04X}"
+    )
+
+
+def load_sym_addrs() -> dict[str, int]:
+    if not SYM_PATH.exists():
+        raise SystemExit(f"symbol file not found: {SYM_PATH}")
+    mapping: dict[str, int] = {}
+    for line in load_lines(SYM_PATH):
+        match = SYM_LINE_RE.match(line.strip())
+        if not match:
+            continue
+        mapping[match.group("label")] = (int(match.group("bank"), 16) << 16) | int(match.group("addr"), 16)
+    return mapping
+
+
 def find_item(query: str):
     infos = build_item_infos()
     matches = [info for info in infos if match_query(info, query)]
     if not matches:
         raise SystemExit(f"no item matches query: {query}")
     return matches[0]
+
+
+def find_existing_label(label_name: str) -> tuple[Path, int, str] | None:
+    for path in ASM_PATHS:
+        for idx, line in enumerate(load_lines(path), 1):
+            stripped = line.strip()
+            match = LABEL_LINE_RE.match(stripped)
+            if not match:
+                continue
+            label = match.group("label")
+            if label == label_name:
+                return path, idx, label
+    return None
+
+
+def find_existing_label_for_raw_target(raw_target: str, symbol_addrs: dict[str, int]) -> tuple[Path, int, str, int] | None:
+    if not raw_target.startswith("$"):
+        return None
+    token = raw_target[1:]
+    if not re.fullmatch(r"[0-9A-Fa-f]{4}", token):
+        return None
+    raw_value = int(token, 16)
+    exact_candidates: list[tuple[Path, int, str, int]] = []
+    plus_one_candidates: list[tuple[Path, int, str, int]] = []
+    for full_addr, bucket in (
+        ((0xC3 << 16) | raw_value, exact_candidates),
+        ((0xC3 << 16) | ((raw_value + 1) & 0xFFFF), plus_one_candidates),
+    ):
+        for label, addr in symbol_addrs.items():
+            if addr != full_addr:
+                continue
+            label_target = find_existing_label(label)
+            if label_target is not None:
+                bucket.append((*label_target, full_addr))
+    if len(exact_candidates) == 1:
+        return exact_candidates[0]
+    if len(exact_candidates) > 1:
+        raise SystemExit(f"ambiguous exact standalone label candidates for raw target {raw_target}")
+    if len(plus_one_candidates) == 1:
+        return plus_one_candidates[0]
+    if len(plus_one_candidates) > 1:
+        raise SystemExit(f"ambiguous +1 standalone label candidates for raw target {raw_target}")
+    return None
 
 
 def find_existing_label_for_addr(entry_addr: int) -> tuple[Path, int, str] | None:
@@ -77,7 +162,7 @@ def find_existing_label_for_addr(entry_addr: int) -> tuple[Path, int, str] | Non
     return None
 
 
-def update_table_entry(item_suffix: str, effect: str, new_symbol: str, dry_run: bool) -> tuple[str, str]:
+def update_table_entry(item_suffix: str, effect: str, table_expr: str, dry_run: bool) -> tuple[str, str]:
     lines = load_lines(BANK03_PATH)
     in_table = False
     for idx, line in enumerate(lines):
@@ -95,7 +180,7 @@ def update_table_entry(item_suffix: str, effect: str, new_symbol: str, dry_run: 
         if match.group("label") != item_suffix:
             continue
         old_target = match.group("target").strip()
-        lines[idx] = f"{match.group('prefix')}{new_symbol}-1{match.group('suffix') or ''}"
+        lines[idx] = f"{match.group('prefix')}{table_expr}{match.group('suffix') or ''}"
         if not dry_run:
             write_lines(BANK03_PATH, lines)
         return old_target, lines[idx]
@@ -140,14 +225,15 @@ def main(argv: list[str]) -> int:
     info = find_item(args.query)
     current_handler = info.use_handler if args.effect == "use" else info.throw_handler
     item_suffix = info.const_name.removeprefix("Item_")
+    symbol_addrs = load_sym_addrs()
 
     label_target: tuple[Path, int, str] | None = None
     old_symbol = current_handler
+    old_symbol_addr: int | None = symbol_addrs.get(current_handler)
     if current_handler.startswith("$"):
-        entry_addr = raw_to_entry_addr(current_handler)
-        if entry_addr is None:
-            raise SystemExit(f"unsupported raw handler format: {current_handler}")
-        label_target = find_existing_label_for_addr(entry_addr)
+        resolved = find_existing_label_for_raw_target(current_handler, symbol_addrs)
+        label_target = None if resolved is None else resolved[:3]
+        old_symbol_addr = None if resolved is None else resolved[3]
         if label_target is None:
             raise SystemExit(
                 f"{info.const_name} {args.effect} handler {current_handler} has no standalone label; "
@@ -165,8 +251,18 @@ def main(argv: list[str]) -> int:
             if label_target is not None:
                 break
 
-    old_table, new_table = update_table_entry(item_suffix, args.effect, args.symbol, args.dry_run)
-    print(f"table: {old_table} -> {args.symbol}-1")
+    if old_symbol_addr is None:
+        old_symbol_addr = symbol_addrs.get(old_symbol)
+    if old_symbol_addr is None:
+        raise SystemExit(f"no symbol address found for {old_symbol} in {SYM_PATH.name}")
+
+    old_table_value = parse_table_target_value(current_handler, symbol_addrs)
+    if old_table_value is None:
+        raise SystemExit(f"could not parse current table target: {current_handler}")
+    table_expr = choose_table_expr(old_table_value, old_symbol_addr, args.symbol)
+
+    old_table, new_table = update_table_entry(item_suffix, args.effect, table_expr, args.dry_run)
+    print(f"table: {old_table} -> {table_expr}")
 
     if label_target is not None and old_symbol != args.symbol:
         path, line_no, label = label_target

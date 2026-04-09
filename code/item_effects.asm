@@ -245,7 +245,7 @@ VictoryHerbUseEffect:
 	jsl.l DisplayMessage
 
 ;c30a14
-func_C30A14:
+KignyHerbUseEffect:
 	rts
 
 ;c30a15

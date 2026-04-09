@@ -240,3 +240,23 @@ Unsafe unless tested one at a time:
 
 - operand form rewrites
 - local blob-to-assembly lifts combined with additional semantic cleanup in the same pass
+
+## Herb Rename Caveat
+
+Some old `func_C...` labels do not match their actual assembled address exactly.
+
+Confirmed example:
+
+- `KignyHerb` uses table entry `$0A13`
+- the lifted source label is named `func_C30A14`
+- but [shiren.sym](/Users/jupiter.whitworth/Development/new/shiren/shiren.sym) shows the symbol is actually assembled at `c3:0a13`
+
+Why this matters:
+
+- a blind rewrite from `.dw $0A13` to `KignyHerbUseEffect-1` changes the ROM byte to `$0A12`
+- that breaks SHA even though the label name looks like it should correspond to `$0A14`
+
+Rule:
+
+- when a raw table pointer targets an old lifted `func_C...` label, trust the assembled address in `shiren.sym`, not the label text alone
+- this is why iterative rename verification is still required even for apparently safe lifted labels
