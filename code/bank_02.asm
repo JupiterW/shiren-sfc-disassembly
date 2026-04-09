@@ -397,7 +397,7 @@ DATA8_C20277:
 	stz.w $89B2
 	stz.w $89B3
 	stz.w $89B4
-	stz.w $89B6
+	stz.w wShirenStatus.cantPickUpItems
 	stz.w $89BA
 	stz.w $89B7
 	stz.w $89B8
@@ -436,10 +436,10 @@ DATA8_C20277:
 	stz.w $8993
 	stz.w $8994
 	stz.w $8995
-	sta.w $8970
-	sta.w $8971
-	sta.w $8972
-	sta.w $8973
+	sta.w wShirenStatus.categoryShortcutItemIds
+	sta.w wShirenStatus.categoryShortcutItemIds+1
+	sta.w wShirenStatus.categoryShortcutItemIds+2
+	sta.w wShirenStatus.categoryShortcutItemIds+3
 	sta.w $897F
 	ldx.b #$20
 @lbl_C2043B:
@@ -1155,7 +1155,7 @@ func_C20E89:
 	sta.l $7E8994
 	sta.l $7E8995
 	sta.l $7E8997
-	sta.l $7E89B6
+	sta.l wShirenStatus.cantPickUpItems
 	sta.l $7E89B7
 	sta.l $7E89B8
 	sta.l $7E894D
@@ -1441,7 +1441,7 @@ func_C21184:
 	sep #$20 ;A->8
 	lda.l $7E89B4
 	sta.b wTemp00
-	lda.l $7E89B6
+	lda.l wShirenStatus.cantPickUpItems
 	sta.b wTemp01
 	plp
 	rtl
@@ -3495,7 +3495,9 @@ func_C23959:
 	plp
 	rtl
 
-func_C23A02:
+; Validate the selected item source and insert it into inventory, handling the
+; special blank-scroll rejection path reused by the ground-item exchange flow.
+TryAddSelectedItemToInventory:
 	php
 	sep #$30 ;AXY->8
 	ldy.b wTemp00
@@ -3510,6 +3512,8 @@ func_C23A02:
 @lbl_C23A15:
 	sty.b wTemp00
 	phy
+	; Reject one special blank-scroll case before continuing with the broader
+	; selection flow that this helper feeds.
 	jsl.l func_C30824
 	ply
 	lda.b wTemp00
@@ -3641,7 +3645,7 @@ func_C23B1C:
 	stx.b wTemp00
 	lda.w UNREACH_00894F,x
 	pha
-	jsl.l func_C23C4D
+	jsl.l RemoveItemFromCategoryShortcutSlots
 	pla
 	sta.b wTemp00
 	plp
@@ -3656,16 +3660,16 @@ func_C23B7C:
 	plp
 	rtl
 
-func_C23B89:
+GetCategoryShortcutItemIds:
 	php
 	sep #$20 ;A->8
-	lda.l $7E8970
+	lda.l wShirenStatus.categoryShortcutItemIds
 	sta.b wTemp00
-	lda.l $7E8971
+	lda.l wShirenStatus.categoryShortcutItemIds+1
 	sta.b wTemp01
-	lda.l $7E8972
+	lda.l wShirenStatus.categoryShortcutItemIds+2
 	sta.b wTemp02
-	lda.l $7E8973
+	lda.l wShirenStatus.categoryShortcutItemIds+3
 	sta.b wTemp03
 	plp
 	rtl
@@ -3694,13 +3698,13 @@ func_C23BB7:
 	.db $08,$E2,$30,$A6,$00,$BF,$E9,$88,$7E,$85,$00,$BF,$FD,$88,$7E,$85   ;C23BCE
 	.db $01,$28,$6B                       ;C23BDE  
 
-func_C23BE1:
+ToggleArrowShortcutItem:
 	php
 	sep #$20 ;A->8
 	lda.b wTemp00
-	cmp.l $7E8973
+	cmp.l wShirenStatus.categoryShortcutItemIds+3
 	beq @lbl_C23BF6
-	sta.l $7E8973
+	sta.l wShirenStatus.categoryShortcutItemIds+3
 	lda.b #$02
 	sta.b wTemp00
 	plp
@@ -3709,30 +3713,30 @@ func_C23BE1:
 	.db $A9,$FF,$8F,$73,$89,$7E,$A9,$01   ;C23BF6
 	.db $85,$00,$28,$6B                   ;C23BFE  
 
-func_C23C02:
+ToggleWeaponShortcutItem:
 	php
 	sep #$30 ;AXY->8
 	ldx.b #$00
-	bra func_C23C15
+	bra ToggleCategoryShortcutItemByIndex
 
-func_C23C09:
+ToggleArmbandShortcutItem:
 	php
 	sep #$30 ;AXY->8
 	ldx.b #$02
-	bra func_C23C15
+	bra ToggleCategoryShortcutItemByIndex
 
-func_C23C10:
+ToggleShieldShortcutItem:
 	php
 	sep #$30 ;AXY->8
 	ldx.b #$01
-func_C23C15:
+ToggleCategoryShortcutItemByIndex:
 	ldy.b wTemp00
-	lda.l $7E8970,x
+	lda.l wShirenStatus.categoryShortcutItemIds,x
 	bmi @lbl_C23C42
 	sta.b wTemp00
 	phx
 	phy
-	jsl.l func_C32C90
+	jsl.l TryClearAssignedCategoryItem
 	ply
 	plx
 	lda.b wTemp00
@@ -3741,23 +3745,23 @@ func_C23C15:
 	.db $64,$00,$28,$6B
 @lbl_C23C2F:
 	tya
-	cmp.l $7E8970,x
+	cmp.l wShirenStatus.categoryShortcutItemIds,x
 	bne @lbl_C23C42
 	lda.b #$FF
-	sta.l $7E8970,x
+	sta.l wShirenStatus.categoryShortcutItemIds,x
 	lda.b #$01
 	sta.b wTemp00
 	plp
 	rtl
 @lbl_C23C42:
 	tya
-	sta.l $7E8970,x
+	sta.l wShirenStatus.categoryShortcutItemIds,x
 	lda.b #$02
 	sta.b wTemp00
 	plp
 	rtl
 
-func_C23C4D:
+RemoveItemFromCategoryShortcutSlots:
 	php
 	sep #$30 ;AXY->8
 	bankswitch 0x7E
@@ -3765,7 +3769,7 @@ func_C23C4D:
 	lda.w $894F,y
 	ldx.b #$03
 @lbl_C23C5B:
-	cmp.w $8970,x
+	cmp.w wShirenStatus.categoryShortcutItemIds,x
 	beq @lbl_C23C65
 	dex
 	bpl @lbl_C23C5B
@@ -3776,7 +3780,7 @@ func_C23C4D:
 	sta.b wTemp00
 	phx
 	phy
-	call_savebank func_C32C90
+	call_savebank TryClearAssignedCategoryItem
 	ply
 	plx
 	lda.b wTemp00
@@ -3785,7 +3789,7 @@ func_C23C4D:
 	.db $64,$00,$28,$6B
 @lbl_C23C7D:
 	lda.b #$FF
-	sta.w $8970,x
+	sta.w wShirenStatus.categoryShortcutItemIds,x
 @lbl_C23C82:
 	iny
 	lda.w $894F,y
@@ -3796,29 +3800,36 @@ func_C23C4D:
 	plp
 	rtl
 
-func_C23C91:
+HandleCategoryShortcutSelectionAction:
 	php
 	sep #$30 ;AXY->8
 	lda.b wTemp01
 	bpl @lbl_C23C9B
-	jmp.w func_C23DCD
+	; Negative wTemp01 selects a nested/container item path.
+	jmp.w HandleContainedItemSelectionAction
 @lbl_C23C9B:
 	bit.b #$40
 	beq @lbl_C23CA2
-;C23C9F  
-	.db $4C,$1E,$3D
+	; Bit $40 in wTemp01 selects the special ground-item exchange path, distinct
+	; from the regular inventory, contextual-map-item, and nested/container
+	; modes. This path shares some helper logic with jar handling, but gameplay
+	; confirms it is the generic underfoot-item exchange action.
+	jmp.w @lbl_C23D1E
 @lbl_C23CA2:
 	ldx.b wTemp00
 	cpx.b #$1F
 	beq @lbl_C23CB5
+	; Regular inventory-slot selection.
 	jsl.l func_C14FD0
 	lda.b wTemp02
 	bne @lbl_C23CB3
-	jsr.w func_C23F30
+	jsr.w AssignSelectedInventoryItemToCategoryShortcut
 @lbl_C23CB3:
 	plp
 	rtl
 @lbl_C23CB5:
+	; Slot $1F is a contextual map item selection resolved from Shiren's current
+	; position via the map-object lookup helpers below.
 	ldy.b wTemp01
 	lda.l $7E85C8
 	sta.b wTemp00
@@ -3857,7 +3868,7 @@ func_C23C91:
 	plx
 	stx.b wTemp00
 	sty.b wTemp01
-	jsr.w func_C23F30
+	jsr.w AssignSelectedInventoryItemToCategoryShortcut
 	lda.l $7E896E
 	bpl @lbl_C23D0C
 	lda.b #$80
@@ -3873,25 +3884,110 @@ func_C23C91:
 	pla
 	plp
 	rtl
-	.db $29,$1F,$85,$00,$AA,$AF,$B6,$89,$7E,$F0,$0E,$A9,$2B,$85,$00,$A9   ;C23D1E
-	.db $01,$85,$01
+@lbl_C23D1E:
+	and.b #$1F
+	sta.b wTemp00
+	tax
+	; The exchange action needs to take the underfoot item into inventory, so it
+	; is blocked while cantPickUpItems is active.
+	lda.l wShirenStatus.cantPickUpItems
+	beq @lbl_C23D2E
+	lda.b #$2B
+	sta.b wTemp00
+	lda.b #$01
+	sta.b wTemp01
 	jsl.l DisplayMessage
-	.db $28,$6B,$AF,$C8,$85,$7E,$85,$00,$AF   ;C23D2E  
-	.db $DC,$85,$7E,$85,$01,$DA,$22,$AF,$59,$C3,$FA,$A4,$01,$84,$00,$DA   ;C23D3E  
-	.db $5A,$22,$24,$08,$C3,$7A,$FA,$A5,$00,$D0,$0E,$84,$02,$A9,$C6,$85   ;C23D4E
-	.db $00,$64,$01
+	plp
+	rtl
+@lbl_C23D2E:
+	; Resolve the current ground item under Shiren.
+	lda.l wCharXPos+CharDataShirenIndex
+	sta.b wTemp00
+	lda.l wCharYPos+CharDataShirenIndex
+	sta.b wTemp01
+	phx
+	jsl.l func_C359AF
+	plx
+	ldy.b wTemp01
+	sty.b wTemp00
+	phx
+	phy
+	jsl.l func_C30824
+	ply
+	plx
+	lda.b wTemp00
+	bne @lbl_C23D5E
+	; Reject one special blank-scroll case before continuing.
+	sty.b wTemp02
+	lda.b #$C6
+	sta.b wTemp00
+	stz.b wTemp01
 	jsl.l DisplayMessage
-	.db $28,$6B,$BF,$4F,$89,$7E,$48,$86,$00   ;C23D5E
-	.db $DA,$5A,$22,$4D,$3C,$C2,$7A,$FA,$A5,$00,$D0,$03,$68,$28,$6B,$84   ;C23D6E
-	.db $00,$DA,$5A,$22,$23,$08,$C3,$7A,$FA,$AF,$C8,$85,$7E,$85,$00,$AF   ;C23D7E
-	.db $DC,$85,$7E,$85,$01,$A3,$01,$85,$02,$DA,$22,$A2,$5B,$C3,$FA,$68   ;C23D8E  
-	.db $85,$02,$84,$03,$A9,$1D,$85,$00,$64,$01,$DA,$5A
+	plp
+	rtl
+@lbl_C23D5E:
+	; Replace the ground item with the currently selected inventory item.
+	lda.l wShirenStatus.itemAmounts,x
+	pha
+	stx.b wTemp00
+	phx
+	phy
+	jsl.l RemoveItemFromCategoryShortcutSlots
+	ply
+	plx
+	lda.b wTemp00
+	bne @lbl_C23D74
+	pla
+	plp
+	rtl
+@lbl_C23D74:
+	sty.b wTemp00
+	phx
+	phy
+	jsl.l func_C30823
+	ply
+	plx
+	lda.l wCharXPos+CharDataShirenIndex
+	sta.b wTemp00
+	lda.l wCharYPos+CharDataShirenIndex
+	sta.b wTemp01
+	lda.b $01,s
+	sta.b wTemp02
+	phx
+	jsl.l func_C35BA2
+	plx
+	pla
+	sta.b wTemp02
+	sty.b wTemp03
+	lda.b #$1D
+	sta.b wTemp00
+	stz.b wTemp01
+	phx
+	phy
 	jsl.l DisplayMessage
-	.db $7A,$FA,$84,$00,$64,$01,$DA,$5A,$22,$FD,$5A,$C2,$7A,$FA,$CA,$E8   ;C23DAE
-	.db $BF,$4F,$89,$7E,$48,$98,$9F,$4F   ;C23DBE  
-	.db $89,$7E,$7A,$10,$F2,$28,$6B       ;C23DC6
+	ply
+	plx
+	sty.b wTemp00
+	stz.b wTemp01
+	phx
+	phy
+	jsl.l func_C25AFD
+	ply
+	plx
+	dex
+@lbl_C23DB4:
+	; Insert the old ground item into inventory, shifting later entries down.
+	inx
+	lda.l wShirenStatus.itemAmounts,x
+	pha
+	tya
+	sta.l wShirenStatus.itemAmounts,x
+	ply
+	bpl @lbl_C23DB4
+	plp
+	rtl
 
-func_C23DCD:
+HandleContainedItemSelectionAction:
 	pha
 	ldx.b wTemp00
 	cpx.b #$1F
@@ -3914,6 +4010,12 @@ func_C23DCD:
 	.db $68,$4C,$2E,$3F
 @lbl_C23DFF:
 	lda.b wTemp01,s
+	; For contained items, the low 5 bits select the linked-list entry inside the
+	; container and bits 5-6 select the action family:
+	;   $00 = route into category shortcut/equip handling
+	;   $20 = use the contained item
+	;   $40 = place the contained item on the ground
+	;   $60 = move the contained item into inventory
 	and.b #$1F
 	tay
 	pla
@@ -3926,21 +4028,21 @@ func_C23DCD:
 	sty.b wTemp01
 	phx
 	phy
-	jsl.l func_C33AEF
+	jsl.l GetContainedItemByIndex
 	ply
 	plx
 	stx.b wTemp00
 	sty.b wTemp01
 	phx
 	phy
-	jsl.l func_C33B01
+	jsl.l RemoveContainedItemByIndex
 	lda.b wTemp00
 	sta.l $7E896E
 	lda.b #$1F
 	sta.b wTemp00
 	lda.l $7E899F
 	sta.b wTemp01
-	jsr.w func_C23F30
+	jsr.w AssignSelectedInventoryItemToCategoryShortcut
 	ply
 	plx
 	jmp.w func_C23E5F
@@ -3954,7 +4056,7 @@ func_C23E5F:
 	stx.b wTemp00
 	sty.b wTemp01
 	sta.b wTemp02
-	jsl.l func_C33B35
+	jsl.l InsertContainedItemByIndex
 @lbl_C23E6F:
 	plp
 	rtl
@@ -3979,7 +4081,7 @@ func_C23E5F:
 	.db $BF,$4F,$89,$7E,$10,$F9,$98,$9F   ;C23F21  
 	.db $4F,$89,$7E,$28,$6B,$28,$6B       ;C23F29  
 
-func_C23F30:
+AssignSelectedInventoryItemToCategoryShortcut:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -4007,12 +4109,13 @@ func_C23F30:
 	lda.b #$13
 	sta.b wTemp04
 	phx
-	jsl.l func_C30AE5
+	; Route the selected inventory item into the category-based shortcut/equip path.
+	jsl.l ExecuteSelectedItemActionByCategory
 	plx
 	lda.b wTemp00
 	bne @lbl_C23F71
 	stx.b wTemp00
-	jsl.l func_C23C4D
+	jsl.l RemoveItemFromCategoryShortcutSlots
 @lbl_C23F71:
 	dec a
 	bne @lbl_C23F76
@@ -4022,7 +4125,7 @@ func_C23F30:
 	.db $86,$00,$22,$4D,$3C,$C2,$22,$CF   ;C23F76  
 	.db $22,$C3,$28,$60                   ;C23F7E  
 
-func_C23F82:
+DropSelectedInventoryItem:
 	php
 	sep #$30 ;AXY->8
 	bankswitch 0x7E
@@ -4058,7 +4161,7 @@ func_C23F82:
 	ldy.w $894F,x
 	pha
 	phy
-	call_savebank func_C23C4D
+	call_savebank RemoveItemFromCategoryShortcutSlots
 	ply
 	pla
 	ldx.b wTemp00
@@ -4632,12 +4735,13 @@ func_C2455F:
 	.db $08,$E2,$30,$A6,$00,$20,$5F,$45,$28,$6B,$08,$E2,$30,$A6,$00,$20   ;C2457A
 	.db $2B,$45,$28,$6B                   ;C2458A
 
-func_C2458E:
+HandleArrowShortcutAction:
 	php
 	sep #$30 ;AXY->8
 	lda.l $7E899B
 	bne @lbl_C245C4
-	lda.l $7E8973
+	; L-button action uses the arrow shortcut slot.
+	lda.l wShirenStatus.categoryShortcutItemIds+3
 	bpl @lbl_C245B1
 	lda.b #$B5
 	sta.b wTemp00
@@ -4655,7 +4759,7 @@ func_C2458E:
 	cmp.l wShirenStatus.itemAmounts,x
 	bne @lbl_C245B3
 	stx.b wTemp00
-	jsl.l func_C24671
+	jsl.l ThrowSelectedItem
 	stz.b wTemp00
 	plp
 	rtl
@@ -4665,13 +4769,13 @@ func_C2458E:
 	plp
 	rtl
 
-func_C245CC:
+HandleThrowItemAction:
 	php
 	sep #$30 ;AXY->8
 	lda.b wTemp00
 	cmp.b #$1F
 	beq @lbl_C245DB
-	jsl.l func_C24671
+	jsl.l ThrowSelectedItem
 	plp
 	rtl
 @lbl_C245DB:
@@ -4688,7 +4792,7 @@ func_C245CC:
 	.db $D0,$10,$A9,$80,$85,$02,$A3,$02,$85,$00,$A3,$01,$85,$01,$22,$A2   ;C2465B  
 	.db $5B,$C3,$68,$68,$28,$6B           ;C2466B
 
-func_C24671:
+ThrowSelectedItem:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -4702,7 +4806,7 @@ func_C24671:
 	sta.b wTemp00
 	phx
 	phy
-	jsl.l func_C33A50
+	jsl.l PrepareSelectedThrowableItem
 	ply
 	plx
 	lda.b wTemp00
@@ -4719,7 +4823,7 @@ func_C24671:
 	stx.b wTemp00
 	pha
 	phy
-	jsl.l func_C23C4D
+	jsl.l RemoveItemFromCategoryShortcutSlots
 	ply
 	pla
 	ldx.b wTemp00
@@ -4735,7 +4839,7 @@ func_C24671:
 	sty.b wTemp01
 	lda.l $7E898A
 	sta.b wTemp05
-	jsl.l func_C33382
+	jsl.l ExecutePreparedThrowEffect
 @lbl_C246CB:
 	plp
 	rtl
@@ -4997,7 +5101,7 @@ func_C248B2:
 	plp
 	rtl
 
-func_C248D8:
+HandleUnderfootItemPickupAction:
 	php
 	sep #$30 ;AXY->8
 	lda.l $7E85DC
@@ -5048,10 +5152,10 @@ func_C248D8:
 	.db $A9,$13,$85,$00,$A9,$10,$85,$02,$22,$F6,$26,$C6,$A9,$13,$85,$00   ;C2494D
 	.db $22,$90,$43,$C2,$64,$00,$28,$6B   ;C2495D  
 
-func_C24965:
+DispatchPlayerActionCommand:
 	php
 	sep #$30 ;AXY->8
-	jsl.l func_C2498C
+	jsl.l HandlePlayerActionCommand
 	lda.l $7E89B3
 	beq @lbl_C2498A
 	lda.b wTemp00
@@ -5069,7 +5173,7 @@ func_C24965:
 	plp
 	rtl
 
-func_C2498C:
+HandlePlayerActionCommand:
 	php
 	sep #$30 ;AXY->8
 	bankswitch 0x7E
@@ -5138,9 +5242,17 @@ func_C2498C:
 	.db $6B                               ;C24A5B
 @lbl_C24A5C:
 	lda.b wTemp00
+	; Fixed commands use dedicated byte values. Other commands use a packed format:
+	; upper 3 bits = action family, lower 5 bits = operand/direction.
+	; Known fixed-command sources:
+	; $1B = inventory sort action.
+	; $18 = A-button action using the current facing.
+	; $1C = A+B fixed action.
+	; $1D = L-button fixed action.
+	; $5F = context-sensitive underfoot-item pickup action from the X-button path.
 	cmp.b #$1B
 	bne @lbl_C24A6C
-	jsl.l func_C28D24
+	jsl.l SortShirenInventory
 	lda.b #$02
 	sta.b wTemp00
 	plp
@@ -5161,7 +5273,7 @@ func_C2498C:
 @lbl_C24A84:
 	cmp.b #$5F
 	bne @lbl_C24A8E
-	jsl.l func_C248D8
+	jsl.l HandleUnderfootItemPickupAction
 	plp
 	rtl
 @lbl_C24A8E:
@@ -5182,7 +5294,7 @@ func_C2498C:
 @lbl_C24AAD:
 	cmp.b #$1D
 	bne @lbl_C24AB7
-	jsl.l func_C2458E
+	jsl.l HandleArrowShortcutAction
 	plp
 	rtl
 @lbl_C24AB7:
@@ -5197,27 +5309,28 @@ func_C2498C:
 	beq @lbl_C24ACF
 	cmp.b #$60
 	bne @lbl_C24ADD
-	lda.w $85F0
+	; Shiren's requested move/facing direction is stored in his wCharDir slot.
+	lda.w wCharDir+CharDataShirenIndex
 	sta.b wTemp01
 @lbl_C24ACF:
-	lda.w $85F0
+	lda.w wCharDir+CharDataShirenIndex
 	sta.w $899F
 @lbl_C24AD5:
 	sty.b wTemp00
-	jsl.l func_C23C91
+	jsl.l HandleCategoryShortcutSelectionAction
 	bra @lbl_C24AF3
 @lbl_C24ADD:
 	cmp.b #$40
 	bne @lbl_C24AE9
 	sty.b wTemp00
-	jsl.l func_C23F82
+	jsl.l DropSelectedInventoryItem
 	plp
 	rtl
 @lbl_C24AE9:
 	cmp.b #$80
 	bne @lbl_C24AF7
 	sty.b wTemp00
-	jsl.l func_C245CC
+	jsl.l HandleThrowItemAction
 @lbl_C24AF3:
 	stz.b wTemp00
 	plp
@@ -5226,8 +5339,10 @@ func_C2498C:
 	tya
 	bit.b #$10
 	beq @lbl_C24B0B
+	; Packed direction|$10 means "change facing only" without committing movement.
+	; Directions use the 0-7 enum in constants/npc.asm: even = cardinal, odd = diagonal.
 	and.b #$07
-	sta.w $85F0
+	sta.w wCharDir+CharDataShirenIndex
 	jsl.l func_C28FBC
 	lda.b #$02
 	sta.b wTemp00
@@ -5242,12 +5357,14 @@ func_C2498C:
 @lbl_C24B18:
 	bit.b #$08
 	beq @lbl_C24B21
+	; Packed direction|$08 stores an alternate movement family in $8977 before
+	; falling through to the normal movement resolution path.
 	sta.w $8977
 	and.b #$07
 @lbl_C24B21:
-	sta.w $85F0
+	sta.w wCharDir+CharDataShirenIndex
 @lbl_C24B24:
-	lda.b #$13
+	lda.b #CharDataShirenIndex
 	sta.b wTemp00
 	call_savebank func_C2785E
 	lda.b wTemp00
@@ -5283,7 +5400,7 @@ func_C2498C:
 @lbl_C24B70:
 	beq @lbl_C24BE8
 @lbl_C24B72:
-	lda.w $85F0
+	lda.w wCharDir+CharDataShirenIndex
 	lsr a
 	bcc @lbl_C24B92
 	and.b #$03
@@ -5298,7 +5415,7 @@ func_C2498C:
 	tax
 	lda.l UNREACH_C24D7B,x
 	bmi @lbl_C24B92
-	sta.w $85F0
+	sta.w wCharDir+CharDataShirenIndex
 	bra @lbl_C24B24
 @lbl_C24B92:
 	bra @lbl_C24BD1
@@ -5315,18 +5432,18 @@ func_C2498C:
 	stz.w $8977
 	txa
 	sta.w $897F
-	lda.w $85F0
+	lda.w wCharDir+CharDataShirenIndex
 	clc
 	adc.b #$04
 	and.b #$07
 	sta.w wCharDir,x
 	phx
-	lda.b #$13
+	lda.b #CharDataShirenIndex
 	sta.b wTemp01
 	stx.b wTemp00
 	jsl.l func_C289F5
 	plx
-	lda.l $7E85F0
+	lda.l wCharDir+CharDataShirenIndex
 	sta.l wCharDir,x
 	jmp.w func_C24DDD
 @lbl_C24BD1:
@@ -5473,7 +5590,7 @@ func_C2498C:
 @lbl_C24D0E:
 	rep #$20 ;A->16
 	pla
-	ldy.b #$13
+	ldy.b #CharDataShirenIndex
 	sty.b wTemp00
 	sta.b wTemp02
 	jsl.l func_C27951
@@ -5649,15 +5766,16 @@ func_C24F17:
 	lda.b wTemp02
 	cmp.b #$B0
 	bne @lbl_C24F93
-	lda.l $7E85F0
+	lda.l wCharDir+CharDataShirenIndex
+	; Bit 0 set means Shiren is facing diagonally.
 	bit.b #$01
 	bne @lbl_C24F93
 	sta.b wTemp00
 	lda.b #$02
 	sta.b wTemp01
-	lda.l $7E85C8
+	lda.l wCharXPos+CharDataShirenIndex
 	sta.b wTemp02
-	lda.l $7E85DC
+	lda.l wCharYPos+CharDataShirenIndex
 	sta.b wTemp03
 	jsl.l func_C32FEE
 	ldx.b wTemp00
@@ -5669,7 +5787,7 @@ func_C24F17:
 	plp
 	rtl
 @lbl_C24F8B:
-	lda.b #$13
+	lda.b #CharDataShirenIndex
 	sta.b wTemp00
 	jsl.l func_C2785E
 @lbl_C24F93:
@@ -5677,7 +5795,7 @@ func_C24F17:
 	and.b #$E0
 	cmp.b #$A0
 	bne @lbl_C24FAF
-	lda.l $7E85F0
+	lda.l wCharDir+CharDataShirenIndex
 	cmp.b #$02
 	bne @lbl_C24FAF
 	lda.b wTemp01
@@ -5735,7 +5853,7 @@ func_C24F17:
 	sta.b wTemp03
 	stx.b wTemp00
 	sty.b wTemp01
-	lda.l $7E85F0
+	lda.l wCharDir+CharDataShirenIndex
 	sta.b wTemp02
 	stz.b wTemp04
 	jsr.w func_C2501C
@@ -6204,7 +6322,7 @@ func_C2598A:
 @lbl_C259B1:
 	sep #$20 ;A->8
 	pha
-	lda.l $7E89B6
+	lda.l wShirenStatus.cantPickUpItems
 	tax
 	pla
 	rep #$20 ;A->16
@@ -6217,7 +6335,7 @@ func_C2598A:
 	sty.b wTemp00
 	pha
 	phy
-	jsl.l func_C23A02
+	jsl.l TryAddSelectedItemToInventory
 	ply
 	pla
 	ldx.b wTemp00
@@ -6448,11 +6566,11 @@ func_C25C3C:
 	sep #$30 ;AXY->8
 	lda.l $7E8977
 	beq @lbl_C25C8C
-	lda.l $7E85C8
+	lda.l wCharXPos+CharDataShirenIndex
 	sta.b wTemp00
-	lda.l $7E85DC
+	lda.l wCharYPos+CharDataShirenIndex
 	sta.b wTemp01
-	lda.l $7E85F0
+	lda.l wCharDir+CharDataShirenIndex
 	sta.b wTemp02
 	jsl.l func_C359D1
 	lda.b wTemp02
@@ -6460,7 +6578,7 @@ func_C25C3C:
 	and.b wTemp00
 	bit.b #$C7
 	bne @lbl_C25CA0
-	lda.l $7E85F0
+	lda.l wCharDir+CharDataShirenIndex
 	lsr a
 	bcs @lbl_C25C8E
 	lda.b wTemp02
@@ -8738,10 +8856,12 @@ func_C28CC3:
 	.db $00,$A9,$06,$85,$01,$22,$9F,$F6,$C3,$A5,$00,$80,$02,$A9,$40,$8F   ;C28D0F
 	.db $9C,$89,$7E,$28,$6B               ;C28D1F  
 
-func_C28D24:
+SortShirenInventory:
 	php
 	sep #$30 ;AXY->8
 	restorebank
+	; Reorder Shiren's inventory entries in wShirenStatus.itemAmounts using
+	; item metadata from func_C30710 and the priority table at DATA8_C28E40.
 	lda.b #$00
 	pha
 	pha
@@ -9466,7 +9586,7 @@ func_C2942A:
 	sta.b wTemp03
 	stx.b wTemp04
 	stz.b wTemp05
-	jsl.l func_C33382
+	jsl.l ExecutePreparedThrowEffect
 	plp
 	rtl
 
