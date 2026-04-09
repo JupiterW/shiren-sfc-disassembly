@@ -859,22 +859,77 @@ MedicinalHerbUseEffect:
 RestorativeHerbUseEffect:
 	; Heal up to 100 HP. If Shiren is already at max HP, raise max HP by 2 first.
 	; Then clear confusion and puzzled status if present.
-	.db $E2,$20,$C2,$10,$A9,$13,$85,$00,$22,$28,$11,$C2,$A5,$01,$38,$E5   ;C30EFD
-	.db $00,$F0,$21,$C9,$64,$90,$02,$A9,$64,$85,$02,$A0,$40,$00,$84,$00   ;C30F0D
-	.db $48
+	sep #$20 ;A->8
+	rep #$10 ;XY->16
+	lda.b #$13
+	sta.b wTemp00
+	jsl.l func_C21128
+	lda.b wTemp01
+	sec
+	sbc.b wTemp00
+	beq @lbl_C30F31
+	cmp.b #$64
+	bcc @lbl_C30F16
+	lda.b #$64
+@lbl_C30F16:
+	sta.b wTemp02
+	ldy.w #$0040
+	sty.b wTemp00
+	pha
 	jsl.l DisplayMessage
-	.db $68,$85,$02,$64,$03,$A9,$13,$85,$00,$22,$09   ;C30F1D
-	.db $32,$C2,$80,$27,$A0,$87,$00,$84,$00,$A9,$02,$85,$02
+	pla
+	sta.b wTemp02
+	stz.b wTemp03
+	lda.b #$13
+	sta.b wTemp00
+	jsl.l func_C23209
+	bra @lbl_C30F58
+@lbl_C30F31:
+	ldy.w #$0087
+	sty.b wTemp00
+	lda.b #$02
+	sta.b wTemp02
 	jsl.l DisplayMessage
-	.db $A9,$13,$85,$00,$A0,$02,$00,$84,$02,$22,$3C,$32,$C2,$A9,$13   ;C30F3D  
-	.db $85,$00,$A0,$02,$00,$84,$02,$22,$09,$32,$C2,$E2,$20,$C2,$10,$A9   ;C30F4D  
-	.db $13,$85,$00,$22,$A2,$85,$C2,$A5,$01,$48,$A5,$03,$48,$68,$F0,$12   ;C30F5D  
-	.db $A0,$13,$00,$84,$00,$22,$FF,$3F,$C2,$A0,$67,$00,$84,$00
+	lda.b #$13
+	sta.b wTemp00
+	ldy.w #$0002
+	sty.b wTemp02
+	jsl.l func_C2323C
+	lda.b #$13
+	sta.b wTemp00
+	ldy.w #$0002
+	sty.b wTemp02
+	jsl.l func_C23209
+@lbl_C30F58:
+	sep #$20 ;A->8
+	rep #$10 ;XY->16
+	lda.b #$13
+	sta.b wTemp00
+	jsl.l func_C285A2
+	lda.b wTemp01
+	pha
+	lda.b wTemp03
+	pha
+	pla
+	beq @lbl_C30F7F
+	ldy.w #$0013
+	sty.b wTemp00
+	jsl.l func_C23FFF
+	ldy.w #$0067
+	sty.b wTemp00
 	jsl.l DisplayMessage
-	.db $68,$F0,$12,$A0,$13,$00,$84,$00,$22,$73,$40,$C2,$A0,$6C   ;C30F7D  
-	.db $00,$84,$00
+@lbl_C30F7F:
+	pla
+	beq @lbl_C30F94
+	ldy.w #$0013
+	sty.b wTemp00
+	jsl.l func_C24073
+	ldy.w #$006C
+	sty.b wTemp00
 	jsl.l DisplayMessage
-	.db $60,$E2,$20,$C2,$10,$A9,$13,$85,$00   ;C30F8D
+@lbl_C30F94:
+	rts
+	.db $E2,$20,$C2,$10,$A9,$13,$85,$00   ;C30F95
 	.db $22,$A2,$85,$C2,$A5,$01,$48,$A5,$03,$48,$A5,$00,$F0,$12,$A0,$13   ;C30F9D  
 	.db $00,$84,$00,$22,$A7,$40,$C2,$A0,$9B,$00,$84,$00
 	jsl.l DisplayMessage
@@ -935,10 +990,22 @@ func_C31004:
 	.db $60
 LifeHerbUseEffect:
 	; Increase Shiren's max HP by 5, which also heals by the same amount.
-	.db $E2,$20,$A9,$87,$85,$00,$64,$01,$A9,$05,$85,$02
+	sep #$20 ;A->8
+	lda.b #$87
+	sta.b wTemp00
+	stz.b wTemp01
+	lda.b #$05
+	sta.b wTemp02
 	jsl.l DisplayMessage
-	.db $A9,$13,$85,$00,$E2,$20,$A9,$05,$85,$02,$64,$03,$22,$3C,$32   ;C311B2  
-	.db $C2,$60,$E2,$20,$A9,$65,$85,$00,$64,$01
+	lda.b #$13
+	sta.b wTemp00
+	sep #$20 ;A->8
+	lda.b #$05
+	sta.b wTemp02
+	stz.b wTemp03
+	jsl.l func_C2323C
+	rts
+	.db $E2,$20,$A9,$65,$85,$00,$64,$01   ;C311C3
 	jsl.l DisplayMessage
 	.db $22,$A2   ;C311C2
 	.db $5D,$C2,$A9,$13,$85,$00,$E2,$20,$A9,$0B,$85,$01,$22,$BC,$40,$C2   ;C311D2  
