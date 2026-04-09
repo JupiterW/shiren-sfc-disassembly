@@ -35,6 +35,39 @@ def restore(path: Path, text: str) -> None:
     path.write_text(text, encoding="utf-8")
 
 
+def apply_lift(rel: Path, start_addr: int, end_addr: int) -> subprocess.CompletedProcess[str]:
+    cmd = [
+        sys.executable,
+        "tools/lift_raw_cluster.py",
+        "--file",
+        str(rel),
+        "--start",
+        f"{start_addr:06X}",
+        "--end",
+        f"{end_addr:06X}",
+        "--apply",
+        "--quiet",
+    ]
+    return subprocess.run(cmd, cwd=ROOT, text=True, capture_output=True)
+
+
+def commit_if_needed(rel: Path, message: str) -> tuple[bool, str | None]:
+    add_proc = run_argv(["git", "add", str(rel)])
+    if add_proc.returncode != 0:
+        return False, "git-add"
+
+    cached_diff = run_argv(["git", "diff", "--cached", "--quiet", "--", str(rel)])
+    if cached_diff.returncode == 0:
+        return True, None
+    if cached_diff.returncode not in (0, 1):
+        return False, "git-diff"
+
+    commit_proc = run_argv(["git", "commit", "-m", message])
+    if commit_proc.returncode != 0:
+        return False, "git-commit"
+    return True, None
+
+
 def sorted_clusters(path: Path, min_bytes: int, max_bytes: int | None, raw_only: bool) -> list:
     clusters = find_clusters(load_lines(path))
     clusters = [c for c in clusters if c.byte_count >= min_bytes]
@@ -92,12 +125,30 @@ def sorted_segments(path: Path, min_bytes: int, max_bytes: int | None) -> list[t
     return segments
 
 
+def format_batch_message(template: str, rel: Path, items: list[tuple[int, int]]) -> str:
+    first_start = items[0][0]
+    first_end = items[0][1]
+    last_start = items[-1][0]
+    last_end = items[-1][1]
+    return template.format(
+        start=f"{first_start:06X}",
+        end=f"{first_end:06X}",
+        first_start=f"{first_start:06X}",
+        first_end=f"{first_end:06X}",
+        last_start=f"{last_start:06X}",
+        last_end=f"{last_end:06X}",
+        count=len(items),
+        file=str(rel),
+    )
+
+
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--file", required=True, help="asm file to process")
     parser.add_argument("--min-bytes", type=int, default=16, help="minimum cluster size")
     parser.add_argument("--max-bytes", type=int, help="maximum cluster size")
     parser.add_argument("--limit", type=int, help="maximum number of clusters to attempt")
+    parser.add_argument("--batch-size", type=int, default=1, help="apply this many segments at once before verify; failed batches are bisected")
     parser.add_argument("--raw-only", action="store_true", help="process raw-only clusters instead of mixed clusters")
     parser.add_argument("--mode", choices=("cluster", "segment"), default="segment", help="process whole mixed clusters or consecutive raw segments")
     parser.add_argument("--dry-run", action="store_true", help="list planned clusters without applying them")
@@ -106,7 +157,7 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--commit", action="store_true", help="git add/commit the file after each kept verified lift")
     parser.add_argument(
         "--commit-template",
-        default="Lift raw segment {start}-{end} in {file}",
+        default="Lift raw batch {first_start}-{last_end} ({count} segments) in {file}",
         help="commit message template for kept lifts",
     )
     args = parser.parse_args(argv)
@@ -151,89 +202,76 @@ def main(argv: list[str]) -> int:
         else [(c.start_addr, c.end_addr) for c in clusters]
     )
 
-    for start_addr, end_addr in work_items:
+    def process_batch(items: list[tuple[int, int]]) -> bool:
+        nonlocal baseline, kept
+        if not items:
+            return True
+
         before = baseline
-        cmd = [
-            sys.executable,
-            "tools/lift_raw_cluster.py",
-            "--file",
-            str(rel),
-            "--start",
-            f"{start_addr:06X}",
-            "--end",
-            f"{end_addr:06X}",
-            "--apply",
-            "--quiet",
-        ]
-        proc = subprocess.run(cmd, cwd=ROOT, text=True, capture_output=True)
-        if proc.returncode != 0:
-            restore(path, before)
-            print(f"FAIL  {start_addr:06X}-{end_addr:06X} apply")
-            if proc.stderr:
-                print(proc.stderr.strip())
-            if proc.stdout:
-                print(proc.stdout.strip())
-            failures.append((start_addr, end_addr, "apply"))
-            if args.stop_on_fail:
-                break
-            continue
+        for start_addr, end_addr in items:
+            proc = apply_lift(rel, start_addr, end_addr)
+            if proc.returncode != 0:
+                restore(path, before)
+                if len(items) > 1:
+                    mid = len(items) // 2
+                    left_ok = process_batch(items[:mid])
+                    right_ok = process_batch(items[mid:])
+                    return left_ok and right_ok
+                print(f"FAIL  {start_addr:06X}-{end_addr:06X} apply")
+                if proc.stderr:
+                    print(proc.stderr.strip())
+                if proc.stdout:
+                    print(proc.stdout.strip())
+                failures.append((start_addr, end_addr, "apply"))
+                return False
 
         verify = run(args.verify_cmd)
         if verify.returncode == 0:
-            kept += 1
-            baseline = snapshot(path)
             if args.commit:
-                add_proc = run_argv(["git", "add", str(rel)])
-                if add_proc.returncode != 0:
+                commit_msg = format_batch_message(args.commit_template, rel, items)
+                ok, reason = commit_if_needed(rel, commit_msg)
+                if not ok:
                     restore(path, before)
-                    print(f"FAIL  {start_addr:06X}-{end_addr:06X} git-add")
-                    if add_proc.stdout:
-                        print(add_proc.stdout.strip())
-                    if add_proc.stderr:
-                        print(add_proc.stderr.strip())
-                    failures.append((start_addr, end_addr, "git-add"))
-                    if args.stop_on_fail:
-                        break
-                    continue
-                cached_diff = run_argv(["git", "diff", "--cached", "--quiet", "--", str(rel)])
-                if cached_diff.returncode == 0:
-                    print(f"SKIP  {start_addr:06X}-{end_addr:06X} no staged diff")
-                    continue
-                if cached_diff.returncode not in (0, 1):
-                    restore(path, before)
-                    print(f"FAIL  {start_addr:06X}-{end_addr:06X} git-diff")
-                    failures.append((start_addr, end_addr, "git-diff"))
-                    if args.stop_on_fail:
-                        break
-                    continue
-                commit_msg = args.commit_template.format(
-                    start=f"{start_addr:06X}",
-                    end=f"{end_addr:06X}",
-                    file=str(rel),
+                    if len(items) > 1:
+                        mid = len(items) // 2
+                        left_ok = process_batch(items[:mid])
+                        right_ok = process_batch(items[mid:])
+                        return left_ok and right_ok
+                    print(f"FAIL  {items[0][0]:06X}-{items[0][1]:06X} {reason}")
+                    failures.append((items[0][0], items[0][1], reason or "git"))
+                    return False
+            kept += len(items)
+            baseline = snapshot(path)
+            if len(items) == 1:
+                start_addr, end_addr = items[0]
+                print(f"KEPT  {start_addr:06X}-{end_addr:06X}")
+            else:
+                print(
+                    f"KEPT  {items[0][0]:06X}-{items[-1][1]:06X} "
+                    f"batch={len(items)}"
                 )
-                commit_proc = run_argv(["git", "commit", "-m", commit_msg])
-                if commit_proc.returncode != 0:
-                    restore(path, before)
-                    print(f"FAIL  {start_addr:06X}-{end_addr:06X} git-commit")
-                    if commit_proc.stdout:
-                        print(commit_proc.stdout.strip())
-                    if commit_proc.stderr:
-                        print(commit_proc.stderr.strip())
-                    failures.append((start_addr, end_addr, "git-commit"))
-                    if args.stop_on_fail:
-                        break
-                    continue
-            print(f"KEPT  {start_addr:06X}-{end_addr:06X}")
-            continue
+            return True
 
         restore(path, before)
+        if len(items) > 1:
+            mid = len(items) // 2
+            left_ok = process_batch(items[:mid])
+            right_ok = process_batch(items[mid:])
+            return left_ok and right_ok
+
+        start_addr, end_addr = items[0]
         print(f"FAIL  {start_addr:06X}-{end_addr:06X} verify")
         if verify.stdout:
             print(verify.stdout.strip())
         if verify.stderr:
             print(verify.stderr.strip())
         failures.append((start_addr, end_addr, "verify"))
-        if args.stop_on_fail:
+        return False
+
+    for batch_start in range(0, len(work_items), args.batch_size):
+        batch = work_items[batch_start : batch_start + args.batch_size]
+        ok = process_batch(batch)
+        if not ok and args.stop_on_fail:
             break
 
     print(f"kept lifts: {kept}/{len(work_items)}")
