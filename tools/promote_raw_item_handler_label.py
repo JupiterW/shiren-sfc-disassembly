@@ -34,6 +34,11 @@ from safe_item_handler_rename import (
 
 DB_TOKEN_RE = re.compile(r"\$([0-9A-F]{2})")
 COMMENT_ADDR_RE = re.compile(r";C?(?P<addr>[0-9A-F]{5,6})\b")
+LABEL_RE = re.compile(r"^[A-Za-z0-9_@.]+:\s*$")
+
+
+def _db_bytes_from_line(line: str) -> list[int]:
+    return [int(tok.group(1), 16) for tok in DB_TOKEN_RE.finditer(line.split(";")[0])]
 
 
 def find_item(query: str):
@@ -65,10 +70,82 @@ def db_line_end_addr(line: str) -> int | None:
     start = parse_comment_addr(line)
     if start is None:
         return None
-    bytes_ = [int(tok.group(1), 16) for tok in DB_TOKEN_RE.finditer(line.split(";")[0])]
+    bytes_ = _db_bytes_from_line(line)
     if not bytes_:
         return None
     return start + len(bytes_)
+
+
+def estimate_asm_line_size(stripped: str) -> int | None:
+    if not stripped or stripped.startswith(";") or LABEL_RE.match(stripped):
+        return 0
+    if ".db " in stripped or stripped.startswith(".db"):
+        bytes_ = _db_bytes_from_line(stripped)
+        return len(bytes_) if bytes_ else None
+
+    op = stripped.split()[0]
+    rest = stripped[len(op):].strip()
+    op = op.lower()
+
+    one_byte = {
+        "pha",
+        "pla",
+        "phx",
+        "plx",
+        "phy",
+        "ply",
+        "phb",
+        "plb",
+        "php",
+        "plp",
+        "rts",
+        "rtl",
+        "tax",
+        "txa",
+        "tay",
+        "tya",
+        "tsx",
+        "txs",
+        "dex",
+        "inx",
+        "dey",
+        "iny",
+        "clc",
+        "sec",
+        "xce",
+        "nop",
+        "inc",
+        "dec",
+    }
+    if op in one_byte and (not rest or rest == "a"):
+        return 1
+    if op in {"sep", "rep"}:
+        return 2
+    if op in {"bra", "bcc", "bcs", "beq", "bmi", "bne", "bpl", "bvc", "bvs"}:
+        return 2
+    if op in {"jsl", "jsl.l"}:
+        return 4
+    if op in {"jsr", "jsr.w", "jmp", "jmp.w"}:
+        return 3
+    if op == "call_savebank":
+        return 4
+
+    if "#" in rest:
+        if ".l" in op or ".l " in stripped:
+            return 4
+        if ".w" in op:
+            return 3
+        return 2
+
+    if ",s" in rest or rest.endswith(",s"):
+        return 2
+    if ".w" in op:
+        return 3
+    if ".l" in op:
+        return 4
+    if op in {"lda", "sta", "ldx", "stx", "ldy", "sty", "cmp", "cpx", "cpy", "adc", "sbc", "eor", "and", "ora", "bit", "stz"}:
+        return 2
+    return None
 
 
 def promote_asm_entry(path: Path, entry_addr: int, new_symbol: str, dry_run: bool) -> tuple[int, str]:
@@ -92,10 +169,49 @@ def promote_asm_entry(path: Path, entry_addr: int, new_symbol: str, dry_run: boo
     raise SystemExit(f"no promotable asm entry found at {entry_addr:06X}")
 
 
+def promote_mixed_region_entry(path: Path, entry_addr: int, new_symbol: str, dry_run: bool) -> tuple[int, str]:
+    lines = load_lines(path)
+    current_addr: int | None = None
+    for idx, line in enumerate(lines):
+        stripped = line.strip()
+        comment_addr = parse_comment_addr(line)
+        if comment_addr is not None and (current_addr is None or comment_addr >= current_addr):
+            current_addr = comment_addr
+        size = estimate_asm_line_size(stripped)
+        if current_addr is None or size is None:
+            continue
+        if size == 0:
+            continue
+        if ".db " in stripped or stripped.startswith(".db"):
+            end_addr = current_addr + size
+            if current_addr < entry_addr < end_addr:
+                bytes_ = _db_bytes_from_line(line)
+                offset = entry_addr - current_addr
+                replacement = [
+                    format_db_line(bytes_[:offset], current_addr),
+                    f"{new_symbol}:",
+                    format_db_line(bytes_[offset:], entry_addr),
+                ]
+                lines[idx : idx + 1] = replacement
+                if not dry_run:
+                    write_lines(path, lines)
+                return idx + 1, "\n".join(replacement)
+        if current_addr == entry_addr:
+            lines.insert(idx, f"{new_symbol}:")
+            if not dry_run:
+                write_lines(path, lines)
+            return idx + 1, "\n".join([f"{new_symbol}:", lines[idx + 1]])
+        current_addr += size
+    raise SystemExit(f"no promotable mixed-region entry found at {entry_addr:06X}")
+
+
 def promote_raw_entry(path: Path, entry_addr: int, new_symbol: str, dry_run: bool) -> tuple[int, str]:
     containing = find_containing_region(entry_addr)
     if containing is None:
-        return promote_asm_entry(path, entry_addr, new_symbol, dry_run)
+        try:
+            return promote_asm_entry(path, entry_addr, new_symbol, dry_run)
+        except SystemExit:
+            return promote_mixed_region_entry(path, entry_addr, new_symbol, dry_run)
     regions, index = containing
     region = regions[index]
     offset = entry_addr - region.addr
@@ -172,7 +288,12 @@ def main(argv: list[str]) -> int:
                 path = candidate
                 break
             except SystemExit:
-                continue
+                try:
+                    promote_mixed_region_entry(candidate, entry_addr, args.symbol, dry_run=True)
+                    path = candidate
+                    break
+                except SystemExit:
+                    continue
         if path is None:
             raise SystemExit(f"no promotable region found for {current_handler}")
 
