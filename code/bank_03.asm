@@ -2213,7 +2213,7 @@ ItemUseEffectFunctionTable:
 	.dw BlastwaveScrollUseEffect-1 ;BlastwaveScroll
 	.dw SilenceScrollUseEffect-1 ;SilenceScroll
 	.dw $1A7A ;5C
-	.dw $17A8 ;TrapScroll
+	.dw TrapScrollUseEffect-1 ;TrapScroll
 	.dw NeedScrollUseEffect-1 ;NeedScroll
 	.dw HasteScrollUseEffect-1 ;HasteScroll
 	.dw SleepScrollUseEffect-1 ;SleepScroll

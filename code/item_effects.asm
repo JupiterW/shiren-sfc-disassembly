@@ -1345,13 +1345,42 @@ SpoiledOnigiriUseEffect:
 	.db $AC,$10,$C2,$22,$1A,$63,$C3,$A6,$00,$30,$24,$22,$71,$27,$C6,$A5   ;C31779  
 	.db $00,$86,$00,$85,$02,$DA,$22,$E7,$0B,$C2,$FA,$A5,$00,$30,$10,$86   ;C31789
 	.db $00,$85,$02,$48,$22,$7A,$5B,$C3,$68,$85,$00,$22,$AA,$7F,$C2,$60   ;C31799
-	.db $E2,$20,$C2,$10,$A2,$8C,$00,$86,$00
+TrapScrollUseEffect:
+	sep #$20 ;A->8                       ;C317A9
+	rep #$10 ;XY->16                    ;C317AB
+	ldx.w #$008C                        ;C317AD
+	stx.b wTemp00                       ;C317B0
 	jsl.l DisplayMessage
-	.db $A9,$1E,$48   ;C317A9
-	.db $22,$87,$62,$C3,$A6,$00,$30,$1E,$22,$71,$27,$C6,$A5,$00,$86,$00   ;C317B9  
-	.db $85,$02,$DA,$22,$AB,$D3,$C3,$FA,$A5,$00,$30,$0A,$86,$00,$09,$C0   ;C317C9  
-	.db $85,$02,$22,$A2,$5B,$C3,$68,$3A,$D0,$D5,$AF,$75,$89,$7E,$89,$01   ;C317D9  
-	.db $F0,$04,$22,$A2,$5F,$C3,$60,$C2,$20,$A9,$97,$00,$85,$00
+	lda.b #$1E                          ;C317B6
+@lbl_C317B8:
+	pha                                 ;C317B8
+	jsl.l func_C36287                   ;C317B9
+	ldx.b wTemp00                       ;C317BD
+	bmi @lbl_C317DF                     ;C317BF
+	jsl.l $C62771                       ;C317C1
+	lda.b wTemp00                       ;C317C5
+	stx.b wTemp00                       ;C317C7
+	sta.b wTemp02                       ;C317C9
+	phx                                 ;C317CB
+	jsl.l func_C3D3AB                   ;C317CC
+	plx                                 ;C317D0
+	lda.b wTemp00                       ;C317D1
+	bmi @lbl_C317DF                     ;C317D3
+	stx.b wTemp00                       ;C317D5
+	ora.b #$C0                          ;C317D7
+	sta.b wTemp02                       ;C317D9
+	jsl.l func_C35BA2                   ;C317DB
+@lbl_C317DF:
+	pla                                 ;C317DF
+	dec a                               ;C317E0
+	bne @lbl_C317B8                     ;C317E1
+	lda.l $7E8975                       ;C317E3
+	bit.b #$01                          ;C317E7
+	beq @lbl_C317EF                     ;C317E9
+	jsl.l func_C35FA2                   ;C317EB
+@lbl_C317EF:
+	rts                                 ;C317EF
+	.db $C2,$20,$A9,$97,$00,$85,$00
 	jsl.l DisplayMessage
 	.db $22,$BD,$7F,$C2,$60,$E2,$20,$22,$5A,$7F,$C2,$A5,$00,$F0   ;C317F9  
 	.db $0C,$C2,$20,$A9,$68,$00,$85,$00
