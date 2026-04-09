@@ -27,6 +27,12 @@ Fixed inventory-related commands currently understood:
 
 There are three main layers to item data in this codebase:
 
+Reusable helper:
+
+- [tools/item_pipeline.py](/Users/jupiter.whitworth/Development/new/shiren/tools/item_pipeline.py)
+  - Query `item -> category -> use handler -> throw handler`
+  - Supports direct item lookup plus reverse lookup by handler substring
+
 1. Item ids / canonical item definitions
 
 - [constants/items.asm](/Users/jupiter.whitworth/Development/new/shiren/constants/items.asm)
