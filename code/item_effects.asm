@@ -1652,9 +1652,20 @@ SpecialOnigiriUseEffect:
 	.db $60,$E2,$20,$22,$88,$84,$C2,$C2,$20,$A9,$30,$01,$85   ;C316A9  
 	.db $00
 	jsl.l DisplayMessage
-	.db $60,$E2,$20,$C2,$10,$A9,$13,$85,$00,$22,$28   ;C316B9
-	.db $11,$C2,$A5,$01,$38,$E5,$00,$F0,$19,$85,$02,$A0,$40,$00,$84,$00   ;C316C9  
-	.db $48
+	rts                                     ;C316BE
+	sep #$20                                ;C316BF
+	rep #$10                                ;C316C1
+	lda #$13                                ;C316C3
+	sta $00                                 ;C316C5
+	jsl $C21128                             ;C316C7
+	lda $01                                 ;C316CB
+	sec                                     ;C316CD
+	sbc $00                                 ;C316CE
+	.db $F0,$19   ;C316D0
+	sta $02                                 ;C316D2
+	ldy #$0040                              ;C316D4
+	sty $00                                 ;C316D7
+	pha                                     ;C316D9
 	jsl.l DisplayMessage
 	.db $68,$85,$02,$64,$03,$A9,$13,$85,$00,$22,$09   ;C316D9
 	.db $32,$C2,$60   ;C316E9
