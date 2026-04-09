@@ -1281,9 +1281,25 @@ ConfusionHerbUseEffect:
 	.db $60,$E2,$20,$A9   ;C31354  
 	.db $15,$80,$E1,$E2,$30,$A6,$00,$86,$02,$A9,$04,$85,$00,$64,$01,$DA   ;C31364  
 	jsl.l DisplayMessage
-	.db $FA,$86,$00,$A9,$0B,$85,$01,$22,$FF,$3F,$C2,$60   ;C31374  
-	.db $E2,$30,$A5,$00,$48,$22,$29,$89,$C2,$68,$85,$02,$A9,$04,$A6,$00   ;C31384
-	.db $F0,$02,$A9,$05,$85,$00,$64,$01
+	plx                                     ;C31378
+	stx $00                                 ;C31379
+	lda #$0B                                ;C3137B
+	sta $01                                 ;C3137D
+	jsl $C23FFF                             ;C3137F
+	rts                                     ;C31383
+	sep #$30                                ;C31384
+	lda $00                                 ;C31386
+	pha                                     ;C31388
+	jsl $C28929                             ;C31389
+	pla                                     ;C3138D
+	sta $02                                 ;C3138E
+	lda #$04                                ;C31390
+	ldx $00                                 ;C31392
+	beq @lbl_C31398                         ;C31394
+	lda #$05                                ;C31396
+@lbl_C31398:
+	sta $00                                 ;C31398
+	stz $01                                 ;C3139A
 	jsl.l DisplayMessage
 	.db $60   ;C313A0
 SleepHerbUseEffect:
