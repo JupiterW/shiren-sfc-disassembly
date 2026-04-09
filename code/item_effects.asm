@@ -4301,9 +4301,20 @@ func_C32CFE:
 	jsl.l DisplayMessage
 	.db $28,$6B,$A9,$D7,$85,$00,$64,$01
 	jsl.l DisplayMessage
-	.db $28,$6B,$08,$E2   ;C32DCA
-	.db $30,$A6,$00,$BF,$8C,$8F,$7E,$89,$08,$F0,$18,$29,$F7,$9F,$8C,$8F   ;C32DDA  
-	.db $7E,$A9,$13,$85,$00,$A9,$01,$85,$01
+	plp                                     ;C32DD6
+	rtl                                     ;C32DD7
+	php                                     ;C32DD8
+	sep #$30                                ;C32DD9
+	ldx $00                                 ;C32DDB
+	lda $7E8F8C,x                           ;C32DDD
+	bit #$08                                ;C32DE1
+	.db $F0,$18   ;C32DE3
+	and #$F7                                ;C32DE5
+	sta $7E8F8C,x                           ;C32DE7
+	lda #$13                                ;C32DEB
+	sta $00                                 ;C32DED
+	lda #$01                                ;C32DEF
+	sta $01                                 ;C32DF1
 	jsl.l DisplayMessage
 	lda #$01                                ;C32DF7
 	sta $00                                 ;C32DF9
