@@ -1112,7 +1112,9 @@ ConfusionHerbUseEffect:
 	.db $E2,$30,$A5,$00,$48,$22,$29,$89,$C2,$68,$85,$02,$A9,$04,$A6,$00   ;C31384
 	.db $F0,$02,$A9,$05,$85,$00,$64,$01
 	jsl.l DisplayMessage
-	.db $60,$E2,$20,$A9   ;C31394  
+	.db $60   ;C313A0
+SleepHerbUseEffect:
+	.db $E2,$20,$A9   ;C313A1
 	.db $05,$85,$01,$A9,$13,$85,$00,$22,$80,$40,$C2,$A5,$00,$F0,$0A,$A9   ;C313A4  
 	.db $6A,$85,$00,$64,$01
 	jsl.l DisplayMessage
@@ -1149,6 +1151,7 @@ ConfusionHerbUseEffect:
 	.db $A9,$36,$85,$00,$64,$01
 	jsl.l DisplayMessage
 	.db $60                       ;C314BC  
+DragonHerbUseEffect:
 	sep #$30 ;AXY->8
 	lda.b #$13
 	sta.b wTemp00

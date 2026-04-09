@@ -2164,7 +2164,7 @@ ItemUseEffectFunctionTable:
 	.dw RestorativeHerbUseEffect-1 ;RestorativeHerb
 	.dw HappinessHerbUseEffect-1 ;HappinessHerb
 	.dw SightHerbUseEffect-1 ;SightHerb
-	.dw $14BE ;DragonHerb
+	.dw DragonHerbUseEffect-1 ;DragonHerb
 	.dw VictoryHerbUseEffect-1 ;VictoryHerb
 	.dw AngelSeedUseEffect-1 ;AngelSeed
 	.dw $09F0 ;RevivalHerb
@@ -2183,7 +2183,7 @@ ItemUseEffectFunctionTable:
 	.dw AntidoteHerbUseEffect-1 ;AntidoteHerb
 	.dw PoisonHerbUseEffect-1 ;PoisonHerb
 	.dw ConfusionHerbUseEffect-1 ;ConfusionHerb
-	.dw $13A0 ;SleepHerb
+	.dw SleepHerbUseEffect-1 ;SleepHerb
 	.dw $09F0 ;Weeds
 	.dw UnusedItemUseEffect-1
 	.dw UnusedItemUseEffect-1
