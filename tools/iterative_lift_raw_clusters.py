@@ -13,9 +13,9 @@ import subprocess
 import sys
 from pathlib import Path
 
-from list_raw_clusters import find_clusters
-from lift_raw_cluster import ROOT, _resolve_file
-from promote_raw_item_handler_label import load_lines
+from list_raw_clusters import RAW_RE, find_clusters
+from lift_raw_cluster import ROOT, _compute_line_starts, _resolve_file
+from promote_raw_item_handler_label import estimate_asm_line_size, load_lines
 
 
 def run(cmd: str) -> subprocess.CompletedProcess[str]:
@@ -43,6 +43,50 @@ def sorted_clusters(path: Path, min_bytes: int, max_bytes: int | None, raw_only:
     return clusters
 
 
+def sorted_segments(path: Path, min_bytes: int, max_bytes: int | None) -> list[tuple[int, int, int, int]]:
+    lines = load_lines(path)
+    line_starts = _compute_line_starts(lines)
+    segments: list[tuple[int, int, int, int]] = []
+    start_idx: int | None = None
+    start_addr: int | None = None
+    end_addr: int | None = None
+
+    def finish(end_idx: int) -> None:
+        nonlocal start_idx, start_addr, end_addr
+        if start_idx is None or start_addr is None or end_addr is None:
+            start_idx = None
+            start_addr = None
+            end_addr = None
+            return
+        byte_count = end_addr - start_addr + 1
+        if byte_count >= min_bytes and (max_bytes is None or byte_count <= max_bytes):
+            segments.append((start_idx, end_idx, start_addr, end_addr))
+        start_idx = None
+        start_addr = None
+        end_addr = None
+
+    for idx, line in enumerate(lines):
+        stripped = line.strip()
+        line_start = line_starts[idx]
+        line_size = estimate_asm_line_size(stripped)
+        line_end = None if line_start is None or line_size in (None, 0) else line_start + line_size - 1
+
+        if RAW_RE.match(stripped) and line_start is not None and line_end is not None:
+            if start_idx is None:
+                start_idx = idx
+                start_addr = line_start
+            end_addr = line_end
+        else:
+            if start_idx is not None:
+                finish(idx - 1)
+
+    if start_idx is not None:
+        finish(len(lines) - 1)
+
+    segments.sort(key=lambda item: -(item[3] - item[2] + 1))
+    return segments
+
+
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--file", required=True, help="asm file to process")
@@ -50,30 +94,51 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--max-bytes", type=int, help="maximum cluster size")
     parser.add_argument("--limit", type=int, help="maximum number of clusters to attempt")
     parser.add_argument("--raw-only", action="store_true", help="process raw-only clusters instead of mixed clusters")
+    parser.add_argument("--mode", choices=("cluster", "segment"), default="segment", help="process whole mixed clusters or consecutive raw segments")
     parser.add_argument("--dry-run", action="store_true", help="list planned clusters without applying them")
     parser.add_argument("--stop-on-fail", action="store_true", default=True, help="stop on first failure")
     args = parser.parse_args(argv)
 
     path = _resolve_file(args.file)
-    clusters = sorted_clusters(path, args.min_bytes, args.max_bytes, args.raw_only)
-    if args.limit is not None:
-        clusters = clusters[: args.limit]
+    if args.mode == "segment":
+        segments = sorted_segments(path, args.min_bytes, args.max_bytes)
+        if args.limit is not None:
+            segments = segments[: args.limit]
+    else:
+        clusters = sorted_clusters(path, args.min_bytes, args.max_bytes, args.raw_only)
+        if args.limit is not None:
+            clusters = clusters[: args.limit]
 
     if args.dry_run:
-        for cluster in clusters:
-            print(
-                f"{cluster.start_addr:06X}-{cluster.end_addr:06X} "
-                f"{cluster.kind} bytes={cluster.byte_count} "
-                f"lines={cluster.start_idx + 1}-{cluster.end_idx + 1}"
-            )
-        print(f"planned lifts: {len(clusters)}")
+        if args.mode == "segment":
+            for start_idx, end_idx, start_addr, end_addr in segments:
+                print(
+                    f"{start_addr:06X}-{end_addr:06X} "
+                    f"segment bytes={end_addr - start_addr + 1} "
+                    f"lines={start_idx + 1}-{end_idx + 1}"
+                )
+            print(f"planned lifts: {len(segments)}")
+        else:
+            for cluster in clusters:
+                print(
+                    f"{cluster.start_addr:06X}-{cluster.end_addr:06X} "
+                    f"{cluster.kind} bytes={cluster.byte_count} "
+                    f"lines={cluster.start_idx + 1}-{cluster.end_idx + 1}"
+                )
+            print(f"planned lifts: {len(clusters)}")
         return 0
 
     kept = 0
     baseline = snapshot(path)
     rel = path.relative_to(ROOT)
 
-    for cluster in clusters:
+    work_items = (
+        [(s[2], s[3]) for s in segments]
+        if args.mode == "segment"
+        else [(c.start_addr, c.end_addr) for c in clusters]
+    )
+
+    for start_addr, end_addr in work_items:
         before = baseline
         cmd = [
             sys.executable,
@@ -81,16 +146,16 @@ def main(argv: list[str]) -> int:
             "--file",
             str(rel),
             "--start",
-            f"{cluster.start_addr:06X}",
+            f"{start_addr:06X}",
             "--end",
-            f"{cluster.end_addr:06X}",
+            f"{end_addr:06X}",
             "--apply",
             "--quiet",
         ]
         proc = subprocess.run(cmd, cwd=ROOT, text=True, capture_output=True)
         if proc.returncode != 0:
             restore(path, before)
-            print(f"FAIL  {cluster.start_addr:06X}-{cluster.end_addr:06X} apply")
+            print(f"FAIL  {start_addr:06X}-{end_addr:06X} apply")
             if proc.stderr:
                 print(proc.stderr.strip())
             if proc.stdout:
@@ -101,11 +166,11 @@ def main(argv: list[str]) -> int:
         if verify.returncode == 0:
             kept += 1
             baseline = snapshot(path)
-            print(f"KEPT  {cluster.start_addr:06X}-{cluster.end_addr:06X}")
+            print(f"KEPT  {start_addr:06X}-{end_addr:06X}")
             continue
 
         restore(path, before)
-        print(f"FAIL  {cluster.start_addr:06X}-{cluster.end_addr:06X} verify")
+        print(f"FAIL  {start_addr:06X}-{end_addr:06X} verify")
         if verify.stdout:
             print(verify.stdout.strip())
         if verify.stderr:
@@ -113,7 +178,7 @@ def main(argv: list[str]) -> int:
         if args.stop_on_fail:
             break
 
-    print(f"kept lifts: {kept}/{len(clusters)}")
+    print(f"kept lifts: {kept}/{len(work_items)}")
     return 0
 
 

@@ -20,6 +20,7 @@ from __future__ import annotations
 import argparse
 import re
 import sys
+from dataclasses import dataclass
 from pathlib import Path
 
 from promote_raw_item_handler_label import (
@@ -36,6 +37,25 @@ from raw_db_decode import DecodeState, decode_one, parse_addr
 
 ROOT = Path(__file__).resolve().parents[1]
 RAW_LINE_RE = re.compile(r"^\s*\.db\b")
+SHORT_BRANCH_OPS = {
+    0xF0: "beq",
+    0xD0: "bne",
+    0x10: "bpl",
+    0x30: "bmi",
+    0x80: "bra",
+    0x90: "bcc",
+    0xB0: "bcs",
+}
+OUT_ADDR_RE = re.compile(r";([0-9A-F]{6})\s*$")
+OUT_BRANCH_RE = re.compile(r"^(\s*)(beq|bne|bpl|bmi|bra|bcc|bcs)\s+\$([0-9A-F]{5,6})(\s*;[0-9A-F]{6}\s*)$", re.IGNORECASE)
+
+
+@dataclass
+class DecodedInsn:
+    addr: int
+    size: int
+    text: str
+    opcode: int
 
 
 def _resolve_file(path_text: str) -> Path:
@@ -63,7 +83,7 @@ def _fmt_instruction(text: str) -> str:
 
 def _emit_decoded_lines(
     data: list[int], base_addr: int, state: DecodeState, table16: int
-) -> list[str]:
+) -> tuple[list[str], dict[int, str]]:
     out: list[str] = []
     i = 0
 
@@ -77,17 +97,44 @@ def _emit_decoded_lines(
             out.append(f"\t.dw ${bank | target:06X}")
         i = table16 * 2
 
+    decoded: list[DecodedInsn] = []
     while i < len(data):
         size, text = decode_one(data, i, base_addr, state)
-        addr = base_addr + i
-        if text.startswith(".db "):
-            chunk = data[i : i + size]
-            out.append(format_db_line(chunk, addr))
-        else:
-            out.append(f"{_fmt_instruction(text):<40} ;{addr:06X}")
+        decoded.append(DecodedInsn(addr=base_addr + i, size=max(size, 1), text=text, opcode=data[i]))
         i += max(size, 1)
 
-    return out
+    branch_labels: dict[int, str] = {}
+    for insn in decoded:
+        if insn.opcode not in SHORT_BRANCH_OPS or insn.size < 2:
+            continue
+        disp = data[insn.addr - base_addr + 1]
+        if disp >= 0x80:
+            disp -= 0x100
+        target = insn.addr + 2 + disp
+        if base_addr <= target < base_addr + len(data):
+            branch_labels.setdefault(target, f"@lbl_{target:06X}")
+
+    offset = 0
+    for insn in decoded:
+        if insn.addr in branch_labels:
+            out.append(f"{branch_labels[insn.addr]}:")
+        if insn.text.startswith(".db "):
+            chunk = data[offset : offset + insn.size]
+            out.append(format_db_line(chunk, insn.addr))
+        else:
+            text = insn.text
+            if insn.opcode in SHORT_BRANCH_OPS and insn.size >= 2:
+                disp = data[offset + 1]
+                if disp >= 0x80:
+                    disp -= 0x100
+                target = insn.addr + 2 + disp
+                label = branch_labels.get(target)
+                if label is not None:
+                    text = f"{SHORT_BRANCH_OPS[insn.opcode]} {label}"
+            out.append(f"{_fmt_instruction(text):<40} ;{insn.addr:06X}")
+        offset += insn.size
+
+    return out, branch_labels
 
 
 def _compute_line_starts(lines: list[str]) -> list[int | None]:
@@ -140,6 +187,56 @@ def _advance_state_from_asm_line(stripped: str, state: DecodeState) -> None:
         state.x_width = 8 if op == "sep" else 16
 
 
+def _rewrite_output_branches(out: list[str]) -> list[str]:
+    labels: dict[int, str] = {}
+    line_addrs: dict[int, int] = {}
+    for idx, line in enumerate(out):
+        match = OUT_ADDR_RE.search(line)
+        if not match:
+            continue
+        addr = int(match.group(1), 16)
+        line_addrs[addr] = idx
+
+    for line in out:
+        match = OUT_BRANCH_RE.match(line)
+        if not match:
+            continue
+        target = int(match.group(3), 16)
+        if target not in line_addrs and target < 0x100000:
+            banked = target | 0xC00000
+            if banked in line_addrs:
+                target = banked
+        if target in line_addrs:
+            labels.setdefault(target, f"@lbl_{target:06X}")
+
+    if not labels:
+        return out
+
+    rewritten: list[str] = []
+    for idx, line in enumerate(out):
+        match = OUT_ADDR_RE.search(line)
+        if match:
+            addr = int(match.group(1), 16)
+            label = labels.get(addr)
+            if label is not None:
+                rewritten.append(f"{label}:")
+
+        branch_match = OUT_BRANCH_RE.match(line)
+        if branch_match:
+            indent, op, target_hex, suffix = branch_match.groups()
+            target = int(target_hex, 16)
+            if target not in line_addrs and target < 0x100000:
+                banked = target | 0xC00000
+                if banked in line_addrs:
+                    target = banked
+            label = labels.get(target)
+            if label is not None:
+                line = f"{indent}{op} {label}{suffix}"
+        rewritten.append(line)
+
+    return rewritten
+
+
 def build_candidate(lines: list[str], start_addr: int, end_addr: int, m_width: int, x_width: int, table16: int) -> tuple[int, int, list[str]]:
     start_idx: int | None = None
     end_idx: int | None = None
@@ -147,8 +244,12 @@ def build_candidate(lines: list[str], start_addr: int, end_addr: int, m_width: i
     line_starts = _compute_line_starts(lines)
     state = DecodeState(m_width=m_width, x_width=x_width)
     used_table16 = False
+    skip_until = -1
+    pending_labels: dict[int, str] = {}
 
     for idx, line in enumerate(lines):
+        if idx <= skip_until:
+            continue
         stripped = line.strip()
         line_start = line_starts[idx]
         line_size = estimate_asm_line_size(stripped)
@@ -168,27 +269,54 @@ def build_candidate(lines: list[str], start_addr: int, end_addr: int, m_width: i
             end_idx = idx
             break
 
+        if line_start in pending_labels:
+            out.append(f"{pending_labels.pop(line_start)}:")
+
         if RAW_LINE_RE.match(stripped):
-            bytes_ = _db_bytes_from_line(line)
-            if not bytes_:
+            raw_lines: list[tuple[int, list[int]]] = []
+            j = idx
+            while j < len(lines):
+                next_line = lines[j]
+                next_stripped = next_line.strip()
+                if not RAW_LINE_RE.match(next_stripped):
+                    break
+                next_start = line_starts[j]
+                next_bytes = _db_bytes_from_line(next_line)
+                if next_start is None or not next_bytes:
+                    break
+                raw_lines.append((next_start, next_bytes))
+                j += 1
+
+            skip_until = j - 1
+            if not raw_lines:
                 out.append(line.rstrip("\n"))
                 continue
-            raw_start = line_start
-            if raw_start is None:
-                out.append(line.rstrip("\n"))
-                continue
-            raw_end = raw_start + len(bytes_) - 1
+
+            raw_start = raw_lines[0][0]
+            combined: list[int] = []
+            for _, next_bytes in raw_lines:
+                combined.extend(next_bytes)
+            raw_end = raw_start + len(combined) - 1
             if raw_end < start_addr or raw_start > end_addr:
-                out.append(line.rstrip("\n"))
+                for raw_line_idx in range(idx, j):
+                    out.append(lines[raw_line_idx].rstrip("\n"))
                 continue
             seg_start = max(start_addr, raw_start)
             seg_end = min(end_addr, raw_end)
-            prefix = bytes_[: seg_start - raw_start]
-            suffix = bytes_[seg_end - raw_start + 1 :]
+            prefix = combined[: seg_start - raw_start]
+            suffix = combined[seg_end - raw_start + 1 :]
             if prefix:
                 out.append(format_db_line(prefix, raw_start))
-            middle = bytes_[seg_start - raw_start : seg_end - raw_start + 1]
-            out.extend(_emit_decoded_lines(middle, seg_start, state, table16 if not used_table16 and seg_start == start_addr else 0))
+            middle = combined[seg_start - raw_start : seg_end - raw_start + 1]
+            decoded_lines, branch_labels = _emit_decoded_lines(
+                middle,
+                seg_start,
+                state,
+                table16 if not used_table16 and seg_start == start_addr else 0,
+            )
+            out.extend(decoded_lines)
+            for target, label in branch_labels.items():
+                pending_labels.setdefault(target, label)
             if table16 and seg_start == start_addr:
                 used_table16 = True
             if suffix:
@@ -203,6 +331,7 @@ def build_candidate(lines: list[str], start_addr: int, end_addr: int, m_width: i
     if end_idx is None:
         end_idx = len(lines)
 
+    out = _rewrite_output_branches(out)
     return start_idx, end_idx, out
 
 
