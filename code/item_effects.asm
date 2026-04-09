@@ -1017,9 +1017,18 @@ StrengthHerbUseEffect:
 	.db $E2,$20,$22,$67,$11,$C2,$A5,$00,$C5,$01,$D0,$1F,$A9,$9F,$85,$00   ;C31022
 	.db $64,$01,$A9,$01,$85,$02
 	jsl.l DisplayMessage
-	.db $A9,$01,$85,$00,$22,$BF   ;C31032  
-	.db $32,$C2,$A9,$01,$85,$00,$22,$71,$32,$C2,$60,$A9,$9E,$85,$00,$64   ;C31042  
-	.db $01,$A9,$01,$85,$02
+	lda #$01                                ;C3103C
+	sta $00                                 ;C3103E
+	jsl $C232BF                             ;C31040
+	lda #$01                                ;C31044
+	sta $00                                 ;C31046
+	jsl $C23271                             ;C31048
+	rts                                     ;C3104C
+	lda #$9E                                ;C3104D
+	sta $00                                 ;C3104F
+	stz $01                                 ;C31051
+	lda #$01                                ;C31053
+	sta $02                                 ;C31055
 	jsl.l DisplayMessage
 	lda #$01                                ;C3105B
 	sta $00                                 ;C3105D
