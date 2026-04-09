@@ -1195,9 +1195,19 @@ PoisonHerbUseEffect:
 	.db $10,$A0,$C7,$84,$00,$22,$A6,$3B,$C2,$A9,$3F,$00,$85,$00,$A0,$14   ;C31242  
 	.db $84,$02
 	jsl.l DisplayMessage
-	.db $A9,$EC,$FF,$85,$02,$A0,$13,$84,$00,$22   ;C31252  
-	.db $09,$32,$C2,$A9,$FA,$FF,$85,$00,$22,$71,$32,$C2,$A4,$00,$F0,$0B   ;C31262
-	.db $84,$02,$A9,$A0,$00,$85,$00
+	lda #$FFEC                              ;C31258
+	sta $02                                 ;C3125B
+	ldy #$13                                ;C3125D
+	sty $00                                 ;C3125F
+	jsl $C23209                             ;C31261
+	lda #$FFFA                              ;C31265
+	sta $00                                 ;C31268
+	jsl $C23271                             ;C3126A
+	ldy $00                                 ;C3126E
+	.db $F0,$0B   ;C31270
+	sty $02                                 ;C31272
+	lda #$00A0                              ;C31274
+	sta $00                                 ;C31277
 	jsl.l DisplayMessage
 	rts                                     ;C3127D
 	sep #$20                                ;C3127E
