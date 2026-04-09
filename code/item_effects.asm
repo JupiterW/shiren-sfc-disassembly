@@ -3612,11 +3612,37 @@ func_C32CFE:
 @lbl_C32D6A:
 	.db $A9,$D7,$85,$00,$64,$01
 	jsl.l DisplayMessage
-	.db $28,$6B,$08,$E2,$30,$A6   ;C32D6A
-	.db $00,$DA,$22,$89,$3B,$C2,$A6,$02,$BF,$8C,$8B,$7E,$FA,$C9,$98,$F0   ;C32D7A
-	.db $41,$86,$00,$DA,$22,$10,$07,$C3,$FA,$BF,$8C,$8F,$7E,$89,$08,$D0   ;C32D8A  
-	.db $23,$A5,$04,$F0,$1D,$BF,$8C,$8C,$7E,$3A,$9F,$8C,$8C,$7E,$A9,$FF   ;C32D9A  
-	.db $85,$00,$22,$2B,$34,$C2,$A9,$10,$85,$00,$A9,$01,$85,$01
+	plp                                     ;C32D74
+	rtl                                     ;C32D75
+	.db $08   ;C32D76
+	sep #$30                                ;C32D77
+	ldx $00                                 ;C32D79
+	phx                                     ;C32D7B
+	jsl $C23B89                             ;C32D7C
+	ldx $02                                 ;C32D80
+	lda $7E8B8C,x                           ;C32D82
+	plx                                     ;C32D86
+	cmp #$98                                ;C32D87
+	.db $F0,$41   ;C32D89
+	stx $00                                 ;C32D8B
+	phx                                     ;C32D8D
+	jsl $C30710                             ;C32D8E
+	plx                                     ;C32D92
+	lda $7E8F8C,x                           ;C32D93
+	bit #$08                                ;C32D97
+	.db $D0,$23   ;C32D99
+	lda $04                                 ;C32D9B
+	.db $F0,$1D   ;C32D9D
+	lda $7E8C8C,x                           ;C32D9F
+	dec a                                   ;C32DA3
+	sta $7E8C8C,x                           ;C32DA4
+	lda #$FF                                ;C32DA8
+	sta $00                                 ;C32DAA
+	jsl $C2342B                             ;C32DAC
+	lda #$10                                ;C32DB0
+	sta $00                                 ;C32DB2
+	lda #$01                                ;C32DB4
+	sta $01                                 ;C32DB6
 	jsl.l DisplayMessage
 	.db $28,$6B,$A9,$11,$85,$00,$A9,$01,$85,$01
 	jsl.l DisplayMessage
