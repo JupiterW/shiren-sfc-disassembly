@@ -2568,11 +2568,36 @@ HandsFullScrollUseEffect:
 	jsl.l DisplayMessage
 	jsl.l $C28472                         ;C322CA
 	rts                                  ;C322CE
-	.db $08,$C2,$30,$22,$5F,$F6,$C3,$A5,$00,$29,$0F,$00,$C9   ;C322CF  
-	.db $08,$00,$B0,$F2,$0A,$AA,$BF,$ED,$22,$C3,$F4,$EA,$22,$48,$60,$28   ;C322DC
-	.db $6B,$FC,$22,$40,$23,$EA,$23,$0A,$24,$A2,$24,$A8,$24,$B4,$24,$E8   ;C322EC
-	.db $24,$C2,$20,$22,$45,$25,$C3,$22,$45,$25,$C3,$22,$45,$25,$C3,$A9   ;C322FC  
-	.db $76,$00,$85,$00
+	.db $08   ;C322CF
+	rep #$30                                ;C322D0
+@lbl_C322D2:
+	jsl $C3F65F                             ;C322D2
+	lda $00                                 ;C322D6
+	and #$000F                              ;C322D8
+	cmp #$0008                              ;C322DB
+	bcs @lbl_C322D2                         ;C322DE
+	asl a                                   ;C322E0
+	tax                                     ;C322E1
+	lda $C322ED,x                           ;C322E2
+	.db $F4   ;C322E6
+	.db $EA   ;C322E7
+	jsl $286048                             ;C322E8
+	rtl                                     ;C322EC
+	.db $FC   ;C322ED
+	jsl $EA2340                             ;C322EE
+	.db $23   ;C322F2
+	asl a                                   ;C322F3
+	bit $A2                                 ;C322F4
+	bit $A8                                 ;C322F6
+	bit $B4                                 ;C322F8
+	bit $E8                                 ;C322FA
+	bit $C2                                 ;C322FC
+	jsr $4522                               ;C322FE
+	and $C3                                 ;C32301
+	jsl $C32545                             ;C32303
+	jsl $C32545                             ;C32307
+	lda #$0076                              ;C3230B
+	sta $00                                 ;C3230E
 	jsl.l DisplayMessage
 	.db $A9,$0B,$00,$85,$00,$A9,$03,$00   ;C3230C  
 	.db $85,$02
