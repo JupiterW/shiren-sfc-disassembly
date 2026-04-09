@@ -3496,7 +3496,7 @@ func_C23959:
 	rtl
 
 ; Validate the selected item source and insert it into inventory, handling the
-; special blank-scroll rejection path used by jar-related item selection.
+; special blank-scroll rejection path reused by the ground-item exchange flow.
 TryAddSelectedItemToInventory:
 	php
 	sep #$30 ;AXY->8
@@ -3810,10 +3810,10 @@ HandleCategoryShortcutSelectionAction:
 @lbl_C23C9B:
 	bit.b #$40
 	beq @lbl_C23CA2
-	; Bit $40 in wTemp01 selects a special jar-related item-selection path
-	; distinct from the regular inventory, contextual-map-item, and
-	; nested/container modes. This path shares the cantPickUpItems guard and
-	; blank-scroll validation used by JarUseEffect.
+	; Bit $40 in wTemp01 selects the special ground-item exchange path, distinct
+	; from the regular inventory, contextual-map-item, and nested/container
+	; modes. This path shares some helper logic with jar handling, but gameplay
+	; confirms it is the generic underfoot-item exchange action.
 	jmp.w @lbl_C23D1E
 @lbl_C23CA2:
 	ldx.b wTemp00
@@ -3888,8 +3888,8 @@ HandleCategoryShortcutSelectionAction:
 	and.b #$1F
 	sta.b wTemp00
 	tax
-	; This mode needs to take the underfoot item into inventory, so it is blocked
-	; while cantPickUpItems is active.
+	; The exchange action needs to take the underfoot item into inventory, so it
+	; is blocked while cantPickUpItems is active.
 	lda.l wShirenStatus.cantPickUpItems
 	beq @lbl_C23D2E
 	lda.b #$2B
