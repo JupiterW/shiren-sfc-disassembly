@@ -2253,9 +2253,24 @@ BlessingScrollUseEffect:
 	jsl $C28497                             ;C31DC4
 	rts                                     ;C31DC8
 	rts
-	.db $E2,$30,$A4,$00,$A6,$01,$A9,$12,$85,$00,$A9,$16,$85,$01,$DA,$5A   ;C31DCA
-	.db $22,$9F,$F6,$C3,$7A,$FA,$A5,$00,$85,$02,$86,$01,$84,$00,$22,$DF   ;C31DDA  
-	.db $28,$C2,$60                       ;C31DEA
+	sep #$30                                ;C31DCA
+	ldy $00                                 ;C31DCC
+	ldx $01                                 ;C31DCE
+	lda #$12                                ;C31DD0
+	sta $00                                 ;C31DD2
+	lda #$16                                ;C31DD4
+	sta $01                                 ;C31DD6
+	phx                                     ;C31DD8
+	phy                                     ;C31DD9
+	jsl $C3F69F                             ;C31DDA
+	ply                                     ;C31DDE
+	plx                                     ;C31DDF
+	lda $00                                 ;C31DE0
+	sta $02                                 ;C31DE2
+	stx $01                                 ;C31DE4
+	sty $00                                 ;C31DE6
+	jsl $C228DF                             ;C31DE8
+	rts                                     ;C31DEC
 	jsl.l func_C24390
 	rts
 	.db $22,$D6,$40,$C2,$22,$A2,$5D,$C2   ;C31DF2  
