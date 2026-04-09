@@ -33,12 +33,22 @@ from safe_item_handler_rename import (
 
 
 DB_TOKEN_RE = re.compile(r"\$([0-9A-F]{2})")
+DW_TOKEN_RE = re.compile(r"\$([0-9A-F]{4})")
 COMMENT_ADDR_RE = re.compile(r";C?(?P<addr>[0-9A-F]{5,6})\b")
 LABEL_RE = re.compile(r"^[A-Za-z0-9_@.]+:\s*$")
+LABEL_ADDR_RE = re.compile(r"C(?P<addr>[0-9A-F]{5,6})")
 
 
 def _db_bytes_from_line(line: str) -> list[int]:
     return [int(tok.group(1), 16) for tok in DB_TOKEN_RE.finditer(line.split(";")[0])]
+
+
+def _dw_bytes_from_line(line: str) -> list[int]:
+    out: list[int] = []
+    for tok in DW_TOKEN_RE.finditer(line.split(";")[0]):
+        word = int(tok.group(1), 16)
+        out.extend([word & 0xFF, (word >> 8) & 0xFF])
+    return out
 
 
 def find_item(query: str):
@@ -56,8 +66,32 @@ def format_db_line(bytes_: list[int], addr: int | None = None) -> str:
     return f"\t.db {body}   ;{addr:06X}"
 
 
+def format_dw_line(bytes_: list[int]) -> str:
+    if len(bytes_) % 2 != 0:
+        raise ValueError("dw line requires an even number of bytes")
+    words = []
+    for i in range(0, len(bytes_), 2):
+        word = bytes_[i] | (bytes_[i + 1] << 8)
+        words.append(f"${word:04X}")
+    return "\t.dw " + ",".join(words)
+
+
 def parse_comment_addr(line: str) -> int | None:
     match = COMMENT_ADDR_RE.search(line)
+    if not match:
+        return None
+    token = match.group("addr")
+    if len(token) == 5:
+        token = f"C{token}"
+    return int(token, 16)
+
+
+def parse_label_addr(line: str) -> int | None:
+    stripped = line.strip()
+    if not LABEL_RE.match(stripped):
+        return None
+    name = stripped[:-1]
+    match = LABEL_ADDR_RE.search(name)
     if not match:
         return None
     token = match.group("addr")
@@ -70,7 +104,12 @@ def db_line_end_addr(line: str) -> int | None:
     start = parse_comment_addr(line)
     if start is None:
         return None
-    bytes_ = _db_bytes_from_line(line)
+    if ".db" in line:
+        bytes_ = _db_bytes_from_line(line)
+    elif ".dw" in line:
+        bytes_ = _dw_bytes_from_line(line)
+    else:
+        return None
     if not bytes_:
         return None
     return start + len(bytes_)
@@ -82,6 +121,12 @@ def estimate_asm_line_size(stripped: str) -> int | None:
     if ".db " in stripped or stripped.startswith(".db"):
         bytes_ = _db_bytes_from_line(stripped)
         return len(bytes_) if bytes_ else None
+    if ".dw " in stripped or stripped.startswith(".dw"):
+        body = stripped.split(".dw", 1)[1].strip()
+        if not body:
+            return None
+        parts = [part.strip() for part in body.split(",") if part.strip()]
+        return len(parts) * 2 if parts else None
 
     op = stripped.split()[0]
     rest = stripped[len(op):].strip()
@@ -177,6 +222,9 @@ def promote_mixed_region_entry(path: Path, entry_addr: int, new_symbol: str, dry
         comment_addr = parse_comment_addr(line)
         if comment_addr is not None and (current_addr is None or comment_addr >= current_addr):
             current_addr = comment_addr
+        label_addr = parse_label_addr(line)
+        if label_addr is not None and (current_addr is None or label_addr >= current_addr):
+            current_addr = label_addr
         size = estimate_asm_line_size(stripped)
         if current_addr is None or size is None:
             continue
@@ -192,6 +240,23 @@ def promote_mixed_region_entry(path: Path, entry_addr: int, new_symbol: str, dry
                     f"{new_symbol}:",
                     format_db_line(bytes_[offset:], entry_addr),
                 ]
+                lines[idx : idx + 1] = replacement
+                if not dry_run:
+                    write_lines(path, lines)
+                return idx + 1, "\n".join(replacement)
+        if ".dw " in stripped or stripped.startswith(".dw"):
+            end_addr = current_addr + size
+            if current_addr < entry_addr < end_addr:
+                bytes_ = _dw_bytes_from_line(line)
+                offset = entry_addr - current_addr
+                if offset % 2 != 0:
+                    raise SystemExit(f"entry {entry_addr:06X} is in the middle of a .dw word")
+                replacement: list[str] = []
+                if offset:
+                    replacement.append(format_dw_line(bytes_[:offset]))
+                replacement.append(f"{new_symbol}:")
+                if offset < len(bytes_):
+                    replacement.append(format_dw_line(bytes_[offset:]))
                 lines[idx : idx + 1] = replacement
                 if not dry_run:
                     write_lines(path, lines)
@@ -217,8 +282,10 @@ def promote_raw_entry(path: Path, entry_addr: int, new_symbol: str, dry_run: boo
     offset = entry_addr - region.addr
     lines = load_lines(path)
     old_line = lines[region.line_no - 1]
-    if not old_line.strip().startswith(".db") and ".db " not in old_line:
-        raise SystemExit(f"expected .db line at {path}:{region.line_no}")
+    is_db = old_line.strip().startswith(".db") or ".db " in old_line
+    is_dw = old_line.strip().startswith(".dw") or ".dw " in old_line
+    if not is_db and not is_dw:
+        raise SystemExit(f"expected .db or .dw line at {path}:{region.line_no}")
 
     if offset == 0:
         replacement = [
@@ -237,11 +304,21 @@ def promote_raw_entry(path: Path, entry_addr: int, new_symbol: str, dry_run: boo
 
     prefix = region.bytes_[:offset]
     suffix = region.bytes_[offset:]
-    replacement = [
-        format_db_line(prefix, region.addr),
-        f"{new_symbol}:",
-        format_db_line(suffix, entry_addr),
-    ]
+    if is_db:
+        replacement = [
+            format_db_line(prefix, region.addr),
+            f"{new_symbol}:",
+            format_db_line(suffix, entry_addr),
+        ]
+    else:
+        if offset % 2 != 0:
+            raise SystemExit(f"entry {entry_addr:06X} is in the middle of a .dw word")
+        replacement = []
+        if prefix:
+            replacement.append(format_dw_line(prefix))
+        replacement.append(f"{new_symbol}:")
+        if suffix:
+            replacement.append(format_dw_line(suffix))
     lines[region.line_no - 1 : region.line_no] = replacement
     if not dry_run:
         write_lines(path, lines)
