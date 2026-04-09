@@ -3925,14 +3925,65 @@ func_C332D7:
 	bpl @lbl_C332DC
 	plp
 	rtl
-	.db $08,$E2,$30,$86,$00,$DA,$22,$10,$07,$C3,$FA,$A5,$00,$C9,$03,$F0   ;C33319
-	.db $0C,$C9,$05,$F0,$08,$C9,$07,$F0,$04,$A5,$01,$80,$0F,$BF,$8C,$8C   ;C33329  
-	.db $7E,$30,$04,$C9,$63,$10,$05,$1A,$9F,$8C,$8C,$7E,$28,$60,$08,$E2   ;C33339  
-	.db $30,$86,$00,$DA,$22,$10,$07,$C3,$FA,$A5,$01,$A5,$00,$C9,$03,$F0   ;C33349  
-	.db $08,$C9,$05,$F0,$04,$C9,$07,$D0,$0D,$A5,$04,$F0,$09,$BF,$8C,$8C   ;C33359
-	.db $7E,$3A,$9F,$8C,$8C,$7E,$28,$60,$BF,$8C,$8C,$7E,$10,$04,$C9,$F7   ;C33369  
-	.db $30,$05,$3A,$9F,$8C,$8C,$7E,$28   ;C33379  
-	.db $60                               ;C33381
+	.db $08   ;C33319
+	sep #$30                                ;C3331A
+	stx $00                                 ;C3331C
+	phx                                     ;C3331E
+	jsl $C30710                             ;C3331F
+	plx                                     ;C33323
+	lda $00                                 ;C33324
+	cmp #$03                                ;C33326
+	beq @lbl_C33336                         ;C33328
+	cmp #$05                                ;C3332A
+	beq @lbl_C33336                         ;C3332C
+	cmp #$07                                ;C3332E
+	beq @lbl_C33336                         ;C33330
+	lda $01                                 ;C33332
+	bra @lbl_C33345                         ;C33334
+@lbl_C33336:
+	lda $7E8C8C,x                           ;C33336
+	bmi @lbl_C33340                         ;C3333A
+	cmp #$63                                ;C3333C
+	bpl @lbl_C33345                         ;C3333E
+@lbl_C33340:
+	inc a                                   ;C33340
+	sta $7E8C8C,x                           ;C33341
+@lbl_C33345:
+	.db $28   ;C33345
+	rts                                     ;C33346
+	.db $08   ;C33347
+	sep #$30                                ;C33348
+	stx $00                                 ;C3334A
+	phx                                     ;C3334C
+	jsl $C30710                             ;C3334D
+	plx                                     ;C33351
+	lda $01                                 ;C33352
+	lda $00                                 ;C33354
+	cmp #$03                                ;C33356
+	beq @lbl_C33362                         ;C33358
+	cmp #$05                                ;C3335A
+	beq @lbl_C33362                         ;C3335C
+	cmp #$07                                ;C3335E
+	bne @lbl_C3336F                         ;C33360
+@lbl_C33362:
+	lda $04                                 ;C33362
+	beq @lbl_C3336F                         ;C33364
+	lda $7E8C8C,x                           ;C33366
+	dec a                                   ;C3336A
+	sta $7E8C8C,x                           ;C3336B
+@lbl_C3336F:
+	.db $28   ;C3336F
+	rts                                     ;C33370
+	lda $7E8C8C,x                           ;C33371
+	bpl @lbl_C3337B                         ;C33375
+	cmp #$F7                                ;C33377
+	bmi @lbl_C33380                         ;C33379
+@lbl_C3337B:
+	dec a                                   ;C3337B
+	sta $7E8C8C,x                           ;C3337C
+@lbl_C33380:
+	.db $28   ;C33380
+	rts                                     ;C33381
 
 ExecutePreparedThrowEffect:
 	php
