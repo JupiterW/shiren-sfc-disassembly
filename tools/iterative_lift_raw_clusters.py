@@ -195,6 +195,17 @@ def main(argv: list[str]) -> int:
                     if args.stop_on_fail:
                         break
                     continue
+                cached_diff = run_argv(["git", "diff", "--cached", "--quiet", "--", str(rel)])
+                if cached_diff.returncode == 0:
+                    print(f"SKIP  {start_addr:06X}-{end_addr:06X} no staged diff")
+                    continue
+                if cached_diff.returncode not in (0, 1):
+                    restore(path, before)
+                    print(f"FAIL  {start_addr:06X}-{end_addr:06X} git-diff")
+                    failures.append((start_addr, end_addr, "git-diff"))
+                    if args.stop_on_fail:
+                        break
+                    continue
                 commit_msg = args.commit_template.format(
                     start=f"{start_addr:06X}",
                     end=f"{end_addr:06X}",
