@@ -576,11 +576,44 @@ func_C30BD3:
 	ply
 	lda.b wTemp00
 	beq @lbl_C30CCE
-	.db $A3,$01,$85,$00,$A9,$12,$85,$02,$5A,$8B,$22,$50,$25,$C6,$AB,$7A   ;C30C8A  
-	.db $C2,$20,$A3,$02,$85,$06,$A3,$05,$85,$04,$E2,$20,$84,$00,$A9,$07   ;C30C9A
-	.db $85,$01,$A9,$00,$85,$02,$A3,$04,$49,$04,$85,$03,$5A,$8B,$22,$CA   ;C30CAA  
-	.db $26,$C6,$AB,$7A,$AF,$5E,$93,$7E,$AA,$A3,$01,$09,$80,$8F,$5E,$93   ;C30CBA  
-	.db $7E,$8A,$83,$01                   ;C30CCA  
+	lda $01,s                               ;C30C8A
+	sta $00                                 ;C30C8C
+	lda #$12                                ;C30C8E
+	sta $02                                 ;C30C90
+	phy                                     ;C30C92
+	phb                                     ;C30C93
+	jsl $C62550                             ;C30C94
+	plb                                     ;C30C98
+	ply                                     ;C30C99
+	rep #$20                                ;C30C9A
+	lda $02,s                               ;C30C9C
+	sta $06                                 ;C30C9E
+	lda $05,s                               ;C30CA0
+	sta $04                                 ;C30CA2
+	sep #$20                                ;C30CA4
+	sty $00                                 ;C30CA6
+	lda #$07                                ;C30CA8
+	sta $01                                 ;C30CAA
+	lda #$00                                ;C30CAC
+	sta $02                                 ;C30CAE
+	lda $04,s                               ;C30CB0
+	eor #$04                                ;C30CB2
+	sta $03                                 ;C30CB4
+	phy                                     ;C30CB6
+	phb                                     ;C30CB7
+	jsl $C626CA                             ;C30CB8
+	plb                                     ;C30CBC
+	ply                                     ;C30CBD
+	lda $7E935E                             ;C30CBE
+	tax                                     ;C30CC2
+	lda $01,s                               ;C30CC3
+	ora #$80                                ;C30CC5
+	.db $8F   ;C30CC7
+	.db $5E   ;C30CC8
+	.db $93   ;C30CC9
+	.db $7E   ;C30CCA
+	txa                                     ;C30CCB
+	sta $01,s                               ;C30CCC
 @lbl_C30CCE:
 	pla
 	phb
