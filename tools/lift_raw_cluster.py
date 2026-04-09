@@ -21,6 +21,7 @@ import argparse
 import re
 import sys
 from dataclasses import dataclass
+import copy
 from pathlib import Path
 
 from promote_raw_item_handler_label import (
@@ -211,6 +212,41 @@ def _emit_decoded_lines(
     return out, branch_labels
 
 
+def _align_raw_segment(
+    data: list[int],
+    raw_start: int,
+    req_start: int,
+    req_end: int,
+    state: DecodeState,
+) -> tuple[int, int, DecodeState]:
+    decode_state = copy.deepcopy(state)
+    boundaries: list[tuple[int, int, DecodeState]] = []
+    i = 0
+    while i < len(data):
+        insn_addr = raw_start + i
+        boundaries.append((insn_addr, i, copy.deepcopy(decode_state)))
+        size, _ = decode_one(data, i, raw_start, decode_state)
+        i += max(size, 1)
+
+    aligned_start = req_start
+    start_state = copy.deepcopy(state)
+    for idx, (insn_addr, offset, snap) in enumerate(boundaries):
+        next_addr = raw_start + (boundaries[idx + 1][1] if idx + 1 < len(boundaries) else len(data))
+        if insn_addr <= req_start < next_addr:
+            aligned_start = insn_addr
+            start_state = snap
+            break
+
+    aligned_end = req_end
+    for idx, (insn_addr, offset, _) in enumerate(boundaries):
+        next_addr = raw_start + (boundaries[idx + 1][1] if idx + 1 < len(boundaries) else len(data))
+        if insn_addr <= req_end < next_addr:
+            aligned_end = next_addr - 1
+            break
+
+    return aligned_start, aligned_end, start_state
+
+
 def _compute_line_starts(lines: list[str]) -> list[int | None]:
     starts: list[int | None] = []
     current_addr: int | None = None
@@ -333,6 +369,7 @@ def build_candidate(lines: list[str], start_addr: int, end_addr: int, m_width: i
             start_idx = idx
 
         if start_idx is None:
+            _advance_state_from_asm_line(stripped, state)
             continue
 
         if line_start is None:
@@ -375,8 +412,9 @@ def build_candidate(lines: list[str], start_addr: int, end_addr: int, m_width: i
                 for raw_line_idx in range(idx, j):
                     out.append(lines[raw_line_idx].rstrip("\n"))
                 continue
-            seg_start = max(start_addr, raw_start)
-            seg_end = min(end_addr, raw_end)
+            req_start = max(start_addr, raw_start)
+            req_end = min(end_addr, raw_end)
+            seg_start, seg_end, seg_state = _align_raw_segment(combined, raw_start, req_start, req_end, state)
             prefix = combined[: seg_start - raw_start]
             suffix = combined[seg_end - raw_start + 1 :]
             if prefix:
@@ -385,7 +423,7 @@ def build_candidate(lines: list[str], start_addr: int, end_addr: int, m_width: i
             decoded_lines, branch_labels = _emit_decoded_lines(
                 middle,
                 seg_start,
-                state,
+                seg_state,
                 table16 if not used_table16 and seg_start == start_addr else 0,
             )
             out.extend(decoded_lines)

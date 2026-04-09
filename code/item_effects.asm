@@ -1217,9 +1217,23 @@ PoisonHerbUseEffect:
 	.db $F0,$06   ;C312AE
 	sty $02                                 ;C312B0
 	jsl.l DisplayMessage
-	.db $7A,$F0,$0E,$84,$02,$A0,$FF,$84,$03,$A0,$13,$84   ;C312B2  
-	.db $00,$22,$09,$32,$C2,$7A,$84,$00,$22,$71,$32,$C2,$A4,$00,$F0,$0B   ;C312C2
-	.db $84,$02,$A9,$A0,$00,$85,$00
+	ply                                     ;C312B6
+	beq @lbl_C312C7                         ;C312B7
+	sty $02                                 ;C312B9
+	ldy #$FF                                ;C312BB
+	sty $03                                 ;C312BD
+	ldy #$13                                ;C312BF
+	sty $00                                 ;C312C1
+	jsl $C23209                             ;C312C3
+@lbl_C312C7:
+	ply                                     ;C312C7
+	sty $00                                 ;C312C8
+	jsl $C23271                             ;C312CA
+	ldy $00                                 ;C312CE
+	.db $F0,$0B   ;C312D0
+	sty $02                                 ;C312D2
+	lda #$00A0                              ;C312D4
+	sta $00                                 ;C312D7
 	jsl.l DisplayMessage
 	.db $60                   ;C312DA  
 
@@ -3029,10 +3043,25 @@ HandsFullScrollUseEffect:
 	.db $60,$C2,$20,$22,$AE,$2A,$C6,$C2,$20,$A9   ;C3249C  
 	.db $13,$03,$85,$00,$22,$79,$35,$C2,$60,$C2,$20,$A9,$C4,$00,$85,$00   ;C324AC  
 	jsl.l DisplayMessage
-	.db $A9,$E8,$03,$85,$00,$22,$BE,$33,$C2,$A9,$13,$00   ;C324BC  
-	.db $85,$00,$A9,$FF,$00,$85,$02,$22,$09,$32,$C2,$E2,$20,$22,$67,$11   ;C324CC  
-	.db $C2,$A5,$01,$38,$E5,$00,$85,$00,$22,$71,$32,$C2,$60,$C2,$20,$A9   ;C324DC
-	.db $C3,$00,$85,$00
+	lda #$03E8                              ;C324C0
+	sta $00                                 ;C324C3
+	jsl $C233BE                             ;C324C5
+	lda #$0013                              ;C324C9
+	sta $00                                 ;C324CC
+	lda #$00FF                              ;C324CE
+	sta $02                                 ;C324D1
+	jsl $C23209                             ;C324D3
+	sep #$20                                ;C324D7
+	jsl $C21167                             ;C324D9
+	lda $01                                 ;C324DD
+	sec                                     ;C324DF
+	sbc $00                                 ;C324E0
+	sta $00                                 ;C324E2
+	jsl $C23271                             ;C324E4
+	rts                                     ;C324E8
+	rep #$20                                ;C324E9
+	lda #$00C3                              ;C324EB
+	sta $00                                 ;C324EE
 	jsl.l DisplayMessage
 	.db $22,$D5,$7F,$C2,$60               ;C324F4  
 
@@ -4762,11 +4791,40 @@ func_C331B2:
 	plx
 	plp
 	rts
-	.db $08,$C2,$20,$E2,$10,$A5,$00,$85,$00,$48,$22,$AF,$59,$C3,$68,$A6   ;C3329C
-	.db $02,$30,$26,$A6,$01,$30,$10,$E0,$7F,$B0,$14,$86,$00,$48,$DA,$22   ;C332AC
-	.db $F4,$06,$C3,$FA,$68,$80,$08,$E0,$80,$F0,$04,$E0,$C0,$90,$0A,$A2   ;C332BC  
-	.db $E0,$85,$00,$86,$02,$22,$A2,$5B   ;C332CC
-	.db $C3,$28,$60                       ;C332D4  
+	php                                     ;C3329C
+	rep #$20                                ;C3329D
+	sep #$10                                ;C3329F
+	lda $00                                 ;C332A1
+	sta $00                                 ;C332A3
+	pha                                     ;C332A5
+	jsl $C359AF                             ;C332A6
+	pla                                     ;C332AA
+	ldx $02                                 ;C332AB
+	bmi @lbl_C332D5                         ;C332AD
+	ldx $01                                 ;C332AF
+	bmi @lbl_C332C3                         ;C332B1
+	cpx #$7F                                ;C332B3
+	bcs @lbl_C332CB                         ;C332B5
+	stx $00                                 ;C332B7
+	pha                                     ;C332B9
+	phx                                     ;C332BA
+	jsl $C306F4                             ;C332BB
+	plx                                     ;C332BF
+	pla                                     ;C332C0
+	bra @lbl_C332CB                         ;C332C1
+@lbl_C332C3:
+	cpx #$80                                ;C332C3
+	beq @lbl_C332CB                         ;C332C5
+	cpx #$C0                                ;C332C7
+	bcc @lbl_C332D5                         ;C332C9
+@lbl_C332CB:
+	ldx #$E0                                ;C332CB
+	sta $00                                 ;C332CD
+	stx $02                                 ;C332CF
+	jsl $C35BA2                             ;C332D1
+@lbl_C332D5:
+	plp                                     ;C332D5
+	rts                                     ;C332D6
 
 func_C332D7:
 	php
