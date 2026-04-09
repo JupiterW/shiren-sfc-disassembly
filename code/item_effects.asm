@@ -1703,6 +1703,7 @@ DoppelgangerStaffUseEffect:
 	sta.b wTemp01
 	jsl.l func_C2402A
 	rts
+SwitchingStaffUseEffect:
 	rep #$20 ;A->16
 	sep #$10 ;XY->8
 	lda.b wTemp00
@@ -1734,6 +1735,7 @@ DoppelgangerStaffUseEffect:
 	sta.b wTemp00
 	jsl.l func_C289F5
 	rts
+BufusStaffUseEffect:
 	rep #$20 ;A->16
 	sep #$10 ;XY->8
 	ldx.b wTemp00
@@ -1952,6 +1954,7 @@ ParalysisStaffUseEffect:
 	jsl.l func_C62550
 	jsl.l func_C625CE
 	rts
+PostponeStaffUseEffect:
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
 	phx

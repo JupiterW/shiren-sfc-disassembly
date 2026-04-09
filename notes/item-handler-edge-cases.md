@@ -60,10 +60,7 @@ The current promotion tool could not map the raw pointer to:
 - or a mixed-region computed entry point
 
 Current examples:
-- `HappinessStaffUseEffect`
-- `MisfortuneStaffUseEffect`
-- `PostponeStaffUseEffect`
-- `RemovalScrollUseEffect`
+- currently none in the tracked item families after the latest tool improvements
 
 Likely meaning:
 - the region needs another address-walking rule
@@ -111,20 +108,18 @@ Likely meaning:
 Safe promotions completed:
 - `SlothStaffUseEffect`
 - `KnockbackStaffUseEffect`
+- `HappinessStaffUseEffect`
+- `MisfortuneStaffUseEffect`
 - `DoppelgangerStaffUseEffect`
+- `SwitchingStaffUseEffect`
+- `BufusStaffUseEffect`
 - `SkullStaffUseEffect`
 - `ParalysisStaffUseEffect`
+- `PostponeStaffUseEffect`
 - `PainSplitStaffUseEffect`
 
 Known edge cases:
-- no promotable region:
-  - `HappinessStaffUseEffect`
-  - `MisfortuneStaffUseEffect`
-  - `PostponeStaffUseEffect`
-- SHA drift:
-  - `SwitchingStaffUseEffect`
-- local label / scope breakage:
-  - `BufusStaffUseEffect`
+- no unique raw use-handler edge cases remain in the staff family
 
 ### Scrolls
 
@@ -152,13 +147,34 @@ Known edge cases:
   - `TrapScrollUseEffect`
   - `HasteScrollUseEffect`
   - `HandsFullScrollUseEffect`
-- no promotable region:
-  - `RemovalScrollUseEffect`
 
 Still unnamed raw unique scroll handlers not resolved in this pass:
 - `Item_5C`
 - `Item_62`
 - `Item_70`
+
+### Jars
+
+Safe promotions completed:
+- `HidingJarUseEffect`
+- `MonsterJarUseEffect`
+- `WalrusJarUseEffect`
+
+Known edge cases:
+- no unique raw use-handler edge cases remain in the jar family
+
+## Tool Coverage Wins
+
+Recent tool improvements resolved cases that originally looked like real edge cases:
+- `.dw` stream promotion unlocked:
+  - `HappinessStaffUseEffect`
+- jump-table target anchoring unlocked:
+  - `PostponeStaffUseEffect`
+- better opcode-size accounting in mixed lifted asm unlocked:
+  - `BufusStaffUseEffect`
+  - `SwitchingStaffUseEffect`
+  - `WalrusJarUseEffect`
+  - `RemovalScrollUseEffect`
 
 ## Workflow Notes
 

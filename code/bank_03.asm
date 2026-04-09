@@ -2249,11 +2249,11 @@ ItemUseEffectFunctionTable:
 	.dw HappinessStaffUseEffect-1 ;HappinessStaff
 	.dw MisfortuneStaffUseEffect-1 ;MisfortuneStaff
 	.dw DoppelgangerStaffUseEffect-1 ;DoppelgangerStaff
-	.dw $1E1B ;SwitchingStaff
-	.dw $1E5D ;BufusStaff
+	.dw SwitchingStaffUseEffect-1 ;SwitchingStaff
+	.dw BufusStaffUseEffect-1 ;BufusStaff
 	.dw SkullStaffUseEffect-1 ;SkullStaff
 	.dw ParalysisStaffUseEffect-1 ;ParalysisStaff
-	.dw $206E ;PostponeStaff
+	.dw PostponeStaffUseEffect-1 ;PostponeStaff
 	.dw PainSplitStaffUseEffect-1 ;PainSplitStaff
 	.dw UnusedItemUseEffect-1
 	.dw UnusedItemUseEffect-1

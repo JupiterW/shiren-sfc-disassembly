@@ -150,6 +150,7 @@ def estimate_asm_line_size(stripped: str) -> int | None:
         "txa",
         "tay",
         "tya",
+        "xba",
         "tsx",
         "txs",
         "dex",
