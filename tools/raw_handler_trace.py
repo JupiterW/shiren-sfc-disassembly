@@ -19,7 +19,7 @@ from item_pipeline import ROOT, build_item_infos, match_query
 
 
 ASM_PATHS = sorted((ROOT / "code").rglob("*.asm"))
-COMMENT_ADDR_RE = re.compile(r";C(?P<addr>[0-9A-F]{5})\b")
+COMMENT_ADDR_RE = re.compile(r";C(?P<addr>[0-9A-F]{5,6})\b")
 LABEL_RE = re.compile(r"^(?P<label>[A-Za-z0-9_@.]+):\s*$")
 DB_TOKEN_RE = re.compile(r"\$([0-9A-F]{2})")
 FUNC_ADDR_RE = re.compile(r"^func_C([0-9A-F]{5,6})$")
@@ -103,7 +103,10 @@ def find_regions(path: Path) -> list[Region]:
         comment = COMMENT_ADDR_RE.search(line)
         if not comment:
             continue
-        addr = int(comment.group("addr"), 16)
+        addr_token = comment.group("addr")
+        if len(addr_token) == 5:
+            addr_token = f"C{addr_token}"
+        addr = int(addr_token, 16)
         bytes_ = [int(tok.group(1), 16) for tok in DB_TOKEN_RE.finditer(line.split(";")[0])]
         if not bytes_:
             continue
