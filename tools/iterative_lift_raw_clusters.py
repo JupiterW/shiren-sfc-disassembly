@@ -101,7 +101,7 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--raw-only", action="store_true", help="process raw-only clusters instead of mixed clusters")
     parser.add_argument("--mode", choices=("cluster", "segment"), default="segment", help="process whole mixed clusters or consecutive raw segments")
     parser.add_argument("--dry-run", action="store_true", help="list planned clusters without applying them")
-    parser.add_argument("--stop-on-fail", action="store_true", default=True, help="stop on first failure")
+    parser.add_argument("--stop-on-fail", action="store_true", help="stop on first failure")
     parser.add_argument("--verify-cmd", default="make -B -j1 PYTHON=.venv/bin/python && shasum -c shiren.sha1", help="command used to verify a kept lift")
     parser.add_argument("--commit", action="store_true", help="git add/commit the file after each kept verified lift")
     parser.add_argument(
@@ -141,6 +141,7 @@ def main(argv: list[str]) -> int:
         return 0
 
     kept = 0
+    failures: list[tuple[int, int, str]] = []
     baseline = snapshot(path)
     rel = path.relative_to(ROOT)
 
@@ -172,7 +173,10 @@ def main(argv: list[str]) -> int:
                 print(proc.stderr.strip())
             if proc.stdout:
                 print(proc.stdout.strip())
-            return 1
+            failures.append((start_addr, end_addr, "apply"))
+            if args.stop_on_fail:
+                break
+            continue
 
         verify = run(args.verify_cmd)
         if verify.returncode == 0:
@@ -187,7 +191,10 @@ def main(argv: list[str]) -> int:
                         print(add_proc.stdout.strip())
                     if add_proc.stderr:
                         print(add_proc.stderr.strip())
-                    return 1
+                    failures.append((start_addr, end_addr, "git-add"))
+                    if args.stop_on_fail:
+                        break
+                    continue
                 commit_msg = args.commit_template.format(
                     start=f"{start_addr:06X}",
                     end=f"{end_addr:06X}",
@@ -201,7 +208,10 @@ def main(argv: list[str]) -> int:
                         print(commit_proc.stdout.strip())
                     if commit_proc.stderr:
                         print(commit_proc.stderr.strip())
-                    return 1
+                    failures.append((start_addr, end_addr, "git-commit"))
+                    if args.stop_on_fail:
+                        break
+                    continue
             print(f"KEPT  {start_addr:06X}-{end_addr:06X}")
             continue
 
@@ -211,10 +221,15 @@ def main(argv: list[str]) -> int:
             print(verify.stdout.strip())
         if verify.stderr:
             print(verify.stderr.strip())
+        failures.append((start_addr, end_addr, "verify"))
         if args.stop_on_fail:
             break
 
     print(f"kept lifts: {kept}/{len(work_items)}")
+    if failures:
+        print("failures:")
+        for start_addr, end_addr, reason in failures:
+            print(f"  {start_addr:06X}-{end_addr:06X} {reason}")
     return 0
 
 
