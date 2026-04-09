@@ -2162,7 +2162,7 @@ ItemUseEffectFunctionTable:
 	.dw ShieldUseEffect-1 ;27
 	.dw MedicinalHerbUseEffect-1 ;MedicinalHerb
 	.dw RestorativeHerbUseEffect-1 ;RestorativeHerb
-	.dw $10B8 ;HappinessHerb
+	.dw HappinessHerbUseEffect-1 ;HappinessHerb
 	.dw $155C ;SightHerb
 	.dw $14BE ;DragonHerb
 	.dw VictoryHerbUseEffect-1 ;VictoryHerb
