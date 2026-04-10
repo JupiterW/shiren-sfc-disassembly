@@ -7365,7 +7365,8 @@ func_C2501C:
 	sta $00                                 ;C25035
 	phx                                     ;C25037
 	jsl.l DisplayMessage
-	.db $FA,$68               ;C25039  
+	.db $FA   ;C2503B
+	pla                                     ;C2503C
 @lbl_C2503E:
 	sta.b wTemp04
 	sta.b wTemp06
@@ -11449,7 +11450,7 @@ func_C28790:
 	bit.b #$10
 	beq @lbl_C2879F
 ;C2879D
-	.db $A0,$08
+	ldy #$08                                ;C3879A
 @lbl_C2879F:
 	sty.b wTemp02
 	lda.b #$13
@@ -12827,7 +12828,8 @@ func_C290BC:
 	jsl.l DisplayMessage
 	.db $28,$6B                       ;C29231  
 @lbl_C29234:
-	.db $E2,$20   ;C3921D
+	sep #$20                                ;C3921D
+.ACCU 16
 	lda $7E8972                             ;C3921F
 	rep #$20                                ;C39223
 	bmi @lbl_C39264                         ;C39225
