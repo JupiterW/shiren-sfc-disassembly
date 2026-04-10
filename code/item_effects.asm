@@ -3325,7 +3325,8 @@ NeedScrollUseEffect:
 	ldx.b wTemp00
 	bmi @lbl_C32213
 ;C3220A  
-	.db $BF,$0C,$8C,$7E,$F0,$03
+	lda $7E8C0C,x                           ;C3220A
+	.db $F0,$03   ;C3220E
 @lbl_C32210:
 	.db $4C,$70,$1C
 @lbl_C32213:
@@ -3360,7 +3361,9 @@ NeedScrollUseEffect:
 @lbl_C3224E:
 	tya
 	beq @lbl_C3225B
-	.db $A9,$5C,$85,$00,$64,$01
+	lda #$5C                                ;C32251
+	sta $00                                 ;C32253
+	stz $01                                 ;C32255
 	jsl.l DisplayMessage
 @lbl_C3225B:
 	rts
@@ -3924,7 +3927,9 @@ JarUseEffect:
 @lbl_C326FC:
 	lda.w wItemModification1,y
 	bne @lbl_C3270C
-	.db $A9,$CF,$85,$00,$64,$01
+	lda #$CF                                ;C32701
+	sta $00                                 ;C32703
+	stz $01                                 ;C32705
 	jsl.l DisplayMessage
 	rts
 @lbl_C3270C:
