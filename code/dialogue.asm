@@ -6740,7 +6740,7 @@ UNREACH_C13D7C:
 	ldy #$08D3                              ;C13EC4
 	sty $00                                 ;C13EC7
 	jsl.l DisplayMessage
-	.db $60                           ;C13F06  
+	rts                                     ;C13F06
 @lbl_C13F08:
 	ldy.w #$083D
 	sty.b wTemp00
@@ -6757,7 +6757,7 @@ UNREACH_C13D7C:
 	ldy #$08D4                              ;C13F1C
 	sty $00                                 ;C13F1F
 	jsl.l DisplayMessage
-	.db $60                           ;C13F3A  
+	rts                                     ;C13F3A
 @lbl_C13F3C:
 	ldy.w #$083E
 	sty.b wTemp00
@@ -6774,7 +6774,7 @@ UNREACH_C13D7C:
 	ldy #$08E5                              ;C13F50
 	sty $00                                 ;C13F53
 	jsl.l DisplayMessage
-	.db $60                           ;C13F6E  
+	rts                                     ;C13F6E
 @lbl_C13F70:
 	ldy.w #$0841
 	sty.b wTemp00
@@ -6790,7 +6790,7 @@ UNREACH_C13D7C:
 	ldy #$08E6                              ;C13F84
 	sty $00                                 ;C13F87
 	jsl.l DisplayMessage
-	.db $60                           ;C13F96  
+	rts                                     ;C13F96
 @lbl_C13F98:
 	ldy.w #$0842
 	sty.b wTemp00
@@ -6807,14 +6807,14 @@ UNREACH_C13D7C:
 	ldy #$0845                              ;C13FB2
 	sty $00                                 ;C13FB5
 	jsl.l DisplayMessage
-	.db $60                           ;C13FBA  
+	rts                                     ;C13FBB
 @lbl_C13FBC:
 	dec a
 	bne @lbl_C13FC9
 	ldy #$0846                              ;C13FBF
 	sty $00                                 ;C13FC2
 	jsl.l DisplayMessage
-	.db $60                           ;C13FC7  
+	rts                                     ;C13FC8
 @lbl_C13FC9:
 	ldy.w #$0847
 	sty.b wTemp00
@@ -6830,7 +6830,7 @@ UNREACH_C13D7C:
 	ldy #$08D6                              ;C13FDD
 	sty $00                                 ;C13FE0
 	jsl.l DisplayMessage
-	.db $60                           ;C13FEF  
+	rts                                     ;C13FEF
 @lbl_C13FF1:
 	ldy.w #$0691
 	sty.b wTemp00
@@ -6846,7 +6846,7 @@ UNREACH_C13D7C:
 	ldy #$08E4                              ;C14005
 	sty $00                                 ;C14008
 	jsl.l DisplayMessage
-	.db $60                           ;C14017  
+	rts                                     ;C14017
 @lbl_C14019:
 	ldy.w #$0848
 	sty.b wTemp00
@@ -6856,7 +6856,7 @@ UNREACH_C13D7C:
 	ldy #$084A                              ;C14026
 	sty $00                                 ;C14029
 	jsl.l DisplayMessage
-	.db $60                           ;C1402E  
+	rts                                     ;C1402F
 @lbl_C14030:
 	ldy.w #$084B
 	sty.b wTemp00
@@ -6902,7 +6902,7 @@ UNREACH_C13D7C:
 	ldy #$084D                              ;C140AA
 	sty $00                                 ;C140AD
 	jsl.l DisplayMessage
-	.db $60                           ;C140B2  
+	rts                                     ;C140B3
 @lbl_C140B4:
 	ldy.w #$084F
 	sty.b wTemp00
@@ -7568,7 +7568,7 @@ NPCScriptFunction_C14479:
 	sty $00                                 ;C14687
 .ACCU 16
 	jsl.l DisplayMessage
-	.db $60                           ;C1468C  
+	rts                                     ;C1468D
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
 	ldy.w #$08AB
@@ -7644,7 +7644,7 @@ NPCScriptFunction_C14479:
 	ldy #$08AF                              ;C14722
 	sty $00                                 ;C14725
 	jsl.l DisplayMessage
-	.db $60                       ;C14729  
+	rts                                     ;C1472B
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
 	phx
@@ -7655,7 +7655,7 @@ NPCScriptFunction_C14479:
 	ldy #$08E9                              ;C14736
 	sty $00                                 ;C14739
 	jsl.l DisplayMessage
-	.db $60                           ;C14748  
+	rts                                     ;C14748
 @lbl_C1474A:
 	ldy.w #$08B0
 	sty.b wTemp00
@@ -7671,7 +7671,7 @@ NPCScriptFunction_C14479:
 	ldy #$08EA                              ;C1475E
 	sty $00                                 ;C14761
 	jsl.l DisplayMessage
-	.db $60                           ;C14770  
+	rts                                     ;C14770
 @lbl_C14772:
 	ldy.w #$08B1
 	sty.b wTemp00
@@ -7706,7 +7706,7 @@ NPCScriptFunction_C14479:
 	ldy #$08B5                              ;C147B7
 	sty $00                                 ;C147BA
 	jsl.l DisplayMessage
-	.db $60           ;C147BB
+	rts                                     ;C147C0
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
 	phx
@@ -7717,7 +7717,7 @@ NPCScriptFunction_C14479:
 	ldy #$08D7                              ;C147CB
 	sty $00                                 ;C147CE
 	jsl.l DisplayMessage
-	.db $60                           ;C147DD  
+	rts                                     ;C147DD
 @lbl_C147DF:
 	ldy.w #$08B6
 	sty.b wTemp00
@@ -7742,7 +7742,7 @@ NPCScriptFunction_C14479:
 	ldy #$08B8                              ;C1480D
 	sty $00                                 ;C14810
 	jsl.l DisplayMessage
-	.db $60           ;C14811
+	rts                                     ;C14816
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
 	lda.l wCharEventFlags,x
@@ -7758,7 +7758,7 @@ NPCScriptFunction_C14479:
 	ldy #$08B9                              ;C14831
 	sty $00                                 ;C14834
 	jsl.l DisplayMessage
-	.db $60                           ;C14839  
+	rts                                     ;C1483A
 @lbl_C1483B:
 	ldy.w #$08BA
 	sty.b wTemp00
@@ -7870,7 +7870,7 @@ NPCScriptFunction_C14479:
 	ldy #$07BF                              ;C14929
 	sty $00                                 ;C1492C
 	jsl.l DisplayMessage
-	.db $60           ;C1492D
+	rts                                     ;C14932
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
 	phx
@@ -7881,7 +7881,7 @@ NPCScriptFunction_C14479:
 	ldy #$08DA                              ;C1493D
 	sty $00                                 ;C14940
 	jsl.l DisplayMessage
-	.db $60                           ;C1494F  
+	rts                                     ;C1494F
 @lbl_C14951:
 	GetEvent Event1A
 	cmp.b #$08
@@ -7957,7 +7957,7 @@ NPCScriptFunction_C14479:
 	ldy #$08CF                              ;C14A03
 	sty $00                                 ;C14A06
 	jsl.l DisplayMessage
-	.db $60           ;C14A07
+	rts                                     ;C14A0C
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
 	phx
@@ -7968,7 +7968,7 @@ NPCScriptFunction_C14479:
 	ldy #$08F6                              ;C14A17
 	sty $00                                 ;C14A1A
 	jsl.l DisplayMessage
-	.db $60                           ;C14A29  
+	rts                                     ;C14A29
 @lbl_C14A2B:
 	ldy.w #$08CE
 	sty.b wTemp00
@@ -8074,7 +8074,7 @@ NPCScriptFunction_C14479:
 	ldy #$08D9                              ;C14B00
 	sty $00                                 ;C14B03
 	jsl.l DisplayMessage
-	.db $60                               ;C14B1D
+	rts                                     ;C14B1D
 @lbl_C14B1E:
 	phx
 	GetEvent Event1A
@@ -8126,7 +8126,7 @@ NPCScriptFunction_C14479:
 	ldy #$08D8                              ;C14B88
 	sty $00                                 ;C14B8B
 	jsl.l DisplayMessage
-	.db $60                               ;C14BA5
+	rts                                     ;C14BA5
 @lbl_C14BA6:
 	GetEvent Event1A
 	cmp.b #$08
