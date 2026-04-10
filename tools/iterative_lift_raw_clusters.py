@@ -66,6 +66,26 @@ def preview_lift(rel: Path, start_addr: int, end_addr: int) -> subprocess.Comple
     return subprocess.run(cmd, cwd=ROOT, text=True, capture_output=True)
 
 
+DATA_LABEL_PREFIXES = ("DATA", "UNREACH_")
+DATA_LABEL_SUFFIXES = ("Table", "Table:", "Limits", "Limits:", "List", "List:", "Array", "Array:")
+DATA_LABEL_SUBSTRINGS = ("Table", "JumpTable", "PtrTable", "Pointers")
+
+
+def _looks_like_data_label(label: str) -> bool:
+    # Strip trailing colon for comparisons
+    name = label[:-1] if label.endswith(":") else label
+    if not name:
+        return False
+    if any(name.startswith(prefix) for prefix in DATA_LABEL_PREFIXES):
+        return True
+    if any(substr in name for substr in DATA_LABEL_SUBSTRINGS):
+        return True
+    for suffix in ("Table", "Limits", "List", "Array", "Pointers"):
+        if name.endswith(suffix):
+            return True
+    return False
+
+
 def is_data_like_candidate(candidate: str) -> bool:
     lines = [line.rstrip() for line in candidate.splitlines()]
     content = [line.strip() for line in lines if line.strip() and not line.lstrip().startswith(";")]
@@ -73,13 +93,13 @@ def is_data_like_candidate(candidate: str) -> bool:
         return False
 
     first = content[0]
-    if not first.endswith(":") or not first.startswith("DATA"):
+    if not first.endswith(":"):
         return False
 
-    # A DATA label is a strong enough signal on its own — the decoded output
-    # will show opcodes (data bytes decode as valid instructions), so the
-    # .db ratio check is unreliable here.
-    return True
+    # A data-table label is a strong enough signal on its own — the decoded
+    # output will show opcodes (data bytes decode as valid instructions), so
+    # the .db ratio check is unreliable here.
+    return _looks_like_data_label(first)
 
 
 def commit_if_needed(rel: Path, message: str) -> tuple[bool, str | None, bool]:
