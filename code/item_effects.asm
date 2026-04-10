@@ -6519,6 +6519,7 @@ lbl_C339ED:
 	sty $01                                 ;C339F2
 	jsl $C228DF                             ;C339F4
 	rts                                     ;C339F8
+AntidoteHerbThrowEffect:
 	sep #$30                                ;C339F9
 	ldx $00                                 ;C339FB
 	ldy $01                                 ;C339FD

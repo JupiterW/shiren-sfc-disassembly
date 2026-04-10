@@ -2415,7 +2415,7 @@ ItemThrowEffectFunctionTable:
 	.dw $3877 ;LittleBellySeed
 	.dw $3877 ;TalkSeed
 	.dw $3877 ;StrengthHerb
-	.dw $39F8 ;AntidoteHerb
+	.dw AntidoteHerbThrowEffect-1 ;AntidoteHerb
 	.dw $1309 ;PoisonHerb
 	.dw $1366 ;ConfusionHerb
 	.dw $13C3 ;SleepHerb
