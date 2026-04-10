@@ -1129,7 +1129,9 @@ func_C20844:
 	phy                                     ;C20A2F
 	phb                                     ;C20A30
 	jsl.l _SetEvent
-	.db $AB,$7A,$A9   ;C20A34
+	.db $AB   ;C20A34
+	ply                                     ;C20A35
+	.db $A9   ;C20A36
 	dey                                     ;C20A44
 	sta $8835,y                             ;C20A45
 @lbl_C20A48:
@@ -1596,7 +1598,7 @@ func_C20F35:
 	cmp.b #$17
 	bne @lbl_C20FC0
 ;C20FBD  
-	.db $4C,$58,$10
+	jmp $1058                               ;C20FBD
 @lbl_C20FC0:
 	cmp.b #$1D
 	bne @lbl_C20FE3
@@ -1627,7 +1629,7 @@ func_C20F35:
 @lbl_C21003:
 	jsl.l func_C62456
 ;C21007
-	.db $AE,$AF,$B2
+	ldx $B2AF                               ;C21007
 @lbl_C2100A:
 	sep #$30 ;AXY->8
 	pha
@@ -1635,7 +1637,7 @@ func_C20F35:
 	cmp.b #$C0
 	bne @lbl_C21019
 ;C21015  
-	.db $22,$28,$24,$C6
+	jsl $C62428                             ;C21015
 @lbl_C21019:
 	jsl.l func_C62405
 	lda.b wTemp01,s
@@ -2096,7 +2098,7 @@ func_C228EF:
 	asl a
 	bcc @lbl_C22933
 ;C22930
-	.db $A9,$00,$FF
+	lda #$FF00                              ;C22930
 @lbl_C22933:
 	sep #$20 ;A->8
 	xba
@@ -2240,7 +2242,8 @@ func_C22A25:
 	lda.w $89A6
 	beq @lbl_C22A35
 ;C22A31
-	.db $A9,$00,$83,$01
+	lda #$00                                ;C22A31
+	sta $01,s                               ;C22A33
 @lbl_C22A35:
 	lda.w wCharOverrideState,y
 	beq @lbl_C22A45
@@ -2276,7 +2279,8 @@ func_C22A25:
 	lda.b wTemp01
 	beq @lbl_C22A7C
 ;C22A78
-	.db $A9,$FF,$85,$00
+	lda #$FF                                ;C22A78
+	sta $00                                 ;C22A7A
 @lbl_C22A7C:
 	lda.b wTemp00
 	lsr a
@@ -2520,7 +2524,7 @@ func_C22C1C:
 	plp
 	rtl
 @lbl_C22C69:
-	.db $4C,$9C,$2C
+	jmp $2C9C                               ;C22C69
 @lbl_C22C6C:
 	cmp.b #$0A
 	beq @lbl_C22C74
@@ -2599,7 +2603,7 @@ func_C22CF1:
 	dec a
 	beq @lbl_C22D01
 ;C22CFD  
-	.db $22,$D4,$2C,$C2
+	jsl $C22CD4                             ;C22CFD
 @lbl_C22D01:
 	plp
 	rtl
@@ -3265,7 +3269,8 @@ func_C2323C:
 	beq @lbl_C23256
 	bpl @lbl_C2325A
 @lbl_C23256:
-	.db $A9,$01,$80,$0A
+	lda #$01                                ;C23256
+	.db $80,$0A   ;C23258
 @lbl_C2325A:
 	xba
 	bne @lbl_C23262
@@ -3322,7 +3327,9 @@ func_C23271:
 	sta $00                                 ;C232B3
 	stz $01                                 ;C232B5
 	jsl.l DisplayMessage
-	.db $64,$00,$28,$6B       ;C232B8  
+	stz $00                                 ;C232BB
+	plp                                     ;C232BD
+	rtl                                     ;C232BE
 
 func_C232BF:
 	php
@@ -3457,12 +3464,12 @@ func_C23395:
 	adc.b wTemp00
 	bpl @lbl_C233A4
 ;C233A1
-	.db $A9,$00,$00
+	lda #$0000                              ;C233A1
 @lbl_C233A4:
 	cmp.w #$07D0
 	bcc @lbl_C233AC
 ;C233A9
-	.db $A9,$D0,$07
+	lda #$07D0                              ;C233A9
 @lbl_C233AC:
 	sta.l wShirenStatus.maxHunger
 	stz.b wTemp00
@@ -3890,7 +3897,8 @@ func_C23684:
 	sbc.l LevelExpTableHighByte-1,x
 	bpl @lbl_C236C4
 ;C236C1
-	.db $CA,$80,$E6
+	dex                                     ;C236C1
+	.db $80,$E6   ;C236C2
 @lbl_C236C4:
 	txa
 	sta.w wCharTrueLevel,y
@@ -4028,8 +4036,9 @@ func_C236CD:
 	phy                                     ;C237C8
 	phb                                     ;C237C9
 	jsl.l DisplayMessage
-	.db $AB,$7A,$80   ;C237C9
-	.db $00                               ;C237D1
+	.db $AB   ;C237CD
+	ply                                     ;C237CE
+	.db $80,$00   ;C237CF
 @lbl_C237D2:
 	pla
 	sta.w wCharLevel,y
@@ -4479,7 +4488,9 @@ func_C23B1C:
 	cpy.b #$00
 	bpl @lbl_C23B47
 ;C23B43  
-	.db $84,$00,$28,$6B
+	sty $00                                 ;C23B43
+	plp                                     ;C23B45
+	rtl                                     ;C23B46
 @lbl_C23B47:
 	stz.b wTemp00
 	sty.b wTemp01
@@ -4611,7 +4622,9 @@ ToggleCategoryShortcutItemByIndex:
 	lda.b wTemp00
 	bne @lbl_C23C2F
 ;C23C2B  
-	.db $64,$00,$28,$6B
+	stz $00                                 ;C23C2B
+	plp                                     ;C23C2D
+	rtl                                     ;C23C2E
 @lbl_C23C2F:
 	tya
 	cmp.l wShirenStatus.categoryShortcutItemIds,x
@@ -4655,7 +4668,9 @@ RemoveItemFromCategoryShortcutSlots:
 	lda.b wTemp00
 	bne @lbl_C23C7D
 ;C23C79  
-	.db $64,$00,$28,$6B
+	stz $00                                 ;C23C79
+	plp                                     ;C23C7B
+	rtl                                     ;C23C7C
 @lbl_C23C7D:
 	lda.b #$FF
 	sta.w wShirenStatus.categoryShortcutItemIds,x
@@ -4880,7 +4895,8 @@ HandleContainedItemSelectionAction:
 	cmp.b #$BC
 	bne @lbl_C23DFF
 ;C23DFB
-	.db $68,$4C,$2E,$3F
+	pla                                     ;C23DFB
+	jmp $3F2E                               ;C23DFC
 @lbl_C23DFF:
 	lda.b wTemp01,s
 	; For contained items, the low 5 bits select the linked-list entry inside the
@@ -4895,7 +4911,7 @@ HandleContainedItemSelectionAction:
 	and.b #$60
 	beq @lbl_C23E0C
 ;C23E09  
-	.db $4C,$3A,$3E
+	jmp $3E3A                               ;C23E09
 @lbl_C23E0C:
 	stx.b wTemp00
 	sty.b wTemp01
@@ -5142,7 +5158,9 @@ DropSelectedInventoryItem:
 	ldx.b wTemp00
 	bne @lbl_C23FE5
 ;C23FE1  
-	.db $64,$00,$28,$6B
+	stz $00                                 ;C23FE1
+	plp                                     ;C23FE3
+	rtl                                     ;C23FE4
 @lbl_C23FE5:
 	sta.b wTemp00
 	sty.b wTemp02
@@ -5178,7 +5196,9 @@ func_C23FFF:
 	sta $00                                 ;C2401E
 	stz $01                                 ;C24020
 	jsl.l DisplayMessage
-	.db $64,$00,$28,$6B           ;C24024  
+	stz $00                                 ;C24026
+	plp                                     ;C24028
+	rtl                                     ;C24029
 
 func_C2402A:
 	php
@@ -5243,7 +5263,9 @@ func_C24080:
 	sta $00                                 ;C2409B
 	stz $01                                 ;C2409D
 	jsl.l DisplayMessage
-	.db $64,$00,$28,$6B           ;C240A1  
+	stz $00                                 ;C240A3
+	plp                                     ;C240A5
+	rtl                                     ;C240A6
 
 func_C240A7:
 	php
@@ -6480,7 +6502,9 @@ HandlePlayerActionCommand:
 	sta $00                                 ;C249CF
 	stz $01                                 ;C249D1
 	jsl.l DisplayMessage
-	.db $64,$00,$28,$6B   ;C249CB  
+	stz $00                                 ;C249D7
+	plp                                     ;C249D9
+	rtl                                     ;C249DA
 @lbl_C249DB:
 	lda.w $89B3
 	beq @lbl_C249E5
@@ -6545,8 +6569,9 @@ HandlePlayerActionCommand:
 	lda #$01                                ;C24A50
 	sta $01                                 ;C24A52
 	jsl.l DisplayMessage
-	.db $64,$00,$28   ;C24A53  
-	.db $6B                               ;C24A5B
+	stz $00                                 ;C24A58
+	plp                                     ;C24A5A
+	rtl                                     ;C24A5B
 @lbl_C24A5C:
 	lda.b wTemp00
 	; Fixed commands use dedicated byte values. Other commands use a packed format:
@@ -6816,7 +6841,9 @@ HandlePlayerActionCommand:
 	sta $00                                 ;C24C3D
 	stz $01                                 ;C24C3F
 	jsl.l DisplayMessage
-	.db $64,$00,$28,$6B       ;C24C42  
+	stz $00                                 ;C24C45
+	plp                                     ;C24C47
+	rtl                                     ;C24C48
 @lbl_C24C49:
 	lda.w $8949
 	beq @lbl_C24C6F
@@ -7061,7 +7088,7 @@ func_C24DE8:
 	cmp.b #$83
 	bne @lbl_C24E0F
 ;C24E0B  
-	.db $8F,$7A,$89,$7E
+	sta $7E897A                             ;C24E0B
 @lbl_C24E0F:
 	plp
 	rts
@@ -7265,7 +7292,8 @@ func_C24F17:
 	cmp.b #$00
 	beq @lbl_C24FCD
 ;C24FC9
-	.db $A9,$00,$85,$02
+	lda #$00                                ;C24FC9
+	sta $02                                 ;C24FCB
 @lbl_C24FCD:
 	phx
 	phy
@@ -8529,7 +8557,8 @@ func_C2598A:
 	sta $00                                 ;C259C3
 	phy                                     ;C259C5
 	jsl.l DisplayMessage
-	.db $7A,$4C,$54,$5A           ;C259C8  
+	.db $7A   ;C259C9
+	jmp $5A54                               ;C259CA
 @lbl_C259CE:
 	sty.b wTemp00
 	pha
@@ -10525,7 +10554,9 @@ func_C2816C:
 	lda.b wTemp00
 	bpl @lbl_C2818B
 ;C28187  
-	.db $64,$00,$28,$6B
+	stz $00                                 ;C38187
+	plp                                     ;C38189
+	rtl                                     ;C3818A
 @lbl_C2818B:
 	lda.l wCharDir,x
 	sta.b wTemp02
@@ -10533,7 +10564,7 @@ func_C2816C:
 	cpx.b #$13
 	bne @lbl_C2819D
 ;C28199  
-	.db $BF,$A9,$87,$7E
+	lda $7E87A9,x                           ;C38198
 @lbl_C2819D:
 	sta.b wTemp03
 	lda.l wCharLevel,x
@@ -13295,7 +13326,8 @@ UNREACH_C2CBDA:
 	cmp.b #$14
 	bcs @lbl_C2CC6E
 ;C2CC6A
-	.db $A2,$55,$80,$0A
+	.db $A2,$55   ;C395CF
+	.db $80,$0A   ;C395D1
 @lbl_C2CC6E:
 	cmp.b #$19
 	bcs @lbl_C2CC76
