@@ -3825,7 +3825,7 @@ DATA8_C122EB:
 	php                                     ;C123E6
 	sty $00                                 ;C123E7
 	jsl.l DisplayMessage
-	.db $60   ;C123DE  
+	rts                                     ;C123ED
 
 
 	sep #$20 ;A->8
@@ -3911,7 +3911,7 @@ DATA8_C122EB:
 	ldy #$005C                              ;C124A6
 	sty $00                                 ;C124A9
 	jsl.l DisplayMessage
-	.db $60           ;C124AA
+	rts                                     ;C124AF
 
 
 	sep #$20 ;A->8
@@ -3960,7 +3960,7 @@ func_C124BB:
 	ldy #$005C                              ;C12510
 	sty $00                                 ;C12513
 	jsl.l DisplayMessage
-	.db $60                           ;C12518  
+	rts                                     ;C12519
 @lbl_C1251A:
 	cmp.b #$03
 	bcc @lbl_C12521
@@ -3993,7 +3993,7 @@ func_C124BB:
 	ldy #$076D                              ;C12552
 	sty $00                                 ;C12555
 	jsl.l DisplayMessage
-	.db $60                           ;C12572  
+	rts                                     ;C12572
 @lbl_C12574:
 	lda.b #$03
 	sta.b wTemp00
@@ -5397,7 +5397,7 @@ func_C13228:
 	ldy #$07CD                              ;C13241
 	sty $00                                 ;C13244
 	jsl.l DisplayMessage
-	.db $60                           ;C13249  
+	rts                                     ;C1324A
 @lbl_C1324B:
 	rep #$20 ;A->16
 	lda.b wTemp03,s
@@ -5411,7 +5411,7 @@ func_C13228:
 	ldy #$07CE                              ;C13260
 	sty $00                                 ;C13263
 	jsl.l DisplayMessage
-	.db $60                           ;C13268  
+	rts                                     ;C13269
 @lbl_C1326A:
 	jsl.l func_C62405
 	ldy.w #$0050
@@ -5500,7 +5500,7 @@ func_C13304:
 	ldy #$07DC                              ;C13320
 	sty $00                                 ;C13323
 	jsl.l DisplayMessage
-	.db $60                           ;C13328  
+	rts                                     ;C13329
 @lbl_C1332A:
 	tdc
 	lda.b wTemp03,s
@@ -5563,7 +5563,7 @@ func_C13304:
 	ldy #$07D2                              ;C133A8
 	sty $00                                 ;C133AB
 	jsl.l DisplayMessage
-	.db $60                           ;C133B0  
+	rts                                     ;C133B1
 @lbl_C133B2:
 	ldy.w #$03E8
 	sty.b wTemp00
@@ -5575,7 +5575,7 @@ func_C13304:
 	ldy #$07D3                              ;C133C4
 	sty $00                                 ;C133C7
 	jsl.l DisplayMessage
-	.db $60                           ;C133CC  
+	rts                                     ;C133CD
 @lbl_C133CE:
 	jsl.l func_C62405
 	ldy.w #$0050
@@ -6225,7 +6225,7 @@ func_C13304:
 	ldy #$0882                              ;C139D2
 	sty $00                                 ;C139D5
 	jsl.l DisplayMessage
-	.db $60                   ;C139D8
+	rts                                     ;C139DB
 
 
 	sep #$20 ;A->8
@@ -6238,7 +6238,7 @@ func_C13304:
 	ldy #$08F3                              ;C139E6
 	sty $00                                 ;C139E9
 	jsl.l DisplayMessage
-	.db $60                           ;C139F8  
+	rts                                     ;C139F8
 @lbl_C139FA:
 	ldy.w #$0808
 	sty.b wTemp00
@@ -6257,7 +6257,7 @@ func_C13304:
 	ldy #$08F4                              ;C13A15
 	sty $00                                 ;C13A18
 	jsl.l DisplayMessage
-	.db $60                           ;C13A27  
+	rts                                     ;C13A27
 @lbl_C13A29:
 	ldy.w #$0809
 	sty.b wTemp00
@@ -6276,7 +6276,7 @@ func_C13304:
 	ldy #$08F5                              ;C13A41
 	sty $00                                 ;C13A44
 	jsl.l DisplayMessage
-	.db $60                           ;C13A5D  
+	rts                                     ;C13A5D
 @lbl_C13A5F:
 	ldy.w #$080A
 	sty.b wTemp00
@@ -6286,7 +6286,7 @@ func_C13304:
 	ldy #$087D                              ;C13A69
 	sty $00                                 ;C13A6C
 	jsl.l DisplayMessage
-	.db $60                           ;C13A71  
+	rts                                     ;C13A72
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
 	phx
@@ -6297,14 +6297,14 @@ func_C13304:
 	ldy #$08F7                              ;C13A7D
 	sty $00                                 ;C13A80
 	jsl.l DisplayMessage
-	.db $60                           ;C13A8F  
+	rts                                     ;C13A8F
 @lbl_C13A91:
 	lda.l wCharEventFlags,x
 	beq @lbl_C13AA1
 	ldy #$0812                              ;C13A97
 	sty $00                                 ;C13A9A
 	jsl.l DisplayMessage
-	.db $60                           ;C13A9F  
+	rts                                     ;C13AA0
 @lbl_C13AA1:
 	;fortune teller dialogue
 	;Both the fortune you get and the tip he gives are completely random. It doesn't
@@ -6319,7 +6319,7 @@ func_C13304:
 	ldy #$080E                              ;C13AB3
 	sty $00                                 ;C13AB6
 	jsl.l DisplayMessage
-	.db $60                           ;C13ABB  
+	rts                                     ;C13ABC
 @lbl_C13ABD:
 	ldy.w #$080F
 	sty.b wTemp00
@@ -6388,7 +6388,7 @@ FortuneTellerTipsText:
 	ldy #$0820                              ;C13B3D
 	sty $00                                 ;C13B40
 	jsl.l DisplayMessage
-	.db $60                   ;C13B47  
+	rts                                     ;C13B47
 
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -6400,7 +6400,7 @@ FortuneTellerTipsText:
 	ldy #$08FE                              ;C13B52
 	sty $00                                 ;C13B55
 	jsl.l DisplayMessage
-	.db $60                           ;C13B67  
+	rts                                     ;C13B67
 @lbl_C13B69:
 	ldy.w #$0821
 	sty.b wTemp00
@@ -6423,7 +6423,7 @@ FortuneTellerTipsText:
 	ldy #$0822                              ;C13B91
 	sty $00                                 ;C13B94
 	jsl.l DisplayMessage
-	.db $60   ;C13B93
+	rts                                     ;C13B9A
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
 	phx
@@ -6434,7 +6434,7 @@ FortuneTellerTipsText:
 	ldy #$08FC                              ;C13BA5
 	sty $00                                 ;C13BA8
 	jsl.l DisplayMessage
-	.db $60                           ;C13BB7  
+	rts                                     ;C13BB7
 @lbl_C13BB9:
 	ldy.w #$0823
 	sty.b wTemp00
@@ -6475,7 +6475,7 @@ FortuneTellerTipsText:
 	ldy #$081F                              ;C13C09
 	sty $00                                 ;C13C0C
 	jsl.l DisplayMessage
-	.db $60   ;C13C03
+	rts                                     ;C13C12
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
 	lda.l wCharEventFlags,x
@@ -6501,14 +6501,14 @@ FortuneTellerTipsText:
 	ldy #$08D0                              ;C13C40
 	sty $00                                 ;C13C43
 	jsl.l DisplayMessage
-	.db $60                           ;C13C52  
+	rts                                     ;C13C52
 @lbl_C13C54:
 	lda.l wCharEventFlags,x
 	beq @lbl_C13C64
 	ldy #$0688                              ;C13C5A
 	sty $00                                 ;C13C5D
 	jsl.l DisplayMessage
-	.db $60                           ;C13C62  
+	rts                                     ;C13C63
 @lbl_C13C64:
 	inc a
 	sta.l wCharEventFlags,x
@@ -6522,7 +6522,7 @@ FortuneTellerTipsText:
 	ldy #$082C                              ;C13C78
 	sty $00                                 ;C13C7B
 	jsl.l DisplayMessage
-	.db $60                           ;C13C80  
+	rts                                     ;C13C81
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
 	phx
@@ -6555,7 +6555,7 @@ FortuneTellerTipsText:
 	ldy #$08D2                              ;C13CC7
 	sty $00                                 ;C13CCA
 	jsl.l DisplayMessage
-	.db $60                       ;C13CD6  
+	rts                                     ;C13CD6
 @lbl_C13CD9:
 	lda.l wCharEventFlags,x
 	bne @lbl_C13D17
@@ -6571,14 +6571,14 @@ FortuneTellerTipsText:
 	ldy #$082E                              ;C13D0D
 	sty $00                                 ;C13D10
 	jsl.l DisplayMessage
-	.db $60                           ;C13D15  
+	rts                                     ;C13D16
 @lbl_C13D17:
 	GetEvent Event95
 	beq @lbl_C13D2D
 	ldy #$082E                              ;C13D19
 	sty $00                                 ;C13D1C
 	jsl.l DisplayMessage
-	.db $60                           ;C13D2B  
+	rts                                     ;C13D2B
 @lbl_C13D2D:
 	SetEvent Event95 $01
 	ldy.w #$082F
@@ -6608,7 +6608,7 @@ FortuneTellerTipsText:
 	ldy #$0832                              ;C13D72
 	sty $00                                 ;C13D75
 	jsl.l DisplayMessage
-	.db $60                           ;C13D7A  
+	rts                                     ;C13D7B
 
 UNREACH_C13D7C:
 	and ($08,s),y                           ;C13D7C
@@ -6630,7 +6630,7 @@ UNREACH_C13D7C:
 	ldy #$08D5                              ;C13D95
 	sty $00                                 ;C13D98
 	jsl.l DisplayMessage
-	.db $60                           ;C13DA8  
+	rts                                     ;C13DA8
 @lbl_C13DAA:
 	lda.l wCharEventFlags,x
 	bne @lbl_C13E1E
@@ -6639,7 +6639,7 @@ UNREACH_C13D7C:
 	ldy #$0690                              ;C13DB2
 	sty $00                                 ;C13DB5
 	jsl.l DisplayMessage
-	.db $60                           ;C13DC4  
+	rts                                     ;C13DC4
 @lbl_C13DC6:
 	ldy.w #$068D
 	sty.b wTemp00
@@ -6649,7 +6649,7 @@ UNREACH_C13D7C:
 	ldy #$068E                              ;C13DD3
 	sty $00                                 ;C13DD6
 	jsl.l DisplayMessage
-	.db $60                           ;C13DDB  
+	rts                                     ;C13DDC
 @lbl_C13DDD:
 	SetEvent Event1F $01
 	ldy.w #$068F
