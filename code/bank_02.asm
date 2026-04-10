@@ -470,7 +470,7 @@ DATA8_C20277:
 	lda.b #$01
 	sta.w wCharIsSealed,y
 	rts
-	.db $60                               ;C20453
+	rts                                     ;C20453
 	sep #$20 ;A->8
 	lda.b #$02
 	sta.w wCharSpeed,y
@@ -579,7 +579,7 @@ DATA8_C20277:
 	lda.b #$01
 	sta.w wCharIsSealed,y
 	rts
-	.db $60                               ;C20535
+	rts                                     ;C20535
 	sep #$20 ;A->8
 	lda.b #$01
 	sta.w wCharIsSealed,y
@@ -14515,7 +14515,7 @@ func_C2D469:
 	cmp.b wTemp05
 	bcs @lbl_C2D4F4
 ;C2D4F2  
-	.db $85,$05
+	sta $05                                 ;C39E0C
 @lbl_C2D4F4:
 	ldx.w $89C2
 	cpx.b #$FF
