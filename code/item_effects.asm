@@ -1130,7 +1130,9 @@ StrengthHerbUseEffect:
 	lda $02                                 ;C310A6
 	pha                                     ;C310A8
 	jsl.l DisplayMessage
-	.db $68,$85,$02,$A5,$02   ;C310A2  
+	pla                                     ;C310AC
+	sta $02                                 ;C310AD
+	lda $02                                 ;C310AF
 	sta $00                                 ;C310B2
 	jsl $C23271                             ;C310B4
 	rts                                     ;C310B8
@@ -2126,10 +2128,11 @@ SleepScrollUseEffect:
 	jsl $C28851                             ;C318D2
 	rts                                     ;C318D6
 ConfusionScrollUseEffect:
-	.db $22,$DA   ;C318D7
-	.db $87,$C2,$60   ;C318D9
+	jsl $C287DA                             ;C318D7
+	rts                                     ;C318DB
 ExplosionScrollUseEffect:
-	.db $22,$A3,$88,$C2,$60   ;C318DC
+	jsl $C288A3                             ;C318DC
+	rts                                     ;C318E0
 PowerupScrollUseEffect:
 	sep #$20 ;A->8
 	lda.b #$13
@@ -4986,12 +4989,9 @@ func_C32CFE:
 	sta $00                                 ;C32EB4
 	.db $28   ;C32EB6
 	rtl                                     ;C32EB7
-	.db $15   ;C32EB8
-	.db $01   ;C32EB9
-	.db $16   ;C32EBA
-	.db $01   ;C32EBB
-	.db $17   ;C32EBC
-	.db $01   ;C32EBD
+	ora $01,x                               ;C32EB8
+	asl $01,x                               ;C32EBA
+	ora [$01],y                             ;C32EBC
 	clc                                     ;C32EBE
 	.db $01   ;C32EBF
 	ora $1A01,y                             ;C32EC0
@@ -6331,10 +6331,7 @@ func_C335FE:
 	plx                                     ;C3385E
 	lda $00                                 ;C3385F
 	.db $30,$12   ;C33861
-	.db $9F   ;C33863
-	.db $0C   ;C33864
-	.db $8E   ;C33865
-	.db $7E   ;C33866
+	sta $7E8E0C,x                           ;C33863
 	lda #$0D                                ;C33867
 	sta $00                                 ;C33869
 	lda #$01                                ;C3386B
