@@ -5494,7 +5494,8 @@ func_C13304:
 	dec a
 	cmp.b #$03
 	bcs @lbl_C1332A
-	.db $A0,$DC,$07,$84,$00
+	ldy #$07DC                              ;C13320
+	sty $00                                 ;C13323
 	jsl.l DisplayMessage
 	.db $60                           ;C13328  
 @lbl_C1332A:
@@ -5556,7 +5557,8 @@ func_C13304:
 	jsl.l DisplayMessage1
 	lda.b wTemp00
 	beq @lbl_C133B2
-	.db $A0,$D2,$07,$84,$00
+	ldy #$07D2                              ;C133A8
+	sty $00                                 ;C133AB
 	jsl.l DisplayMessage
 	.db $60                           ;C133B0  
 @lbl_C133B2:
@@ -5567,7 +5569,8 @@ func_C13304:
 	jsl.l func_C25BB7
 	lda.b wTemp00
 	beq @lbl_C133CE
-	.db $A0,$D3,$07,$84,$00
+	ldy #$07D3                              ;C133C4
+	sty $00                                 ;C133C7
 	jsl.l DisplayMessage
 	.db $60                           ;C133CC  
 @lbl_C133CE:
@@ -6088,7 +6091,8 @@ func_C13304:
 	ldy #$07FB                              ;C1388F
 	sty $00                                 ;C13892
 	jsl.l DisplayMessage
-	.db $A0,$2F,$01,$84,$00
+	ldy #$012F                              ;C13898
+	sty $00                                 ;C1389B
 	jsl.l DisplayMessage
 	jsl $C62405                             ;C138A1
 	lda $03,s                               ;C138A5
@@ -6106,7 +6110,8 @@ func_C13304:
 	ldy #$07FD                              ;C138C1
 	sty $00                                 ;C138C4
 	jsl.l DisplayMessage
-	.db $A0,$2F,$01,$84,$00
+	ldy #$012F                              ;C138CA
+	sty $00                                 ;C138CD
 	jsl.l DisplayMessage
 	jsl $C62405                             ;C138D3
 	lda $03,s                               ;C138D7
@@ -6123,7 +6128,8 @@ func_C13304:
 	ldy #$07FF                              ;C138F1
 	sty $00                                 ;C138F4
 	jsl.l DisplayMessage
-	.db $A0,$00,$08,$84,$00
+	ldy #$0800                              ;C138FA
+	sty $00                                 ;C138FD
 	jsl.l DisplayMessage
 	tdc                                     ;C13903
 	lda $03,s                               ;C13904
@@ -6157,9 +6163,11 @@ func_C13304:
 	ldy #$0802                              ;C13947
 	sty $00                                 ;C1394A
 	jsl.l DisplayMessage
-	.db $A0,$03,$08,$84,$00
+	ldy #$0803                              ;C13950
+	sty $00                                 ;C13953
 	jsl.l DisplayMessage
-	.db $A0,$04,$08,$84,$00
+	ldy #$0804                              ;C13959
+	sty $00                                 ;C1395C
 	jsl.l DisplayMessage
 	lda #$5E                                ;C13962
 	sta $00                                 ;C13964
@@ -6223,7 +6231,8 @@ func_C13304:
 	plx
 	bit.b #$01
 	beq @lbl_C139FA
-	.db $A0,$F3,$08,$84,$00
+	ldy #$08F3                              ;C139E6
+	sty $00                                 ;C139E9
 	jsl.l DisplayMessage
 	.db $60                           ;C139F8  
 @lbl_C139FA:
@@ -6241,7 +6250,8 @@ func_C13304:
 	plx
 	bit.b #$01
 	beq @lbl_C13A29
-	.db $A0,$F4,$08,$84,$00
+	ldy #$08F4                              ;C13A15
+	sty $00                                 ;C13A18
 	jsl.l DisplayMessage
 	.db $60                           ;C13A27  
 @lbl_C13A29:
@@ -6259,7 +6269,8 @@ func_C13304:
 	plx
 	bit.b #$01
 	beq @lbl_C13A5F
-	.db $A0,$F5,$08,$84,$00
+	ldy #$08F5                              ;C13A41
+	sty $00                                 ;C13A44
 	jsl.l DisplayMessage
 	.db $60                           ;C13A5D  
 @lbl_C13A5F:
@@ -6268,7 +6279,8 @@ func_C13304:
 	jsl.l DisplayMessage
 	rts
 @lbl_C13A69:
-	.db $A0,$7D,$08,$84,$00
+	ldy #$087D                              ;C13A69
+	sty $00                                 ;C13A6C
 	jsl.l DisplayMessage
 	.db $60                           ;C13A71  
 	sep #$20 ;A->8
@@ -6278,13 +6290,15 @@ func_C13304:
 	plx
 	bit.b #$01
 	beq @lbl_C13A91
-	.db $A0,$F7,$08,$84,$00
+	ldy #$08F7                              ;C13A7D
+	sty $00                                 ;C13A80
 	jsl.l DisplayMessage
 	.db $60                           ;C13A8F  
 @lbl_C13A91:
 	lda.l wCharEventFlags,x
 	beq @lbl_C13AA1
-	.db $A0,$12,$08,$84,$00
+	ldy #$0812                              ;C13A97
+	sty $00                                 ;C13A9A
 	jsl.l DisplayMessage
 	.db $60                           ;C13A9F  
 @lbl_C13AA1:
@@ -6298,7 +6312,8 @@ func_C13304:
 	jsl.l DisplayMessage1
 	lda.b wTemp00
 	beq @lbl_C13ABD
-	.db $A0,$0E,$08,$84,$00
+	ldy #$080E                              ;C13AB3
+	sty $00                                 ;C13AB6
 	jsl.l DisplayMessage
 	.db $60                           ;C13ABB  
 @lbl_C13ABD:
@@ -6378,7 +6393,8 @@ FortuneTellerTipsText:
 	plx
 	bit.b #$01
 	beq @lbl_C13B69
-	.db $A0,$FE,$08,$84,$00
+	ldy #$08FE                              ;C13B52
+	sty $00                                 ;C13B55
 	jsl.l DisplayMessage
 	.db $60                           ;C13B67  
 @lbl_C13B69:
@@ -6411,7 +6427,8 @@ FortuneTellerTipsText:
 	plx
 	bit.b #$01
 	beq @lbl_C13BB9
-	.db $A0,$FC,$08,$84,$00
+	ldy #$08FC                              ;C13BA5
+	sty $00                                 ;C13BA8
 	jsl.l DisplayMessage
 	.db $60                           ;C13BB7  
 @lbl_C13BB9:
@@ -6477,13 +6494,15 @@ FortuneTellerTipsText:
 	plx
 	bit.b #$01
 	beq @lbl_C13C54
-	.db $A0,$D0,$08,$84,$00
+	ldy #$08D0                              ;C13C40
+	sty $00                                 ;C13C43
 	jsl.l DisplayMessage
 	.db $60                           ;C13C52  
 @lbl_C13C54:
 	lda.l wCharEventFlags,x
 	beq @lbl_C13C64
-	.db $A0,$88,$06,$84,$00
+	ldy #$0688                              ;C13C5A
+	sty $00                                 ;C13C5D
 	jsl.l DisplayMessage
 	.db $60                           ;C13C62  
 @lbl_C13C64:
@@ -6496,7 +6515,8 @@ FortuneTellerTipsText:
 	jsl.l DisplayMessage
 	rts
 @lbl_C13C78:
-	.db $A0,$2C,$08,$84,$00
+	ldy #$082C                              ;C13C78
+	sty $00                                 ;C13C7B
 	jsl.l DisplayMessage
 	.db $60                           ;C13C80  
 	sep #$20 ;A->8
@@ -6527,7 +6547,8 @@ FortuneTellerTipsText:
 	ldy #$0832                              ;C13CBE
 	sty $00                                 ;C13CC1
 	jsl.l DisplayMessage
-	.db $A0,$D2,$08,$84,$00
+	ldy #$08D2                              ;C13CC7
+	sty $00                                 ;C13CCA
 	jsl.l DisplayMessage
 	.db $60                       ;C13CD6  
 @lbl_C13CD9:
@@ -6542,13 +6563,15 @@ FortuneTellerTipsText:
 	jsl.l DisplayMessage
 	rts
 @lbl_C13D0D:
-	.db $A0,$2E,$08,$84,$00
+	ldy #$082E                              ;C13D0D
+	sty $00                                 ;C13D10
 	jsl.l DisplayMessage
 	.db $60                           ;C13D15  
 @lbl_C13D17:
 	GetEvent Event95
 	beq @lbl_C13D2D
-	.db $A0,$2E,$08,$84,$00
+	ldy #$082E                              ;C13D19
+	sty $00                                 ;C13D1C
 	jsl.l DisplayMessage
 	.db $60                           ;C13D2B  
 @lbl_C13D2D:
@@ -6577,7 +6600,8 @@ FortuneTellerTipsText:
 	jsl.l DisplayMessage
 	rts
 @lbl_C13D72:
-	.db $A0,$32,$08,$84,$00
+	ldy #$0832                              ;C13D72
+	sty $00                                 ;C13D75
 	jsl.l DisplayMessage
 	.db $60                           ;C13D7A  
 
@@ -6598,7 +6622,8 @@ UNREACH_C13D7C:
 	plx
 	bit.b #$01
 	beq @lbl_C13DAA
-	.db $A0,$D5,$08,$84,$00
+	ldy #$08D5                              ;C13D95
+	sty $00                                 ;C13D98
 	jsl.l DisplayMessage
 	.db $60                           ;C13DA8  
 @lbl_C13DAA:
@@ -6606,7 +6631,8 @@ UNREACH_C13D7C:
 	bne @lbl_C13E1E
 	GetEvent Event82
 	beq @lbl_C13DC6
-	.db $A0,$90,$06,$84,$00
+	ldy #$0690                              ;C13DB2
+	sty $00                                 ;C13DB5
 	jsl.l DisplayMessage
 	.db $60                           ;C13DC4  
 @lbl_C13DC6:
@@ -6615,7 +6641,8 @@ UNREACH_C13D7C:
 	jsl.l DisplayMessage1
 	lda.b wTemp00
 	beq @lbl_C13DDD
-	.db $A0,$8E,$06,$84,$00
+	ldy #$068E                              ;C13DD3
+	sty $00                                 ;C13DD6
 	jsl.l DisplayMessage
 	.db $60                           ;C13DDB  
 @lbl_C13DDD:
@@ -6705,7 +6732,8 @@ UNREACH_C13D7C:
 	plx
 	bit.b #$01
 	beq @lbl_C13F08
-	.db $A0,$D3,$08,$84,$00
+	ldy #$08D3                              ;C13EC4
+	sty $00                                 ;C13EC7
 	jsl.l DisplayMessage
 	.db $60                           ;C13F06  
 @lbl_C13F08:
@@ -6721,7 +6749,8 @@ UNREACH_C13D7C:
 	plx
 	bit.b #$01
 	beq @lbl_C13F3C
-	.db $A0,$D4,$08,$84,$00
+	ldy #$08D4                              ;C13F1C
+	sty $00                                 ;C13F1F
 	jsl.l DisplayMessage
 	.db $60                           ;C13F3A  
 @lbl_C13F3C:
@@ -6737,7 +6766,8 @@ UNREACH_C13D7C:
 	plx
 	bit.b #$01
 	beq @lbl_C13F70
-	.db $A0,$E5,$08,$84,$00
+	ldy #$08E5                              ;C13F50
+	sty $00                                 ;C13F53
 	jsl.l DisplayMessage
 	.db $60                           ;C13F6E  
 @lbl_C13F70:
@@ -6752,7 +6782,8 @@ UNREACH_C13D7C:
 	plx
 	bit.b #$01
 	beq @lbl_C13F98
-	.db $A0,$E6,$08,$84,$00
+	ldy #$08E6                              ;C13F84
+	sty $00                                 ;C13F87
 	jsl.l DisplayMessage
 	.db $60                           ;C13F96  
 @lbl_C13F98:
@@ -6768,7 +6799,8 @@ UNREACH_C13D7C:
 @lbl_C13FAF:
 	dec a
 	bne @lbl_C13FBC
-	.db $A0,$45,$08,$84,$00
+	ldy #$0845                              ;C13FB2
+	sty $00                                 ;C13FB5
 	jsl.l DisplayMessage
 	.db $60                           ;C13FBA  
 @lbl_C13FBC:
