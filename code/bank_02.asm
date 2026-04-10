@@ -906,7 +906,10 @@ DATA8_C20611:
 	sta.w wCharEventFlags,y
 	cmp.b #$03
 	bne @lbl_C20843
-	.db $3A,$85,$02,$A9,$09,$85,$00
+	dec a                                   ;C2082A
+	sta $02                                 ;C2082B
+	lda #$09                                ;C2082D
+	sta $00                                 ;C2082F
 	jsl.l _SetEvent
 @lbl_C20843:
 	rts
@@ -1034,7 +1037,10 @@ func_C20844:
 	sta.w wCharEventFlags,y
 	cmp.b #$01
 	bne @lbl_C2096F
-	.db $3A,$85,$02,$A9,$0C,$85,$00
+	.db $3A   ;C20956
+	sta $02                                 ;C20957
+	lda #$0C                                ;C20959
+	sta $00                                 ;C2095B
 	jsl.l _SetEvent
 @lbl_C2096F:
 	lda.b #$01
@@ -1052,8 +1058,10 @@ func_C20844:
 	sta $00                                 ;C2098A
 	phy                                     ;C2098C
 	jsl.l _GetEvent
-	.db $7A,$A5,$00   ;C2098C
-	.db $99,$71,$88,$60                   ;C20994  
+	.db $7A   ;C20990
+	lda $00                                 ;C20991
+	sta $8871,y                             ;C20993
+	rts                                     ;C20996
 	sep #$30 ;AXY->8
 	lda.b #$08
 	sta.w wCharNPCFlags,y
@@ -1065,7 +1073,10 @@ func_C20844:
 	sta.w wCharEventFlags,y
 	cmp.b #$05
 	bne @lbl_C209C7
-	.db $3A,$85,$02,$A9,$03,$85,$00
+	.db $3A   ;C209AE
+	sta $02                                 ;C209AF
+	lda #$03                                ;C209B1
+	sta $00                                 ;C209B3
 	jsl.l _SetEvent
 @lbl_C209C7:
 	lda.b #$01
@@ -1085,7 +1096,10 @@ func_C20844:
 	sta.w wCharEventFlags,y
 	cmp.b #$04
 	bne @lbl_C20A03
-	.db $3A,$85,$02,$A9,$05,$85,$00
+	dec a                                   ;C209EC
+	sta $02                                 ;C209ED
+	lda #$05                                ;C209EF
+	sta $00                                 ;C209F1
 	jsl.l _SetEvent
 @lbl_C20A03:
 	lda.b #$01
@@ -1105,7 +1119,12 @@ func_C20844:
 	sta.w wCharEventFlags,y
 	cmp.b #$06
 	bne @lbl_C20A48
-	.db $3A,$85,$02,$A9,$06,$85,$00,$5A,$8B
+	dec a                                   ;C20A28
+	sta $02                                 ;C20A29
+	lda #$06                                ;C20A2B
+	sta $00                                 ;C20A2D
+	phy                                     ;C20A2F
+	phb                                     ;C20A30
 	jsl.l _SetEvent
 	.db $AB,$7A,$A9   ;C20A34
 	.db $88,$99,$35,$88                   ;C20A44
@@ -1412,7 +1431,11 @@ func_C20E47:
 	lda.l wCharUnk885D,x
 	beq @lbl_C20E5A
 ;C20E52
-	.db $A9,$FF,$85,$00,$86,$01,$28,$6B
+	lda #$FF                                ;C20E52
+	sta $00                                 ;C20E54
+	stx $01                                 ;C20E56
+	plp                                     ;C20E58
+	rtl                                     ;C20E59
 @lbl_C20E5A:
 	lda.l wCharType,x
 	cmp.b #$0B
@@ -1472,8 +1495,9 @@ func_C20E89:
 	sta.l $7E89A8
 	lda.l $7E899B
 	bpl @lbl_C20F05
-	.db $A9,$01,$8F,$9B,$89,$7E,$20,$F6   ;C20EFC
-	.db $30                               ;C20F04  
+	lda #$01                                ;C20EFC
+	sta $7E899B                             ;C20EFE
+	jsr $30F6                               ;C20F02
 @lbl_C20F05:
 	ldx.b #$7E
 @lbl_C20F07:
@@ -1591,7 +1615,10 @@ func_C20F35:
 	lda.l $7E897D
 	cmp.b #$50
 	bne @lbl_C21003
-	.db $A9,$54,$85,$00,$A9,$07,$85,$01   ;C20FF7
+	lda #$54                                ;C20FF7
+	sta $00                                 ;C20FF9
+	lda #$07                                ;C20FFB
+	sta $01                                 ;C20FFD
 	jsl.l DisplayMessage
 @lbl_C21003:
 	jsl.l func_C62456
@@ -2081,7 +2108,12 @@ func_C228EF:
 	and.l $7E89A2
 	beq @lbl_C22958
 ;C22951
-	.db $68,$0A,$90,$02,$A9,$FF,$48
+	pla                                     ;C22951
+	asl a                                   ;C22952
+	bcc @lbl_C22957                         ;C22953
+	lda #$FF                                ;C22955
+@lbl_C22957:
+	pha                                     ;C22957
 @lbl_C22958:
 	lda.w $8988
 	beq @lbl_C22969
@@ -2370,7 +2402,10 @@ func_C22A25:
 	bit.b #$10
 	beq @lbl_C22B82
 ;C22B7A  
-	.db $84,$00,$5A,$22,$D4,$2B,$C2,$7A
+	sty $00                                 ;C22B7A
+	phy                                     ;C22B7C
+	jsl $C22BD4                             ;C22B7D
+	ply                                     ;C22B81
 @lbl_C22B82:
 	lda.l $7E87BC
 	cmp.b #$23
@@ -3028,7 +3063,10 @@ func_C22E2D:
 	jsl.l func_C35B7A
 	bra @lbl_C230D6
 @lbl_C230CE:
-	.db $E2,$20,$A9,$01,$8F,$80,$89,$7E
+	sep #$20                                ;C230CE
+	lda #$01                                ;C230D0
+	sta $7E8980                             ;C230D2
+.ACCU 16
 @lbl_C230D6:
 	sep #$20 ;A->8
 	lda.l $7E8984
@@ -3273,7 +3311,10 @@ func_C23271:
 	plp
 	rtl
 @lbl_C232B0:
-	.db $68,$A9,$A5,$85,$00,$64,$01
+	pla                                     ;C232B0
+	lda #$A5                                ;C232B1
+	sta $00                                 ;C232B3
+	stz $01                                 ;C232B5
 	jsl.l DisplayMessage
 	.db $64,$00,$28,$6B       ;C232B8  
 
@@ -3285,7 +3326,10 @@ func_C232BF:
 	lda.b wTemp00
 	bpl @lbl_C232D3
 ;C232CB
-	.db $A8,$AF,$4C,$89,$7E,$D0,$28,$98
+	tay                                     ;C232CB
+	lda $7E894C                             ;C232CC
+	.db $D0,$28   ;C232D0
+	tya                                     ;C232D2
 @lbl_C232D3:
 	clc
 	adc.l wShirenStatus.maxStrength
@@ -3309,7 +3353,10 @@ func_C232BF:
 	sta.b wTemp00
 	plp
 	rtl
-	.db $68,$A9,$A5,$85,$00,$64,$01
+	pla                                     ;C232FA
+	lda #$A5                                ;C232FB
+	sta $00                                 ;C232FD
+	stz $01                                 ;C232FF
 	jsl.l DisplayMessage
 	stz $00                                 ;C23305
 	plp                                     ;C23307
@@ -3643,7 +3690,10 @@ func_C234DF:
 	sta.b wTemp04
 	bpl @lbl_C23548
 ;C23540  
-	.db $64,$02,$64,$03,$64,$04,$80,$1A
+	stz $02                                 ;C23540
+	stz $03                                 ;C23542
+	stz $04                                 ;C23544
+	.db $80,$1A   ;C23546
 @lbl_C23548:
 	lda.b #$3F
 	cmp.b wTemp02
@@ -4273,7 +4323,10 @@ TryAddSelectedItemToInventory:
 	ply
 	lda.b wTemp00
 	bne @lbl_C23A2F
-	.db $84,$02,$A9,$C6,$85,$00,$64,$01   ;C23A21  
+	sty $02                                 ;C23A21
+	lda #$C6                                ;C23A23
+	sta $00                                 ;C23A25
+	stz $01                                 ;C23A27
 	jsl.l DisplayMessage
 	.db $80,$10  ;C23A29  
 @lbl_C23A2F:
@@ -5342,7 +5395,10 @@ func_C24167:
 	cpx.b #$15
 	bne @lbl_C241FE
 ;C241F6
-	.db $A9,$80,$8F,$A2,$89,$7E,$28,$6B
+	lda #$80                                ;C241F6
+	sta $7E89A2                             ;C241F8
+	plp                                     ;C241FC
+	rtl                                     ;C241FD
 @lbl_C241FE:
 	cpx.b #$22
 	bne @lbl_C24217
@@ -5359,8 +5415,9 @@ func_C24167:
 @lbl_C24217:
 	cpx.b #$0C
 	bne @lbl_C24225
-	.db $A9,$32,$8F,$C0,$88,$7E,$8F,$9B   ;C2421B
-	.db $89,$7E                           ;C24223
+	lda #$32                                ;C2421B
+	sta $7E88C0                             ;C2421D
+	sta $7E899B                             ;C24221
 @lbl_C24225:
 	cpx.b #$0E
 	bne @lbl_C2423E
@@ -5481,8 +5538,10 @@ func_C24167:
 @lbl_C2430C:
 	cpx.b #$1D
 	bne @lbl_C2431A
-	.db $AF,$7F,$95,$C2,$8F,$90,$86,$7E   ;C24310  
-	.db $28,$6B                           ;C24318
+	lda $C2957F                             ;C24310
+	sta $7E8690                             ;C24314
+	plp                                     ;C24318
+	rtl                                     ;C24319
 @lbl_C2431A:
 	cpx.b #$1B
 	bne @lbl_C24338
@@ -6009,7 +6068,10 @@ func_C246D2:
 	stz $01                                 ;C24706
 	jsl.l DisplayMessage
 @lbl_C2470C:
-	.db $A9,$00,$8F,$79,$89,$7E,$28,$6B
+	lda #$00                                ;C2470C
+	sta $7E8979                             ;C2470E
+	plp                                     ;C24712
+	rtl                                     ;C24713
 @lbl_C24714:
 	lda.l $7E8979
 	dec a
@@ -6368,7 +6430,10 @@ HandlePlayerActionCommand:
 	dec a
 	bne @lbl_C249A2
 ;C2499B  
-	.db $9C,$B7,$89,$64,$00,$28,$6B
+	stz $89B7                               ;C2499B
+	stz $00                                 ;C2499E
+	plp                                     ;C249A0
+	rtl                                     ;C249A1
 @lbl_C249A2:
 	stz.w $89B7
 	lda.b #$18
@@ -6389,7 +6454,10 @@ HandlePlayerActionCommand:
 	sta $00                                 ;C249C3
 	stz $01                                 ;C249C5
 	jsl.l DisplayMessage
-	.db $80,$0A,$A9,$6D,$85,$00,$64,$01
+	.db $80,$0A   ;C249CB
+	lda #$6D                                ;C249CD
+	sta $00                                 ;C249CF
+	stz $01                                 ;C249D1
 	jsl.l DisplayMessage
 	.db $64,$00,$28,$6B   ;C249CB  
 @lbl_C249DB:
@@ -6605,7 +6673,9 @@ HandlePlayerActionCommand:
 	cpy.b #$02
 	bne @lbl_C24B59
 ;C24B52  
-	.db $AC,$2C,$86,$C0,$03,$F0,$17
+	ldy $862C                               ;C24B52
+	cpy #$03                                ;C24B55
+	.db $F0,$17   ;C24B57
 @lbl_C24B59:
 	ldy.w $87D0
 	bmi @lbl_C24B6E
@@ -6772,8 +6842,12 @@ HandlePlayerActionCommand:
 	ldx.w $87BC
 	cpx.b #$2D
 	bne @lbl_C24CAB
-	.db $84,$00,$48,$8B,$22,$DE,$12,$C3   ;C24CA1  
-	.db $AB,$68                           ;C24CA9
+	sty $00                                 ;C24CA1
+	pha                                     ;C24CA3
+	phb                                     ;C24CA4
+	jsl $C312DE                             ;C24CA5
+	plb                                     ;C24CA9
+	pla                                     ;C24CAA
 @lbl_C24CAB:
 	sty.b wTemp00
 	ldx.w $8977
@@ -6896,7 +6970,11 @@ func_C24D8B:
 	dex
 	bpl @lbl_C24DA2
 ;C24D9A
-	.db $A9,$1C,$85,$00,$64,$01,$28,$60
+	lda #$1C                                ;C24D9A
+	sta $00                                 ;C24D9C
+	stz $01                                 ;C24D9E
+	plp                                     ;C24DA0
+	rts                                     ;C24DA1
 @lbl_C24DA2:
 	stz.b wTemp00
 	stx.b wTemp01
@@ -7220,7 +7298,10 @@ func_C2501C:
 	beq @lbl_C25051
 	cpx.b #$03
 	bne @lbl_C2503E
-	.db $48,$A9,$37,$01,$85,$00,$DA
+	pha                                     ;C25031
+	lda #$0137                              ;C25032
+	sta $00                                 ;C25035
+	phx                                     ;C25037
 	jsl.l DisplayMessage
 	.db $FA,$68               ;C25039  
 @lbl_C2503E:
@@ -7264,8 +7345,9 @@ func_C25056:
 	sta $02                                 ;C25082
 	pha                                     ;C25084
 	jsl.l DisplayMessage
-	.db $68,$85,$00,$22,$F4,$06   ;C25087  
-	.db $C3                               ;C2508F  
+	.db $68   ;C25088
+	sta $00                                 ;C25089
+	jsl $C306F4                             ;C2508B
 @lbl_C25090:
 	plp
 	rts
@@ -8568,8 +8650,12 @@ func_C2598A:
 	ldx #$0F                                ;C25AEB
 	stx $02                                 ;C25AED
 	jsl.l DisplayMessage
-	.db $A2,$01,$86,$00,$A2,$00,$86,$01,$28   ;C25AEC  
-	.db $6B                               ;C25AFC
+	ldx #$01                                ;C25AF3
+	stx $00                                 ;C25AF5
+	ldx #$00                                ;C25AF7
+	stx $01                                 ;C25AF9
+	plp                                     ;C25AFB
+	rtl                                     ;C25AFC
 
 func_C25AFD:
 	php
@@ -12386,7 +12472,11 @@ func_C29005:
 	lda.l wCharRemainingSleepTurns,x
 	beq @lbl_C29020
 ;C29010
-	.db $A9,$33,$85,$00,$A9,$01,$85,$01,$86,$02
+	.db $A9,$33   ;C38FF9
+	sta $00                                 ;C38FFB
+	lda #$01                                ;C38FFD
+	sta $01                                 ;C38FFF
+	stx $02                                 ;C39001
 	jsl.l DisplayMessage
 	.db $28,$6B
 @lbl_C29020:
@@ -12441,7 +12531,10 @@ func_C29082:
 	lda.l wCharIsSealed,x
 	cmp.b #$02
 	bne @lbl_C2909A
-	.db $A9,$81,$85,$00,$A9,$06,$85,$01   ;C2908C
+	.db $A9,$81   ;C39075
+	sta $00                                 ;C39077
+	lda #$06                                ;C39079
+	sta $01                                 ;C3907B
 	jsl.l DisplayMessage
 	.db $28,$6B           ;C29094  
 @lbl_C2909A:
@@ -14839,7 +14932,11 @@ func_C2D8F0:
 	beq @lbl_C2D92A
 	bcc @lbl_C2D903
 ;C2D8FB
-	.db $48,$A5,$01,$85,$00,$68,$85,$01
+	.db $48   ;C3A20B
+	lda $01                                 ;C3A20C
+	sta $00                                 ;C3A20E
+	pla                                     ;C3A210
+	sta $01                                 ;C3A211
 @lbl_C2D903:
 	lda.b wTemp01
 	sec
