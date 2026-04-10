@@ -1123,7 +1123,9 @@ StrengthHerbUseEffect:
 	pha                                     ;C310A8
 	jsl.l DisplayMessage
 	.db $68,$85,$02,$A5,$02   ;C310A2  
-	.db $85,$00,$22,$71,$32,$C2,$60   ;C310B2
+	sta $00                                 ;C310B2
+	jsl $C23271                             ;C310B4
+	rts                                     ;C310B8
 HappinessHerbUseEffect:
 	sep #$20                                ;C310B9
 	lda #$13                                ;C310BB
@@ -1722,7 +1724,10 @@ SightHerbUseEffect:
 	jsl.l func_C240A7
 	jsl.l func_C35FA2
 	rts
-	.db $C2,$30,$A9,$4B,$00,$85,$00
+	rep #$30                                ;C31579
+	lda #$004B                              ;C3157B
+	sta $00                                 ;C3157E
+.INDEX 8
 	jsl.l DisplayMessage
 	lda #$07D0                              ;C31585
 	sta $00                                 ;C31588
@@ -2012,7 +2017,10 @@ TrapScrollUseEffect:
 	jsl.l func_C35FA2                   ;C317EB
 @lbl_C317EF:
 	rts                                 ;C317EF
-	.db $C2,$20,$A9,$97,$00,$85,$00
+	rep #$20                                ;C317EF
+	lda #$0097                              ;C317F1
+	sta $00                                 ;C317F4
+.ACCU 8
 	jsl.l DisplayMessage
 	jsl $C27FBD                             ;C317FA
 	rts                                     ;C317FE
@@ -2051,7 +2059,10 @@ LightScrollUseEffect:
 	jsl.l func_C285A2
 	lda.b wTemp00
 	beq @lbl_C31862
-	.db $C2,$20,$A9,$B9,$00,$85,$00
+	rep #$20                                ;C31857
+	lda #$00B9                              ;C31859
+	sta $00                                 ;C3185C
+.ACCU 8
 	jsl.l DisplayMessage
 @lbl_C31862:
 	rts
@@ -6206,8 +6217,10 @@ func_C335FE:
 	lda #$01                                ;C337DB
 	sta $02                                 ;C337DD
 	jsl.l _SetEvent
-	.db $A9,$87,$85,$00,$A9   ;C337D8
-	.db $03,$85,$02
+	lda #$87                                ;C337E3
+	sta $00                                 ;C337E5
+	lda #$03                                ;C337E7
+	sta $02                                 ;C337E9
 	jsl.l _SetEvent
 	ply                                     ;C337EF
 	rts                                     ;C337F0
