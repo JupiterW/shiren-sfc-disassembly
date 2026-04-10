@@ -376,7 +376,10 @@ func_C10189:
 	stz $02                                 ;C103D8
 .INDEX 16
 	jsl.l _SetEvent
-	.db $C2,$20,$A9,$A8,$06,$85,$00
+	rep #$20                                ;C103DE
+	lda #$06A8                              ;C103E0
+	sta $00                                 ;C103E3
+.ACCU 8
 	jsl.l DisplayMessage
 	rts                                     ;C103E9
 	rep #$20                                ;C103EA
