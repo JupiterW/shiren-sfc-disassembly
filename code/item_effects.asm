@@ -1168,6 +1168,7 @@ MisfortuneHerbUseEffect:
 	sep #$20                                ;C310EC
 	lda #$13                                ;C310EE
 	sta $00                                 ;C310F0
+MisfortuneHerbThrowEffect:
 	sep #$20                                ;C310F2
 	lda #$FD                                ;C310F4
 	sta $01                                 ;C310F6
@@ -6479,10 +6480,11 @@ DragonHerbThrowEffect:
 MedicinalHerbThrowEffect:
 	sep #$30                                ;C339B1
 	lda #$19                                ;C339B3
-	bra @lbl_C339BB                         ;C339B5
+	bra lbl_C339BB                         ;C339B5
+RestorativeHerbThrowEffect:
 	sep #$30                                ;C339B7
 	lda #$64                                ;C339B9
-@lbl_C339BB:
+lbl_C339BB:
 	pha                                     ;C339BB
 	ldx $00                                 ;C339BC
 	ldy $01                                 ;C339BE
@@ -6491,17 +6493,17 @@ MedicinalHerbThrowEffect:
 	plx                                     ;C339C5
 	lda $03                                 ;C339C6
 	cmp #$02                                ;C339C8
-	beq @lbl_C339ED                         ;C339CA
+	beq lbl_C339ED                         ;C339CA
 	cmp #$11                                ;C339CC
-	beq @lbl_C339ED                         ;C339CE
+	beq lbl_C339ED                         ;C339CE
 	cmp #$13                                ;C339D0
-	beq @lbl_C339ED                         ;C339D2
+	beq lbl_C339ED                         ;C339D2
 	cmp #$0E                                ;C339D4
-	beq @lbl_C339ED                         ;C339D6
+	beq lbl_C339ED                         ;C339D6
 	cmp #$21                                ;C339D8
-	beq @lbl_C339ED                         ;C339DA
+	beq lbl_C339ED                         ;C339DA
 	cmp #$18                                ;C339DC
-	beq @lbl_C339ED                         ;C339DE
+	beq lbl_C339ED                         ;C339DE
 	pla                                     ;C339E0
 	sta $02                                 ;C339E1
 	stz $03                                 ;C339E3
@@ -6509,7 +6511,7 @@ MedicinalHerbThrowEffect:
 	jsl $C23209                             ;C339E7
 	rts                                     ;C339EB
 	rts                                     ;C339EC
-@lbl_C339ED:
+lbl_C339ED:
 	pla                                     ;C339ED
 	sta $02                                 ;C339EE
 	stx $00                                 ;C339F0
@@ -6524,9 +6526,9 @@ MedicinalHerbThrowEffect:
 	plx                                     ;C33A04
 	lda $03                                 ;C33A05
 	cmp #$12                                ;C33A07
-	beq @lbl_C33A0C                         ;C33A09
+	beq lbl_C33A0C                         ;C33A09
 	rts                                     ;C33A0B
-@lbl_C33A0C:
+lbl_C33A0C:
 	lda #$32                                ;C33A0C
 	sta $02                                 ;C33A0E
 	stx $00                                 ;C33A10
