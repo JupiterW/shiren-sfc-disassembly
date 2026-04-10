@@ -2055,12 +2055,44 @@ func_C22C1C:
 @lbl_C22C9A:
 	plp
 	rtl
-	.db $E2,$30,$A9,$00,$9F,$95,$87,$7E,$BF,$81,$87,$7E,$9F,$D1,$87,$7E   ;C22C9C
-	.db $BF,$71,$88,$7E,$9F,$E5,$87,$7E,$A4,$01,$DA,$5A,$22,$B3,$77,$C2   ;C22CAC  
-	.db $7A,$FA,$A5,$00,$C9,$01,$D0,$0E,$A5,$01,$9F,$DD,$85,$7E,$86,$00   ;C22CBC
-	.db $84,$01,$22,$15,$14,$C2,$28,$6B,$08,$E2,$30,$A6,$00,$BF,$F1,$85   ;C22CCC  
-	.db $7E,$F0,$10,$22,$5F,$F6,$C3,$A5,$00,$89,$03,$D0,$06,$86,$00,$22   ;C22CDC  
-	.db $6C,$81,$C2,$28,$6B               ;C22CEC  
+	sep #$30                                ;C22C9C
+	lda #$00                                ;C22C9E
+	sta $7E8795,x                           ;C22CA0
+	lda $7E8781,x                           ;C22CA4
+	sta $7E87D1,x                           ;C22CA8
+	lda $7E8871,x                           ;C22CAC
+	sta $7E87E5,x                           ;C22CB0
+	ldy $01                                 ;C22CB4
+	phx                                     ;C22CB6
+	phy                                     ;C22CB7
+	jsl $C277B3                             ;C22CB8
+	ply                                     ;C22CBC
+	plx                                     ;C22CBD
+	lda $00                                 ;C22CBE
+	cmp #$01                                ;C22CC0
+	bne @lbl_C22CD2                         ;C22CC2
+	lda $01                                 ;C22CC4
+	sta $7E85DD,x                           ;C22CC6
+	stx $00                                 ;C22CCA
+	sty $01                                 ;C22CCC
+	jsl $C21415                             ;C22CCE
+@lbl_C22CD2:
+	plp                                     ;C22CD2
+	rtl                                     ;C22CD3
+	php                                     ;C22CD4
+	sep #$30                                ;C22CD5
+	ldx $00                                 ;C22CD7
+	lda $7E85F1,x                           ;C22CD9
+	beq @lbl_C22CEF                         ;C22CDD
+	jsl $C3F65F                             ;C22CDF
+	lda $00                                 ;C22CE3
+	bit #$03                                ;C22CE5
+	bne @lbl_C22CEF                         ;C22CE7
+	stx $00                                 ;C22CE9
+	jsl $C2816C                             ;C22CEB
+@lbl_C22CEF:
+	plp                                     ;C22CEF
+	rtl                                     ;C22CF0
 
 func_C22CF1:
 	php
@@ -3016,12 +3048,44 @@ func_C23579:
 	ldy.b wTemp00
 	cpy.b #$13
 	bne @lbl_C235D9
-	.db $A5,$01,$30,$22,$18,$79,$2D,$86,$C9,$46,$30,$02,$A9,$46,$AA,$BF   ;C23586  
-	.db $03,$CA,$C2,$99,$41,$86,$BF,$4A,$CA,$C2,$99,$55,$86,$BF,$91,$CA   ;C23596  
-	.db $C2,$99,$69,$86,$80,$27,$18,$79,$2D,$86,$C9,$01,$10,$02,$A9,$01   ;C235A6
-	.db $AA,$BF,$04,$CA,$C2,$38,$E9,$01,$99,$41,$86,$BF,$4B,$CA,$C2,$E9   ;C235B6
-	.db $00,$99,$55,$86,$BF,$92,$CA,$C2,$E9,$00,$99,$69,$86,$22,$84,$36   ;C235C6
-	.db $C2,$28,$6B                       ;C235D6
+	lda $01                                 ;C23586
+	bmi @lbl_C235AC                         ;C23588
+	clc                                     ;C2358A
+	adc $862D,y                             ;C2358B
+	cmp #$46                                ;C2358E
+	bmi @lbl_C23594                         ;C23590
+	lda #$46                                ;C23592
+@lbl_C23594:
+	tax                                     ;C23594
+	lda $C2CA03,x                           ;C23595
+	sta $8641,y                             ;C23599
+	lda $C2CA4A,x                           ;C2359C
+	sta $8655,y                             ;C235A0
+	lda $C2CA91,x                           ;C235A3
+	sta $8669,y                             ;C235A7
+	bra @lbl_C235D3                         ;C235AA
+@lbl_C235AC:
+	clc                                     ;C235AC
+	adc $862D,y                             ;C235AD
+	cmp #$01                                ;C235B0
+	bpl @lbl_C235B6                         ;C235B2
+	lda #$01                                ;C235B4
+@lbl_C235B6:
+	tax                                     ;C235B6
+	lda $C2CA04,x                           ;C235B7
+	sec                                     ;C235BB
+	sbc #$01                                ;C235BC
+	sta $8641,y                             ;C235BE
+	lda $C2CA4B,x                           ;C235C1
+	sbc #$00                                ;C235C5
+	sta $8655,y                             ;C235C7
+	lda $C2CA92,x                           ;C235CA
+	sbc #$00                                ;C235CE
+	sta $8669,y                             ;C235D0
+@lbl_C235D3:
+	jsl $C23684                             ;C235D3
+	plp                                     ;C235D7
+	rtl                                     ;C235D8
 @lbl_C235D9:
 	sep #$30 ;AXY->8
 	lda.w wCharType,y
@@ -6318,12 +6382,45 @@ func_C25152:
 @lbl_C253C3:
 	cmp.b #$13
 	bne @lbl_C2541D
-	.db $A6,$00,$DA,$A9,$13,$85,$00,$22,$91,$15,$C2,$FA,$30,$45,$BF,$35   ;C253C7  
-	.db $88,$7E,$D0,$3F,$BF,$59,$87,$7E,$C9,$FE,$F0,$37,$C9,$00,$30,$08   ;C253D7
-	.db $85,$00,$DA,$22,$F4,$06,$C3,$FA,$A9,$FE,$9F,$59,$87,$7E,$DA,$20   ;C253E7  
-	.db $55,$59,$FA,$A5,$00,$30,$1C,$AF,$F0,$85,$7E,$85,$01,$BF,$B5,$85   ;C253F7  
-	.db $7E,$85,$02,$BF,$C9,$85,$7E,$85,$03,$A9,$13,$85,$04,$64,$05,$22   ;C25407  
-	.db $82,$33,$C3,$64,$00,$60           ;C25417  
+	ldx $00                                 ;C253C7
+	phx                                     ;C253C9
+	lda #$13                                ;C253CA
+	sta $00                                 ;C253CC
+	jsl $C21591                             ;C253CE
+	plx                                     ;C253D2
+	bmi @lbl_C2541A                         ;C253D3
+	lda $7E8835,x                           ;C253D5
+	bne @lbl_C2541A                         ;C253D9
+	lda $7E8759,x                           ;C253DB
+	cmp #$FE                                ;C253DF
+	beq @lbl_C2541A                         ;C253E1
+	cmp #$00                                ;C253E3
+	bmi @lbl_C253EF                         ;C253E5
+	sta $00                                 ;C253E7
+	phx                                     ;C253E9
+	jsl $C306F4                             ;C253EA
+	plx                                     ;C253EE
+@lbl_C253EF:
+	lda #$FE                                ;C253EF
+	sta $7E8759,x                           ;C253F1
+	phx                                     ;C253F5
+	jsr $5955                               ;C253F6
+	plx                                     ;C253F9
+	lda $00                                 ;C253FA
+	bmi @lbl_C2541A                         ;C253FC
+	lda $7E85F0                             ;C253FE
+	sta $01                                 ;C25402
+	lda $7E85B5,x                           ;C25404
+	sta $02                                 ;C25408
+	lda $7E85C9,x                           ;C2540A
+	sta $03                                 ;C2540E
+	lda #$13                                ;C25410
+	sta $04                                 ;C25412
+	stz $05                                 ;C25414
+	jsl $C33382                             ;C25416
+@lbl_C2541A:
+	stz $00                                 ;C2541A
+	rts                                     ;C2541C
 @lbl_C2541D:
 	cmp.b #$1C
 	bne @lbl_C2545B
@@ -9068,12 +9165,51 @@ func_C28451:
 	sta.l $7E89A8
 	plp
 	rtl
-	.db $08,$E2,$20,$A5,$00,$8F,$8A,$89,$7E,$28,$6B,$08,$E2,$20,$A5,$00   ;C2845C
-	.db $8F,$8B,$89,$7E,$28,$6B,$08,$E2,$20,$A9,$01,$8F,$B6,$89,$7E,$28   ;C2846C  
-	.db $6B,$08,$E2,$20,$A5,$00,$8F,$8C,$89,$7E,$28,$6B,$08,$E2,$20,$AF   ;C2847C
-	.db $8D,$89,$7E,$09,$01,$8F,$8D,$89,$7E,$28,$6B,$08,$E2,$20,$A5,$00   ;C2848C  
-	.db $F0,$08,$AF,$8D,$89,$7E,$09,$02,$80,$06,$AF,$8D,$89,$7E,$29,$FD   ;C2849C  
-	.db $8F,$8D,$89,$7E,$28,$6B           ;C284AC  
+	.db $08   ;C38459
+	sep #$20                                ;C3845A
+	lda $00                                 ;C3845C
+	sta $7E898A                             ;C3845E
+	plp                                     ;C38462
+	rtl                                     ;C38463
+	php                                     ;C38464
+	sep #$20                                ;C38465
+	lda $00                                 ;C38467
+	sta $7E898B                             ;C38469
+	plp                                     ;C3846D
+	rtl                                     ;C3846E
+	php                                     ;C3846F
+	sep #$20                                ;C38470
+	lda #$01                                ;C38472
+	sta $7E89B6                             ;C38474
+	plp                                     ;C38478
+	rtl                                     ;C38479
+	php                                     ;C3847A
+	sep #$20                                ;C3847B
+	lda $00                                 ;C3847D
+	sta $7E898C                             ;C3847F
+	plp                                     ;C38483
+	rtl                                     ;C38484
+	php                                     ;C38485
+	sep #$20                                ;C38486
+	lda $7E898D                             ;C38488
+	ora #$01                                ;C3848C
+	sta $7E898D                             ;C3848E
+	plp                                     ;C38492
+	rtl                                     ;C38493
+	php                                     ;C38494
+	sep #$20                                ;C38495
+	lda $00                                 ;C38497
+	beq @lbl_C384A3                         ;C38499
+	lda $7E898D                             ;C3849B
+	ora #$02                                ;C3849F
+	bra @lbl_C384A9                         ;C384A1
+@lbl_C384A3:
+	lda $7E898D                             ;C384A3
+	and #$FD                                ;C384A7
+@lbl_C384A9:
+	sta $7E898D                             ;C384A9
+	plp                                     ;C384AD
+	rtl                                     ;C384AE
 
 func_C284B2:
 	php
