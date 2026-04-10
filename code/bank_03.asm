@@ -2406,7 +2406,7 @@ ItemThrowEffectFunctionTable:
 	.dw InvisibilityHerbThrowEffect-1 ;InvisibilityHerb
 	.dw BitterHerbThrowEffect-1 ;BitterHerb
 	.dw MisfortuneHerbThrowEffect-1 ;MisfortuneHerb
-	.dw $1157 ;IllLuckHerb
+	.dw IllLuckHerbThrowEffect-1 ;IllLuckHerb
 	.dw $0A19 ;KignyHerb
 	.dw $3877 ;AmnesiaHerb
 	.dw $3877 ;36

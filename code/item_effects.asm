@@ -1224,6 +1224,7 @@ IllLuckHerbUseEffect:
 	sep #$20                                ;C31152
 	lda #$13                                ;C31154
 	sta $00                                 ;C31156
+IllLuckHerbThrowEffect:
 	sep #$30                                ;C31158
 	ldx $00                                 ;C3115A
 	phx                                     ;C3115C
