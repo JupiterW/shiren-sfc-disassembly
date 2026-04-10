@@ -12561,8 +12561,8 @@ func_C29005:
 	sta $01                                 ;C29016
 	stx $02                                 ;C29018
 	jsl.l DisplayMessage
-	plp                                     ;C39008
-	rtl                                     ;C39009
+	plp                                     ;C2901E
+	rtl                                     ;C2901F
 @lbl_C29020:
 	lda.l wCharIsAwake,x
 	and.b #$FD
@@ -12620,8 +12620,8 @@ func_C29082:
 	lda #$06                                ;C29090
 	sta $01                                 ;C29092
 	jsl.l DisplayMessage
-	plp                                     ;C39082
-	rtl                                     ;C39083
+	plp                                     ;C29098
+	rtl                                     ;C29099
 @lbl_C2909A:
 	lda.l $7E87D0
 	cmp.b #$0A
