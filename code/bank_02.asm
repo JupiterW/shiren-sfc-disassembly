@@ -2535,9 +2535,23 @@ func_C22E2D:
 @lbl_C22EE8:
 	lda.w $89B4
 	beq @lbl_C22F12
-	.db $3A,$8D,$B4,$89,$A9,$00,$38,$ED,$B5,$89,$F0,$19,$85,$02,$A9,$FF   ;C22EED
-	.db $85,$03,$A9,$13,$85,$00,$A9,$DD,$8F,$7D,$89,$7E,$8B,$22,$09,$32   ;C22EFD  
-	.db $C2,$AB,$9C,$77,$89               ;C22F0D
+	dec a                                   ;C22EED
+	sta $89B4                               ;C22EEE
+	lda #$00                                ;C22EF1
+	sec                                     ;C22EF3
+	sbc $89B5                               ;C22EF4
+	.db $F0,$19   ;C22EF7
+	sta $02                                 ;C22EF9
+	lda #$FF                                ;C22EFB
+	sta $03                                 ;C22EFD
+	lda #$13                                ;C22EFF
+	sta $00                                 ;C22F01
+	lda #$DD                                ;C22F03
+	sta $7E897D                             ;C22F05
+	phb                                     ;C22F09
+	jsl $C23209                             ;C22F0A
+	plb                                     ;C22F0E
+	stz $8977                               ;C22F0F
 @lbl_C22F12:
 	lda.w $86B8
 	beq @lbl_C22F38
@@ -3108,9 +3122,25 @@ func_C233BE:
 	plp
 	rtl
 @lbl_C233E4:
-	.db $C9,$64,$00,$90,$0A,$C0,$C8,$00,$90,$F4,$A9,$44,$00,$80,$15,$C9   ;C233E4
-	.db $04,$00,$90,$0A,$C0,$64,$00,$90,$E5,$A9,$45,$00,$80,$06,$0A,$AA   ;C233F4  
-	.db $BF,$18,$34,$C2,$85,$00
+	cmp #$0064                              ;C233E4
+	bcc @lbl_C233F3                         ;C233E7
+	cpy #$00C8                              ;C233E9
+	.db $90,$F4   ;C233EC
+	lda #$0044                              ;C233EE
+	bra @lbl_C23408                         ;C233F1
+@lbl_C233F3:
+	cmp #$0004                              ;C233F3
+	bcc @lbl_C23402                         ;C233F6
+	cpy #$0064                              ;C233F8
+	.db $90,$E5   ;C233FB
+	lda #$0045                              ;C233FD
+	bra @lbl_C23408                         ;C23400
+@lbl_C23402:
+	asl a                                   ;C23402
+	tax                                     ;C23403
+	lda $C23418,x                           ;C23404
+@lbl_C23408:
+	sta $00                                 ;C23408
 	jsl.l DisplayMessage
 	.db $E2,$20,$A9,$00,$8F,$77   ;C23404  
 	.db $89,$7E,$28,$6B,$00,$00,$48,$00   ;C23414
