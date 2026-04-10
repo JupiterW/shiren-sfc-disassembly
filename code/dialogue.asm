@@ -2365,11 +2365,36 @@ func_C124BB:
 	ldy #$079A                              ;C126DB
 	sty $00                                 ;C126DE
 	jsl.l DisplayMessage
-	.db $22,$05,$24,$C6,$A3   ;C126D9  
-	.db $03,$1A,$1A,$1A,$85,$00,$A0,$81,$2A,$84,$02,$A9,$C1,$85,$04,$22   ;C126E9  
-	.db $8C,$93,$C2,$A3,$03,$1A,$85,$00,$A0,$88,$2A,$84,$02,$A9,$C1,$85   ;C126F9  
-	.db $04,$22,$8C,$93,$C2,$A3,$03,$1A,$1A,$85,$00,$A0,$8E,$2A,$84,$02   ;C12709  
-	.db $A9,$C1,$85,$04,$22,$8C,$93,$C2,$A0,$9B,$07,$84,$00
+	jsl $C62405                             ;C126E4
+	lda $03,s                               ;C126E8
+	inc a                                   ;C126EA
+	inc a                                   ;C126EB
+	inc a                                   ;C126EC
+	sta $00                                 ;C126ED
+	ldy #$2A81                              ;C126EF
+	sty $02                                 ;C126F2
+	lda #$C1                                ;C126F4
+	sta $04                                 ;C126F6
+	jsl $C2938C                             ;C126F8
+	lda $03,s                               ;C126FC
+	inc a                                   ;C126FE
+	sta $00                                 ;C126FF
+	ldy #$2A88                              ;C12701
+	sty $02                                 ;C12704
+	lda #$C1                                ;C12706
+	sta $04                                 ;C12708
+	jsl $C2938C                             ;C1270A
+	lda $03,s                               ;C1270E
+	inc a                                   ;C12710
+	inc a                                   ;C12711
+	sta $00                                 ;C12712
+	ldy #$2A8E                              ;C12714
+	sty $02                                 ;C12717
+	lda #$C1                                ;C12719
+	sta $04                                 ;C1271B
+	jsl $C2938C                             ;C1271D
+	ldy #$079B                              ;C12721
+	sty $00                                 ;C12724
 	jsl.l DisplayMessage
 	.db $A0,$9C,$07,$84,$00
 	jsl.l DisplayMessage
