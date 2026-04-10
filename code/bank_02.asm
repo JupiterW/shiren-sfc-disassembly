@@ -2020,9 +2020,18 @@ func_C228EF:
 	lda.w wCharType,y
 	cmp.b #$18
 	bne @lbl_C229A6
-	.db $E0,$13,$D0,$0E,$AF,$BA,$89,$7E,$F0,$08,$AF,$A2,$89,$7E,$89,$02   ;C2298C
-	.db $D0,$08,$A3,$01,$F0,$04,$A9,$01   ;C2299C  
-	.db $83,$01                           ;C229A4  
+	cpx #$13                                ;C2298C
+	bne @lbl_C2299E                         ;C2298E
+	lda $7E89BA                             ;C22990
+	beq @lbl_C2299E                         ;C22994
+	lda $7E89A2                             ;C22996
+	bit #$02                                ;C2299A
+	.db $D0,$08   ;C2299C
+@lbl_C2299E:
+	lda $01,s                               ;C2299E
+	.db $F0,$04   ;C229A0
+	lda #$01                                ;C229A2
+	sta $01,s                               ;C229A4
 @lbl_C229A6:
 	pla
 	pha
