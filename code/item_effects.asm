@@ -1036,7 +1036,11 @@ AntidoteHerbUseEffect:
 	sbc.b wTemp00
 	beq @lbl_C31021
 ;C31011  
-	.db $85,$00,$22,$71,$32,$C2,$A9,$9D,$85,$00,$64,$01
+	sta $00                                 ;C31011
+	jsl $C23271                             ;C31013
+	lda #$9D                                ;C31017
+	sta $00                                 ;C31019
+	stz $01                                 ;C3101B
 	jsl.l DisplayMessage
 @lbl_C31021:
 	rts
@@ -2697,8 +2701,12 @@ BlessingScrollUseEffect:
 	.db $60                               ;C31DFA
 	jsl.l func_C240BC
 	rts
-	.db $E2,$20,$A9,$06,$85,$01,$22,$80   ;C31E00
-	.db $40,$C2,$60,$60                   ;C31E08
+	sep #$20                                ;C31E00
+	lda #$06                                ;C31E02
+	sta $01                                 ;C31E04
+	jsl $C24080                             ;C31E06
+	rts                                     ;C31E0A
+	rts                                     ;C31E0B
 KnockbackStaffUseEffect:
 	jsl.l func_C2444B
 	rts
@@ -3349,8 +3357,11 @@ HandsFullScrollUseEffect:
 	.db $A9,$0B,$00,$85,$00,$A9,$03,$00   ;C3230C  
 	.db $85,$02
 	jsl.l DisplayMessage
-	.db $60,$C2,$20,$22,$FB,$25,$C3,$A9,$76,$00   ;C3231C  
-	.db $85,$00
+	rts                                     ;C32322
+	rep #$20                                ;C32323
+	jsl $C325FB                             ;C32325
+	lda #$0076                              ;C32329
+	sta $00                                 ;C3232C
 	jsl.l DisplayMessage
 	.db $A9,$0A,$00,$85,$00,$A9,$01,$00,$85,$02   ;C3232C  
 	jsl.l DisplayMessage
@@ -3431,8 +3442,11 @@ HandsFullScrollUseEffect:
 	lda #$0077                              ;C323F1
 	sta $00                                 ;C323F4
 	jsl.l DisplayMessage
-	.db $60,$C2   ;C323EC  
-	.db $20,$22,$A2,$65,$C3,$A9,$71,$00,$85,$00
+	rts                                     ;C323FA
+	rep #$20                                ;C323FB
+	jsl $C365A2                             ;C323FD
+	lda #$0071                              ;C32401
+	sta $00                                 ;C32404
 	jsl.l DisplayMessage
 	.db $60,$C2   ;C323FC  
 	.db $20,$22,$89,$0E,$C2,$A9,$78,$00,$85,$00
