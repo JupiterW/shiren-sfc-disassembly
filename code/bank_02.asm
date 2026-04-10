@@ -4488,9 +4488,26 @@ HandleContainedItemSelectionAction:
 	ply
 	plx
 	jmp.w func_C23E5F
-	.db $C9,$20,$F0,$03,$4C,$71,$3E,$86,$00,$84,$01,$DA,$5A,$22,$01,$3B   ;C23E3A
-	.db $C3,$7A,$FA,$A5,$00,$8F,$6E,$89,$7E,$A9,$1F,$85,$00,$DA,$5A,$22   ;C23E4A  
-	.db $71,$46,$C2,$7A,$FA               ;C23E5A  
+	cmp #$20                                ;C23E3A
+	beq @lbl_C23E41                         ;C23E3C
+	jmp $3E71                               ;C23E3E
+@lbl_C23E41:
+	stx $00                                 ;C23E41
+	sty $01                                 ;C23E43
+	phx                                     ;C23E45
+	phy                                     ;C23E46
+	jsl $C33B01                             ;C23E47
+	ply                                     ;C23E4B
+	plx                                     ;C23E4C
+	lda $00                                 ;C23E4D
+	sta $7E896E                             ;C23E4F
+	lda #$1F                                ;C23E53
+	sta $00                                 ;C23E55
+	phx                                     ;C23E57
+	phy                                     ;C23E58
+	jsl $C24671                             ;C23E59
+	ply                                     ;C23E5D
+	plx                                     ;C23E5E
 
 func_C23E5F:
 	lda.l $7E896E
