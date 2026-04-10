@@ -419,7 +419,8 @@ ExecuteSelectedItemActionByCategory:
 	cmp.b #$06
 	bne @lbl_C30B55
 ;C30B51
-	.db $A9,$AD,$85,$00
+	lda #$AD                                ;C30B51
+	sta $00                                 ;C30B53
 @lbl_C30B55:
 	stz.b wTemp01
 	sty.b wTemp02
@@ -617,10 +618,7 @@ func_C30BD3:
 	tax                                     ;C30CC2
 	lda $01,s                               ;C30CC3
 	ora #$80                                ;C30CC5
-	.db $8F   ;C30CC7
-	.db $5E   ;C30CC8
-	.db $93   ;C30CC9
-	.db $7E   ;C30CCA
+	sta $7E935E                             ;C30CC7
 	txa                                     ;C30CCB
 	sta $01,s                               ;C30CCC
 @lbl_C30CCE:
@@ -796,7 +794,9 @@ func_C30D11:
 	phy                                     ;C30E03
 	phb                                     ;C30E04
 	jsl.l DisplayMessage
-	.db $AB,$7A,$FA           ;C30E06  
+	plb                                     ;C30E08
+	ply                                     ;C30E09
+	plx                                     ;C30E0A
 @lbl_C30E0C:
 	bra @lbl_C30E3C
 @lbl_C30E0E:
@@ -1428,13 +1428,14 @@ func_C312FF:
 	jsr.w func_C328E9
 	jsr.w AntidoteHerbUseEffect
 	rtl
-	.db $20,$0A,$13,$6B                   ;C31306  
+	jsr $130A                               ;C31306
+	rtl                                     ;C31309
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
 	cpx.b #$13
 	bne @lbl_C31315
 ;C31312  
-	.db $4C,$EF,$11
+	jmp $11EF                               ;C31312
 @lbl_C31315:
 	phx
 	jsl.l func_C21128
@@ -1836,8 +1837,7 @@ SpecialOnigiriUseEffect:
 	tax                                     ;C31643
 	rep #$20                                ;C31644
 	jmp ($1649,x)                           ;C31646
-	.db $57   ;C31649
-	.db $16   ;C3164A
+	eor [$16],y                             ;C31649
 	.db $6D   ;C3164B
 	.db $16   ;C3164C
 	sta $16,s                               ;C3164D
@@ -2222,8 +2222,7 @@ func_C31959:
 	jsr $1959                               ;C31981
 	lda $00                                 ;C31984
 	ply                                     ;C31986
-	.db $C4   ;C31987
-	.db $00   ;C31988
+	cpy $00                                 ;C31987
 	.db $D0,$0B   ;C31989
 	lda #$5C                                ;C3198B
 	sta $00                                 ;C3198D
@@ -3290,7 +3289,7 @@ NeedScrollUseEffect:
 	ora.b wTemp07
 	bne @lbl_C321BD
 ;C321BA  
-	.db $4C,$AE,$15
+	jmp $15AE                               ;C321BA
 @lbl_C321BD:
 	lda.b #$13
 	sta.b wTemp00
@@ -4074,10 +4073,8 @@ JarUseEffect:
 	lda $8E0C,y                             ;C327E3
 	cmp #$FF                                ;C327E6
 	bne @lbl_C327E2                         ;C327E8
-	.db $8A   ;C327EA
-	.db $99   ;C327EB
-	.db $0C   ;C327EC
-	.db $8E   ;C327ED
+	txa                                     ;C327EA
+	sta $8E0C,y                             ;C327EB
 	ply                                     ;C327EE
 	lda $8C8C,y                             ;C327EF
 	beq @lbl_C3283B                         ;C327F2
@@ -4127,10 +4124,8 @@ JarUseEffect:
 	lda $8E0C,y                             ;C3283D
 	cmp #$FF                                ;C32840
 	bne @lbl_C3283C                         ;C32842
-	.db $8A   ;C32844
-	.db $99   ;C32845
-	.db $0C   ;C32846
-	.db $8E   ;C32847
+	txa                                     ;C32844
+	sta $8E0C,y                             ;C32845
 	rts                                     ;C32848
 	sep #$30                                ;C32849
 	lda $8C8C,y                             ;C3284B
@@ -4511,7 +4506,9 @@ TryPrepareSelectedItemForJarInsertion:
 	lda #$00C6                              ;C32B2D
 	sta $00                                 ;C32B30
 	jsl.l DisplayMessage
-	.db $64,$00,$28,$60
+	stz $00                                 ;C32B36
+	plp                                     ;C32B38
+	rts                                     ;C32B39
 @lbl_C32B3A:
 	stx.b wTemp00
 	phx
@@ -4727,7 +4724,9 @@ TryClearAssignedCategoryItem:
 	stz $01                                 ;C32CA2
 	sty $02                                 ;C32CA4
 	jsl.l DisplayMessage
-	.db $64,$00,$28,$6B
+	stz $00                                 ;C32CAA
+	plp                                     ;C32CAC
+	rtl                                     ;C32CAD
 @lbl_C32CAE:
 	lda.w wItemType,y
 	stz.b wTemp00
@@ -5124,10 +5123,8 @@ func_C32CFE:
 	jsl $012301                             ;C32FAE
 	bit $01                                 ;C32FB2
 	and $01                                 ;C32FB4
-	.db $26   ;C32FB6
-	.db $01   ;C32FB7
-	.db $27   ;C32FB8
-	.db $01   ;C32FB9
+	rol $01                                 ;C32FB6
+	and [$01]                               ;C32FB8
 	plp                                     ;C32FBA
 	.db $01   ;C32FBB
 	and #$01                                ;C32FBC
@@ -5231,7 +5228,8 @@ func_C3303C:
 	bit.b #$20
 	beq @lbl_C33066
 ;C33062
-	.db $A9,$01,$83,$04
+	lda #$01                                ;C33062
+	sta $04,s                               ;C33064
 @lbl_C33066:
 	ply
 	sty.b wTemp02
