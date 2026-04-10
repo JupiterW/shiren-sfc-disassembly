@@ -6078,8 +6078,11 @@ func_C335FE:
 	lda #$01                                ;C3374B
 	sta $02                                 ;C3374D
 	jsl.l _SetEvent
-	.db $22,$05,$24,$C6,$C2   ;C33748  
-	.db $10,$A2,$A3,$06,$86,$00
+	jsl $C62405                             ;C33753
+	rep #$10                                ;C33757
+	ldx #$06A3                              ;C33759
+	stx $00                                 ;C3375C
+.INDEX 8
 	jsl.l DisplayMessage
 	.db $A2,$03,$09,$86,$00,$68   ;C33758  
 	.db $85,$02
