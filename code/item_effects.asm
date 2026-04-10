@@ -684,8 +684,13 @@ func_C30D11:
 	beq @lbl_C30D55
 	.db $A9,$53,$85,$00,$64,$01
 	jsl.l DisplayMessage
-	.db $68,$68,$68,$A9,$01,$85   ;C30D42
-	.db $00,$28,$6B                       ;C30D52
+	pla                                     ;C30D4C
+	pla                                     ;C30D4D
+	pla                                     ;C30D4E
+	lda #$01                                ;C30D4F
+	sta $00                                 ;C30D51
+	plp                                     ;C30D53
+	rtl                                     ;C30D54
 @lbl_C30D55:
 	sty.b wTemp00
 	phx
@@ -3391,8 +3396,10 @@ HandsFullScrollUseEffect:
 	lda #$0076                              ;C3230B
 	sta $00                                 ;C3230E
 	jsl.l DisplayMessage
-	.db $A9,$0B,$00,$85,$00,$A9,$03,$00   ;C3230C  
-	.db $85,$02
+	lda #$000B                              ;C32314
+	sta $00                                 ;C32317
+	lda #$0003                              ;C32319
+	sta $02                                 ;C3231C
 	jsl.l DisplayMessage
 	rts                                     ;C32322
 	rep #$20                                ;C32323
@@ -3400,7 +3407,10 @@ HandsFullScrollUseEffect:
 	lda #$0076                              ;C32329
 	sta $00                                 ;C3232C
 	jsl.l DisplayMessage
-	.db $A9,$0A,$00,$85,$00,$A9,$01,$00,$85,$02   ;C3232C  
+	lda #$000A                              ;C32332
+	sta $00                                 ;C32335
+	lda #$0001                              ;C32337
+	sta $02                                 ;C3233A
 	jsl.l DisplayMessage
 	rts                                     ;C32340
 	sep #$20                                ;C32341
@@ -4757,7 +4767,12 @@ func_C32CFE:
 	lda #$01                                ;C32DB4
 	sta $01                                 ;C32DB6
 	jsl.l DisplayMessage
-	.db $28,$6B,$A9,$11,$85,$00,$A9,$01,$85,$01
+	plp                                     ;C32DBC
+	rtl                                     ;C32DBD
+	lda #$11                                ;C32DBE
+	sta $00                                 ;C32DC0
+	lda #$01                                ;C32DC2
+	sta $01                                 ;C32DC4
 	jsl.l DisplayMessage
 	.db $28,$6B,$A9,$D7,$85,$00,$64,$01
 	jsl.l DisplayMessage
@@ -5268,7 +5283,11 @@ func_C330FC:
 	plp
 	rtl
 @lbl_C3315B:
-	.db $7A,$F0,$0B,$A9,$17,$00,$85,$00,$86,$02
+	ply                                     ;C3315B
+	.db $F0,$0B   ;C3315C
+	lda #$0017                              ;C3315E
+	sta $00                                 ;C33161
+	stx $02                                 ;C33163
 	jsl.l DisplayMessage
 	.db $A9,$FF   ;C3315B
 	.db $FF,$85,$00,$28,$6B               ;C3316B  
