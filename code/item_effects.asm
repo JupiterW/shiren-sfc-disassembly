@@ -1872,8 +1872,13 @@ SpecialOnigiriUseEffect:
 	sty $00                                 ;C316D7
 	pha                                     ;C316D9
 	jsl.l DisplayMessage
-	.db $68,$85,$02,$64,$03,$A9,$13,$85,$00,$22,$09   ;C316D9
-	.db $32,$C2,$60   ;C316E9
+	pla                                     ;C316DD
+	sta $02                                 ;C316DE
+	stz $03                                 ;C316E0
+	lda #$13                                ;C316E2
+	sta $00                                 ;C316E4
+	jsl $C23209                             ;C316E6
+	.db $60   ;C316EA
 SpoiledOnigiriUseEffect:
 	rep #$20                                ;C316EC
 	sep #$10                                ;C316EE
@@ -2061,7 +2066,11 @@ BlastwaveScrollUseEffect:
 	jsl.l func_C28672                   ;C3189F
 	rts                                ;C318A3
 HasteScrollUseEffect:
-	.db $22,$6E,$87,$C2,$C2,$20,$A9,$63,$01,$85,$00   ;C318A4
+	jsl $C2876E                             ;C318A4
+	rep #$20                                ;C318A8
+	lda #$0163                              ;C318AA
+	sta $00                                 ;C318AD
+.ACCU 8
 	jsl.l DisplayMessage
 	.db $60                               ;C318B3
 SleepScrollUseEffect:
@@ -2284,7 +2293,13 @@ BigpotScrollUseEffect:
 	sta $00                                 ;C31A72
 	stz $01                                 ;C31A74
 	jsl.l DisplayMessage
-	.db $60,$C2,$20,$E2,$10,$A9,$89,$00,$85,$00,$5A
+	rts                                     ;C31A7A
+	rep #$20                                ;C31A7B
+	sep #$10                                ;C31A7D
+	lda #$0089                              ;C31A7F
+	sta $00                                 ;C31A82
+	phy                                     ;C31A84
+.ACCU 8
 	jsl.l DisplayMessage
 	.db $7A   ;C31A7A
 	.db $84,$00,$22,$63,$2A,$C6           ;C31A8A
@@ -5147,8 +5162,13 @@ func_C3303C:
 ;C330B2  
 	.db $BF,$8C,$8E,$7E,$D0,$C5,$80,$0B
 @lbl_C330BA:
-	.db $C2,$20,$A5,$04,$38,$E3,$01,$85   ;C330BA
-	.db $04,$A2,$FF                       ;C330C2  
+	rep #$20                                ;C330BA
+	lda $04                                 ;C330BC
+	sec                                     ;C330BE
+	sbc $01,s                               ;C330BF
+	sta $04                                 ;C330C1
+	ldx #$FF                                ;C330C3
+.ACCU 8
 @lbl_C330C5:
 	rep #$20 ;A->16
 	stx.b wTemp00
@@ -5194,7 +5214,12 @@ func_C330FC:
 	plx
 	lda.b wTemp00
 	bpl @lbl_C3312A
-	.db $7A,$F0,$0D,$A9,$17,$00,$85,$00,$86,$02,$DA
+	ply                                     ;C3310D
+	.db $F0,$0D   ;C3310E
+	lda #$0017                              ;C33110
+	sta $00                                 ;C33113
+	stx $02                                 ;C33115
+	phx                                     ;C33117
 	jsl.l DisplayMessage
 	plx                                     ;C3311C
 	stx $00                                 ;C3311D
