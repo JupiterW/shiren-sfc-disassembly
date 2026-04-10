@@ -826,8 +826,12 @@ func_C30D11:
 	plp
 	rtl
 @lbl_C30E65:
-	.db $86,$00,$22,$F4,$06,$C3,$A9,$02   ;C30E65  
-	.db $85,$00,$28,$6B                   ;C30E6D  
+	stx $00                                 ;C30E65
+	jsl $C306F4                             ;C30E67
+	lda #$02                                ;C30E6B
+	sta $00                                 ;C30E6D
+	plp                                     ;C30E6F
+	rtl                                     ;C30E70
 
 func_C30E71:
 	sep #$20 ;A->8
@@ -3377,8 +3381,12 @@ HandsFullScrollUseEffect:
 	lda #$13                                ;C32378
 	sta $02                                 ;C3237A
 	jsl.l DisplayMessage
-	.db $C2,$20,$A9,$0B,$00,$85,$00,$E2,$20,$A9,$03,$85   ;C3237C  
-	.db $02
+	rep #$20                                ;C32380
+	lda #$000B                              ;C32382
+	sta $00                                 ;C32385
+	sep #$20                                ;C32387
+	lda #$03                                ;C32389
+	sta $02                                 ;C3238B
 	jsl.l DisplayMessage
 	rts                                     ;C32391
 	sep #$20                                ;C32392
@@ -3392,7 +3400,12 @@ HandsFullScrollUseEffect:
 	lda #$13                                ;C323A5
 	sta $02                                 ;C323A7
 	jsl.l DisplayMessage
-	.db $C2,$20,$A9,$0A,$00,$85,$00,$E2,$20,$A9,$01,$85,$02
+	rep #$20                                ;C323AD
+	lda #$000A                              ;C323AF
+	sta $00                                 ;C323B2
+	sep #$20                                ;C323B4
+	lda #$01                                ;C323B6
+	sta $02                                 ;C323B8
 	jsl.l DisplayMessage
 	lda #$13                                ;C323BE
 	sta $00                                 ;C323C0
@@ -5152,9 +5165,13 @@ func_C330FC:
 	bpl @lbl_C3312A
 	.db $7A,$F0,$0D,$A9,$17,$00,$85,$00,$86,$02,$DA
 	jsl.l DisplayMessage
-	.db $FA   ;C3310D
-	.db $86,$00,$22,$F4,$06,$C3,$A9,$FF   ;C3311D  
-	.db $FF,$85,$00,$28,$6B               ;C33125  
+	plx                                     ;C3311C
+	stx $00                                 ;C3311D
+	jsl $C306F4                             ;C3311F
+	lda #$FFFF                              ;C33123
+	sta $00                                 ;C33126
+	plp                                     ;C33128
+	rtl                                     ;C33129
 @lbl_C3312A:
 	cpx.b #$7F
 	bne @lbl_C3313B
@@ -5280,8 +5297,13 @@ func_C331B2:
 @lbl_C33210:
 	cmp.b #$C5
 	bne @lbl_C33222
-	.db $C2,$20,$A3,$01,$85,$00,$E2,$20   ;C33214
-	.db $DA,$22,$F7,$D9,$C3,$FA           ;C3321C
+	rep #$20                                ;C33214
+	lda $01,s                               ;C33216
+	sta $00                                 ;C33218
+	sep #$20                                ;C3321A
+	phx                                     ;C3321C
+	jsl $C3D9F7                             ;C3321D
+	plx                                     ;C33221
 @lbl_C33222:
 	bra @lbl_C33280
 @lbl_C33224:
