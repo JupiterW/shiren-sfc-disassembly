@@ -4195,7 +4195,9 @@ JarUseEffect:
 	jsr.w AntidoteHerbUseEffect
 	rts
 @lbl_C328DE:
-	.db $A9,$5C,$85,$00,$64,$01
+	lda #$5C                                ;C328DE
+	sta $00                                 ;C328E0
+	stz $01                                 ;C328E2
 	jsl.l DisplayMessage
 	.db $60                       ;C328E6  
 
@@ -4264,7 +4266,9 @@ WalrusJarUseEffect:
 	plx
 	lda.l wItemModification1,x
 	bne @lbl_C3297D
-	.db $A9,$5C,$85,$00,$64,$01
+	lda #$5C                                ;C32971
+	sta $00                                 ;C32973
+	stz $01                                 ;C32975
 	jsl.l DisplayMessage
 	.db $60                       ;C3297A  
 @lbl_C3297D:
@@ -4474,7 +4478,9 @@ TryPrepareSelectedItemForJarInsertion:
 	cmp.b #$1F
 	beq @lbl_C32B0B
 ;C32B05  
-	.db $22,$4D,$3C,$C2,$28,$60
+	jsl $C23C4D                             ;C32B05
+	plp                                     ;C32B09
+	rts                                     ;C32B0A
 @lbl_C32B0B:
 	lda.b #$13
 	sta.b wTemp00
@@ -4804,11 +4810,15 @@ func_C32CFE:
 	jsl.l DisplayMessage
 	.db $28,$6B           ;C32D58  
 @lbl_C32D5E:
-	.db $A9,$A8,$85,$00,$64,$01
+	lda #$A8                                ;C32D5E
+	sta $00                                 ;C32D60
+	stz $01                                 ;C32D62
 	jsl.l DisplayMessage
 	.db $28,$6B                   ;C32D66  
 @lbl_C32D6A:
-	.db $A9,$D7,$85,$00,$64,$01
+	lda #$D7                                ;C32D6A
+	sta $00                                 ;C32D6C
+	stz $01                                 ;C32D6E
 	jsl.l DisplayMessage
 	plp                                     ;C32D74
 	rtl                                     ;C32D75
