@@ -1442,10 +1442,15 @@ func_C108B1:
 	ldy #$06FC                              ;C10DD6
 	sty $00                                 ;C10DD9
 	jsl.l DisplayMessage
-	.db $A9,$04,$85,$00,$A9,$05,$85,$02
+	lda #$04                                ;C10DDF
+	sta $00                                 ;C10DE1
+	lda #$05                                ;C10DE3
+	sta $02                                 ;C10DE5
 	jsl.l _SetEvent
-	.db $A9   ;C10DDC  
-	.db $84,$85,$00,$A9,$01,$85,$02
+	lda #$84                                ;C10DEB
+	sta $00                                 ;C10DED
+	lda #$01                                ;C10DEF
+	sta $02                                 ;C10DF1
 	jsl.l _SetEvent
 	rts                                     ;C10DF7
 	dec a                                   ;C10DF8
@@ -1632,8 +1637,10 @@ func_C10E5D:
 	lda #$17                                ;C10FAB
 	sta $00                                 ;C10FAD
 	jsl.l _SetEvent
-	.db $A9,$8D,$85,$00,$A9,$01   ;C10FA9  
-	.db $85,$02
+	lda #$8D                                ;C10FB3
+	sta $00                                 ;C10FB5
+	lda #$01                                ;C10FB7
+	sta $02                                 ;C10FB9
 	jsl.l _SetEvent
 	jsl $C62771                             ;C10FBF
 	sta $02                                 ;C10FC3
@@ -1692,8 +1699,11 @@ func_C10E5D:
 	ldy #$06FA                              ;C1106D
 	sty $00                                 ;C11070
 	jsl.l DisplayMessage
-	.db $60,$3A,$D0,$20,$A9   ;C1106B  
-	.db $84,$85,$00
+	rts                                     ;C11076
+	dec a                                   ;C11077
+	.db $D0,$20   ;C11078
+	lda #$84                                ;C1107A
+	sta $00                                 ;C1107C
 	jsl.l _GetEvent
 	lda $00                                 ;C11082
 	.db $D0,$0A   ;C11084
@@ -1948,10 +1958,15 @@ func_C111EA:
 	.db $60   ;C112FA
 	.db $A0,$0E,$07,$84,$00
 	jsl.l DisplayMessage
-	.db $A9,$85,$85,$00,$A9,$03,$85   ;C1130A
-	.db $02
+	lda #$85                                ;C1130A
+	sta $00                                 ;C1130C
+	lda #$03                                ;C1130E
+	sta $02                                 ;C11310
 	jsl.l _SetEvent
-	.db $A9,$05,$85,$00,$A9,$02,$85,$02
+	lda #$05                                ;C11316
+	sta $00                                 ;C11318
+	lda #$02                                ;C1131A
+	sta $02                                 ;C1131C
 	jsl.l _SetEvent
 	rts                                     ;C1132A
 	lda $03,s                               ;C1132B
@@ -1963,7 +1978,10 @@ func_C111EA:
 	ldy #$070C                              ;C11338
 	sty $00                                 ;C1133B
 	jsl.l DisplayMessage
-	.db $22,$05,$24,$C6,$A3,$03,$18,$69   ;C1133A  
+	jsl $C62405                             ;C11341
+	lda $03,s                               ;C11345
+	clc                                     ;C11347
+	.db $69   ;C11348
 	tsb $48                                 ;C1134A
 	sta $00                                 ;C1134C
 	ldy #$17E9                              ;C1134E
@@ -2380,8 +2398,10 @@ func_C111EA:
 	ldy #$0724                              ;C1171F
 	sty $00                                 ;C11722
 	jsl.l DisplayMessage
-	.db $60,$84   ;C1171A
-	.db $02,$A0,$22,$07,$84,$00
+	rts                                     ;C11728
+	sty $02                                 ;C11729
+	ldy #$0722                              ;C1172B
+	sty $00                                 ;C1172E
 	jsl.l DisplayMessage
 	.db $60,$A0,$23,$07,$84,$00   ;C1172A
 	jsl.l DisplayMessage
@@ -2773,7 +2793,10 @@ func_C11A07:
 	lda #$04                                ;C11AFC
 	sta $02                                 ;C11AFE
 	jsl.l _SetEvent
-	.db $A9,$06,$85,$00,$A9,$01,$85,$02   ;C11AFC
+	lda #$06                                ;C11B04
+	sta $00                                 ;C11B06
+	lda #$01                                ;C11B08
+	sta $02                                 ;C11B0A
 	jsl.l _SetEvent
 	.db $60               ;C11B0C  
 
@@ -2811,8 +2834,10 @@ func_C11B11:
 	ldy #$0737                              ;C11B54
 	sty $00                                 ;C11B57
 	jsl.l DisplayMessage
-	.db $A9,$86,$85   ;C11B5C
-	.db $00,$A9,$02,$85,$02
+	lda #$86                                ;C11B5D
+	sta $00                                 ;C11B5F
+	lda #$02                                ;C11B61
+	sta $02                                 ;C11B63
 	jsl.l _SetEvent
 	rts                                     ;C11B6C
 	cmp #$03                                ;C11B6D
@@ -2997,7 +3022,10 @@ func_C11B11:
 	ldy #$073F                              ;C11D37
 	sty $00                                 ;C11D3A
 	jsl.l DisplayMessage
-	.db $A9,$86,$85,$00,$A9,$02,$85,$02
+	lda #$86                                ;C11D40
+	sta $00                                 ;C11D42
+	lda #$02                                ;C11D44
+	sta $02                                 ;C11D46
 	jsl.l _SetEvent
 	rts                                     ;C11D4C
 	cmp #$03                                ;C11D4D
@@ -3100,8 +3128,9 @@ func_C11B11:
 	ldy #$074B                              ;C11E3F
 	sty $00                                 ;C11E42
 	jsl.l DisplayMessage
-	.db $4C,$1A,$1F,$A0   ;C11E3C  
-	.db $4B,$07,$84,$00
+	jmp $1F1A                               ;C11E48
+	ldy #$074B                              ;C11E4B
+	sty $00                                 ;C11E4E
 	jsl.l DisplayMessage
 	ldy #$8918                              ;C11E54
 	sty $00                                 ;C11E57
@@ -3192,8 +3221,9 @@ func_C11B11:
 	ldy #$091F                              ;C11F40
 	sty $00                                 ;C11F43
 	jsl.l DisplayMessage
-	.db $20,$C8,$21   ;C11F3C  
-	.db $A0,$20,$09,$84,$00
+	jsr $21C8                               ;C11F49
+	ldy #$0920                              ;C11F4C
+	sty $00                                 ;C11F4F
 	jsl.l DisplayMessage
 	jsl $C62405                             ;C11F55
 	lda $03,s                               ;C11F59
@@ -3259,8 +3289,9 @@ func_C11B11:
 	ldy #$091F                              ;C11FF0
 	sty $00                                 ;C11FF3
 	jsl.l DisplayMessage
-	.db $20,$05,$22   ;C11FEC  
-	.db $A0,$20,$09,$84,$00
+	jsr $2205                               ;C11FF9
+	ldy #$0920                              ;C11FFC
+	sty $00                                 ;C11FFF
 	jsl.l DisplayMessage
 	jsl $C62405                             ;C12005
 	jsr $222B                               ;C12009
@@ -3274,8 +3305,10 @@ func_C11B11:
 	jsl.l DisplayMessage
 	.db $A0,$21,$09,$84,$00
 	jsl.l DisplayMessage
-	.db $A9,$06,$85,$00,$A9,$05   ;C1201C  
-	.db $85,$02
+	lda #$06                                ;C12026
+	sta $00                                 ;C12028
+	lda #$05                                ;C1202A
+	sta $02                                 ;C1202C
 	jsl.l _SetEvent
 	tdc                                     ;C12032
 	lda $03,s                               ;C12033
@@ -3313,7 +3346,9 @@ func_C11B11:
 	lda #$07                                ;C1207B
 	sta $00                                 ;C1207D
 	jsl.l _SetEvent
-	.db $4C,$D4,$1F,$A0,$30,$07,$84,$00
+	jmp $1FD4                               ;C12083
+	ldy #$0730                              ;C12086
+	sty $00                                 ;C12089
 	jsl.l DisplayMessage
 	rts                                     ;C1208F
 	ldy #$075C                              ;C12090
@@ -3408,7 +3443,9 @@ func_C11B11:
 	ldy #$091F                              ;C12167
 	sty $00                                 ;C1216A
 	jsl.l DisplayMessage
-	.db $20,$05,$22,$A0,$20,$09,$84,$00
+	jsr $2205                               ;C12170
+	ldy #$0920                              ;C12173
+	sty $00                                 ;C12176
 	jsl.l DisplayMessage
 	jsl $C62405                             ;C1217C
 	jsr $222B                               ;C12180
@@ -3719,7 +3756,10 @@ DATA8_C122EB:
 	ldy #$0761                              ;C12424
 	sty $00                                 ;C12427
 	jsl.l DisplayMessage
-	.db $A9,$87,$85,$00,$A9,$02,$85,$02
+	lda #$87                                ;C1242D
+	sta $00                                 ;C1242F
+	lda #$02                                ;C12431
+	sta $02                                 ;C12433
 	jsl.l _SetEvent
 	rts                                     ;C12439
 	ldy #$0767                              ;C1243A
@@ -3896,7 +3936,10 @@ func_C124BB:
 	ldy #$078D                              ;C125D3
 	sty $00                                 ;C125D6
 	jsl.l DisplayMessage
-	.db $A9,$88,$85,$00,$A9,$02,$85,$02
+	lda #$88                                ;C125DC
+	sta $00                                 ;C125DE
+	lda #$02                                ;C125E0
+	sta $02                                 ;C125E2
 	jsl.l _SetEvent
 	.db $60   ;C125D9  
 	.db $A0,$8F,$07,$84,$00
@@ -4172,7 +4215,10 @@ func_C124BB:
 	lda #$03                                ;C12869
 	sta $02                                 ;C1286B
 	jsl.l _SetEvent
-	.db $A9,$09,$85,$00,$A9,$05,$85,$02   ;C12869
+	lda #$09                                ;C12871
+	sta $00                                 ;C12873
+	lda #$05                                ;C12875
+	sta $02                                 ;C12877
 	jsl.l _SetEvent
 	.db $60,$A9,$0B,$85,$00
 	jsl.l _GetEvent
