@@ -6283,7 +6283,7 @@ func_C335FE:
 	beq @lbl_C3383F                         ;C3382C
 @lbl_C3382E:
 	plx                                     ;C3382E
-	.db $E8   ;C3382F
+	inx                                     ;C3382F
 @lbl_C33830:
 	lda $7E894F,x                           ;C33830
 	bpl @lbl_C33806                         ;C33834
