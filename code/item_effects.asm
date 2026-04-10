@@ -566,8 +566,15 @@ func_C30BD3:
 @lbl_C30C68:
 	.db $A9,$5C,$85,$00,$64,$01
 	jsl.l DisplayMessage
-	.db $68,$68,$68,$68,$68,$A9   ;C30C68
-	.db $01,$85,$00,$28,$6B               ;C30C78  
+	pla                                     ;C30C72
+	pla                                     ;C30C73
+	pla                                     ;C30C74
+	pla                                     ;C30C75
+	pla                                     ;C30C76
+	lda #$01                                ;C30C77
+	sta $00                                 ;C30C79
+	plp                                     ;C30C7B
+	rtl                                     ;C30C7C
 @lbl_C30C7D:
 	pha
 	sta.b wTemp00
@@ -1684,8 +1691,11 @@ DragonHerbUseEffect:
 @lbl_C31551:
 	rts
 @lbl_C31552:
-	.db $86,$00,$A9,$01,$85,$01,$22,$79   ;C31552  
-	.db $35,$C2,$60                       ;C3155A  
+	stx $00                                 ;C31552
+	lda #$01                                ;C31554
+	sta $01                                 ;C31556
+	jsl $C23579                             ;C31558
+	rts                                     ;C3155C
 SightHerbUseEffect:
 	rep #$20 ;A->16
 	lda.w #$0075
@@ -1772,7 +1782,11 @@ func_C315DF:
 	lda #$004E                              ;C31610
 	sta $00                                 ;C31613
 	jsl.l DisplayMessage
-	.db $A9,$10,$27,$85,$00,$22,$BE,$33,$C2,$38,$60   ;C31619
+	lda #$2710                              ;C31619
+	sta $00                                 ;C3161C
+	jsl $C233BE                             ;C3161E
+	sec                                     ;C31622
+	rts                                     ;C31623
 SpecialOnigiriUseEffect:
 	rep #$30                                ;C31624
 	ldx #$000A                              ;C31626
@@ -3448,8 +3462,11 @@ HandsFullScrollUseEffect:
 	lda #$0071                              ;C32401
 	sta $00                                 ;C32404
 	jsl.l DisplayMessage
-	.db $60,$C2   ;C323FC  
-	.db $20,$22,$89,$0E,$C2,$A9,$78,$00,$85,$00
+	rts                                     ;C3240A
+	rep #$20                                ;C3240B
+	jsl $C20E89                             ;C3240D
+	lda #$0078                              ;C32411
+	sta $00                                 ;C32414
 	jsl.l DisplayMessage
 	rts                                     ;C3241A
 	sep #$20                                ;C3241B
@@ -5895,8 +5912,12 @@ func_C335FE:
 	plx
 	cpx.b #$2C
 	bne @lbl_C3364B
-	.db $84,$00,$A9,$01,$85,$01,$5A,$22   ;C3363F  
-	.db $79,$35,$C2,$7A                   ;C33647  
+	sty $00                                 ;C3363F
+	lda #$01                                ;C33641
+	sta $01                                 ;C33643
+	phy                                     ;C33645
+	jsl $C23579                             ;C33646
+	ply                                     ;C3364A
 @lbl_C3364B:
 	lda.b #$00
 	plp
