@@ -2899,7 +2899,7 @@ SkullStaffUseEffect:
 	lda.l $7E935D
 	bpl @lbl_C31ED4
 ;C31ED2  
-	.db $A6,$00
+	ldx $00                                 ;C31ED2
 @lbl_C31ED4:
 	stx.b wTemp00
 	phx
@@ -3037,11 +3037,9 @@ MisfortuneStaffUseEffect:
 	phy                                     ;C31FD0
 	jsl $C2801B                             ;C31FD1
 	ply                                     ;C31FD5
-	.db $C0   ;C31FD6
-	.db $13   ;C31FD7
+	cpy #$13                                ;C31FD6
 	beq @lbl_C31FFD                         ;C31FD8
-	.db $C4   ;C31FDA
-	.db $00   ;C31FDB
+	cpy $00                                 ;C31FDA
 	beq @lbl_C31FF5                         ;C31FDC
 	ldx $00                                 ;C31FDE
 	.db $E0   ;C31FE0
@@ -3351,8 +3349,7 @@ NeedScrollUseEffect:
 	asl a                                   ;C32237
 	asl a                                   ;C32238
 	clc                                     ;C32239
-	.db $65   ;C3223A
-	.db $00   ;C3223B
+	adc $00                                 ;C3223A
 	sep #$20                                ;C3223C
 	sta $7E8C8C,x                           ;C3223E
 	xba                                     ;C32242
@@ -3436,7 +3433,7 @@ HandsFullScrollUseEffect:
 	tax                                     ;C322E1
 	lda $C322ED,x                           ;C322E2
 	.db $F4   ;C322E6
-	.db $EA   ;C322E7
+	nop                                     ;C322E7
 	jsl $286048                             ;C322E8
 	rtl                                     ;C322EC
 	.db $FC   ;C322ED
@@ -4805,7 +4802,8 @@ func_C32CFE:
 	stz $01                                 ;C32D54
 	stx $02                                 ;C32D56
 	jsl.l DisplayMessage
-	.db $28,$6B           ;C32D58  
+	plp                                     ;C32D5C
+	rtl                                     ;C32D5D
 @lbl_C32D5E:
 	lda #$A8                                ;C32D5E
 	sta $00                                 ;C32D60
