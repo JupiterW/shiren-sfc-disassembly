@@ -486,9 +486,9 @@ DATA8_C20277:
 	rts                                     ;C2046C
 	lda #$02                                ;C2046D
 	sta $8731,y                             ;C2046F
-	lda #$01                                ;C20472
-	sta $8781,y                             ;C20474
-	rts                                     ;C20477
+	lda #$01                                ;C20471
+	sta $8781,y                             ;C20473
+	rts                                     ;C20475
 	sep #$30 ;AXY->8
 	phy
 	call_savebank func_C3041A
@@ -513,97 +513,97 @@ DATA8_C20277:
 	lda.b #$03
 	sta.w wCharIsSealed,y
 	rts
-	rts                                     ;C204AF
-	sep #$20                                ;C204B0
-	lda #$01                                ;C204B2
-	sta $8781,y                             ;C204B4
-	rts                                     ;C204B7
-	sep #$30                                ;C204B8
-	lda #$2A                                ;C204BA
-	sta $00                                 ;C204BC
-	phy                                     ;C204BE
-	phb                                     ;C204BF
-	jsl $C3035D                             ;C204C0
-	plb                                     ;C204C4
-	ply                                     ;C204C5
-	lda $00                                 ;C204C6
-	sta $8759,y                             ;C204C8
-	lda #$00                                ;C204CB
-	sta $8731,y                             ;C204CD
-	lda #$01                                ;C204D0
-	sta $8781,y                             ;C204D2
-	lda #$02                                ;C204D5
-	sta $876D,y                             ;C204D7
-	rts                                     ;C204DA
+	rts                                     ;C204A9
+	sep #$20                                ;C204AA
+	lda #$01                                ;C204AC
+	sta $8781,y                             ;C204AE
+	rts                                     ;C204B0
+	sep #$30                                ;C204B1
+	lda #$2A                                ;C204B3
+	sta $00                                 ;C204B5
+	phy                                     ;C204B7
+	phb                                     ;C204B8
+	jsl $C3035D                             ;C204B9
+	plb                                     ;C204BD
+	ply                                     ;C204BE
+	lda $00                                 ;C204BF
+	sta $8759,y                             ;C204C1
+	lda #$00                                ;C204C3
+	sta $8731,y                             ;C204C5
+	lda #$01                                ;C204C7
+	sta $8781,y                             ;C204C9
+	lda #$02                                ;C204CB
+	sta $876D,y                             ;C204CD
+	rts                                     ;C204CF
 	rts
-	sep #$20                                ;C204DC
-	lda #$01                                ;C204DE
-	sta $8781,y                             ;C204E0
-	rts                                     ;C204E3
-	sep #$20                                ;C204E4
-	lda #$01                                ;C204E6
-	sta $8781,y                             ;C204E8
-	lda #$02                                ;C204EB
-	sta $8731,y                             ;C204ED
-	lda #$02                                ;C204F0
-	sta $876D,y                             ;C204F2
-	rts                                     ;C204F5
-	sep #$20                                ;C204F6
-	lda #$00                                ;C204F8
-	sta $8731,y                             ;C204FA
-	lda #$01                                ;C204FD
-	sta $8781,y                             ;C204FF
-	rts                                     ;C20502
-	rts                                     ;C20503
-	sep #$20                                ;C20504
-	lda #$01                                ;C20506
-	sta $8781,y                             ;C20508
-	rts                                     ;C2050B
-	sep #$20                                ;C2050C
-	lda #$01                                ;C2050E
-	sta $8781,y                             ;C20510
-	rts                                     ;C20513
-	sep #$20                                ;C20514
-	lda #$01                                ;C20516
-	sta $8709,y                             ;C20518
-	sta $8781,y                             ;C2051B
-	lda #$00                                ;C2051E
-	sta $8731,y                             ;C20520
-	rts                                     ;C20523
-	sep #$20                                ;C20524
-	lda #$02                                ;C20526
-	sta $8731,y                             ;C20528
-	rts                                     ;C2052B
+	sep #$20                                ;C204D1
+	lda #$01                                ;C204D3
+	sta $8781,y                             ;C204D5
+	rts                                     ;C204D7
+	sep #$20                                ;C204D8
+	lda #$01                                ;C204DA
+	sta $8781,y                             ;C204DC
+	lda #$02                                ;C204DE
+	sta $8731,y                             ;C204E0
+	lda #$02                                ;C204E2
+	sta $876D,y                             ;C204E4
+	rts                                     ;C204E6
+	sep #$20                                ;C204E7
+	lda #$00                                ;C204E9
+	sta $8731,y                             ;C204EB
+	lda #$01                                ;C204ED
+	sta $8781,y                             ;C204EF
+	rts                                     ;C204F1
+	rts                                     ;C204F2
+	sep #$20                                ;C204F3
+	lda #$01                                ;C204F5
+	sta $8781,y                             ;C204F7
+	rts                                     ;C204F9
+	sep #$20                                ;C204FA
+	lda #$01                                ;C204FC
+	sta $8781,y                             ;C204FE
+	rts                                     ;C20500
+	sep #$20                                ;C20501
+	lda #$01                                ;C20503
+	sta $8709,y                             ;C20505
+	sta $8781,y                             ;C20507
+	lda #$00                                ;C20509
+	sta $8731,y                             ;C2050B
+	rts                                     ;C2050D
+	sep #$20                                ;C2050E
+	lda #$02                                ;C20510
+	sta $8731,y                             ;C20512
+	rts                                     ;C20514
 	rts
 	sep #$20 ;A->8
 	lda.b #$01
 	sta.w wCharIsSealed,y
 	rts
-	rts                                     ;C20535
+	rts                                     ;C2051E
 	sep #$20 ;A->8
 	lda.b #$01
 	sta.w wCharIsSealed,y
 	rts
-	sep #$30                                ;C2053E
-	lda #$01                                ;C20540
-	sta $8781,y                             ;C20542
-	lda $8619,y                             ;C20545
-	cmp #$03                                ;C20548
-	bcc @lbl_C20551                         ;C2054A
-	lda #$02                                ;C2054C
-	sta $876D,y                             ;C2054E
+	sep #$30                                ;C20527
+	lda #$01                                ;C20529
+	sta $8781,y                             ;C2052B
+	lda $8619,y                             ;C2052D
+	cmp #$03                                ;C2052F
+	bcc @lbl_C20551                         ;C20531
+	lda #$02                                ;C20533
+	sta $876D,y                             ;C20535
 @lbl_C20551:
-	rts                                     ;C20551
-	sep #$20                                ;C20552
-	lda #$01                                ;C20554
-	sta $88D5,y                             ;C20556
-	lda #$01                                ;C20559
-	sta $8781,y                             ;C2055B
-	rts                                     ;C2055E
-	sep #$20                                ;C2055F
-	lda #$02                                ;C20561
-	sta $876D,y                             ;C20563
-	rts                                     ;C20566
+	rts                                     ;C20537
+	sep #$20                                ;C20538
+	lda #$01                                ;C2053A
+	sta $88D5,y                             ;C2053C
+	lda #$01                                ;C2053E
+	sta $8781,y                             ;C20540
+	rts                                     ;C20542
+	sep #$20                                ;C20543
+	lda #$02                                ;C20545
+	sta $876D,y                             ;C20547
+	rts                                     ;C20549
 	sep #$20 ;A->8
 	lda.b #$01
 	sta.w wCharIsSealed,y
@@ -612,14 +612,14 @@ DATA8_C20277:
 	and.b #$3F
 	cmp.b #$08
 	bcs @lbl_C2058D
-	lda #$83                                ;C2057A
-	sta $00                                 ;C2057C
-	phy                                     ;C2057E
-	phb                                     ;C2057F
-	jsl $C3035D                             ;C20580
-	plb                                     ;C20584
-	ply                                     ;C20585
-	lda $00                                 ;C20586
+	lda #$83                                ;C2055D
+	sta $00                                 ;C2055F
+	phy                                     ;C20561
+	phb                                     ;C20562
+	jsl $C3035D                             ;C20563
+	plb                                     ;C20567
+	ply                                     ;C20568
+	lda $00                                 ;C20569
 	.db $30,$03   ;C20588
 	sta $8759,y                             ;C2058A
 @lbl_C2058D:
@@ -730,50 +730,50 @@ DATA8_C20611:
 	sep #$30                                ;C20679
 	lda #$00                                ;C2067B
 	sta $8731,y                             ;C2067D
-	rts                                     ;C20680
-	sep #$30                                ;C20681
-	lda #$00                                ;C20683
-	sta $8731,y                             ;C20685
-	lda #$01                                ;C20688
-	sta $8781,y                             ;C2068A
-	sta $885D,y                             ;C2068D
-	rts                                     ;C20690
-	sep #$30                                ;C20691
-	lda #$01                                ;C20693
-	sta $8781,y                             ;C20695
-	jsl $C3F65F                             ;C20698
-	lda $00                                 ;C2069C
-	and #$3F                                ;C2069E
-	cmp #$04                                ;C206A0
-	bcs @lbl_C206B7                         ;C206A2
-	lda #$0A                                ;C206A4
-	sta $00                                 ;C206A6
-	phy                                     ;C206A8
-	phb                                     ;C206A9
-	jsl $C3035D                             ;C206AA
-	plb                                     ;C206AE
-	ply                                     ;C206AF
-	lda $00                                 ;C206B0
-	bmi @lbl_C206B7                         ;C206B2
-	sta $8759,y                             ;C206B4
+	rts                                     ;C2067F
+	sep #$30                                ;C20680
+	lda #$00                                ;C20682
+	sta $8731,y                             ;C20684
+	lda #$01                                ;C20686
+	sta $8781,y                             ;C20688
+	sta $885D,y                             ;C2068A
+	rts                                     ;C2068C
+	sep #$30                                ;C2068D
+	lda #$01                                ;C2068F
+	sta $8781,y                             ;C20691
+	jsl $C3F65F                             ;C20693
+	lda $00                                 ;C20697
+	and #$3F                                ;C20699
+	cmp #$04                                ;C2069B
+	bcs @lbl_C206B7                         ;C2069D
+	lda #$0A                                ;C2069F
+	sta $00                                 ;C206A1
+	phy                                     ;C206A3
+	phb                                     ;C206A4
+	jsl $C3035D                             ;C206A5
+	plb                                     ;C206A9
+	ply                                     ;C206AA
+	lda $00                                 ;C206AB
+	bmi @lbl_C206B7                         ;C206AD
+	sta $8759,y                             ;C206AF
 @lbl_C206B7:
-	rts                                     ;C206B7
+	rts                                     ;C206B1
 	rts
-	sep #$30                                ;C206B9
-	lda #$02                                ;C206BB
-	sta $876D,y                             ;C206BD
-	rts                                     ;C206C0
-	sep #$30                                ;C206C1
-	lda #$01                                ;C206C3
-	sta $8835,y                             ;C206C5
-	sta $8781,y                             ;C206C8
-	lda #$00                                ;C206CB
-	sta $8731,y                             ;C206CD
-	lda $85B5,y                             ;C206D0
-	sta $87D1,y                             ;C206D3
-	lda $85C9,y                             ;C206D6
-	sta $87E5,y                             ;C206D9
-	rts                                     ;C206DC
+	sep #$30                                ;C206B3
+	lda #$02                                ;C206B5
+	sta $876D,y                             ;C206B7
+	rts                                     ;C206B9
+	sep #$30                                ;C206BA
+	lda #$01                                ;C206BC
+	sta $8835,y                             ;C206BE
+	sta $8781,y                             ;C206C0
+	lda #$00                                ;C206C2
+	sta $8731,y                             ;C206C4
+	lda $85B5,y                             ;C206C6
+	sta $87D1,y                             ;C206C8
+	lda $85C9,y                             ;C206CA
+	sta $87E5,y                             ;C206CC
+	rts                                     ;C206CE
 	sep #$30 ;AXY->8
 	lda.b #$01
 	sta.w wCharNPCFlags,y
@@ -817,14 +817,14 @@ DATA8_C20611:
 	lda.b #$40
 	sta.w wCharIsAwake,y
 	rts
-	sep #$30                                ;C20742
-	lda #$01                                ;C20744
-	sta $8835,y                             ;C20746
-	lda #$01                                ;C20749
-	sta $8781,y                             ;C2074B
-	lda #$80                                ;C2074E
-	sta $8731,y                             ;C20750
-	rts                                     ;C20753
+	sep #$30                                ;C20734
+	lda #$01                                ;C20736
+	sta $8835,y                             ;C20738
+	lda #$01                                ;C2073A
+	sta $8781,y                             ;C2073C
+	lda #$80                                ;C2073E
+	sta $8731,y                             ;C20740
+	rts                                     ;C20742
 	sep #$30 ;AXY->8
 	lda.b #$05
 	sta.w wCharNPCFlags,y
@@ -5441,40 +5441,40 @@ func_C24167:
 ;C241F6
 	lda #$80                                ;C241F6
 	sta $7E89A2                             ;C241F8
-	plp                                     ;C241FC
-	rtl                                     ;C241FD
+	plp                                     ;C241FA
+	rtl                                     ;C241FB
 @lbl_C241FE:
 	cpx.b #$22
 	bne @lbl_C24217
-	lda $7E862C                             ;C24202
-	dec a                                   ;C24206
-	bne @lbl_C24215                         ;C24207
-	lda #$FF                                ;C24209
-	sta $7E8998                             ;C2420B
-	lda #$01                                ;C2420F
-	sta $7E8780                             ;C24211
+	lda $7E862C                             ;C24200
+	dec a                                   ;C24202
+	bne @lbl_C24215                         ;C24203
+	lda #$FF                                ;C24205
+	sta $7E8998                             ;C24207
+	lda #$01                                ;C24209
+	sta $7E8780                             ;C2420B
 @lbl_C24215:
-	plp                                     ;C24215
-	rtl                                     ;C24216
+	plp                                     ;C2420D
+	rtl                                     ;C2420E
 @lbl_C24217:
 	cpx.b #$0C
 	bne @lbl_C24225
-	lda #$32                                ;C2421B
-	sta $7E88C0                             ;C2421D
-	sta $7E899B                             ;C24221
+	lda #$32                                ;C24213
+	sta $7E88C0                             ;C24215
+	sta $7E899B                             ;C24217
 @lbl_C24225:
 	cpx.b #$0E
 	bne @lbl_C2423E
-	lda #$FF                                ;C24229
-	sta $7E871C                             ;C2422B
-	lda $7E862C                             ;C2422F
-	dec a                                   ;C24233
-	beq @lbl_C2423C                         ;C24234
-	lda #$80                                ;C24236
-	sta $7E89A2                             ;C24238
+	lda #$FF                                ;C2421D
+	sta $7E871C                             ;C2421F
+	lda $7E862C                             ;C24221
+	dec a                                   ;C24223
+	beq @lbl_C2423C                         ;C24224
+	lda #$80                                ;C24226
+	sta $7E89A2                             ;C24228
 @lbl_C2423C:
-	plp                                     ;C2423C
-	rtl                                     ;C2423D
+	plp                                     ;C2422A
+	rtl                                     ;C2422B
 @lbl_C2423E:
 	cpx.b #$2A
 	bne @lbl_C24252
@@ -5487,19 +5487,19 @@ func_C24167:
 @lbl_C24252:
 	cpx.b #$24
 	bne @lbl_C242D4
-	lda #$00                                ;C24256
-	sta $7E87BC                             ;C24258
-	jsl $C62405                             ;C2425C
-	lda #$24                                ;C24260
-	sta $7E87BC                             ;C24262
-	lda #$FF                                ;C24266
-	pha                                     ;C24268
-	lda $7E862C                             ;C24269
-	dec a                                   ;C2426D
-	bne @lbl_C24279                         ;C2426E
-	lda $7E8971                             ;C24270
-	bmi @lbl_C24277                         ;C24274
-	pha                                     ;C24276
+	lda #$00                                ;C24244
+	sta $7E87BC                             ;C24246
+	jsl $C62405                             ;C24248
+	lda #$24                                ;C2424C
+	sta $7E87BC                             ;C2424E
+	lda #$FF                                ;C24250
+	pha                                     ;C24252
+	lda $7E862C                             ;C24253
+	dec a                                   ;C24255
+	bne @lbl_C24279                         ;C24256
+	lda $7E8971                             ;C24258
+	bmi @lbl_C24277                         ;C2425A
+	pha                                     ;C2425C
 @lbl_C24277:
 	.db $80,$34   ;C24277
 @lbl_C24279:
@@ -5702,16 +5702,16 @@ func_C24390:
 	stx $00                                 ;C243E3
 	sep #$20                                ;C243E5
 	lda $7E87D0                             ;C243E7
-	beq @lbl_C243FB                         ;C243EB
-	jsl $C24380                             ;C243ED
-	jsl $C62405                             ;C243F1
-	jsl $C608A9                             ;C243F5
-	plp                                     ;C243F9
-	rtl                                     ;C243FA
+	beq @lbl_C243FB                         ;C243E9
+	jsl $C24380                             ;C243EB
+	jsl $C62405                             ;C243EF
+	jsl $C608A9                             ;C243F3
+	plp                                     ;C243F7
+	rtl                                     ;C243F8
 @lbl_C243FB:
-	jsl $C24380                             ;C243FB
-	plp                                     ;C243FF
-	rtl                                     ;C24400
+	jsl $C24380                             ;C243F9
+	plp                                     ;C243FD
+	rtl                                     ;C243FE
 func_C24401:
 	sep #$30 ;AXY->8
 	lda.l wCharType,x
@@ -7993,9 +7993,9 @@ func_C25520:
 	jsl.l DisplayMessage
 	plx                                     ;C25541
 	lda $7E862C                             ;C25542
-	dec a                                   ;C25546
-	bne @lbl_C2555F                         ;C25547
-	lda $7E867D,x                           ;C25549
+	dec a                                   ;C25544
+	bne @lbl_C2555F                         ;C25545
+	lda $7E867D,x                           ;C25547
 	lsr a                                   ;C2554D
 	lsr a                                   ;C2554E
 	adc #$00                                ;C2554F
@@ -10837,21 +10837,21 @@ func_C283A0:
 	jsl.l func_C35E1B
 	plp
 	rtl
-	.db $08   ;C383B0
-	sep #$20                                ;C383B1
-	lda $00                                 ;C383B3
-	beq @lbl_C383BF                         ;C383B5
-	lda $7E8975                             ;C383B7
-	ora #$02                                ;C383BB
-	bra @lbl_C383C5                         ;C383BD
+	.db $08   ;C283B3
+	sep #$20                                ;C283B4
+	lda $00                                 ;C283B6
+	beq @lbl_C383BF                         ;C283B8
+	lda $7E8975                             ;C283BA
+	ora #$02                                ;C283BC
+	bra @lbl_C383C5                         ;C283BE
 @lbl_C383BF:
-	lda $7E8975                             ;C383BF
-	and #$FD                                ;C383C3
+	lda $7E8975                             ;C283C0
+	and #$FD                                ;C283C2
 @lbl_C383C5:
-	sta $7E8975                             ;C383C5
-	jsl $C35E1B                             ;C383C9
-	plp                                     ;C383CD
-	rtl                                     ;C383CE
+	sta $7E8975                             ;C283C4
+	jsl $C35E1B                             ;C283C6
+	plp                                     ;C283CA
+	rtl                                     ;C283CB
 
 func_C283D2:
 	php
@@ -10861,36 +10861,36 @@ func_C283D2:
 	jsl.l func_C35E1B
 	plp
 	rtl
-	.db $08   ;C383DE
-	sep #$20                                ;C383DF
-	lda $00                                 ;C383E1
-	sta $7E8984                             ;C383E3
-	plp                                     ;C383E7
-	rtl                                     ;C383E8
-	php                                     ;C383E9
-	sep #$20                                ;C383EA
-	lda $00                                 ;C383EC
-	sta $7E8985                             ;C383EE
-	plp                                     ;C383F2
-	rtl                                     ;C383F3
-	php                                     ;C383F4
-	sep #$20                                ;C383F5
-	lda $00                                 ;C383F7
-	sta $7E8986                             ;C383F9
-	plp                                     ;C383FD
-	rtl                                     ;C383FE
-	php                                     ;C383FF
-	sep #$20                                ;C38400
-	lda $00                                 ;C38402
-	sta $7E8987                             ;C38404
-	plp                                     ;C38408
-	rtl                                     ;C38409
-	php                                     ;C3840A
-	sep #$20                                ;C3840B
-	lda $00                                 ;C3840D
-	sta $7E8989                             ;C3840F
-	plp                                     ;C38413
-	rtl                                     ;C38414
+	.db $08   ;C283E1
+	sep #$20                                ;C283E2
+	lda $00                                 ;C283E4
+	sta $7E8984                             ;C283E6
+	plp                                     ;C283E8
+	rtl                                     ;C283E9
+	php                                     ;C283EA
+	sep #$20                                ;C283EB
+	lda $00                                 ;C283ED
+	sta $7E8985                             ;C283EF
+	plp                                     ;C283F1
+	rtl                                     ;C283F2
+	php                                     ;C283F3
+	sep #$20                                ;C283F4
+	lda $00                                 ;C283F6
+	sta $7E8986                             ;C283F8
+	plp                                     ;C283FA
+	rtl                                     ;C283FB
+	php                                     ;C283FC
+	sep #$20                                ;C283FD
+	lda $00                                 ;C283FF
+	sta $7E8987                             ;C28401
+	plp                                     ;C28403
+	rtl                                     ;C28404
+	php                                     ;C28405
+	sep #$20                                ;C28406
+	lda $00                                 ;C28408
+	sta $7E8989                             ;C2840A
+	plp                                     ;C2840C
+	rtl                                     ;C2840D
 
 func_C28418:
 	php
@@ -10937,51 +10937,51 @@ func_C28451:
 	sta.l $7E89A8
 	plp
 	rtl
-	.db $08   ;C38459
-	sep #$20                                ;C3845A
-	lda $00                                 ;C3845C
-	sta $7E898A                             ;C3845E
-	plp                                     ;C38462
-	rtl                                     ;C38463
-	php                                     ;C38464
-	sep #$20                                ;C38465
-	lda $00                                 ;C38467
-	sta $7E898B                             ;C38469
-	plp                                     ;C3846D
-	rtl                                     ;C3846E
-	php                                     ;C3846F
-	sep #$20                                ;C38470
-	lda #$01                                ;C38472
-	sta $7E89B6                             ;C38474
-	plp                                     ;C38478
-	rtl                                     ;C38479
-	php                                     ;C3847A
-	sep #$20                                ;C3847B
-	lda $00                                 ;C3847D
-	sta $7E898C                             ;C3847F
-	plp                                     ;C38483
-	rtl                                     ;C38484
-	php                                     ;C38485
-	sep #$20                                ;C38486
-	lda $7E898D                             ;C38488
-	ora #$01                                ;C3848C
-	sta $7E898D                             ;C3848E
-	plp                                     ;C38492
-	rtl                                     ;C38493
-	php                                     ;C38494
-	sep #$20                                ;C38495
-	lda $00                                 ;C38497
-	beq @lbl_C384A3                         ;C38499
-	lda $7E898D                             ;C3849B
-	ora #$02                                ;C3849F
-	bra @lbl_C384A9                         ;C384A1
+	.db $08   ;C2845C
+	sep #$20                                ;C2845D
+	lda $00                                 ;C2845F
+	sta $7E898A                             ;C28461
+	plp                                     ;C28463
+	rtl                                     ;C28464
+	php                                     ;C28465
+	sep #$20                                ;C28466
+	lda $00                                 ;C28468
+	sta $7E898B                             ;C2846A
+	plp                                     ;C2846C
+	rtl                                     ;C2846D
+	php                                     ;C2846E
+	sep #$20                                ;C2846F
+	lda #$01                                ;C28471
+	sta $7E89B6                             ;C28473
+	plp                                     ;C28475
+	rtl                                     ;C28476
+	php                                     ;C28477
+	sep #$20                                ;C28478
+	lda $00                                 ;C2847A
+	sta $7E898C                             ;C2847C
+	plp                                     ;C2847E
+	rtl                                     ;C2847F
+	php                                     ;C28480
+	sep #$20                                ;C28481
+	lda $7E898D                             ;C28483
+	ora #$01                                ;C28485
+	sta $7E898D                             ;C28487
+	plp                                     ;C28489
+	rtl                                     ;C2848A
+	php                                     ;C2848B
+	sep #$20                                ;C2848C
+	lda $00                                 ;C2848E
+	beq @lbl_C384A3                         ;C28490
+	lda $7E898D                             ;C28492
+	ora #$02                                ;C28494
+	bra @lbl_C384A9                         ;C28496
 @lbl_C384A3:
-	lda $7E898D                             ;C384A3
-	and #$FD                                ;C384A7
+	lda $7E898D                             ;C28498
+	and #$FD                                ;C2849A
 @lbl_C384A9:
-	sta $7E898D                             ;C384A9
-	plp                                     ;C384AD
-	rtl                                     ;C384AE
+	sta $7E898D                             ;C2849C
+	plp                                     ;C2849E
+	rtl                                     ;C2849F
 
 func_C284B2:
 	php
@@ -11000,22 +11000,22 @@ func_C284BD:
 	rtl
 
 UNREACH_C284C8:
-	.db $00   ;C384C6
-	.db $00   ;C384C7
-	.db $02   ;C384C8
-	.db $00   ;C384C9
-	.db $00   ;C384CA
-	.db $00   ;C384CB
-	.db $00   ;C384CC
-	.db $00   ;C384CD
-	.db $00   ;C384CE
-	.db $00   ;C384CF
-	.db $00   ;C384D0
-	.db $00   ;C384D1
-	.db $00   ;C384D2
-	php                                     ;C384D3
-	.db $02   ;C384D4
-	.db $00   ;C384D5
+	.db $00   ;C284C8
+	.db $00   ;C284C9
+	.db $02   ;C284CA
+	.db $00   ;C284CB
+	.db $00   ;C284CC
+	.db $00   ;C284CD
+	.db $00   ;C284CE
+	.db $00   ;C284CF
+	.db $00   ;C284D0
+	.db $00   ;C284D1
+	.db $00   ;C284D2
+	.db $00   ;C284D3
+	.db $00   ;C284D4
+	php                                     ;C284D5
+	.db $02   ;C284D6
+	.db $00   ;C284D7
 	tsb $02                                 ;C384D6
 	tsb $0102                               ;C384D8
 	.db $00   ;C384DB
@@ -11868,42 +11868,42 @@ func_C28A92:
 	sta.l $7E8979
 	plp
 	rtl
-	.db $08   ;C38AC9
-	sep #$30                                ;C38ACA
-	ldx #$00                                ;C38ACC
+	.db $08   ;C28ACE
+	sep #$30                                ;C28ACF
+	ldx #$00                                ;C28AD1
 @lbl_C38ACE:
-	lda $7E894F,x                           ;C38ACE
-	pha                                     ;C38AD2
-	inx                                     ;C38AD3
-	cpx #$14                                ;C38AD4
-	bcc @lbl_C38ACE                         ;C38AD6
-	lda #$00                                ;C38AD8
-	sta $7E8604                             ;C38ADA
-	lda $7E85C8                             ;C38ADE
-	sta $00                                 ;C38AE2
-	lda $7E85DC                             ;C38AE4
-	sta $01                                 ;C38AE8
-	lda #$06                                ;C38AEA
-	sta $02                                 ;C38AEC
-	lda #$00                                ;C38AEE
-	sta $03                                 ;C38AF0
-	jsl $C2007D                             ;C38AF2
-	lda #$00                                ;C38AF6
-	sta $7E8979                             ;C38AF8
-	ldx #$13                                ;C38AFC
+	lda $7E894F,x                           ;C28AD3
+	pha                                     ;C28AD5
+	inx                                     ;C28AD6
+	cpx #$14                                ;C28AD7
+	bcc @lbl_C38ACE                         ;C28AD9
+	lda #$00                                ;C28ADB
+	sta $7E8604                             ;C28ADD
+	lda $7E85C8                             ;C28ADF
+	sta $00                                 ;C28AE1
+	lda $7E85DC                             ;C28AE3
+	sta $01                                 ;C28AE5
+	lda #$06                                ;C28AE7
+	sta $02                                 ;C28AE9
+	lda #$00                                ;C28AEB
+	sta $03                                 ;C28AED
+	jsl $C2007D                             ;C28AEF
+	lda #$00                                ;C28AF3
+	sta $7E8979                             ;C28AF5
+	ldx #$13                                ;C28AF7
 @lbl_C38AFE:
-	pla                                     ;C38AFE
-	sta $7E894F,x                           ;C38AFF
-	dex                                     ;C38B03
-	bpl @lbl_C38AFE                         ;C38B04
-	plp                                     ;C38B06
-	rtl                                     ;C38B07
-	php                                     ;C38B08
-	sep #$20                                ;C38B09
-	lda #$01                                ;C38B0B
-	sta $7E89B7                             ;C38B0D
-	plp                                     ;C38B11
-	rtl                                     ;C38B12
+	pla                                     ;C28AF9
+	sta $7E894F,x                           ;C28AFA
+	dex                                     ;C28AFC
+	bpl @lbl_C38AFE                         ;C28AFD
+	plp                                     ;C28AFF
+	rtl                                     ;C28B00
+	php                                     ;C28B01
+	sep #$20                                ;C28B02
+	lda #$01                                ;C28B04
+	sta $7E89B7                             ;C28B06
+	plp                                     ;C28B08
+	rtl                                     ;C28B09
 
 func_C28B18:
 	php
@@ -11941,15 +11941,15 @@ func_C28B52:
 	and.b #$F0
 	cmp.b #$B0
 	bne @lbl_C28B7D
-	.db $A9,$00   ;C38B63
-	sta $7E897B                             ;C38B65
-	lda #$13                                ;C38B69
-	sta $00                                 ;C38B6B
-	jsl $C24390                             ;C38B6D
-	lda #$01                                ;C38B71
-	sta $00                                 ;C38B73
-	plp                                     ;C38B75
-	rtl                                     ;C38B76
+	.db $A9,$00   ;C28B69
+	sta $7E897B                             ;C28B6B
+	lda #$13                                ;C28B6D
+	sta $00                                 ;C28B6F
+	jsl $C24390                             ;C28B71
+	lda #$01                                ;C28B75
+	sta $00                                 ;C28B77
+	plp                                     ;C28B79
+	rtl                                     ;C28B7A
 @lbl_C28B7D:
 	lda.l $7E897B
 	bne @lbl_C28B90
@@ -12118,29 +12118,29 @@ func_C28CC3:
 	bpl @lbl_C28CC8
 	plp
 	rtl
-	.db $08   ;C38CEA
-	sep #$20                                ;C38CEB
-	lda $7E85C8                             ;C38CED
-	sta $7E899D                             ;C38CF1
-	lda $7E85DC                             ;C38CF5
-	sta $7E899E                             ;C38CF9
-	jsl $C3F65F                             ;C38CFD
-	lda $00                                 ;C38D01
-	cmp #$CD                                ;C38D03
-	bcs @lbl_C38D17                         ;C38D05
-	lda #$03                                ;C38D07
-	sta $00                                 ;C38D09
-	lda #$06                                ;C38D0B
-	sta $01                                 ;C38D0D
-	jsl $C3F69F                             ;C38D0F
-	lda $00                                 ;C38D13
-	bra @lbl_C38D19                         ;C38D15
+	.db $08   ;C28CEF
+	sep #$20                                ;C28CF0
+	lda $7E85C8                             ;C28CF2
+	sta $7E899D                             ;C28CF4
+	lda $7E85DC                             ;C28CF6
+	sta $7E899E                             ;C28CF8
+	jsl $C3F65F                             ;C28CFA
+	lda $00                                 ;C28CFE
+	cmp #$CD                                ;C28D00
+	bcs @lbl_C38D17                         ;C28D02
+	lda #$03                                ;C28D04
+	sta $00                                 ;C28D06
+	lda #$06                                ;C28D08
+	sta $01                                 ;C28D0A
+	jsl $C3F69F                             ;C28D0C
+	lda $00                                 ;C28D10
+	bra @lbl_C38D19                         ;C28D12
 @lbl_C38D17:
-	lda #$40                                ;C38D17
+	lda #$40                                ;C28D14
 @lbl_C38D19:
-	sta $7E899C                             ;C38D19
-	plp                                     ;C38D1D
-	rtl                                     ;C38D1E
+	sta $7E899C                             ;C28D16
+	plp                                     ;C28D18
+	rtl                                     ;C28D19
 
 SortShirenInventory:
 	php
@@ -12555,11 +12555,11 @@ func_C29005:
 	lda.l wCharRemainingSleepTurns,x
 	beq @lbl_C29020
 ;C29010
-	.db $A9,$33   ;C38FF9
-	sta $00                                 ;C38FFB
-	lda #$01                                ;C38FFD
-	sta $01                                 ;C38FFF
-	stx $02                                 ;C39001
+	.db $A9,$33   ;C29010
+	sta $00                                 ;C29012
+	lda #$01                                ;C29014
+	sta $01                                 ;C29016
+	stx $02                                 ;C29018
 	jsl.l DisplayMessage
 	.db $28,$6B
 @lbl_C29020:
@@ -12587,7 +12587,7 @@ func_C29005:
 	cmp.b #$4C
 	bne @lbl_C2905A
 ;C29057  
-	jmp $92C3                               ;C39040
+	jmp $92C3                               ;C29057
 @lbl_C2905A:
 	stx.b wTemp00
 	sta.b wTemp01
@@ -12614,18 +12614,18 @@ func_C29082:
 	lda.l wCharIsSealed,x
 	cmp.b #$02
 	bne @lbl_C2909A
-	.db $A9,$81   ;C39075
-	sta $00                                 ;C39077
-	lda #$06                                ;C39079
-	sta $01                                 ;C3907B
+	.db $A9,$81   ;C2908C
+	sta $00                                 ;C2908E
+	lda #$06                                ;C29090
+	sta $01                                 ;C29092
 	jsl.l DisplayMessage
-	.db $28,$6B           ;C29094  
+	.db $28,$6B           ;C29098
 @lbl_C2909A:
 	lda.l $7E87D0
 	cmp.b #$0A
 	bcc @lbl_C290A5
 ;C290A2  
-	jmp $91D9                               ;C3908B
+	jmp $91D9                               ;C290A2
 @lbl_C290A5:
 	sta.b wTemp00
 	jsl.l func_C36698
@@ -12657,26 +12657,26 @@ func_C290BC:
 	lda.b wTemp00
 	cmp.b #$02
 	bne @lbl_C2910E
-	.db $86,$00   ;C390C5
-	lda #$01                                ;C390C7
-	sta $01                                 ;C390C9
-	phx                                     ;C390CB
-	jsl $C33A92                             ;C390CC
-	plx                                     ;C390D0
-	stx $00                                 ;C390D1
-	stz $01                                 ;C390D3
-	phx                                     ;C390D5
-	jsl $C33CA0                             ;C390D6
-	plx                                     ;C390DA
-	rep #$20                                ;C390DB
-	lda $7E8991                             ;C390DD
-	sec                                     ;C390E1
-	sbc $00                                 ;C390E2
-	sta $7E8991                             ;C390E4
-	lda $7E8993                             ;C390E8
-	sbc #$0000                              ;C390EC
-	sta $7E8993                             ;C390EF
-	sep #$20                                ;C390F3
+	.db $86,$00   ;C290DC
+	lda #$01                                ;C290DE
+	sta $01                                 ;C290E0
+	phx                                     ;C290E2
+	jsl $C33A92                             ;C290E3
+	plx                                     ;C290E7
+	stx $00                                 ;C290E8
+	stz $01                                 ;C290EA
+	phx                                     ;C290EC
+	jsl $C33CA0                             ;C290ED
+	plx                                     ;C290F1
+	rep #$20                                ;C290F2
+	lda $7E8991                             ;C290F4
+	sec                                     ;C290F6
+	sbc $00                                 ;C290F7
+	sta $7E8991                             ;C290F9
+	lda $7E8993                             ;C290FB
+	sbc #$0000                              ;C290FD
+	sta $7E8993                             ;C290FF
+	sep #$20                                ;C29101
 	.db $80,$32   ;C390F5
 @lbl_C2910E:
 	cmp.b #$00
@@ -12900,9 +12900,9 @@ func_C29284:
 	bpl @lbl_C292A4
 	plp
 	rtl
-	.db $E2,$30   ;C392AC
-	lda $7E8781,x                           ;C392AE
-	cmp #$02                                ;C392B2
+	.db $E2,$30   ;C292C3
+	lda $7E8781,x                           ;C292C5
+	cmp #$02                                ;C292C7
 	.db $D0,$0E   ;C392B4
 	lda #$86                                ;C392B6
 	sta $00                                 ;C392B8
@@ -13116,12 +13116,12 @@ func_C2942A:
 .include "data/player/level_exp_table.asm"
 
 UNREACH_C2CAD9:
-	.db $0A   ;C39444
-	ora $03                                 ;C39445
-	bmi @lbl_C3944B                         ;C39447
-	ora ($01,x)                             ;C39449
+	.db $0A   ;C2CAD9
+	ora $03                                 ;C2CADA
+	bmi @lbl_C3944B                         ;C2CADC
+	ora ($01,x)                             ;C2CADE
 @lbl_C3944B:
-	ora ($08,x)                             ;C3944B
+	ora ($08,x)                             ;C2CAE0
 	asl a                                   ;C3944D
 	ora $03                                 ;C3944E
 	bmi @lbl_C39454                         ;C39450
@@ -13458,8 +13458,8 @@ UNREACH_C2CBDA:
 	rts                                     ;C396C1
 
 UNREACH_C2CD5F:
-	ora ($12),y                             ;C396C2
-	.db $21,$22,$21,$22,$31,$32,$14,$15,$24,$25,$24,$25,$34,$35,$11,$12,$13,$21,$22,$23,$31,$32,$33,$41,$42,$43,$14,$15,$16,$24,$25,$26,$34,$35,$36,$44,$45,$46,$11,$12,$13,$14,$21,$22,$23,$24,$31,$32,$33,$34,$31,$32,$33,$34,$41,$42,$43,$44,$51,$52,$53,$54,$16,$17,$18,$19,$26,$27,$28,$29,$36,$37,$38,$39,$36,$37,$38,$39,$46,$47,$48,$49,$56,$57,$58,$59   ;C396C4
+	ora ($12),y                             ;C2CD5F
+	.db $21,$22,$21,$22,$31,$32,$14,$15,$24,$25,$24,$25,$34,$35,$11,$12,$13,$21,$22,$23,$31,$32,$33,$41,$42,$43,$14,$15,$16,$24,$25,$26,$34,$35,$36,$44,$45,$46,$11,$12,$13,$14,$21,$22,$23,$24,$31,$32,$33,$34,$31,$32,$33,$34,$41,$42,$43,$44,$51,$52,$53,$54,$16,$17,$18,$19,$26,$27,$28,$29,$36,$37,$38,$39,$36,$37,$38,$39,$46,$47,$48,$49,$56,$57,$58,$59   ;C2CD61
 
 func_C2CDB7:
 	php
@@ -14515,7 +14515,7 @@ func_C2D469:
 	cmp.b wTemp05
 	bcs @lbl_C2D4F4
 ;C2D4F2  
-	sta $05                                 ;C39E0C
+	sta $05                                 ;C2D4F2
 @lbl_C2D4F4:
 	ldx.w $89C2
 	cpx.b #$FF
@@ -14562,7 +14562,7 @@ func_C2D469:
 	dec a
 	bpl @lbl_C2D54D
 ;C2D54A  
-	.db $82,$99,$00   ;C39E64
+	.db $82,$99,$00   ;C2D54A
 @lbl_C2D54D:
 	lda.b wTemp04
 	sta.b wTemp00
@@ -15025,11 +15025,11 @@ func_C2D8F0:
 	beq @lbl_C2D92A
 	bcc @lbl_C2D903
 ;C2D8FB
-	.db $48   ;C3A20B
-	lda $01                                 ;C3A20C
-	sta $00                                 ;C3A20E
-	pla                                     ;C3A210
-	sta $01                                 ;C3A211
+	.db $48   ;C2D8FB
+	lda $01                                 ;C2D8FC
+	sta $00                                 ;C2D8FE
+	pla                                     ;C2D900
+	sta $01                                 ;C2D901
 @lbl_C2D903:
 	lda.b wTemp01
 	sec
