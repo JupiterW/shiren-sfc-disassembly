@@ -112,9 +112,22 @@ func_C200B0:
 	sbc.b #$03
 	beq @lbl_C200DB
 	bcc @lbl_C200DB
-	.db $48,$A9,$03,$85,$04,$22,$E1,$00,$C2,$A6,$00,$22,$3A,$25,$C6,$68   ;C200B9
-	.db $86,$00,$85,$01,$DA,$22,$79,$35,$C2,$FA,$22,$45,$25,$C6,$86,$00   ;C200C9  
-	.db $28,$6B                           ;C200D9
+	pha                                     ;C200B9
+	lda #$03                                ;C200BA
+	sta $04                                 ;C200BC
+	jsl $C200E1                             ;C200BE
+	ldx $00                                 ;C200C2
+	jsl $C6253A                             ;C200C4
+	pla                                     ;C200C8
+	stx $00                                 ;C200C9
+	sta $01                                 ;C200CB
+	phx                                     ;C200CD
+	jsl $C23579                             ;C200CE
+	plx                                     ;C200D2
+	jsl $C62545                             ;C200D3
+	stx $00                                 ;C200D7
+	plp                                     ;C200D9
+	rtl                                     ;C200DA
 @lbl_C200DB:
 	jsl.l func_C200E1
 	plp
@@ -717,9 +730,21 @@ DATA8_C20611:
 @lbl_C206B7:
 	rts                                     ;C206B7
 	rts
-	.db $E2,$30,$A9,$02,$99,$6D,$87,$60,$E2,$30,$A9,$01,$99,$35,$88,$99   ;C206B9
-	.db $81,$87,$A9,$00,$99,$31,$87,$B9,$B5,$85,$99,$D1,$87,$B9,$C9,$85   ;C206C9  
-	.db $99,$E5,$87,$60                   ;C206D9  
+	sep #$30                                ;C206B9
+	lda #$02                                ;C206BB
+	sta $876D,y                             ;C206BD
+	rts                                     ;C206C0
+	sep #$30                                ;C206C1
+	lda #$01                                ;C206C3
+	sta $8835,y                             ;C206C5
+	sta $8781,y                             ;C206C8
+	lda #$00                                ;C206CB
+	sta $8731,y                             ;C206CD
+	lda $85B5,y                             ;C206D0
+	sta $87D1,y                             ;C206D3
+	lda $85C9,y                             ;C206D6
+	sta $87E5,y                             ;C206D9
+	rts                                     ;C206DC
 	sep #$30 ;AXY->8
 	lda.b #$01
 	sta.w wCharNPCFlags,y
@@ -905,9 +930,24 @@ func_C20844:
 	sta $00                                 ;C208C2
 	phy                                     ;C208C4
 	jsl.l _GetEvent
-	.db $7A,$A5,$00,$C9,$02,$F0,$0B,$A9,$09,$99,$35,$88   ;C208C5  
-	.db $A9,$00,$99,$6D,$87,$60,$A9,$01,$99,$35,$88,$A9,$01,$99,$71,$88   ;C208D5
-	.db $A9,$80,$85,$00,$A9,$01,$85,$02
+	.db $7A   ;C208C8
+	lda $00                                 ;C208C9
+	cmp #$02                                ;C208CB
+	beq @lbl_C208DA                         ;C208CD
+	lda #$09                                ;C208CF
+	sta $8835,y                             ;C208D1
+	lda #$00                                ;C208D4
+	sta $876D,y                             ;C208D6
+	rts                                     ;C208D9
+@lbl_C208DA:
+	lda #$01                                ;C208DA
+	sta $8835,y                             ;C208DC
+	lda #$01                                ;C208DF
+	sta $8871,y                             ;C208E1
+	lda #$80                                ;C208E4
+	sta $00                                 ;C208E6
+	lda #$01                                ;C208E8
+	sta $02                                 ;C208EA
 	jsl.l _SetEvent
 	.db $60,$E2,$30,$A9   ;C208E5
 	.db $09,$99,$35,$88,$A9,$01,$99,$81,$87,$A9,$00,$99,$31,$87,$A9,$01   ;C208F5
@@ -7325,9 +7365,24 @@ func_C25649:
 @lbl_C256F6:
 	cmp.b #$07
 	bne @lbl_C2571E
-	.db $A6,$00,$DA,$A9,$13,$85,$00,$22,$91,$15,$C2,$FA,$30,$13,$BF,$F1   ;C256FA  
-	.db $85,$7E,$4A,$69,$00,$85,$02,$86,$00,$A9,$13,$85,$01,$22,$DF,$28   ;C2570A  
-	.db $C2,$64,$00,$60                   ;C2571A
+	ldx $00                                 ;C256FA
+	phx                                     ;C256FC
+	lda #$13                                ;C256FD
+	sta $00                                 ;C256FF
+	jsl $C21591                             ;C25701
+	plx                                     ;C25705
+	bmi @lbl_C2571B                         ;C25706
+	lda $7E85F1,x                           ;C25708
+	lsr a                                   ;C2570C
+	adc #$00                                ;C2570D
+	sta $02                                 ;C2570F
+	stx $00                                 ;C25711
+	lda #$13                                ;C25713
+	sta $01                                 ;C25715
+	jsl $C228DF                             ;C25717
+@lbl_C2571B:
+	stz $00                                 ;C2571B
+	rts                                     ;C2571D
 @lbl_C2571E:
 	cmp.b #$21
 	bne @lbl_C2573F
