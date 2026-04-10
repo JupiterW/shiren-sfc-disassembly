@@ -1828,8 +1828,12 @@ SpecialOnigiriUseEffect:
 	lda #$00FC                              ;C316A3
 	sta $00                                 ;C316A6
 	jsl.l DisplayMessage
-	.db $60,$E2,$20,$22,$88,$84,$C2,$C2,$20,$A9,$30,$01,$85   ;C316A9  
-	.db $00
+	rts                                     ;C316AC
+	sep #$20                                ;C316AD
+	jsl $C28488                             ;C316AF
+	rep #$20                                ;C316B3
+	lda #$0130                              ;C316B5
+	sta $00                                 ;C316B8
 	jsl.l DisplayMessage
 	rts                                     ;C316BE
 	sep #$20                                ;C316BF
@@ -2780,8 +2784,11 @@ BufusStaffUseEffect:
 @lbl_C31EB4:
 	rts
 @lbl_C31EB5:
-	.db $22,$3A,$43,$C2,$A9,$01,$00,$85   ;C31EB5  
-	.db $02,$22,$E5,$25,$C6,$60           ;C31EBD
+	jsl $C2433A                             ;C31EB5
+	lda #$0001                              ;C31EB9
+	sta $02                                 ;C31EBC
+	jsl $C625E5                             ;C31EBE
+	rts                                     ;C31EC2
 SkullStaffUseEffect:
 	rep #$20 ;A->16
 	sep #$10 ;XY->8
@@ -5219,8 +5226,14 @@ func_C331B2:
 @lbl_C331DE:
 	cmp.b #$BD
 	bne @lbl_C331F1
-	.db $C2,$20,$A3,$01,$85,$00,$E2,$20   ;C331E2
-	.db $DA,$20,$9C,$32,$FA,$80,$31       ;C331EA
+	rep #$20                                ;C331E2
+	lda $01,s                               ;C331E4
+	sta $00                                 ;C331E6
+	sep #$20                                ;C331E8
+	phx                                     ;C331EA
+	jsr $329C                               ;C331EB
+	plx                                     ;C331EE
+	.db $80,$31   ;C331EF
 @lbl_C331F1:
 	cmp.b #$C1
 	bne @lbl_C33210
