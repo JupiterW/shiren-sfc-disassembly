@@ -4694,7 +4694,7 @@ func_C32BAD:
 @lbl_C32C8C:
 	plx                                     ;C32C8C
 	pla                                     ;C32C8D
-	.db $28   ;C32C8E
+	plp                                     ;C32C8E
 	rts                                     ;C32C8F
 
 TryClearAssignedCategoryItem:
@@ -4818,7 +4818,7 @@ func_C32CFE:
 	jsl.l DisplayMessage
 	plp                                     ;C32D74
 	rtl                                     ;C32D75
-	.db $08   ;C32D76
+	php                                     ;C32D76
 	sep #$30                                ;C32D77
 	ldx $00                                 ;C32D79
 	phx                                     ;C32D7B
@@ -4878,12 +4878,12 @@ func_C32CFE:
 	jsl.l DisplayMessage
 	lda #$01                                ;C32DF7
 	sta $00                                 ;C32DF9
-	.db $28   ;C32DFB
+	plp                                     ;C32DFB
 	rtl                                     ;C32DFC
 	bit #$80                                ;C32DFD
 	bne @lbl_C32E05                         ;C32DFF
 	stz $00                                 ;C32E01
-	.db $28   ;C32E03
+	plp                                     ;C32E03
 	rtl                                     ;C32E04
 @lbl_C32E05:
 	phx                                     ;C32E05
@@ -4902,7 +4902,7 @@ func_C32CFE:
 	sep #$30                                ;C32E23
 	plx                                     ;C32E25
 	stz $00                                 ;C32E26
-	.db $28   ;C32E28
+	plp                                     ;C32E28
 	rtl                                     ;C32E29
 	rep #$30                                ;C32E2A
 @lbl_C32E2C:
@@ -4939,7 +4939,7 @@ func_C32CFE:
 	lda $06                                 ;C32E62
 	and $00                                 ;C32E64
 	pha                                     ;C32E66
-	.db $8A   ;C32E67
+	txa                                     ;C32E67
 	dec a                                   ;C32E68
 	asl a                                   ;C32E69
 	tax                                     ;C32E6A
@@ -4949,7 +4949,7 @@ func_C32CFE:
 	pla                                     ;C32E75
 	sep #$30                                ;C32E76
 	plx                                     ;C32E78
-	.db $9B   ;C32E79
+	txy                                     ;C32E79
 	sta $7E8F0C,x                           ;C32E7A
 	sta $00                                 ;C32E7E
 	sta $02                                 ;C32E80
@@ -4976,7 +4976,7 @@ func_C32CFE:
 	sep #$20                                ;C32EB0
 	lda #$01                                ;C32EB2
 	sta $00                                 ;C32EB4
-	.db $28   ;C32EB6
+	plp                                     ;C32EB6
 	rtl                                     ;C32EB7
 	ora $01,x                               ;C32EB8
 	asl $01,x                               ;C32EBA
@@ -5479,7 +5479,7 @@ func_C331B2:
 	pha                                     ;C33239
 	cmp #$FF                                ;C3323A
 	beq @lbl_C33245                         ;C3323C
-	.db $C8   ;C3323E
+	iny                                     ;C3323E
 	lda #$FF                                ;C3323F
 	sta $7E8E0C,x                           ;C33241
 @lbl_C33245:
@@ -5607,7 +5607,7 @@ func_C332D7:
 	bpl @lbl_C332DC
 	plp
 	rtl
-	.db $08   ;C33319
+	php                                     ;C33319
 	sep #$30                                ;C3331A
 	stx $00                                 ;C3331C
 	phx                                     ;C3331E
@@ -5631,9 +5631,9 @@ func_C332D7:
 	inc a                                   ;C33340
 	sta $7E8C8C,x                           ;C33341
 @lbl_C33345:
-	.db $28   ;C33345
+	plp                                     ;C33345
 	rts                                     ;C33346
-	.db $08   ;C33347
+	php                                     ;C33347
 	sep #$30                                ;C33348
 	stx $00                                 ;C3334A
 	phx                                     ;C3334C
@@ -5654,7 +5654,7 @@ func_C332D7:
 	dec a                                   ;C3336A
 	sta $7E8C8C,x                           ;C3336B
 @lbl_C3336F:
-	.db $28   ;C3336F
+	plp                                     ;C3336F
 	rts                                     ;C33370
 	lda $7E8C8C,x                           ;C33371
 	bpl @lbl_C3337B                         ;C33375
@@ -5664,7 +5664,7 @@ func_C332D7:
 	dec a                                   ;C3337B
 	sta $7E8C8C,x                           ;C3337C
 @lbl_C33380:
-	.db $28   ;C33380
+	plp                                     ;C33380
 	rts                                     ;C33381
 
 ExecutePreparedThrowEffect:
