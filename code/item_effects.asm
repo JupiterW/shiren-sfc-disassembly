@@ -1530,7 +1530,11 @@ SleepHerbUseEffect:
 	sta $00                                 ;C313F3
 	stz $01                                 ;C313F5
 	jsl.l DisplayMessage
-	.db $60,$E2,$20,$A9,$95,$85,$00,$64,$01   ;C313F4
+	rts                                     ;C313FB
+	sep #$20                                ;C313FC
+	lda #$95                                ;C313FE
+	sta $00                                 ;C31400
+	stz $01                                 ;C31402
 	jsl.l DisplayMessage
 	lda #$13                                ;C31408
 	sta $00                                 ;C3140A
@@ -2104,8 +2108,9 @@ PowerupScrollUseEffect:
 	jsl.l func_C28418
 	rts
 MonsterHouseScrollUseEffect:
-	.db $22,$4D,$2B,$C6,$22,$EA,$69,$C3   ;C318F8  
-	.db $60                               ;C31900
+	jsl $C62B4D                             ;C318F8
+	jsl $C369EA                             ;C318FC
+	rts                                     ;C31900
 IdentityScrollUseEffect:
 	sep #$30 ;AXY->8
 	ldy.b wTemp01
@@ -2737,8 +2742,9 @@ BlessingScrollUseEffect:
 	rts                                     ;C31DEC
 	jsl.l func_C24390
 	rts
-	.db $22,$D6,$40,$C2,$22,$A2,$5D,$C2   ;C31DF2  
-	.db $60                               ;C31DFA
+	jsl $C240D6                             ;C31DF2
+	jsl $C25DA2                             ;C31DF6
+	rts                                     ;C31DFA
 	jsl.l func_C240BC
 	rts
 	sep #$20                                ;C31E00
@@ -4286,7 +4292,11 @@ WalrusJarUseEffect:
 	jsl.l DisplayMessage
 	rts
 @lbl_C32A1F:
-	.db $FA,$A9,$03,$85,$00,$A9,$01,$85,$01
+	plx                                     ;C32A1F
+	lda #$03                                ;C32A20
+	sta $00                                 ;C32A22
+	lda #$01                                ;C32A24
+	sta $01                                 ;C32A26
 	jsl.l DisplayMessage
 	rts                                     ;C32A2C
 	sep #$30                                ;C32A2D
@@ -5445,8 +5455,10 @@ func_C331B2:
 	lda.l wItemPotNextItem,x
 	cmp.b #$FF
 	beq @lbl_C33293
-	.db $48,$A9,$FF,$9F,$0C,$8E,$7E,$80   ;C3328A
-	.db $91                               ;C33292  
+	pha                                     ;C3328A
+	lda #$FF                                ;C3328B
+	sta $7E8E0C,x                           ;C3328D
+	.db $80,$91   ;C33291
 @lbl_C33293:
 	jsl.l func_C625CE
 	pla
