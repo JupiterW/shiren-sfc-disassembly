@@ -1241,8 +1241,14 @@ PoisonHerbUseEffect:
 	lda #$00A0                              ;C3121C
 	sta $00                                 ;C3121F
 	jsl.l DisplayMessage
-	.db $A0,$13,$84,$00,$22,$D6,$40,$C2,$22,$A2,$5D,$C2,$E2   ;C31222  
-	.db $20,$C2,$10,$A0,$64,$01,$84,$00
+	ldy #$13                                ;C31225
+	sty $00                                 ;C31227
+	jsl $C240D6                             ;C31229
+	jsl $C25DA2                             ;C3122D
+	sep #$20                                ;C31231
+	rep #$10                                ;C31233
+	ldy #$0164                              ;C31235
+	sty $00                                 ;C31238
 	jsl.l DisplayMessage
 	rts                                     ;C3123E
 	rep #$20                                ;C3123F
@@ -1383,8 +1389,17 @@ ConfusionHerbUseEffect:
 	sta $00                                 ;C31358
 	stz $01                                 ;C3135A
 	jsl.l DisplayMessage
-	.db $60,$E2,$20,$A9   ;C31354  
-	.db $15,$80,$E1,$E2,$30,$A6,$00,$86,$02,$A9,$04,$85,$00,$64,$01,$DA   ;C31364  
+	rts                                     ;C31360
+	sep #$20                                ;C31361
+	lda #$15                                ;C31363
+	.db $80,$E1   ;C31365
+	sep #$30                                ;C31367
+	ldx $00                                 ;C31369
+	stx $02                                 ;C3136B
+	lda #$04                                ;C3136D
+	sta $00                                 ;C3136F
+	stz $01                                 ;C31371
+	phx                                     ;C31373
 	jsl.l DisplayMessage
 	plx                                     ;C31378
 	stx $00                                 ;C31379
@@ -1498,8 +1513,16 @@ SleepHerbUseEffect:
 	sta $00                                 ;C3145F
 	stz $01                                 ;C31461
 	jsl.l DisplayMessage
-	.db $60,$E2,$20,$A9,$32,$85,$01,$A9,$13,$85,$00,$22,$73   ;C31464  
-	.db $40,$C2,$A9,$6B,$85,$00,$64,$01
+	rts                                     ;C31467
+	sep #$20                                ;C31468
+	lda #$32                                ;C3146A
+	sta $01                                 ;C3146C
+	lda #$13                                ;C3146E
+	sta $00                                 ;C31470
+	jsl $C24073                             ;C31472
+	lda #$6B                                ;C31476
+	sta $00                                 ;C31478
+	stz $01                                 ;C3147A
 	jsl.l DisplayMessage
 	rts                                     ;C31480
 	sep #$20                                ;C31481
@@ -2251,8 +2274,16 @@ AirBlessScrollUseEffect:
 	phb                                     ;C31AF9
 	jsl.l DisplayMessage
 	.db $AB   ;C31AEF  
-	.db $FA,$BD,$8C,$8C,$1A,$9D,$8C,$8C,$A9,$AB,$85,$00,$64,$01,$86,$02   ;C31AFF
-	.db $DA,$8B
+	plx                                     ;C31AFF
+	lda $8C8C,x                             ;C31B00
+	inc a                                   ;C31B03
+	sta $8C8C,x                             ;C31B04
+	lda #$AB                                ;C31B07
+	sta $00                                 ;C31B09
+	stz $01                                 ;C31B0B
+	stx $02                                 ;C31B0D
+	phx                                     ;C31B0F
+	phb                                     ;C31B10
 	jsl.l DisplayMessage
 	.db $AB,$FA,$BD,$0C,$8C,$F0,$0D,$9E,$0C,$8C   ;C31B0F
 	.db $A9,$52,$85,$00,$64,$01
@@ -3741,8 +3772,15 @@ JarUseEffect:
 	lda.b wTemp00
 	cmp.b #$02
 	bcs @lbl_C327B4
-	.db $22,$5F,$F6,$C3,$A9,$06,$A4,$00,$30,$02,$A9,$1C,$85,$00,$22,$5D   ;C327A0  
-	.db $03,$C3,$80,$04                   ;C327B0  
+	jsl $C3F65F                             ;C327A0
+	lda #$06                                ;C327A4
+	ldy $00                                 ;C327A6
+	bmi @lbl_C327AC                         ;C327A8
+	lda #$1C                                ;C327AA
+@lbl_C327AC:
+	sta $00                                 ;C327AC
+	jsl $C3035D                             ;C327AE
+	.db $80,$04   ;C327B2
 @lbl_C327B4:
 	jsl.l func_C3041A
 	ldx.b wTemp00
