@@ -2384,8 +2384,11 @@ AirBlessScrollUseEffect:
 	sta $00                                 ;C31B20
 	stz $01                                 ;C31B22
 	jsl.l DisplayMessage
-	.db $A9,$01,$80,$9B,$A9,$5C   ;C31B1F
-	.db $85,$00,$64,$01
+	lda #$01                                ;C31B28
+	.db $80,$9B   ;C31B2A
+	lda #$5C                                ;C31B2C
+	sta $00                                 ;C31B2E
+	stz $01                                 ;C31B30
 	jsl.l DisplayMessage
 	.db $60                               ;C31B37
 
@@ -2471,8 +2474,11 @@ EarthBlessScrollUseEffect:
 	sta $00                                 ;C31BCC
 	stz $01                                 ;C31BCE
 	jsl.l DisplayMessage
-	.db $A9,$01,$80,$97,$A9,$5C   ;C31BCB
-	.db $85,$00,$64,$01
+	lda #$01                                ;C31BD4
+	.db $80,$97   ;C31BD6
+	lda #$5C                                ;C31BD8
+	sta $00                                 ;C31BDA
+	stz $01                                 ;C31BDC
 	jsl.l DisplayMessage
 	.db $60   ;C31BE3
 PlatingScrollUseEffect:
@@ -3031,8 +3037,10 @@ InvisibilityHerbUseEffect:
 	jsl $C62550                             ;C32039
 	rts                                     ;C3203D
 SlothStaffUseEffect:
-	.db $22,$05,$83,$C2,$60,$22,$50,$83   ;C3203E
-	.db $C2,$60                           ;C32046
+	jsl $C28305                             ;C3203E
+	rts                                     ;C32042
+	jsl $C28350                             ;C32043
+	rts                                     ;C32047
 ParalysisStaffUseEffect:
 	sep #$20 ;A->8
 	lda.b #$03
