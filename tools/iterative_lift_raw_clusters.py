@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Iteratively apply raw-cluster lifts to one file, verifying after each one.
+"""Iteratively apply raw-cluster lifts to one file, verifying after each batch.
 
 Examples:
   python3 tools/iterative_lift_raw_clusters.py --file code/item_effects.asm --dry-run
   python3 tools/iterative_lift_raw_clusters.py --file code/item_effects.asm --limit 3
   python3 tools/iterative_lift_raw_clusters.py --file code/item_effects.asm --limit 10 --commit
+  python3 tools/iterative_lift_raw_clusters.py --file code/item_effects.asm --batch-size 5
 """
 
 from __future__ import annotations
@@ -75,22 +76,10 @@ def is_data_like_candidate(candidate: str) -> bool:
     if not first.endswith(":") or not first.startswith("DATA"):
         return False
 
-    db_like = 0
-    opcode_like = 0
-    for line in content[1:]:
-        if line.endswith(":"):
-            continue
-        if line.startswith(".db") or line.startswith(".dw"):
-            db_like += 1
-            continue
-        if line.startswith("@lbl_"):
-            continue
-        if line.startswith("."):
-            db_like += 1
-            continue
-        opcode_like += 1
-
-    return db_like >= 3 and db_like >= opcode_like * 4
+    # A DATA label is a strong enough signal on its own — the decoded output
+    # will show opcodes (data bytes decode as valid instructions), so the
+    # .db ratio check is unreliable here.
+    return True
 
 
 def commit_if_needed(rel: Path, message: str) -> tuple[bool, str | None]:
@@ -110,15 +99,13 @@ def commit_if_needed(rel: Path, message: str) -> tuple[bool, str | None]:
     return True, None
 
 
-def sorted_clusters(path: Path, min_bytes: int, max_bytes: int | None, raw_only: bool) -> list:
+def sorted_clusters(path: Path, min_bytes: int, max_bytes: int | None, kind: str) -> list:
     clusters = find_clusters(load_lines(path))
     clusters = [c for c in clusters if c.byte_count >= min_bytes]
     if max_bytes is not None:
         clusters = [c for c in clusters if c.byte_count <= max_bytes]
-    if raw_only:
-        clusters = [c for c in clusters if c.kind == "raw-only"]
-    else:
-        clusters = [c for c in clusters if c.kind == "mixed"]
+    if kind != "all":
+        clusters = [c for c in clusters if c.kind == kind]
     clusters.sort(key=lambda c: (c.kind != "mixed", -(c.byte_count), c.start_addr))
     return clusters
 
@@ -155,6 +142,11 @@ def sorted_segments(path: Path, min_bytes: int, max_bytes: int | None) -> list[t
             if start_idx is None:
                 start_idx = idx
                 start_addr = line_start
+            elif end_addr is not None and line_start != end_addr + 1:
+                # Address gap — finish current segment, start a new one
+                finish(idx - 1)
+                start_idx = idx
+                start_addr = line_start
             end_addr = line_end
         else:
             if start_idx is not None:
@@ -174,7 +166,7 @@ def format_batch_message(template: str, rel: Path, items: list[tuple[int, int]])
     last_end = items[-1][1]
     return template.format(
         start=f"{first_start:06X}",
-        end=f"{first_end:06X}",
+        end=f"{last_end:06X}",
         first_start=f"{first_start:06X}",
         first_end=f"{first_end:06X}",
         last_start=f"{last_start:06X}",
@@ -212,11 +204,11 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--min-bytes", type=int, default=16, help="minimum cluster size")
     parser.add_argument("--max-bytes", type=int, help="maximum cluster size")
     parser.add_argument("--limit", type=int, help="maximum number of clusters to attempt")
-    parser.add_argument("--batch-size", type=int, default=1, help="apply this many segments at once before verify; failed batches are bisected")
-    parser.add_argument("--raw-only", action="store_true", help="process raw-only clusters instead of mixed clusters")
+    parser.add_argument("--batch-size", type=int, default=5, help="apply this many segments at once before verify; failed batches are bisected")
+    parser.add_argument("--kind", choices=("mixed", "raw-only", "all"), default="mixed", help="cluster kind to process (default: mixed)")
     parser.add_argument("--mode", choices=("cluster", "segment"), default="segment", help="process whole mixed clusters or consecutive raw segments")
     parser.add_argument("--dry-run", action="store_true", help="list planned clusters without applying them")
-    parser.add_argument("--stop-on-fail", action="store_true", help="stop on first failure")
+    parser.add_argument("--stop-on-fail", action="store_true", help="stop when an entire batch fails (individual items may still fail within a kept batch)")
     parser.add_argument("--verify-cmd", default="make -B -j1 PYTHON=.venv/bin/python && shasum -c shiren.sha1", help="command used to verify a kept lift")
     parser.add_argument("--skip-range", action="append", type=parse_skip_range, default=[], help="skip any candidate range overlapping START-END hex ROM addresses")
     parser.add_argument("--commit", action="store_true", help="git add/commit the file after each kept verified lift")
@@ -233,7 +225,7 @@ def main(argv: list[str]) -> int:
         if args.limit is not None:
             segments = segments[: args.limit]
     else:
-        clusters = sorted_clusters(path, args.min_bytes, args.max_bytes, args.raw_only)
+        clusters = sorted_clusters(path, args.min_bytes, args.max_bytes, args.kind)
         if args.limit is not None:
             clusters = clusters[: args.limit]
 
@@ -268,17 +260,22 @@ def main(argv: list[str]) -> int:
     )
     work_items = [item for item in work_items if not overlaps_any_skip(item[0], item[1], args.skip_range)]
 
+    # Pre-filter data-like items before batching to avoid wasted make cycles
+    skipped = 0
+    filtered_items: list[tuple[int, int]] = []
+    for item in work_items:
+        preview = preview_lift(rel, item[0], item[1])
+        if preview.returncode == 0 and is_data_like_candidate(preview.stdout):
+            print(f"SKIP  {item[0]:06X}-{item[1]:06X} data-like")
+            skipped += 1
+            continue
+        filtered_items.append(item)
+    work_items = filtered_items
+
     def process_batch(items: list[tuple[int, int]]) -> bool:
         nonlocal baseline, kept
         if not items:
             return True
-
-        if len(items) == 1:
-            start_addr, end_addr = items[0]
-            preview = preview_lift(rel, start_addr, end_addr)
-            if preview.returncode == 0 and is_data_like_candidate(preview.stdout):
-                print(f"SKIP  {start_addr:06X}-{end_addr:06X} data-like")
-                return True
 
         before = baseline
         for start_addr, end_addr in items:
@@ -347,7 +344,7 @@ def main(argv: list[str]) -> int:
         if not ok and args.stop_on_fail:
             break
 
-    print(f"kept lifts: {kept}/{len(work_items)}")
+    print(f"kept lifts: {kept}/{len(work_items)}" + (f" (skipped {skipped} data-like)" if skipped else ""))
     if failures:
         print("failures:")
         for start_addr, end_addr, reason in failures:

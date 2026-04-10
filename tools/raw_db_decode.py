@@ -183,10 +183,6 @@ def decode_one(data: list[int], i: int, base_addr: int | None, state: DecodeStat
         if b(2) is None: return _trunc()
         return 3, f"{name} ${b(1):02X},${b(2):02X}"
 
-    def sig_byte(name: str) -> tuple[int, str]:           # BRK / COP / WDM
-        if b(1) is None: return _trunc()
-        return 2, f"{name} #${b(1):02X}"
-
     def sep_or_rep(name: str, set_bits: bool) -> tuple[int, str]:
         size, text = imm8(name)
         if size != 2:
@@ -259,9 +255,8 @@ def decode_one(data: list[int], i: int, base_addr: int | None, state: DecodeStat
         0xC2: lambda: sep_or_rep("rep", False),
 
         # ── 2-byte: signature (BRK/COP/WDM) ─────────────────────────────────
-        0x00: lambda: sig_byte("brk"),
-        0x02: lambda: sig_byte("cop"),
-        0x42: lambda: sig_byte("wdm"),
+        # Left as .db — wla-65816 rejects the #$XX signature syntax and
+        # these opcodes are effectively never real instructions in this ROM.
 
         # ── 2-byte: immediate (accumulator-width) ────────────────────────────
         0x09: lambda: imm_acc("ora"),
