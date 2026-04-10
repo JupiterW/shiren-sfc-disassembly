@@ -2420,7 +2420,7 @@ AirBlessScrollUseEffect:
 	phx                                     ;C31B0F
 	phb                                     ;C31B10
 	jsl.l DisplayMessage
-	.db $AB   ;C31B14
+	plb                                     ;C31B14
 	plx                                     ;C31B15
 	lda $8C0C,x                             ;C31B16
 	.db $F0,$0D   ;C31B19
@@ -2435,7 +2435,7 @@ AirBlessScrollUseEffect:
 	sta $00                                 ;C31B2E
 	stz $01                                 ;C31B30
 	jsl.l DisplayMessage
-	.db $60                               ;C31B37
+	rts                                     ;C31B37
 
 ;c31b38
 ShieldUseEffect:
@@ -2498,7 +2498,7 @@ EarthBlessScrollUseEffect:
 	phx                                     ;C31BA4
 	phb                                     ;C31BA5
 	jsl.l DisplayMessage
-	.db $AB   ;C31B9B  
+	plb                                     ;C31BA9
 	plx                                     ;C31BAB
 	lda $8C8C,x                             ;C31BAC
 	inc a                                   ;C31BAF
@@ -2510,7 +2510,7 @@ EarthBlessScrollUseEffect:
 	phx                                     ;C31BBB
 	phb                                     ;C31BBC
 	jsl.l DisplayMessage
-	.db $AB   ;C31BC0
+	plb                                     ;C31BC0
 	plx                                     ;C31BC1
 	lda $8C0C,x                             ;C31BC2
 	.db $F0,$0D   ;C31BC5
@@ -2525,7 +2525,7 @@ EarthBlessScrollUseEffect:
 	sta $00                                 ;C31BDA
 	stz $01                                 ;C31BDC
 	jsl.l DisplayMessage
-	.db $60   ;C31BE3
+	rts                                     ;C31BE3
 PlatingScrollUseEffect:
 	sep #$30                                ;C31BE4
 	jsl $C23B89                             ;C31BE6
@@ -2586,7 +2586,7 @@ PlatingScrollUseEffect:
 	sta $00                                 ;C31C67
 	stz $01                                 ;C31C69
 	jsl.l DisplayMessage
-	.db $60               ;C31C6B  
+	rts                                     ;C31C6F
 BlessingScrollUseEffect:
 	sep #$30 ;AXY->8
 	lda.b #$13
@@ -2614,7 +2614,7 @@ BlessingScrollUseEffect:
 	sta $00                                 ;C31C9C
 	stz $01                                 ;C31C9E
 	jsl.l DisplayMessage
-	.db $60                       ;C31CA2  
+	rts                                     ;C31CA4
 @lbl_C31CA5:
 	plx                                     ;C31CA5
 	.db $30,$18   ;C31CA6
@@ -2713,7 +2713,7 @@ BlessingScrollUseEffect:
 	ldx $00                                 ;C31D55
 	bne @lbl_C31D5C                         ;C31D57
 	eor #$FF                                ;C31D59
-	.db $1A   ;C31D5B
+	inc a                                   ;C31D5B
 @lbl_C31D5C:
 	cmp #$00                                ;C31D5C
 	bmi @lbl_C31D6F                         ;C31D5E
@@ -2881,7 +2881,7 @@ BufusStaffUseEffect:
 	jsl.l func_C330D1
 	rts
 @lbl_C31EB3:
-	.db $68
+	pla                                     ;C31EB3
 @lbl_C31EB4:
 	rts
 @lbl_C31EB5:
@@ -3172,7 +3172,7 @@ PainSplitStaffUseEffect:
 	jsl $C21128                             ;C320DE
 	plx                                     ;C320E2
 	lda $00                                 ;C320E3
-	.db $4A   ;C320E5
+	lsr a                                   ;C320E5
 	eor #$FF                                ;C320E6
 	inc a                                   ;C320E8
 	beq @lbl_C320F7                         ;C320E9
@@ -3191,7 +3191,7 @@ PainSplitStaffUseEffect:
 	jsl $C21128                             ;C32101
 	plx                                     ;C32105
 	lda $00                                 ;C32106
-	.db $4A   ;C32108
+	lsr a                                   ;C32108
 	pha                                     ;C32109
 	eor #$FF                                ;C3210A
 	inc a                                   ;C3210C
@@ -3236,7 +3236,7 @@ GreatHallScrollUseEffect:
 	sta $00                                 ;C3215E
 	stz $01                                 ;C32160
 	jsl.l DisplayMessage
-	.db $60   ;C32157  
+	rts                                     ;C32166
 NeedScrollUseEffect:
 	sep #$30 ;AXY->8
 	ldy.b #$01
@@ -3408,7 +3408,7 @@ ExtractionScrollUseEffect:
 	stz $01                                 ;C322A9
 .ACCU 16
 	jsl.l DisplayMessage
-	.db $60   ;C322B0
+	rts                                     ;C322B0
 HandsFullScrollUseEffect:
 	rep #$20 ;A->16                      ;C322B1
 	lda.w #$0013
@@ -3421,7 +3421,7 @@ HandsFullScrollUseEffect:
 	jsl.l DisplayMessage
 	jsl.l $C28472                         ;C322CA
 	rts                                  ;C322CE
-	.db $08   ;C322CF
+	php                                     ;C322CF
 	rep #$30                                ;C322D0
 @lbl_C322D2:
 	jsl $C3F65F                             ;C322D2
@@ -3600,7 +3600,7 @@ HandsFullScrollUseEffect:
 	lda $02                                 ;C32473
 	pha                                     ;C32475
 	jsl.l DisplayMessage
-	.db $68   ;C32479
+	pla                                     ;C32479
 	sta $02                                 ;C3247A
 	sep #$20                                ;C3247C
 	lda $03                                 ;C3247E
