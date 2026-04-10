@@ -747,11 +747,34 @@ func_C108B1:
 	ldy #$06F4                              ;C10C58
 	sty $00                                 ;C10C5B
 	jsl.l DisplayMessage
-	.db $A3,$03,$85,$00,$22,$91,$15,$C2,$A3,$03,$85   ;C10C5C
-	.db $00,$A9,$C2,$85,$01,$A9,$05,$85,$02,$22,$2A,$94,$C2,$22,$05,$24   ;C10C6C
-	.db $C6,$A3,$03,$1A,$85,$00,$A0,$E1,$0F,$84,$02,$A9,$C1,$85,$04,$22   ;C10C7C  
-	.db $8C,$93,$C2,$A3,$03,$85,$00,$A0,$E8,$0F,$84,$02,$A9,$C1,$85,$04   ;C10C8C  
-	.db $22,$8C,$93,$C2,$A0,$F4,$06,$84,$00
+	lda $03,s                               ;C10C61
+	sta $00                                 ;C10C63
+	jsl $C21591                             ;C10C65
+	lda $03,s                               ;C10C69
+	sta $00                                 ;C10C6B
+	lda #$C2                                ;C10C6D
+	sta $01                                 ;C10C6F
+	lda #$05                                ;C10C71
+	sta $02                                 ;C10C73
+	jsl $C2942A                             ;C10C75
+	jsl $C62405                             ;C10C79
+	lda $03,s                               ;C10C7D
+	inc a                                   ;C10C7F
+	sta $00                                 ;C10C80
+	ldy #$0FE1                              ;C10C82
+	sty $02                                 ;C10C85
+	lda #$C1                                ;C10C87
+	sta $04                                 ;C10C89
+	jsl $C2938C                             ;C10C8B
+	lda $03,s                               ;C10C8F
+	sta $00                                 ;C10C91
+	ldy #$0FE8                              ;C10C93
+	sty $02                                 ;C10C96
+	lda #$C1                                ;C10C98
+	sta $04                                 ;C10C9A
+	jsl $C2938C                             ;C10C9C
+	ldy #$06F4                              ;C10CA0
+	sty $00                                 ;C10CA3
 	jsl.l DisplayMessage
 	.db $A3,$03,$85   ;C10C9C  
 	.db $00,$22,$91,$15,$C2,$A3,$03,$85,$00,$A9,$C2,$85,$01,$A9,$05,$85   ;C10CAC
