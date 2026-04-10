@@ -1735,11 +1735,23 @@ SpecialOnigiriUseEffect:
 	lda #$00F9                              ;C31663
 	sta $00                                 ;C31666
 	jsl.l DisplayMessage
-	.db $60,$E2,$20,$A9,$01,$85,$00,$22,$39,$33,$C2,$C2,$20   ;C31669  
-	.db $A9,$FA,$00,$85,$00
+	rts                                     ;C3166C
+	sep #$20                                ;C3166D
+	lda #$01                                ;C3166F
+	sta $00                                 ;C31671
+	jsl $C23339                             ;C31673
+	rep #$20                                ;C31677
+	lda #$00FA                              ;C31679
+	sta $00                                 ;C3167C
 	jsl.l DisplayMessage
-	.db $60,$E2,$20,$A9,$00,$85,$00   ;C31679
-	.db $22,$7F,$33,$C2,$C2,$20,$A9,$FB,$00,$85,$00
+	rts                                     ;C31682
+	sep #$20                                ;C31683
+	lda #$00                                ;C31685
+	sta $00                                 ;C31687
+	jsl $C2337F                             ;C31689
+	rep #$20                                ;C3168D
+	lda #$00FB                              ;C3168F
+	sta $00                                 ;C31692
 	jsl.l DisplayMessage
 	.db $60   ;C31689  
 	.db $E2,$20,$64,$00,$22,$74,$33,$C2,$C2,$20,$A9,$FC,$00,$85,$00
@@ -2155,8 +2167,17 @@ BigpotScrollUseEffect:
 	.db $FA,$68,$18,$7F,$8C,$8C,$7E,$9F,$8C,$8C,$7E,$60,$A9,$5C,$85,$00   ;C31A4A
 	.db $64,$01
 	jsl.l DisplayMessage
-	.db $60,$E2,$20,$22,$7E,$48,$C2,$A5,$00,$D0   ;C31A5A  
-	.db $05,$22,$4F,$7F,$C2,$60,$A9,$C5,$85,$00,$64,$01
+	rts                                     ;C31A60
+	sep #$20                                ;C31A61
+	jsl $C2487E                             ;C31A63
+	lda $00                                 ;C31A67
+	bne @lbl_C31A70                         ;C31A69
+	jsl $C27F4F                             ;C31A6B
+	rts                                     ;C31A6F
+@lbl_C31A70:
+	lda #$C5                                ;C31A70
+	sta $00                                 ;C31A72
+	stz $01                                 ;C31A74
 	jsl.l DisplayMessage
 	.db $60,$C2,$20,$E2,$10,$A9,$89,$00,$85,$00,$5A
 	jsl.l DisplayMessage
@@ -2839,8 +2860,16 @@ InvisibilityHerbUseEffect:
 	lda #$015D                              ;C3201F
 	sta $00                                 ;C32022
 	jsl.l DisplayMessage
-	.db $60,$E2,$20,$A9,$15,$85,$01,$A5,$00,$22,$F8,$82,$C2,$A9   ;C32026  
-	.db $01,$85,$02,$22,$50,$25,$C6,$60   ;C32036
+	rts                                     ;C32028
+	sep #$20                                ;C32029
+	lda #$15                                ;C3202B
+	sta $01                                 ;C3202D
+	lda $00                                 ;C3202F
+	jsl $C282F8                             ;C32031
+	lda #$01                                ;C32035
+	sta $02                                 ;C32037
+	jsl $C62550                             ;C32039
+	rts                                     ;C3203D
 SlothStaffUseEffect:
 	.db $22,$05,$83,$C2,$60,$22,$50,$83   ;C3203E
 	.db $C2,$60                           ;C32046
