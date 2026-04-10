@@ -1400,7 +1400,7 @@ PoisonHerbUseEffect:
 	lda #$00A0                              ;C312D4
 	sta $00                                 ;C312D7
 	jsl.l DisplayMessage
-	.db $60                   ;C312DA  
+	rts                                     ;C312DD
 
 func_C312DE:
 	php
@@ -1499,7 +1499,7 @@ ConfusionHerbUseEffect:
 	sta $00                                 ;C31398
 	stz $01                                 ;C3139A
 	jsl.l DisplayMessage
-	.db $60   ;C313A0
+	rts                                     ;C313A0
 SleepHerbUseEffect:
 	sep #$20                                ;C313A1
 	lda #$05                                ;C313A3
@@ -1637,7 +1637,7 @@ SleepHerbUseEffect:
 	sta $00                                 ;C314B6
 	stz $01                                 ;C314B8
 	jsl.l DisplayMessage
-	.db $60                       ;C314BC  
+	rts                                     ;C314BE
 DragonHerbUseEffect:
 	sep #$30 ;AXY->8
 	lda.b #$13
@@ -1903,7 +1903,7 @@ SpecialOnigiriUseEffect:
 	lda #$13                                ;C316E2
 	sta $00                                 ;C316E4
 	jsl $C23209                             ;C316E6
-	.db $60   ;C316EA
+	rts                                     ;C316EA
 SpoiledOnigiriUseEffect:
 	rep #$20                                ;C316EC
 	sep #$10                                ;C316EE
@@ -2042,7 +2042,7 @@ TrapScrollUseEffect:
 	lda #$005C                              ;C31817
 	sta $00                                 ;C3181A
 	jsl.l DisplayMessage
-	.db $60                               ;C31821
+	rts                                     ;C31821
 LightScrollUseEffect:
 	rep #$20 ;A->16
 	lda.w #$0013
@@ -2076,7 +2076,7 @@ LightScrollUseEffect:
 	sta $00                                 ;C31868
 .ACCU 8
 	jsl.l DisplayMessage
-	.db $60   ;C3186E
+	rts                                     ;C3186E
 RemovalScrollUseEffect:
 	rep #$20 ;A->16                    ;C3186F
 	lda.w #$0162
@@ -2108,7 +2108,7 @@ HasteScrollUseEffect:
 	sta $00                                 ;C318AD
 .ACCU 8
 	jsl.l DisplayMessage
-	.db $60                               ;C318B3
+	rts                                     ;C318B3
 SleepScrollUseEffect:
 	jsl.l func_C28790
 	rts
@@ -2176,7 +2176,7 @@ IdentityScrollUseEffect:
 	phy                                     ;C31935
 	jsl $C30192                             ;C31936
 	ply                                     ;C3193A
-	.db $C8   ;C3193B
+	iny                                     ;C3193B
 	bra @lbl_C31929                         ;C3193C
 @lbl_C3193E:
 	ldy #$1F                                ;C3193E
@@ -2190,7 +2190,7 @@ IdentityScrollUseEffect:
 	lda #$00B4                              ;C3194F
 	sta $00                                 ;C31952
 	jsl.l DisplayMessage
-	.db $60                           ;C31957  
+	rts                                     ;C31958
 
 func_C31959:
 	php
@@ -2293,7 +2293,7 @@ BigpotScrollUseEffect:
 	phx                                     ;C31A1E
 	ldy #$FF                                ;C31A1F
 @lbl_C31A21:
-	.db $C8   ;C31A21
+	iny                                     ;C31A21
 	lda $7E8E0C,x                           ;C31A22
 	tax                                     ;C31A26
 	cmp #$FF                                ;C31A27
@@ -2345,7 +2345,7 @@ BigpotScrollUseEffect:
 	phy                                     ;C31A84
 .ACCU 8
 	jsl.l DisplayMessage
-	.db $7A   ;C31A7A
+	ply                                     ;C31A88
 	sty $00                                 ;C31A8A
 	jsl $C62A63                             ;C31A8C
 
@@ -2408,7 +2408,7 @@ AirBlessScrollUseEffect:
 	phx                                     ;C31AF8
 	phb                                     ;C31AF9
 	jsl.l DisplayMessage
-	.db $AB   ;C31AEF  
+	plb                                     ;C31AFD
 	plx                                     ;C31AFF
 	lda $8C8C,x                             ;C31B00
 	inc a                                   ;C31B03
