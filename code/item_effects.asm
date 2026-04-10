@@ -3288,7 +3288,15 @@ ExtractionScrollUseEffect:
 	stx $02                                 ;C32297
 	phx                                     ;C32299
 	jsl.l DisplayMessage
-	.db $FA,$68,$20,$B2,$31,$60,$E2,$20,$A9,$5C,$85,$00,$64,$01   ;C3229C  
+	plx                                     ;C3229D
+	pla                                     ;C3229E
+	jsr $31B2                               ;C3229F
+	rts                                     ;C322A2
+	sep #$20                                ;C322A3
+	lda #$5C                                ;C322A5
+	sta $00                                 ;C322A7
+	stz $01                                 ;C322A9
+.ACCU 16
 	jsl.l DisplayMessage
 	.db $60   ;C322B0
 HandsFullScrollUseEffect:
@@ -3808,8 +3816,15 @@ JarUseEffect:
 	lda.w wItemType,y
 	cmp.b #$B8
 	bne @lbl_C32742
-	.db $86,$00,$DA,$5A,$8B,$22,$92,$01   ;C32734  
-	.db $C3,$AB,$7A,$FA,$80,$16           ;C3273C  
+	stx $00                                 ;C32734
+	phx                                     ;C32736
+	phy                                     ;C32737
+	phb                                     ;C32738
+	jsl $C30192                             ;C32739
+	plb                                     ;C3273D
+	ply                                     ;C3273E
+	plx                                     ;C3273F
+	.db $80,$16   ;C32740
 @lbl_C32742:
 	cmp.b #$BD
 	beq @lbl_C3277C
@@ -4076,17 +4091,29 @@ func_C328E9:
 	pha
 	lda.b wTemp00
 	beq @lbl_C32939
-	.db $A0,$13,$00,$84,$00,$22,$A7,$40,$C2,$A0,$9B,$00,$84,$00
+	ldy #$0013                              ;C32927
+	sty $00                                 ;C3292A
+	jsl $C240A7                             ;C3292C
+	ldy #$009B                              ;C32930
+	sty $00                                 ;C32933
 	jsl.l DisplayMessage
 @lbl_C32939:
 	pla
 	beq @lbl_C3294E
-	.db $A0,$13,$00,$84,$00,$22,$FF,$3F,$C2,$A0,$67,$00,$84,$00
+	ldy #$0013                              ;C3293C
+	sty $00                                 ;C3293F
+	jsl $C23FFF                             ;C32941
+	ldy #$0067                              ;C32945
+	sty $00                                 ;C32948
 	jsl.l DisplayMessage
 @lbl_C3294E:
 	pla
 	beq @lbl_C32963
-	.db $A0,$13,$00,$84,$00,$22,$73,$40,$C2,$A0,$6C,$00,$84,$00
+	ldy #$0013                              ;C32951
+	sty $00                                 ;C32954
+	jsl $C24073                             ;C32956
+	ldy #$006C                              ;C3295A
+	sty $00                                 ;C3295D
 	jsl.l DisplayMessage
 @lbl_C32963:
 	rts
