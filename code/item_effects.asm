@@ -2568,7 +2568,10 @@ PlatingScrollUseEffect:
 	sta $00                                 ;C31C5C
 	stz $01                                 ;C31C5E
 	jsl.l DisplayMessage
-	.db $60,$A9,$5C,$85,$00,$64,$01   ;C31C5B  
+	rts                                     ;C31C64
+	lda #$5C                                ;C31C65
+	sta $00                                 ;C31C67
+	stz $01                                 ;C31C69
 	jsl.l DisplayMessage
 	.db $60               ;C31C6B  
 BlessingScrollUseEffect:
@@ -3215,7 +3218,10 @@ GreatHallScrollUseEffect:
 	sta $00                                 ;C32153
 	stz $01                                 ;C32155
 	jsl.l DisplayMessage
-	.db $60,$A9,$5C,$85,$00,$64,$01
+	rts                                     ;C3215B
+	lda #$5C                                ;C3215C
+	sta $00                                 ;C3215E
+	stz $01                                 ;C32160
 	jsl.l DisplayMessage
 	.db $60   ;C32157  
 NeedScrollUseEffect:
@@ -5341,8 +5347,10 @@ func_C330FC:
 	sta $00                                 ;C33161
 	stx $02                                 ;C33163
 	jsl.l DisplayMessage
-	.db $A9,$FF   ;C3315B
-	.db $FF,$85,$00,$28,$6B               ;C3316B  
+	lda #$FFFF                              ;C33169
+	sta $00                                 ;C3316C
+	plp                                     ;C3316E
+	rtl                                     ;C3316F
 
 func_C33170:
 	php
