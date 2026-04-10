@@ -2352,7 +2352,8 @@ BigpotScrollUseEffect:
 .ACCU 8
 	jsl.l DisplayMessage
 	.db $7A   ;C31A7A
-	.db $84,$00,$22,$63,$2A,$C6           ;C31A8A
+	sty $00                                 ;C31A8A
+	jsl $C62A63                             ;C31A8C
 
 ;c31a90
 WeaponUseEffect:
