@@ -5495,8 +5495,7 @@ func_C331B2:
 	lda $00                                 ;C33255
 	bmi @lbl_C33277                         ;C33257
 	sta $06                                 ;C33259
-	.db $A3   ;C3325B
-	.db $02   ;C3325C
+	lda $02,s                               ;C3325B
 	sta $04                                 ;C3325D
 	stx $00                                 ;C3325F
 	lda $7E8B8C,x                           ;C33261
@@ -5509,8 +5508,7 @@ func_C331B2:
 	jsl $C626CA                             ;C33272
 	ply                                     ;C33276
 @lbl_C33277:
-	.db $C0   ;C33277
-	.db $01   ;C33278
+	cpy #$01                                ;C33277
 	beq @lbl_C33224                         ;C33279
 	plx                                     ;C3327B
 	sep #$20                                ;C3327C
@@ -6346,11 +6344,9 @@ func_C335FE:
 	pla                                     ;C3389D
 	sta $00                                 ;C3389E
 	ldx $03                                 ;C338A0
-	.db $E0   ;C338A2
-	.db $50   ;C338A3
+	cpx #$50                                ;C338A2
 	beq @lbl_C338BE                         ;C338A4
-	.db $E0   ;C338A6
-	.db $23   ;C338A7
+	cpx #$23                                ;C338A6
 	bne @lbl_C33878                         ;C338A8
 	pha                                     ;C338AA
 	jsl $C21128                             ;C338AB
@@ -6418,8 +6414,7 @@ func_C335FE:
 	ply                                     ;C33934
 	pla                                     ;C33935
 	sta $00                                 ;C33936
-	.db $C4   ;C33938
-	.db $00   ;C33939
+	cpy $00                                 ;C33938
 	beq @lbl_C33940                         ;C3393A
 	jsl $C625B9                             ;C3393C
 @lbl_C33940:
