@@ -3316,8 +3316,16 @@ HandsFullScrollUseEffect:
 	lda $02                                 ;C3242E
 	pha                                     ;C32430
 	jsl.l DisplayMessage
-	.db $68,$85,$02,$E2,$20,$A5,$02   ;C3242C  
-	.db $85,$00,$22,$F4,$06,$C3,$80,$0B,$C2,$20,$A9,$5C,$00,$85,$00
+	pla                                     ;C32434
+	sta $02                                 ;C32435
+	sep #$20                                ;C32437
+	lda $02                                 ;C32439
+	sta $00                                 ;C3243B
+	jsl $C306F4                             ;C3243D
+	.db $80,$0B   ;C32441
+	rep #$20                                ;C32443
+	lda #$005C                              ;C32445
+	sta $00                                 ;C32448
 	jsl.l DisplayMessage
 	rts                                     ;C3244F
 	sep #$20                                ;C32450
