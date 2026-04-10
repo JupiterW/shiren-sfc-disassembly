@@ -3305,7 +3305,8 @@ NeedScrollUseEffect:
 	ora.b wTemp01
 	beq @lbl_C321E1
 ;C321DC  
-	.db $22,$95,$11,$C2,$60
+	jsl $C21195                             ;C321DC
+	rts                                     ;C321E0
 @lbl_C321E1:
 	jsl.l func_C21167
 	lda.b wTemp00
@@ -3654,7 +3655,8 @@ HandsFullScrollUseEffect:
 	lda #$00C3                              ;C324EB
 	sta $00                                 ;C324EE
 	jsl.l DisplayMessage
-	.db $22,$D5,$7F,$C2,$60               ;C324F4  
+	jsl $C27FD5                             ;C324F4
+	rts                                     ;C324F8
 
 func_C324F9:
 	php
@@ -6208,7 +6210,9 @@ func_C335FE:
 	pla                                     ;C33767
 	sta $02                                 ;C33768
 	jsl.l DisplayMessage
-	.db $A2,$A4,$06,$86,$00
+	ldx #$A4                                ;C3376E
+	asl $86                                 ;C33770
+	.db $00   ;C33772
 	jsl.l DisplayMessage
 	jsl $C62437                             ;C33777
 	rts                                     ;C3377B
@@ -6250,7 +6254,8 @@ func_C335FE:
 	ldy #$0764                              ;C337C5
 	sty $00                                 ;C337C8
 	jsl.l DisplayMessage
-	.db $A0,$22,$09,$84,$00
+	ldy #$0922                              ;C337CE
+	sty $00                                 ;C337D1
 	jsl.l DisplayMessage
 	lda #$08                                ;C337D7
 	sta $00                                 ;C337D9
@@ -6311,11 +6316,8 @@ func_C335FE:
 	pla                                     ;C3383F
 	lda $7E8C8C,x                           ;C33840
 	dec a                                   ;C33844
-	.db $9F   ;C33845
-	.db $8C   ;C33846
-	.db $8C   ;C33847
-	.db $7E   ;C33848
-	.db $9B   ;C33849
+	sta $7E8C8C,x                           ;C33845
+	txy                                     ;C33849
 	bra @lbl_C3384D                         ;C3384A
 @lbl_C3384C:
 	tax                                     ;C3384C
