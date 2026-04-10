@@ -5210,8 +5210,17 @@ func_C332D7:
 	lda.l wItemType,x
 	cmp.b #$B7
 	bne @lbl_C332F6
-	.db $DA,$DA,$20,$19,$33,$FA,$BF,$0C,$8E,$7E,$AA,$C9,$FF,$D0,$F2,$FA   ;C332E4
-	.db $80,$1E                           ;C332F4  
+	phx                                     ;C332E4
+@lbl_C332E5:
+	phx                                     ;C332E5
+	jsr $3319                               ;C332E6
+	plx                                     ;C332E9
+	lda $7E8E0C,x                           ;C332EA
+	tax                                     ;C332EE
+	cmp #$FF                                ;C332EF
+	bne @lbl_C332E5                         ;C332F1
+	plx                                     ;C332F3
+	.db $80,$1E   ;C332F4
 @lbl_C332F6:
 	cmp.b #$BB
 	bne @lbl_C33314
