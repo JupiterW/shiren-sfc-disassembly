@@ -2066,7 +2066,10 @@ LightScrollUseEffect:
 	jsl.l DisplayMessage
 @lbl_C31862:
 	rts
-	.db $C2,$20,$A9,$55,$00,$85,$00
+	rep #$20                                ;C31863
+	lda #$0055                              ;C31865
+	sta $00                                 ;C31868
+.ACCU 8
 	jsl.l DisplayMessage
 	.db $60   ;C3186E
 RemovalScrollUseEffect:
