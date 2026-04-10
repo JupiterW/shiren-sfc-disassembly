@@ -6443,6 +6443,7 @@ func_C335FE:
 	sta $00                                 ;C3396C
 	jsl.l DisplayMessage
 	rts                                     ;C33972
+DragonHerbThrowEffect:
 	sep #$20                                ;C33973
 	rep #$10                                ;C33975
 	ldy $00                                 ;C33977
