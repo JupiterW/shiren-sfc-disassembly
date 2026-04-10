@@ -564,7 +564,9 @@ func_C30BD3:
 ;C30C66  
 	.db $80,$0A
 @lbl_C30C68:
-	.db $A9,$5C,$85,$00,$64,$01
+	lda #$5C                                ;C30C68
+	sta $00                                 ;C30C6A
+	stz $01                                 ;C30C6C
 	jsl.l DisplayMessage
 	pla                                     ;C30C72
 	pla                                     ;C30C73
@@ -669,8 +671,10 @@ func_C30D11:
 	stz $01                                 ;C30D1B
 	sty $02                                 ;C30D1D
 	jsl.l DisplayMessage
-	.db $A9,$01,$85,$00   ;C30D17
-	.db $28,$6B                           ;C30D27
+	lda #$01                                ;C30D23
+	sta $00                                 ;C30D25
+	plp                                     ;C30D27
+	rtl                                     ;C30D28
 @lbl_C30D29:
 	cmp.b #$0B
 	bne @lbl_C30D30
@@ -685,7 +689,9 @@ func_C30D11:
 	jsl.l func_C23367
 	lda.b wTemp00
 	beq @lbl_C30D55
-	.db $A9,$53,$85,$00,$64,$01
+	lda #$53                                ;C30D42
+	sta $00                                 ;C30D44
+	stz $01                                 ;C30D46
 	jsl.l DisplayMessage
 	pla                                     ;C30D4C
 	pla                                     ;C30D4D
@@ -705,7 +711,9 @@ func_C30D11:
 	cmp.b #$E6
 	bne @lbl_C30D73
 @lbl_C30D67:
-	.db $A9,$82,$85,$00,$64,$01
+	lda #$82                                ;C30D67
+	sta $00                                 ;C30D69
+	stz $01                                 ;C30D6B
 	jsl.l DisplayMessage
 	.db $80,$D9                   ;C30D6F  
 @lbl_C30D73:
@@ -2107,7 +2115,9 @@ HasteScrollUseEffect:
 SleepScrollUseEffect:
 	jsl.l func_C28790
 	rts
-	.db $E2,$20,$A9,$1E,$85,$00
+	sep #$20                                ;C318B9
+	lda #$1E                                ;C318BB
+	sta $00                                 ;C318BD
 	jsl.l _GetEvent
 	.db $A5,$00,$D0,$0B,$A9,$5C   ;C318B9
 	.db $85,$00,$64,$01
