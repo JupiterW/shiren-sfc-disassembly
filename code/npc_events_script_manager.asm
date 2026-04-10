@@ -22,11 +22,19 @@ func_C150D7:
 	rtl
 
 DATA8_C150F5:
-	.db $16,$51,$23,$51,$30,$51           ;C150F5
-	.db $37,$51,$40,$51                   ;C150FB  
-	.db $4A,$51,$57,$51                   ;C150FF
-	.db $90,$51                           ;C15103  
-	.db $61,$51,$0D,$51,$91,$51,$AA,$51   ;C15105
+	asl $51,x                               ;C150F5
+	and $51,s                               ;C150F7
+	.db $30,$51   ;C150F9
+	and [$51],y                             ;C150FB
+	rti                                     ;C150FD
+	eor ($4A),y                             ;C150FE
+	eor ($57),y                             ;C15100
+	eor ($90),y                             ;C15102
+	eor ($61),y                             ;C15104
+	eor ($0D),y                             ;C15106
+	eor ($91),y                             ;C15108
+	eor ($AA),y                             ;C1510A
+	.db $51   ;C1510C
 	tyx
 	iny
 	iny
@@ -59,8 +67,19 @@ DATA8_C150F5:
 	restorebank
 	ldy.w NPCScript,x
 	rts
-	.db $BB,$C8,$C8,$5A,$FC,$40,$52,$80,$05,$B9,$40,$52,$C8,$5A,$20,$09   ;C15137
-	.db $52,$7A,$60                       ;C15147  
+	tyx                                     ;C15137
+	iny                                     ;C15138
+	iny                                     ;C15139
+	phy                                     ;C1513A
+	jsr ($5240,x)                           ;C1513B
+	bra @lbl_C15145                         ;C1513E
+	lda $5240,y                             ;C15140
+	iny                                     ;C15143
+	phy                                     ;C15144
+@lbl_C15145:
+	jsr $5209                               ;C15145
+	ply                                     ;C15148
+	rts                                     ;C15149
 	tyx
 	iny
 	iny
@@ -168,10 +187,36 @@ func_C151E9:
 	bne @lbl_C151F6
 	stx.b wTemp00
 	rts
-	.db $08,$E2,$20,$C2,$10,$48,$A9,$13,$85,$00,$22,$AC,$10,$C2,$22,$1A   ;C15209
-	.db $63,$C3,$A6,$00,$10,$06,$68,$20,$C3,$51,$28,$60,$A9,$06,$85,$02   ;C15219  
-	.db $68,$85,$03,$DA,$22,$7D,$00,$C2,$FA,$A5,$00,$30,$08,$85,$02,$86   ;C15229
-	.db $00,$22,$7A,$5B,$C3,$28,$60       ;C15239
+	php                                     ;C15209
+	sep #$20                                ;C1520A
+	rep #$10                                ;C1520C
+	pha                                     ;C1520E
+	lda #$13                                ;C1520F
+	sta $00                                 ;C15211
+	jsl $C210AC                             ;C15213
+	jsl $C3631A                             ;C15217
+	ldx $00                                 ;C1521B
+	bpl @lbl_C15225                         ;C1521D
+	pla                                     ;C1521F
+	jsr $51C3                               ;C15220
+	plp                                     ;C15223
+	rts                                     ;C15224
+@lbl_C15225:
+	lda #$06                                ;C15225
+	sta $02                                 ;C15227
+	pla                                     ;C15229
+	sta $03                                 ;C1522A
+	phx                                     ;C1522C
+	jsl $C2007D                             ;C1522D
+	plx                                     ;C15231
+	lda $00                                 ;C15232
+	bmi @lbl_C1523E                         ;C15234
+	sta $02                                 ;C15236
+	stx $00                                 ;C15238
+	jsl $C35B7A                             ;C1523A
+@lbl_C1523E:
+	plp                                     ;C1523E
+	rts                                     ;C1523F
 
 .include "data/npc_events_script.asm"
 
@@ -423,9 +468,17 @@ NPCScriptFunction_C15C3F:
 NPCScriptFunction_C15C56:
 	.db $08,$E2,$30,$A9,$8B,$85,$00,$A9,$00,$85,$02
 	jsl.l _SetEvent
-	.db $22   ;C15C56
-	.db $F1,$27,$C6,$A5,$00,$F0,$04,$22,$0B,$2C,$C6,$A9,$03,$85,$00,$22   ;C15C66  
-	.db $F2,$2B,$C6,$20,$9A,$01,$28,$60   ;C15C76  
+	jsl $C627F1                             ;C15C65
+	lda $00                                 ;C15C69
+	beq @lbl_C15C71                         ;C15C6B
+	jsl $C62C0B                             ;C15C6D
+@lbl_C15C71:
+	lda #$03                                ;C15C71
+	sta $00                                 ;C15C73
+	jsl $C62BF2                             ;C15C75
+	jsr $019A                               ;C15C79
+	plp                                     ;C15C7C
+	rts                                     ;C15C7D
 
 NPCScriptFunction_C15C7E:
 	php
@@ -479,8 +532,14 @@ NPCScriptFunction_C15D28:
 	.db $A5,$00,$09,$08,$85   ;C15D28
 	.db $02,$A9,$17,$85,$00
 	jsl.l _SetEvent
-	.db $A9,$0A,$85,$00,$22,$F2,$2B   ;C15D38
-	.db $C6,$20,$9A,$01,$A9,$8E,$85,$00,$A9,$01,$85,$02
+	lda #$0A                                ;C15D41
+	sta $00                                 ;C15D43
+	jsl $C62BF2                             ;C15D45
+	jsr $019A                               ;C15D49
+	lda #$8E                                ;C15D4C
+	sta $00                                 ;C15D4E
+	lda #$01                                ;C15D50
+	sta $02                                 ;C15D52
 	jsl.l _SetEvent
 	.db $22,$07,$09,$C6,$22,$18,$8B,$C2   ;C15D58  
 	.db $28,$60                           ;C15D60
@@ -581,9 +640,23 @@ NPCScriptFunction_C15DD6:
 	rts
 
 NPCScriptFunction_C15DF3:
-	.db $08,$E2,$20,$22,$DB,$27,$C6,$A5,$00,$C9,$0A,$D0,$0D,$22,$66,$27   ;C15DF3
-	.db $C6,$A5,$00,$C9,$73,$D0,$03,$28   ;C15E03  
-	.db $38,$60,$28,$18,$60
+	php                                     ;C15DF3
+	sep #$20                                ;C15DF4
+	jsl $C627DB                             ;C15DF6
+	lda $00                                 ;C15DFA
+	cmp #$0A                                ;C15DFC
+	bne @lbl_C15E0D                         ;C15DFE
+	jsl $C62766                             ;C15E00
+	lda $00                                 ;C15E04
+	cmp #$73                                ;C15E06
+	bne @lbl_C15E0D                         ;C15E08
+	plp                                     ;C15E0A
+	sec                                     ;C15E0B
+	rts                                     ;C15E0C
+@lbl_C15E0D:
+	plp                                     ;C15E0D
+	clc                                     ;C15E0E
+	rts                                     ;C15E0F
 	
 NPCScriptFunction_C15E10:
 	.db $08,$E2,$20   ;C15E0B
@@ -664,9 +737,15 @@ NPCScriptFunction_C15E90:
 	bcc @lbl_C15EC4
 	.db $A9,$87,$85,$00
 	jsl.l _GetEvent
-	.db $A5,$00,$D0,$0D,$22,$5F,$F6,$C3   ;C15EAB
-	.db $A5,$00,$C9,$10,$B0,$03,$28,$38   ;C15EBB  
-	.db $60                               ;C15EC3
+	lda $00                                 ;C15EAB
+	.db $D0,$0D   ;C15EAD
+	jsl $C3F65F                             ;C15EAF
+	lda $00                                 ;C15EB3
+	cmp #$10                                ;C15EB5
+	.db $B0,$03   ;C15EB7
+	plp                                     ;C15EB9
+	sec                                     ;C15EBA
+	rts                                     ;C15EBB
 @lbl_C15EC4:
 	plp
 	clc
@@ -731,28 +810,84 @@ NPCScriptFunction_C15F2F:
 	.db $28,$38,$60
 	
 NPCScriptFunction_C15F3F:
-	.db $08,$E2,$20,$22,$71   ;C15F3C
-	.db $27,$C6,$A5,$00,$C9,$10,$B0,$03   ;C15F44  
-	.db $28,$18,$60,$28,$38,$60
+	php                                     ;C15F3F
+	sep #$20                                ;C15F40
+	jsl $C62771                             ;C15F42
+	lda $00                                 ;C15F46
+	cmp #$10                                ;C15F48
+	bcs @lbl_C15F4F                         ;C15F4A
+	plp                                     ;C15F4C
+	clc                                     ;C15F4D
+	rts                                     ;C15F4E
+@lbl_C15F4F:
+	plp                                     ;C15F4F
+	sec                                     ;C15F50
+	rts                                     ;C15F51
 	
 NPCScriptFunction_C15F52:
-	.db $08,$E2   ;C15F4C
-	.db $20,$A9,$C0,$85,$00,$22,$5D,$03,$C3,$A5,$00,$30,$16,$85,$00,$48   ;C15F54  
-	.db $22,$92,$01,$C3,$68,$85,$02,$A9,$28,$85,$00,$A9,$23,$85,$01,$22   ;C15F64  
-	.db $A2,$5B,$C3,$28,$60
+	php                                     ;C15F52
+	sep #$20                                ;C15F53
+	lda #$C0                                ;C15F55
+	sta $00                                 ;C15F57
+	jsl $C3035D                             ;C15F59
+	lda $00                                 ;C15F5D
+	bmi @lbl_C15F77                         ;C15F5F
+	sta $00                                 ;C15F61
+	pha                                     ;C15F63
+	jsl $C30192                             ;C15F64
+	pla                                     ;C15F68
+	sta $02                                 ;C15F69
+	lda #$28                                ;C15F6B
+	sta $00                                 ;C15F6D
+	lda #$23                                ;C15F6F
+	sta $01                                 ;C15F71
+	jsl $C35BA2                             ;C15F73
+@lbl_C15F77:
+	plp                                     ;C15F77
+	rts                                     ;C15F78
 	
 NPCScriptFunction_C15F79:
-	.db $08,$E2,$20   ;C15F74
-	.db $C2,$10,$A0,$0F,$05,$84,$00,$5A,$22,$55,$00,$C2,$7A,$A5,$00,$85   ;C15F7C
-	.db $02,$84,$00,$22,$7A,$5B,$C3,$A9,$19,$85,$00,$A9,$00,$85,$02
+	php                                     ;C15F79
+	sep #$20                                ;C15F7A
+	rep #$10                                ;C15F7C
+	ldy #$050F                              ;C15F7E
+	sty $00                                 ;C15F81
+	phy                                     ;C15F83
+	jsl $C20055                             ;C15F84
+	ply                                     ;C15F88
+	lda $00                                 ;C15F89
+	sta $02                                 ;C15F8B
+	sty $00                                 ;C15F8D
+	jsl $C35B7A                             ;C15F8F
+	lda #$19                                ;C15F93
+	sta $00                                 ;C15F95
+	lda #$00                                ;C15F97
+	sta $02                                 ;C15F99
 	jsl.l _SetEvent
 	.db $28,$60
 	
 NPCScriptFunction_C15FA1:
-	.db $08,$E2,$20   ;C15F9C  
-	.db $22,$0D,$8B,$C2,$28,$60,$08,$E2,$20,$A9,$E1,$85,$00,$22,$5D,$03   ;C15FA4  
-	.db $C3,$A5,$00,$30,$0E,$85,$02,$A9,$17,$85,$00,$A9,$11,$85,$01,$22   ;C15FB4  
-	.db $A2,$5B,$C3,$28,$60               ;C15FC4
+	php                                     ;C15FA1
+	sep #$20                                ;C15FA2
+	jsl $C28B0D                             ;C15FA4
+	plp                                     ;C15FA8
+	rts                                     ;C15FA9
+	php                                     ;C15FAA
+	sep #$20                                ;C15FAB
+	lda #$E1                                ;C15FAD
+	sta $00                                 ;C15FAF
+	jsl $C3035D                             ;C15FB1
+	lda $00                                 ;C15FB5
+	bmi @lbl_C15FC7                         ;C15FB7
+	sta $02                                 ;C15FB9
+	lda #$17                                ;C15FBB
+	sta $00                                 ;C15FBD
+	lda #$11                                ;C15FBF
+	sta $01                                 ;C15FC1
+	jsl $C35BA2                             ;C15FC3
+@lbl_C15FC7:
+	plp                                     ;C15FC7
+	rts                                     ;C15FC8
 
 NPCScriptFunction_C15FC9:
 	php
@@ -952,8 +1087,16 @@ NPCScriptFunction_C161EB:
 	bne @lbl_C1621F
 	.db $A9,$88,$85,$00
 	jsl.l _GetEvent
-	.db $A5,$00,$D0,$17,$22,$71,$27,$C6   ;C161FC
-	.db $A5,$00,$C9,$07,$B0,$0D,$22,$5F,$F6,$C3,$A5,$00,$C9,$15,$B0,$03   ;C1620C  
+	lda $00                                 ;C161FC
+	.db $D0,$17   ;C161FE
+	jsl $C62771                             ;C16200
+	lda $00                                 ;C16204
+	cmp #$07                                ;C16206
+	.db $B0,$0D   ;C16208
+	jsl $C3F65F                             ;C1620A
+	lda $00                                 ;C1620E
+	cmp #$15                                ;C16210
+	.db $B0,$03   ;C16212
 	;C1621C
 	plp
 	sec
@@ -1044,9 +1187,19 @@ NPCScriptFunction_C162D7:
 	.db $28,$60
 	
 NPCScriptFunction_C162E8:
-	.db $08,$E2,$20,$22   ;C162E4  
-	.db $71,$27,$C6,$A5,$00,$C9,$19,$90   ;C162EC  
-	.db $03,$28,$38,$60,$28,$18,$60
+	php                                     ;C162E8
+	sep #$20                                ;C162E9
+	jsl $C62771                             ;C162EB
+	lda $00                                 ;C162EF
+	cmp #$19                                ;C162F1
+	bcc @lbl_C162F8                         ;C162F3
+	plp                                     ;C162F5
+	sec                                     ;C162F6
+	rts                                     ;C162F7
+@lbl_C162F8:
+	plp                                     ;C162F8
+	clc                                     ;C162F9
+	rts                                     ;C162FA
 	
 NPCScriptFunction_C162FB:
 	.db $08   ;C162F4  
@@ -1062,9 +1215,17 @@ NPCScriptFunction_C16310:
 	.db $28,$60
 	
 NPCScriptFunction_C16321:
-	.db $08,$E2,$20   ;C1631C  
-	.db $A9,$0D,$85,$00,$A9,$14,$85,$01,$A9,$F0,$85,$02,$22,$72,$5C,$C3   ;C16324
-	.db $28,$60                           ;C16334
+	php                                     ;C16321
+	sep #$20                                ;C16322
+	lda #$0D                                ;C16324
+	sta $00                                 ;C16326
+	lda #$14                                ;C16328
+	sta $01                                 ;C1632A
+	lda #$F0                                ;C1632C
+	sta $02                                 ;C1632E
+	jsl $C35C72                             ;C16330
+	plp                                     ;C16334
+	rts                                     ;C16335
 
 NPCScriptFunction_C16336:
 	php
@@ -1550,10 +1711,35 @@ NPCScriptFunction_C16790:
 NPCScriptFunction_C167BC:
 	.db $08,$E2,$30,$A9,$92,$85,$00
 	jsl.l _GetEvent
-	.db $A5,$00,$A2,$63,$86   ;C167BC
-	.db $06,$48,$DA,$22,$1F,$05,$C6,$FA,$68,$45,$00,$45,$01,$45,$02,$45   ;C167CC  
-	.db $03,$45,$04,$45,$05,$CA,$10,$E7,$C9,$00,$D0,$0C,$A9,$1E,$85,$00   ;C167DC  
-	.db $A9,$01,$85,$02
+	lda $00                                 ;C167C7
+	ldx #$63                                ;C167C9
+@lbl_C167CB:
+	stx $06                                 ;C167CB
+	pha                                     ;C167CD
+	phx                                     ;C167CE
+	jsl $C6051F                             ;C167CF
+	plx                                     ;C167D3
+	pla                                     ;C167D4
+	.db $45   ;C167D5
+	.db $00   ;C167D6
+	.db $45   ;C167D7
+	.db $01   ;C167D8
+	.db $45   ;C167D9
+	.db $02   ;C167DA
+	.db $45   ;C167DB
+	.db $03   ;C167DC
+	.db $45   ;C167DD
+	.db $04   ;C167DE
+	.db $45   ;C167DF
+	.db $05   ;C167E0
+	.db $CA   ;C167E1
+	bpl @lbl_C167CB                         ;C167E2
+	cmp #$00                                ;C167E4
+	.db $D0,$0C   ;C167E6
+	lda #$1E                                ;C167E8
+	sta $00                                 ;C167EA
+	lda #$01                                ;C167EC
+	sta $02                                 ;C167EE
 	jsl.l _SetEvent
 	.db $28,$60                           ;C167F4
 
@@ -1636,9 +1822,22 @@ NPCScriptFunction_C16898:
 	.db $08,$E2,$20,$A9,$93,$85,$00   ;C16897
 	.db $A9,$0A,$85,$02
 	jsl.l _SetEvent
-	.db $28,$60,$08,$E2,$20,$C2,$10,$64   ;C1689F
-	.db $00,$A9,$04,$85,$01,$22,$9F,$F6,$C3,$64,$01,$A6,$00,$BF,$C2,$68   ;C168AF
-	.db $C1,$28,$60,$A0,$A1,$A2,$A3,$A6   ;C168BF  
+	plp                                     ;C168A7
+	rts                                     ;C168A8
+	php                                     ;C168A9
+	sep #$20                                ;C168AA
+	rep #$10                                ;C168AC
+	stz $00                                 ;C168AE
+	lda #$04                                ;C168B0
+	sta $01                                 ;C168B2
+	jsl $C3F69F                             ;C168B4
+	stz $01                                 ;C168B8
+	ldx $00                                 ;C168BA
+	lda $C168C2,x                           ;C168BC
+	plp                                     ;C168C0
+	rts                                     ;C168C1
+	ldy #$A2A1                              ;C168C2
+	lda $A6,s                               ;C168C5
 
 NPCScriptFunction_C168C7:
 	php
@@ -1685,8 +1884,17 @@ NPCScriptFunction_C168E8:
 	rts
 
 NPCScript_SetMusic:
-	.db $08,$E2,$20,$22,$5F,$F6,$C3,$A5,$00,$29,$1F,$C9,$14,$B0,$F4,$85   ;C16939
-	.db $02,$A9,$8F,$85,$00
+	php                                     ;C16939
+	sep #$20                                ;C1693A
+@lbl_C1693C:
+	jsl $C3F65F                             ;C1693C
+	lda $00                                 ;C16940
+	and #$1F                                ;C16942
+	cmp #$14                                ;C16944
+	bcs @lbl_C1693C                         ;C16946
+	sta $02                                 ;C16948
+	lda #$8F                                ;C1694A
+	sta $00                                 ;C1694C
 	jsl.l _SetEvent
 	.db $28,$60
 	
@@ -1696,11 +1904,23 @@ NPCScriptFunction_C16954:
 	jsl.l _GetEvent
 	.db $A5,$00,$09,$02,$85,$02,$A9,$18,$85,$00
 	jsl.l _SetEvent
-	.db $20,$89   ;C16969  
-	.db $01,$A9,$02,$85,$00,$64,$01,$64,$02,$22,$95,$02,$C3,$22,$57,$01   ;C16979  
-	.db $C1,$A9,$AF,$85,$00,$22,$5D,$03,$C3,$22,$57,$01,$C1,$22,$3A,$25   ;C16989  
-	.db $C6,$64,$00,$22,$91,$3C,$C2,$22   ;C16999  
-	.db $45,$25,$C6,$28,$60
+	jsr $0189                               ;C16977
+	lda #$02                                ;C1697A
+	sta $00                                 ;C1697C
+	stz $01                                 ;C1697E
+	stz $02                                 ;C16980
+	jsl $C30295                             ;C16982
+	jsl $C10157                             ;C16986
+	lda #$AF                                ;C1698A
+	sta $00                                 ;C1698C
+	jsl $C3035D                             ;C1698E
+	jsl $C10157                             ;C16992
+	jsl $C6253A                             ;C16996
+	stz $00                                 ;C1699A
+	jsl $C23C91                             ;C1699C
+	jsl $C62545                             ;C169A0
+	plp                                     ;C169A4
+	rts                                     ;C169A5
 	
 NPCScriptFunction_C169A6:
 	.db $08,$E2,$20   ;C169A1  
@@ -1717,11 +1937,28 @@ NPCScriptFunction_C169C5:
 	jsl.l _GetEvent
 	.db $A5,$00,$09,$04,$85,$02,$A9,$18,$85,$00
 	jsl.l _SetEvent
-	.db $20   ;C169D9  
-	.db $89,$01,$A9,$95,$85,$00,$64,$01,$64,$02,$22,$95,$02,$C3,$A5,$00   ;C169E9
-	.db $48,$22,$92,$01,$C3,$68,$85,$00,$22,$57,$01,$C1,$A9,$AF,$85,$00   ;C169F9
-	.db $22,$5D,$03,$C3,$22,$57,$01,$C1,$22,$3A,$25,$C6,$64,$00,$22,$91   ;C16A09  
-	.db $3C,$C2,$22,$45,$25,$C6,$28,$60   ;C16A19  
+	jsr $0189                               ;C169E8
+	lda #$95                                ;C169EB
+	sta $00                                 ;C169ED
+	stz $01                                 ;C169EF
+	stz $02                                 ;C169F1
+	jsl $C30295                             ;C169F3
+	lda $00                                 ;C169F7
+	pha                                     ;C169F9
+	jsl $C30192                             ;C169FA
+	pla                                     ;C169FE
+	sta $00                                 ;C169FF
+	jsl $C10157                             ;C16A01
+	lda #$AF                                ;C16A05
+	sta $00                                 ;C16A07
+	jsl $C3035D                             ;C16A09
+	jsl $C10157                             ;C16A0D
+	jsl $C6253A                             ;C16A11
+	stz $00                                 ;C16A15
+	jsl $C23C91                             ;C16A17
+	jsl $C62545                             ;C16A1B
+	plp                                     ;C16A1F
+	rts                                     ;C16A20
 
 NPCScriptFunction_C16A21:
 	.db $08,$E2,$30,$22,$71,$27,$C6,$A5,$00,$C9,$01,$D0,$25,$A9,$18,$85   ;C16A21
@@ -2018,8 +2255,19 @@ func_C16C7D:
 	.db $08,$E2,$30,$AF,$62,$89,$7E,$30,$0E,$A9,$88,$85,$00,$A9,$00,$85   ;C16D28
 	.db $01
 	jsl.l DisplayMessage
-	.db $28,$6B,$A9,$3E,$85,$00,$A9,$09,$85,$01,$22   ;C16D38  
-	.db $7E,$2B,$C6,$A5,$00,$10,$0E,$A9,$7F,$85,$00,$A9,$06,$85,$01
+	plp                                     ;C16D3D
+	rtl                                     ;C16D3E
+	lda #$3E                                ;C16D3F
+	sta $00                                 ;C16D41
+	lda #$09                                ;C16D43
+	sta $01                                 ;C16D45
+	jsl $C62B7E                             ;C16D47
+	lda $00                                 ;C16D4B
+	.db $10,$0E   ;C16D4D
+	lda #$7F                                ;C16D4F
+	sta $00                                 ;C16D51
+	lda #$06                                ;C16D53
+	sta $01                                 ;C16D55
 	jsl.l DisplayMessage
 	.db $28,$6B,$A8,$0A,$AA,$BF,$FD,$6D,$C1,$85,$00,$BF,$FE   ;C16D58  
 	.db $6D,$C1,$85,$01,$5A,$22,$7E,$2B,$C6,$7A,$A6,$00,$10,$06,$22,$05   ;C16D68  
