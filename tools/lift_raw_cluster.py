@@ -31,6 +31,7 @@ from promote_raw_item_handler_label import (
     load_lines,
     parse_comment_addr,
     parse_label_addr,
+    parse_label_name,
     write_lines,
 )
 from raw_db_decode import DecodeState, decode_one, parse_addr
@@ -150,6 +151,11 @@ def _emit_decoded_lines(
             )
         i += table_count * 2
 
+    # Only create labels for targets that land exactly on an instruction boundary.
+    # If a branch target falls mid-instruction (misaligned data decoded as code),
+    # the label would never be placed, causing an assembler "unknown label" error.
+    insn_addr_set: set[int] = {insn.addr for insn in decoded if insn.opcode != -1}
+
     branch_labels: dict[int, str] = {}
     for insn in decoded:
         if insn.opcode in SHORT_BRANCH_OPS and insn.size >= 2:
@@ -164,7 +170,7 @@ def _emit_decoded_lines(
             target = insn.addr + 3 + disp
         else:
             continue
-        if base_addr <= target < base_addr + len(data):
+        if target in insn_addr_set:
             branch_labels.setdefault(target, f"@lbl_{target:06X}")
 
     offset = 0
@@ -177,13 +183,13 @@ def _emit_decoded_lines(
             if disp >= 0x80:
                 disp -= 0x100
             target = insn.addr + 2 + disp
-            branch_external = target not in branch_labels and not (base_addr <= target < base_addr + len(data))
+            branch_external = target not in branch_labels
         elif insn.opcode in LONG_BRANCH_OPS and insn.size >= 3:
             disp = data[offset + 1] | (data[offset + 2] << 8)
             if disp >= 0x8000:
                 disp -= 0x10000
             target = insn.addr + 3 + disp
-            branch_external = target not in branch_labels and not (base_addr <= target < base_addr + len(data))
+            branch_external = target not in branch_labels
 
         if insn.text.startswith(".db ") or branch_external:
             chunk = data[offset : offset + insn.size]
@@ -255,13 +261,26 @@ def _compute_line_starts(lines: list[str]) -> list[int | None]:
         label_addr = parse_label_addr(line)
         comment_addr = parse_comment_addr(line)
 
+        # Determine if this is a non-local label (authoritative ROM anchor).
+        # Non-local labels like func_C2D8F0 always reset the tracker — even
+        # when the address is lower than current_addr — because the file can
+        # contain code from multiple banks.  Local labels (@lbl_*) keep the
+        # >= check: they can reference cross-bank branch targets and blindly
+        # trusting them would corrupt the tracker.
+        label_name = parse_label_name(line)
+        is_nonlocal = (
+            label_name is not None
+            and not label_name.startswith("@")
+            and not label_name.startswith(".")
+        )
+
         if current_addr is None:
             if label_addr is not None:
                 current_addr = label_addr
             elif comment_addr is not None:
                 current_addr = comment_addr
         else:
-            if label_addr is not None and label_addr >= current_addr:
+            if label_addr is not None and (is_nonlocal or label_addr >= current_addr):
                 current_addr = label_addr
             elif comment_addr is not None and comment_addr >= current_addr:
                 current_addr = comment_addr

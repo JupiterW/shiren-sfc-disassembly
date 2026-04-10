@@ -228,6 +228,12 @@ def estimate_asm_line_size(stripped: str) -> int | None:
     if op_base == "call_savebank":
         return 4
 
+    # inc/dec with an operand (not accumulator): .b = direct page (2), .w = absolute (3)
+    if op_base in {"inc", "dec"} and rest and rest != "a":
+        if ".w" in op:
+            return 3
+        return 2  # .b or bare operand → direct page
+
     if "#" in rest:
         if ".l" in op or ".l " in stripped:
             return 4

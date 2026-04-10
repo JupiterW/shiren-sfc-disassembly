@@ -6,6 +6,7 @@ Examples:
   python3 tools/iterative_lift_raw_clusters.py --file code/item_effects.asm --limit 3
   python3 tools/iterative_lift_raw_clusters.py --file code/item_effects.asm --limit 10 --commit
   python3 tools/iterative_lift_raw_clusters.py --file code/item_effects.asm --batch-size 5
+  python3 tools/iterative_lift_raw_clusters.py --file code/graphics_decompress.asm --code-only --commit --min-bytes 1
 """
 
 from __future__ import annotations
@@ -17,7 +18,36 @@ from pathlib import Path
 
 from list_raw_clusters import RAW_RE, find_clusters
 from lift_raw_cluster import ROOT, _compute_line_starts, _resolve_file, build_candidate
-from promote_raw_item_handler_label import estimate_asm_line_size, load_lines
+from promote_raw_item_handler_label import _db_bytes_from_line, estimate_asm_line_size, load_lines
+
+# 65816 opcodes that unambiguously indicate executable code (subroutine calls and returns).
+# A raw .db cluster containing any of these bytes is almost certainly code, not a data table.
+FUNC_OPCODES: frozenset[int] = frozenset({
+    0x20,  # JSR abs
+    0x22,  # JSL abs long
+    0x40,  # RTI
+    0x60,  # RTS
+    0x6B,  # RTL
+    0xFC,  # JSR (abs,X)
+})
+
+
+def has_func_opcodes(lines: list[str], line_starts: list[int | None], start_addr: int, end_addr: int) -> bool:
+    """Return True if any raw .db byte in [start_addr, end_addr] is a function call/return opcode."""
+    for idx, line in enumerate(lines):
+        ls = line_starts[idx]
+        if ls is None:
+            continue
+        if ls > end_addr:
+            break
+        if ls < start_addr:
+            continue
+        if not RAW_RE.match(line.strip()):
+            continue
+        for byte_val in _db_bytes_from_line(line):
+            if byte_val in FUNC_OPCODES:
+                return True
+    return False
 
 
 def run(cmd: str) -> subprocess.CompletedProcess[str]:
@@ -237,6 +267,7 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--stop-on-fail", action="store_true", help="stop when an entire batch fails (individual items may still fail within a kept batch)")
     parser.add_argument("--verify-cmd", default="make -B -j1 PYTHON=.venv/bin/python && shasum -c shiren.sha1", help="command used to verify a kept lift")
     parser.add_argument("--skip-range", action="append", type=parse_skip_range, default=[], help="skip any candidate range overlapping START-END hex ROM addresses")
+    parser.add_argument("--code-only", action="store_true", help="skip raw clusters that contain no function call/return opcodes (jsl, jsr, rts, rtl, rti)")
     parser.add_argument("--commit", action="store_true", help="git add/commit the file after each kept verified lift")
     parser.add_argument(
         "--commit-template",
@@ -256,22 +287,34 @@ def main(argv: list[str]) -> int:
             clusters = clusters[: args.limit]
 
     if args.dry_run:
+        dry_lines = load_lines(path) if args.code_only else []
+        dry_line_starts = _compute_line_starts(dry_lines) if args.code_only else []
         if args.mode == "segment":
+            kept_count = 0
             for start_idx, end_idx, start_addr, end_addr in segments:
+                if args.code_only and not has_func_opcodes(dry_lines, dry_line_starts, start_addr, end_addr):
+                    print(f"SKIP  {start_addr:06X}-{end_addr:06X} no-func-opcodes")
+                    continue
                 print(
                     f"{start_addr:06X}-{end_addr:06X} "
                     f"segment bytes={end_addr - start_addr + 1} "
                     f"lines={start_idx + 1}-{end_idx + 1}"
                 )
-            print(f"planned lifts: {len(segments)}")
+                kept_count += 1
+            print(f"planned lifts: {kept_count}")
         else:
+            kept_count = 0
             for cluster in clusters:
+                if args.code_only and not has_func_opcodes(dry_lines, dry_line_starts, cluster.start_addr, cluster.end_addr):
+                    print(f"SKIP  {cluster.start_addr:06X}-{cluster.end_addr:06X} no-func-opcodes")
+                    continue
                 print(
                     f"{cluster.start_addr:06X}-{cluster.end_addr:06X} "
                     f"{cluster.kind} bytes={cluster.byte_count} "
                     f"lines={cluster.start_idx + 1}-{cluster.end_idx + 1}"
                 )
-            print(f"planned lifts: {len(clusters)}")
+                kept_count += 1
+            print(f"planned lifts: {kept_count}")
         return 0
 
     kept = 0
@@ -289,9 +332,15 @@ def main(argv: list[str]) -> int:
     # Pre-filter data-like and no-op items before batching to avoid wasted make cycles
     skipped_data_like = 0
     skipped_noop = 0
+    skipped_no_func = 0
     filtered_items: list[tuple[int, int]] = []
     original_lines = load_lines(path)
+    original_line_starts = _compute_line_starts(original_lines) if args.code_only else []
     for item in work_items:
+        if args.code_only and not has_func_opcodes(original_lines, original_line_starts, item[0], item[1]):
+            print(f"SKIP  {item[0]:06X}-{item[1]:06X} no-func-opcodes")
+            skipped_no_func += 1
+            continue
         preview = preview_lift(rel, item[0], item[1])
         if preview.returncode == 0 and is_data_like_candidate(preview.stdout):
             print(f"SKIP  {item[0]:06X}-{item[1]:06X} data-like")
@@ -386,6 +435,8 @@ def main(argv: list[str]) -> int:
             break
 
     skipped_parts: list[str] = []
+    if skipped_no_func:
+        skipped_parts.append(f"{skipped_no_func} no-func-opcodes")
     if skipped_data_like:
         skipped_parts.append(f"{skipped_data_like} data-like")
     if skipped_noop:
