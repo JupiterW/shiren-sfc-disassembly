@@ -3690,9 +3690,9 @@ func_C324F9:
 	stz $01                                 ;C3253B
 	sty $02                                 ;C3253D
 	jsl.l DisplayMessage
-	.db $28   ;C32543
+	plp                                     ;C32543
 	rtl                                     ;C32544
-	.db $08   ;C32545
+	php                                     ;C32545
 	sep #$30                                ;C32546
 	ldy #$00                                ;C32548
 @lbl_C3254A:
@@ -3716,10 +3716,10 @@ func_C324F9:
 	lda $01                                 ;C3256B
 	pla                                     ;C3256D
 @lbl_C3256E:
-	.db $C8   ;C3256E
+	iny                                     ;C3256E
 	bra @lbl_C3254A                         ;C3256F
 @lbl_C32571:
-	.db $28   ;C32571
+	plp                                     ;C32571
 	rtl                                     ;C32572
 @lbl_C32573:
 	plx                                     ;C32573
@@ -3787,7 +3787,7 @@ func_C324F9:
 	ply                                     ;C325F7
 @lbl_C325F8:
 	brl @lbl_C3256E                         ;C325F8
-	.db $08   ;C325FB
+	php                                     ;C325FB
 	sep #$30                                ;C325FC
 	ldy #$00                                ;C325FE
 @lbl_C32600:
@@ -3811,10 +3811,10 @@ func_C324F9:
 	lda $01                                 ;C32621
 	pla                                     ;C32623
 @lbl_C32624:
-	.db $C8   ;C32624
+	iny                                     ;C32624
 	bra @lbl_C32600                         ;C32625
 @lbl_C32627:
-	.db $28   ;C32627
+	plp                                     ;C32627
 	rtl                                     ;C32628
 @lbl_C32629:
 	plx                                     ;C32629
@@ -4041,7 +4041,7 @@ JarUseEffect:
 	phy
 	bra @lbl_C327C8
 @lbl_C327C7:
-	.db $A8
+	tay                                     ;C327C7
 @lbl_C327C8:
 	lda.w wItemPotNextItem,y
 	cmp.b #$FF
@@ -4189,7 +4189,7 @@ JarUseEffect:
 	sta $00                                 ;C328E0
 	stz $01                                 ;C328E2
 	jsl.l DisplayMessage
-	.db $60                       ;C328E6  
+	rts                                     ;C328E8
 
 func_C328E9:
 	sep #$20 ;A->8
@@ -4260,7 +4260,7 @@ WalrusJarUseEffect:
 	sta $00                                 ;C32973
 	stz $01                                 ;C32975
 	jsl.l DisplayMessage
-	.db $60                       ;C3297A  
+	rts                                     ;C3297B
 @lbl_C3297D:
 	dec a
 	sta.l wItemModification1,x
@@ -4572,7 +4572,7 @@ func_C32BAD:
 	plx
 	plp
 	rts
-	.db $08   ;C32BC0
+	php                                     ;C32BC0
 	sep #$20                                ;C32BC1
 	rep #$10                                ;C32BC3
 	pha                                     ;C32BC5
@@ -4605,14 +4605,14 @@ func_C32BAD:
 	pla                                     ;C32BFA
 	dec a                                   ;C32BFB
 	bne @lbl_C32BD1                         ;C32BFC
-	.db $28   ;C32BFE
+	plp                                     ;C32BFE
 	rts                                     ;C32BFF
 @lbl_C32C00:
 	plx                                     ;C32C00
 	pla                                     ;C32C01
-	.db $28   ;C32C02
+	plp                                     ;C32C02
 	rts                                     ;C32C03
-	.db $08   ;C32C04
+	php                                     ;C32C04
 	sep #$20                                ;C32C05
 	rep #$10                                ;C32C07
 	ldx $00                                 ;C32C09
@@ -4646,14 +4646,14 @@ func_C32BAD:
 	pla                                     ;C32C40
 	dec a                                   ;C32C41
 	bne @lbl_C32C0B                         ;C32C42
-	.db $28   ;C32C44
+	plp                                     ;C32C44
 	rts                                     ;C32C45
 @lbl_C32C46:
 	plx                                     ;C32C46
 	pla                                     ;C32C47
-	.db $28   ;C32C48
+	plp                                     ;C32C48
 	rts                                     ;C32C49
-	.db $08   ;C32C4A
+	php                                     ;C32C4A
 	sep #$20                                ;C32C4B
 	rep #$10                                ;C32C4D
 	ldx $00                                 ;C32C4F
@@ -4689,7 +4689,7 @@ func_C32BAD:
 @lbl_C32C87:
 	dec a                                   ;C32C87
 	bpl @lbl_C32C53                         ;C32C88
-	.db $28   ;C32C8A
+	plp                                     ;C32C8A
 	rts                                     ;C32C8B
 @lbl_C32C8C:
 	plx                                     ;C32C8C
