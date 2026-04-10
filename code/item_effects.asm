@@ -2122,7 +2122,9 @@ SleepScrollUseEffect:
 	.db $A5,$00,$D0,$0B,$A9,$5C   ;C318B9
 	.db $85,$00,$64,$01
 	jsl.l DisplayMessage
-	.db $60,$22,$51,$88,$C2,$60   ;C318D1
+	rts                                     ;C318D1
+	jsl $C28851                             ;C318D2
+	rts                                     ;C318D6
 ConfusionScrollUseEffect:
 	.db $22,$DA   ;C318D7
 	.db $87,$C2,$60   ;C318D9
@@ -2607,7 +2609,9 @@ BlessingScrollUseEffect:
 @lbl_C31C97:
 	dey
 	bne @lbl_C31C8F
-	.db $A9,$5C,$85,$00,$64,$01
+	lda #$5C                                ;C31C9A
+	sta $00                                 ;C31C9C
+	stz $01                                 ;C31C9E
 	jsl.l DisplayMessage
 	.db $60                       ;C31CA2  
 @lbl_C31CA5:
