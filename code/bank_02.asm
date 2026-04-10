@@ -992,7 +992,7 @@ func_C20844:
 	lda #$01                                ;C208E8
 	sta $02                                 ;C208EA
 	jsl.l _SetEvent
-	.db $60   ;C208F0
+	rts                                     ;C208F0
 	sep #$30                                ;C208F1
 	lda #$09                                ;C208F3
 	sta $8835,y                             ;C208F5
@@ -12828,7 +12828,8 @@ func_C290BC:
 	lda #$0680                              ;C39212
 	sta $00                                 ;C39215
 	jsl.l DisplayMessage
-	.db $28,$6B                       ;C29231  
+	plp                                     ;C3921B
+	rtl                                     ;C3921C
 @lbl_C29234:
 	sep #$20                                ;C3921D
 .ACCU 16
@@ -12911,7 +12912,8 @@ func_C29284:
 	lda #$06                                ;C392BA
 	sta $01                                 ;C392BC
 	jsl.l DisplayMessage
-	.db $28,$6B   ;C392C2
+	plp                                     ;C392C2
+	rtl                                     ;C392C3
 	lda $7E87BD,x                           ;C392C4
 	bit #$90                                ;C392C8
 	.db $D0,$F6   ;C392CA
@@ -12962,7 +12964,8 @@ func_C29284:
 	sta $00                                 ;C39327
 .ACCU 8
 	jsl.l DisplayMessage
-	.db $28,$6B   ;C3932D
+	plp                                     ;C3932D
+	rtl                                     ;C3932E
 	rep #$20                                ;C3932F
 	pla                                     ;C39331
 	sta $00                                 ;C39332
@@ -12974,7 +12977,8 @@ func_C29284:
 	sta $00                                 ;C39341
 .ACCU 8
 	jsl.l DisplayMessage
-	.db $28,$6B   ;C39347
+	plp                                     ;C39347
+	rtl                                     ;C39348
 	sep #$20                                ;C39349
 	lda #$0B                                ;C3934B
 	sta $7E8871,x                           ;C3934D
