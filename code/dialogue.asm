@@ -1860,7 +1860,12 @@ func_C111EA:
 @lbl_C112DD:
 	SetEvent Event_Kechi $01
 	rts
-	.db $3A,$F0,$03,$4C,$ED,$14,$A9,$85,$85,$00
+	dec a                                   ;C112DE
+	beq @lbl_C112E4                         ;C112DF
+	jmp $14ED                               ;C112E1
+@lbl_C112E4:
+	lda #$85                                ;C112E4
+	sta $00                                 ;C112E6
 	jsl.l _GetEvent
 	lda $00                                 ;C112EC
 	dec a                                   ;C112EE
@@ -2333,8 +2338,10 @@ func_C1173F:
 	lda.b wTemp00
 	cmp.b wTemp01
 	bne @lbl_C1178A
-	.db $22,$67,$11,$C2,$A5,$00,$C5,$01   ;C11780  
-	.db $F0,$0A                           ;C11788  
+	jsl $C21167                             ;C11780
+	lda $00                                 ;C11784
+	cmp $01                                 ;C11786
+	.db $F0,$0A   ;C11788
 @lbl_C1178A:
 	jsl.l Random
 	lda.b wTemp00
@@ -2717,7 +2724,12 @@ func_C11B11:
 	jsl.l DisplayMessage
 	SetEvent Event_Pekeji_86 $02
 	rts
-	.db $3A,$F0,$03,$4C,$1C,$1D,$A9,$86,$85,$00
+	dec a                                   ;C11B40
+	beq @lbl_C11B46                         ;C11B41
+	jmp $1D1C                               ;C11B43
+@lbl_C11B46:
+	lda #$86                                ;C11B46
+	sta $00                                 ;C11B48
 	jsl.l _GetEvent
 	lda $00                                 ;C11B4E
 	cmp #$02                                ;C11B50
@@ -2728,8 +2740,11 @@ func_C11B11:
 	.db $A9,$86,$85   ;C11B5C
 	.db $00,$A9,$02,$85,$02
 	jsl.l _SetEvent
-	.db $60,$C9,$03,$B0,$3B,$A0,$38   ;C11B6C
-	.db $07,$84,$00
+	rts                                     ;C11B6C
+	cmp #$03                                ;C11B6D
+	.db $B0,$3B   ;C11B6F
+	ldy #$0738                              ;C11B71
+	sty $00                                 ;C11B74
 	jsl.l DisplayMessage
 	.db $60,$A3,$03,$85,$00,$22,$F8,$77,$C2   ;C11B7C  
 	lda $01                                 ;C11B8C
@@ -2904,7 +2919,11 @@ func_C11B11:
 	jsl.l DisplayMessage
 	.db $A9,$86,$85,$00,$A9,$02,$85,$02
 	jsl.l _SetEvent
-	.db $60,$C9,$03,$B0,$0A,$A0,$38,$07,$84,$00
+	rts                                     ;C11D4C
+	cmp #$03                                ;C11D4D
+	.db $B0,$0A   ;C11D4F
+	ldy #$0738                              ;C11D51
+	sty $00                                 ;C11D54
 	jsl.l DisplayMessage
 	rts                                     ;C11D5A
 	lda #$13                                ;C11D5B
@@ -3517,7 +3536,12 @@ DATA8_C122EB:
 	jsl.l _GetEvent
 	.db $A5,$00,$D0,$0A,$A0,$26,$07,$84,$00
 	jsl.l DisplayMessage
-	.db $60,$C9,$02,$B0,$0A,$A0,$36,$07,$84,$00
+	rts                                     ;C12351
+	cmp #$02                                ;C12352
+	.db $B0,$0A   ;C12354
+	ldy #$36                                ;C12356
+	ora [$84]                               ;C12358
+	.db $00   ;C1235A
 	jsl.l DisplayMessage
 	.db $60,$C9,$03,$B0,$23,$A9,$86,$85,$00
 	jsl.l _GetEvent
@@ -3531,8 +3555,12 @@ DATA8_C122EB:
 	.db $60,$A0,$44   ;C1236E
 	.db $07,$84,$00
 	jsl.l DisplayMessage
-	.db $60,$60,$C9,$04,$B0,$22,$A9,$86,$85   ;C1237E  
-	.db $00
+	rts                                     ;C12385
+	rts                                     ;C12386
+	cmp #$04                                ;C12387
+	.db $B0,$22   ;C12389
+	lda #$86                                ;C1238B
+	sta $00                                 ;C1238D
 	jsl.l _GetEvent
 	lda $00                                 ;C12393
 	cmp #$03                                ;C12395
@@ -3580,8 +3608,11 @@ DATA8_C122EB:
 @lbl_C1240A:
 	.db $A9,$87,$85,$00
 	jsl.l _GetEvent
-	.db $A5,$00,$C9,$02,$B0,$2F,$A9,$08   ;C1240A
-	.db $85,$00
+	lda $00                                 ;C12412
+	cmp #$02                                ;C12414
+	.db $B0,$2F   ;C12416
+	lda #$08                                ;C12418
+	sta $00                                 ;C1241A
 	jsl.l _GetEvent
 	.db $A5,$00,$D0,$16,$A0,$61,$07,$84,$00
 	jsl.l DisplayMessage
@@ -4119,8 +4150,11 @@ func_C124BB:
 	sty $00                                 ;C1293E
 .ACCU 8
 	jsl.l DisplayMessage
-	.db $E2,$20,$A9,$0A,$85   ;C12939  
-	.db $00,$A3,$01,$85,$02
+	sep #$20                                ;C12944
+	lda #$0A                                ;C12946
+	sta $00                                 ;C12948
+	lda $01,s                               ;C1294A
+	sta $02                                 ;C1294C
 	jsl.l _SetEvent
 	.db $A9,$0B,$85,$00,$A3,$02,$85   ;C12949
 	.db $02
@@ -4205,12 +4239,18 @@ func_C124BB:
 	.db $A9   ;C12A29  
 	.db $17,$85,$00
 	jsl.l _GetEvent
-	.db $A5,$00,$09,$02,$85,$02,$A9,$17,$85   ;C12A39  
-	.db $00
+	lda $00                                 ;C12A40
+	ora #$02                                ;C12A42
+	sta $02                                 ;C12A44
+	lda #$17                                ;C12A46
+	sta $00                                 ;C12A48
 	jsl.l _SetEvent
 	.db $A9,$8C,$85,$00,$A9,$01,$85,$02
 	jsl.l _SetEvent
-	.db $22,$71,$27,$C6,$85,$02,$A9,$90,$85,$00
+	jsl $C62771                             ;C12A5A
+	sta $02                                 ;C12A5E
+	lda #$90                                ;C12A60
+	sta $00                                 ;C12A62
 	jsl.l _SetEvent
 	.db $A0   ;C12A59  
 	.db $0A,$01,$84,$00,$22,$23,$2A,$C6,$00,$00,$00,$00,$00,$FF,$02,$FF   ;C12A69
@@ -4562,13 +4602,23 @@ func_C12ABD:
 	jsl.l _SetEvent
 	.db $A9,$09,$85,$00,$A9,$02,$85,$02
 	jsl.l _SetEvent
-	.db $60,$C9,$04,$B0,$0A,$A0,$95,$07,$84,$00
+	rts                                     ;C12DF3
+	cmp #$04                                ;C12DF4
+	.db $B0,$0A   ;C12DF6
+	ldy #$0795                              ;C12DF8
+	sty $00                                 ;C12DFB
 	jsl.l DisplayMessage
-	.db $60,$C9   ;C12DF3
-	.db $05,$B0,$0A,$A0,$A7,$07,$84,$00
+	rts                                     ;C12E01
+	cmp #$05                                ;C12E02
+	.db $B0,$0A   ;C12E04
+	ldy #$07A7                              ;C12E06
+	sty $00                                 ;C12E09
 	jsl.l DisplayMessage
-	.db $60,$C9,$06,$B0   ;C12E03  
-	.db $0A,$A0,$B1,$07,$84,$00
+	rts                                     ;C12E0F
+	cmp #$06                                ;C12E10
+	.db $B0,$0A   ;C12E12
+	ldy #$07B1                              ;C12E14
+	sty $00                                 ;C12E17
 	jsl.l DisplayMessage
 	.db $60,$C9,$07,$B0,$54,$A9   ;C12E13
 	.db $09,$85,$00
@@ -4624,12 +4674,23 @@ func_C12ABD:
 	ldy #$078B                              ;C12EB2
 	sty $00                                 ;C12EB5
 	jsl.l DisplayMessage
-	.db $60,$C9,$04,$B0,$0A,$A0,$96,$07   ;C12EB3
-	.db $84,$00
+	rts                                     ;C12EBB
+	cmp #$04                                ;C12EBC
+	.db $B0,$0A   ;C12EBE
+	ldy #$0796                              ;C12EC0
+	sty $00                                 ;C12EC3
 	jsl.l DisplayMessage
-	.db $60,$C9,$05,$B0,$0A,$A0,$A8,$07,$84,$00   ;C12EC3  
+	rts                                     ;C12EC9
+	cmp #$05                                ;C12ECA
+	.db $B0,$0A   ;C12ECC
+	ldy #$07A8                              ;C12ECE
+	sty $00                                 ;C12ED1
 	jsl.l DisplayMessage
-	.db $60,$C9,$06,$B0,$0A,$A0,$B0,$07,$84,$00
+	rts                                     ;C12ED7
+	cmp #$06                                ;C12ED8
+	.db $B0,$0A   ;C12EDA
+	ldy #$07B0                              ;C12EDC
+	sty $00                                 ;C12EDF
 	jsl.l DisplayMessage
 	.db $60,$C9,$07,$B0,$2C,$A9,$88,$85,$00
 	jsl.l _GetEvent
@@ -4663,12 +4724,23 @@ func_C12ABD:
 	ldy #$078B                              ;C12F52
 	sty $00                                 ;C12F55
 	jsl.l DisplayMessage
-	.db $60,$C9,$04,$B0,$0A,$A0,$94,$07   ;C12F53
-	.db $84,$00
+	rts                                     ;C12F5B
+	cmp #$04                                ;C12F5C
+	.db $B0,$0A   ;C12F5E
+	ldy #$0794                              ;C12F60
+	sty $00                                 ;C12F63
 	jsl.l DisplayMessage
-	.db $60,$C9,$05,$B0,$0A,$A0,$A9,$07,$84,$00   ;C12F63  
+	rts                                     ;C12F69
+	cmp #$05                                ;C12F6A
+	.db $B0,$0A   ;C12F6C
+	ldy #$07A9                              ;C12F6E
+	sty $00                                 ;C12F71
 	jsl.l DisplayMessage
-	.db $60,$C9,$06,$B0,$0A,$A0,$B2,$07,$84,$00
+	rts                                     ;C12F77
+	cmp #$06                                ;C12F78
+	.db $B0,$0A   ;C12F7A
+	ldy #$07B2                              ;C12F7C
+	sty $00                                 ;C12F7F
 	jsl.l DisplayMessage
 	.db $60,$C9,$07,$B0,$0A,$A0,$C4,$07,$84,$00
 	jsl.l DisplayMessage
