@@ -4809,7 +4809,8 @@ func_C32CFE:
 	sta $00                                 ;C32D60
 	stz $01                                 ;C32D62
 	jsl.l DisplayMessage
-	.db $28,$6B                   ;C32D66  
+	plp                                     ;C32D68
+	rtl                                     ;C32D69
 @lbl_C32D6A:
 	lda #$D7                                ;C32D6A
 	sta $00                                 ;C32D6C
@@ -4896,8 +4897,7 @@ func_C32CFE:
 	sta $04                                 ;C32E17
 	ora #$8800                              ;C32E19
 	eor #$FFFF                              ;C32E1C
-	.db $24   ;C32E1F
-	.db $00   ;C32E20
+	bit $00                                 ;C32E1F
 	bne @lbl_C32E2C                         ;C32E21
 	sep #$30                                ;C32E23
 	plx                                     ;C32E25
@@ -4928,19 +4928,16 @@ func_C32CFE:
 	asl a                                   ;C32E4E
 	bra @lbl_C32E4B                         ;C32E4F
 @lbl_C32E51:
-	.db $24   ;C32E51
-	.db $04   ;C32E52
+	bit $04                                 ;C32E51
 	bne @lbl_C32E2C                         ;C32E53
 	sta $02                                 ;C32E55
 	eor #$FFFF                              ;C32E57
 	sta $00                                 ;C32E5A
 	lda $06                                 ;C32E5C
-	.db $24   ;C32E5E
-	.db $02   ;C32E5F
+	bit $02                                 ;C32E5E
 	beq @lbl_C32E2C                         ;C32E60
 	lda $06                                 ;C32E62
-	.db $25   ;C32E64
-	.db $00   ;C32E65
+	and $00                                 ;C32E64
 	pha                                     ;C32E66
 	.db $8A   ;C32E67
 	dec a                                   ;C32E68
@@ -5115,7 +5112,7 @@ func_C32CFE:
 	plp                                     ;C32FBA
 	.db $01   ;C32FBB
 	and #$01                                ;C32FBC
-	.db $2A   ;C32FBE
+	rol a                                   ;C32FBE
 	.db $01   ;C32FBF
 
 func_C32FC0:
@@ -5192,7 +5189,7 @@ func_C32FEE:
 	pla
 	ldy.b wTemp00
 	bpl @lbl_C33025
-	.db $80,$E4                           ;C3303A  
+	.db $80,$E4   ;C3303A
 
 func_C3303C:
 	php
@@ -5471,8 +5468,7 @@ func_C331B2:
 	bra @lbl_C33280
 @lbl_C33224:
 	sep #$20                                ;C33224
-	.db $A3   ;C33226
-	.db $04   ;C33227
+	lda $04,s                               ;C33226
 	tax                                     ;C33228
 	lda $7E8C8C,x                           ;C33229
 	inc a                                   ;C3322D
@@ -5489,8 +5485,7 @@ func_C331B2:
 @lbl_C33245:
 	rep #$20                                ;C33245
 	stx $00                                 ;C33247
-	.db $A3   ;C33249
-	.db $02   ;C3324A
+	lda $02,s                               ;C33249
 	sta $02                                 ;C3324B
 	phx                                     ;C3324D
 	phy                                     ;C3324E
