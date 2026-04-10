@@ -1804,8 +1804,13 @@ SpecialOnigiriUseEffect:
 	lda #$00FB                              ;C3168F
 	sta $00                                 ;C31692
 	jsl.l DisplayMessage
-	.db $60   ;C31689  
-	.db $E2,$20,$64,$00,$22,$74,$33,$C2,$C2,$20,$A9,$FC,$00,$85,$00
+	rts                                     ;C31698
+	sep #$20                                ;C31699
+	stz $00                                 ;C3169B
+	jsl $C23374                             ;C3169D
+	rep #$20                                ;C316A1
+	lda #$00FC                              ;C316A3
+	sta $00                                 ;C316A6
 	jsl.l DisplayMessage
 	.db $60,$E2,$20,$22,$88,$84,$C2,$C2,$20,$A9,$30,$01,$85   ;C316A9  
 	.db $00
@@ -2882,8 +2887,13 @@ MisfortuneStaffUseEffect:
 	sta.b wTemp02
 	jsl.l func_C6262B
 	rts
-	.db $E2,$20,$22,$6C,$81,$C2,$A5,$00,$D0,$0B,$C2,$20,$A9,$5C,$00,$85   ;C31FB6
-	.db $00
+	sep #$20                                ;C31FB6
+	jsl $C2816C                             ;C31FB8
+	lda $00                                 ;C31FBC
+	.db $D0,$0B   ;C31FBE
+	rep #$20                                ;C31FC0
+	lda #$005C                              ;C31FC2
+	sta $00                                 ;C31FC5
 	jsl.l DisplayMessage
 	rts                                     ;C31FCB
 	sep #$30                                ;C31FCC
