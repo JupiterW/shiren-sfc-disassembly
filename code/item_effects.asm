@@ -6472,6 +6472,7 @@ func_C335FE:
 	stz $01                                 ;C339AA
 	jsl $C240A7                             ;C339AC
 	rts                                     ;C339B0
+MedicinalHerbThrowEffect:
 	sep #$30                                ;C339B1
 	lda #$19                                ;C339B3
 	bra @lbl_C339BB                         ;C339B5

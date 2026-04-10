@@ -2395,7 +2395,7 @@ ItemThrowEffectFunctionTable:
 	.dw $3667 ;Stormward
 	.dw $3667 ;26
 	.dw $3667 ;27
-	.dw $39B0 ;MedicinalHerb
+	.dw MedicinalHerbThrowEffect-1 ;MedicinalHerb
 	.dw $39B6 ;RestorativeHerb
 	.dw $10BE ;HappinessHerb
 	.dw $399B ;SightHerb
