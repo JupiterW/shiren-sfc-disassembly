@@ -2397,7 +2397,7 @@ ItemThrowEffectFunctionTable:
 	.dw $3667 ;27
 	.dw MedicinalHerbThrowEffect-1 ;MedicinalHerb
 	.dw $39B6 ;RestorativeHerb
-	.dw $10BE ;HappinessHerb
+	.dw HappinessHerbThrowEffect-1 ;HappinessHerb
 	.dw $399B ;SightHerb
 	.dw $3972 ;DragonHerb
 	.dw $3877 ;VictoryHerb

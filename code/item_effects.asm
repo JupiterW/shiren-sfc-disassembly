@@ -1139,6 +1139,7 @@ HappinessHerbUseEffect:
 	sep #$20                                ;C310B9
 	lda #$13                                ;C310BB
 	sta $00                                 ;C310BD
+HappinessHerbThrowEffect:
 	sep #$20                                ;C310BF
 	lda #$01                                ;C310C1
 	sta $01                                 ;C310C3
