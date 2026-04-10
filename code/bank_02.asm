@@ -2992,7 +2992,7 @@ func_C22E2D:
 	sta $01                                 ;C23013
 	phb                                     ;C23015
 	jsl.l DisplayMessage
-	.db $AB                               ;C2301A
+	plb                                     ;C2301A
 @lbl_C2301B:
 	jsr.w func_C230F6
 	inc.w $8978
