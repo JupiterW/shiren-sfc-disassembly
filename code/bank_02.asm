@@ -12129,7 +12129,9 @@ func_C28D4C:
 	cmp.b #$E0
 	bne @lbl_C28D6A
 ;C28D64  
-	.db $A5,$02,$C3,$04,$D0,$6A
+	.db $A5,$02   ;C38D58
+	cmp $04,s                               ;C38D5A
+	.db $D0,$6A   ;C38D5C
 @lbl_C28D6A:
 	lda.b wTemp00
 	cmp.b #$04
@@ -12271,7 +12273,10 @@ func_C28E4C:
 	cmp.b #$0E
 	bne @lbl_C28E5D
 @lbl_C28E69:
-	.db $A9,$01,$85,$00,$28,$6B           ;C28E69
+	lda #$01                                ;C38E5B
+	sta $00                                 ;C38E5D
+	plp                                     ;C38E5F
+	rtl                                     ;C38E60
 
 func_C28E6F:
 	php
