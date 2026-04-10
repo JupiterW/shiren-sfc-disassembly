@@ -2164,8 +2164,15 @@ BigpotScrollUseEffect:
 	stx $02                                 ;C31A43
 	phx                                     ;C31A45
 	jsl.l DisplayMessage
-	.db $FA,$68,$18,$7F,$8C,$8C,$7E,$9F,$8C,$8C,$7E,$60,$A9,$5C,$85,$00   ;C31A4A
-	.db $64,$01
+	plx                                     ;C31A4A
+	pla                                     ;C31A4B
+	clc                                     ;C31A4C
+	adc $7E8C8C,x                           ;C31A4D
+	sta $7E8C8C,x                           ;C31A51
+	rts                                     ;C31A55
+	lda #$5C                                ;C31A56
+	sta $00                                 ;C31A58
+	stz $01                                 ;C31A5A
 	jsl.l DisplayMessage
 	rts                                     ;C31A60
 	sep #$20                                ;C31A61
