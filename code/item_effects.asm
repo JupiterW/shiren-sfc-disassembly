@@ -1247,8 +1247,14 @@ LifeHerbUseEffect:
 	.db $E2,$20,$A9,$65,$85,$00,$64,$01   ;C311C3
 	jsl.l DisplayMessage
 	.db $22,$A2   ;C311C2
-	.db $5D,$C2,$A9,$13,$85,$00,$E2,$20,$A9,$0B,$85,$01,$22,$BC,$40,$C2   ;C311D2  
-	.db $60   ;C311E2
+	eor $A9C2,x                             ;C311D2
+	ora ($85,s),y                           ;C311D5
+	.db $00   ;C311D7
+	sep #$20                                ;C311D8
+	lda #$0B                                ;C311DA
+	sta $01                                 ;C311DC
+	jsl $C240BC                             ;C311DE
+	rts                                     ;C311E2
 PoisonHerbUseEffect:
 	.db $C2,$20,$E2,$10,$A0,$C7,$84,$00,$22,$A6,$3B,$C2,$C2,$20,$E2   ;C311E3
 	.db $10,$A9,$3F,$00,$85,$00,$A0,$05,$84,$02
