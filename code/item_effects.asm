@@ -1158,6 +1158,7 @@ BitterHerbUseEffect:
 	sep #$20                                ;C310DB
 	lda #$13                                ;C310DD
 	sta $00                                 ;C310DF
+BitterHerbThrowEffect:
 	sep #$20                                ;C310E1
 	lda #$FF                                ;C310E3
 	sta $01                                 ;C310E5
