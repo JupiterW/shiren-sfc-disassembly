@@ -1511,12 +1511,41 @@ func_C11A07:
 	bcc @lbl_C11A1C
 	jmp.w func_C11B11
 @lbl_C11A1C:
-	.db $A9,$13,$85,$00,$A9,$02,$85,$01,$22,$38,$72,$C2,$A3,$03,$85,$00   ;C11A1C
-	.db $A0,$34,$23,$84,$02,$22,$51,$79,$C2,$22,$05,$24,$C6,$A3,$03,$85   ;C11A2C
-	.db $00,$A0,$F0,$22,$84,$02,$A9,$C1,$85,$04,$22,$8C,$93,$C2,$A9,$13   ;C11A3C
-	.db $85,$00,$A9,$04,$85,$01,$22,$38,$72,$C2,$A9,$10,$85,$00,$A9,$01   ;C11A4C  
-	.db $85,$01,$22,$EE,$2A,$C6,$A0,$2B,$07,$84,$00,$22,$7E,$2B,$C6,$A5   ;C11A5C  
-	.db $00,$F0,$0B,$A0,$2D,$07,$84,$00
+	lda #$13                                ;C11A1C
+	sta $00                                 ;C11A1E
+	lda #$02                                ;C11A20
+	sta $01                                 ;C11A22
+	jsl $C27238                             ;C11A24
+	lda $03,s                               ;C11A28
+	sta $00                                 ;C11A2A
+	ldy #$2334                              ;C11A2C
+	sty $02                                 ;C11A2F
+	jsl $C27951                             ;C11A31
+	jsl $C62405                             ;C11A35
+	lda $03,s                               ;C11A39
+	sta $00                                 ;C11A3B
+	ldy #$22F0                              ;C11A3D
+	sty $02                                 ;C11A40
+	lda #$C1                                ;C11A42
+	sta $04                                 ;C11A44
+	jsl $C2938C                             ;C11A46
+	lda #$13                                ;C11A4A
+	sta $00                                 ;C11A4C
+	lda #$04                                ;C11A4E
+	sta $01                                 ;C11A50
+	jsl $C27238                             ;C11A52
+	lda #$10                                ;C11A56
+	sta $00                                 ;C11A58
+	lda #$01                                ;C11A5A
+	sta $01                                 ;C11A5C
+	jsl $C62AEE                             ;C11A5E
+	ldy #$072B                              ;C11A62
+	sty $00                                 ;C11A65
+	jsl $C62B7E                             ;C11A67
+	lda $00                                 ;C11A6B
+	.db $F0,$0B   ;C11A6D
+	ldy #$072D                              ;C11A6F
+	sty $00                                 ;C11A72
 	jsl.l DisplayMessage
 	.db $80,$09,$A0,$2C   ;C11A6C
 	.db $07,$84,$00
