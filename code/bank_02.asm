@@ -1130,7 +1130,8 @@ func_C20844:
 	phb                                     ;C20A30
 	jsl.l _SetEvent
 	.db $AB,$7A,$A9   ;C20A34
-	.db $88,$99,$35,$88                   ;C20A44
+	dey                                     ;C20A44
+	sta $8835,y                             ;C20A45
 @lbl_C20A48:
 	lda.b #$01
 	sta.b wTemp02
@@ -1241,7 +1242,7 @@ func_C20B4B:
 	cmp.l UNREACH_C20BBA,x
 	bcc @lbl_C20B67
 ;C20B63  
-	.db $BF,$BA,$0B,$C2
+	lda $C20BBA,x                           ;C20B63
 @lbl_C20B67:
 	tay
 	txa
@@ -6881,7 +6882,10 @@ HandlePlayerActionCommand:
 	ldx.b wTemp00
 	beq @lbl_C24CCA
 ;C24CC5
-	.db $68,$64,$00,$28,$6B
+	pla                                     ;C24CC5
+	stz $00                                 ;C24CC6
+	plp                                     ;C24CC8
+	rtl                                     ;C24CC9
 @lbl_C24CCA:
 	ply
 	plx
@@ -7020,7 +7024,8 @@ func_C24D8B:
 	cmp.b #$07
 	bne @lbl_C24DD4
 ;C24DCF  
-	.db $AF,$F0,$85,$7E,$A8
+	lda $7E85F0                             ;C24DCF
+	tay                                     ;C24DD3
 @lbl_C24DD4:
 	txa
 	ora.b #$A0
@@ -7929,8 +7934,9 @@ func_C25152:
 .ACCU 8
 .INDEX 8
 	jsl.l DisplayMessage
-	.db $64,$00,$60,$E2   ;C2550F  
-	.db $30                               ;C2551F  
+	stz $00                                 ;C2551B
+	rts                                     ;C2551D
+	sep #$30                                ;C2551E
 
 func_C25520:
 	cmp.b #$12
@@ -9083,7 +9089,9 @@ func_C25DB2:
 	lda.l wCharIsKigny,x
 	beq @lbl_C25E0A
 ;C25E05
-	.db $DA,$A9,$0C,$80,$11
+	phx                                     ;C25E05
+	lda #$0C                                ;C25E06
+	.db $80,$11   ;C25E08
 @lbl_C25E0A:
 	lda.l wCharIsSealed,x
 	bne @lbl_C25E16
@@ -12712,7 +12720,8 @@ func_C290BC:
 	ldy.b #$01
 	bra @lbl_C291B4
 @lbl_C291A9:
-	.db $A9,$7E,$06,$85,$00
+	lda #$067E                              ;C39192
+	sta $00                                 ;C39195
 	jsl.l DisplayMessage
 	.db $A0,$00                       ;C291B1  
 @lbl_C291B4:
@@ -12775,7 +12784,8 @@ func_C290BC:
 	lda.l $7E8941
 	adc.b wTemp02
 	bpl @lbl_C29280
-	.db $A9,$80,$06,$85,$00
+	lda #$0680                              ;C39212
+	sta $00                                 ;C39215
 	jsl.l DisplayMessage
 	.db $28,$6B                       ;C29231  
 @lbl_C29234:
