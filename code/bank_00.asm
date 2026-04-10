@@ -1752,12 +1752,22 @@ UNREACH_C07271:
 	tsb $00                                 ;C07299
 
 UNREACH_C0729B:
-	.db $A0,$01,$A0,$01,$A0,$01,$A0,$0C   ;C0729B
-	.db $C0,$20,$C0,$20                   ;C072A3
-	.db $A0,$01,$80                       ;C072A7
-	.db $01,$80,$FC,$C0,$FE               ;C072AA  
-	.db $A0,$0E,$C0,$CE,$C0,$FE,$A0,$0F,$C0,$20,$C0,$20,$C0,$FE,$A0,$01   ;C072AF
-	.db $C0,$FF,$A0,$01,$80,$01           ;C072BF
+	ldy #$A001                              ;C0729B
+	ora ($A0,x)                             ;C0729E
+	ora ($A0,x)                             ;C072A0
+	tsb $20C0                               ;C072A2
+	cpy #$A020                              ;C072A5
+	ora ($80,x)                             ;C072A8
+	ora ($80,x)                             ;C072AA
+	jsr ($FEC0,x)                           ;C072AC
+	ldy #$C00E                              ;C072AF
+	dec $FEC0                               ;C072B2
+	ldy #$C00F                              ;C072B5
+	jsr $20C0                               ;C072B8
+	cpy #$A0FE                              ;C072BB
+	ora ($C0,x)                             ;C072BE
+	sbc $8001A0,x                           ;C072C0
+	.db $01   ;C072C4
 
 UNREACH_C072C5:
 	.db $10,$82,$80,$F8,$10,$82,$1F,$80,$1F,$80,$1F,$80,$00,$00,$00,$00   ;C072C5  
