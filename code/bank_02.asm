@@ -11960,8 +11960,10 @@ func_C28B52:
 	lda #$06                                ;C38C07
 	sta $01                                 ;C38C09
 	jsl.l DisplayMessage
-	.db $A9,$01   ;C28C05  
-	.db $85,$00,$28,$6B                   ;C28C15  
+	lda #$01                                ;C38C0F
+	sta $00                                 ;C38C11
+	plp                                     ;C38C13
+	rtl                                     ;C38C14
 
 func_C28C19:
 	cmp.b #$86
