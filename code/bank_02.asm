@@ -5231,9 +5231,16 @@ func_C24167:
 @lbl_C2431A:
 	cpx.b #$1B
 	bne @lbl_C24338
-	.db $A9,$13,$85,$00,$A9,$00,$85,$02,$22,$F6,$26,$C6,$22,$5A,$5E,$C3   ;C2431E
-	.db $22,$6D,$5F,$C3,$22,$F8,$5E,$C3   ;C2432E  
-	.db $28,$6B                           ;C24336
+	lda #$13                                ;C2431E
+	sta $00                                 ;C24320
+	lda #$00                                ;C24322
+	sta $02                                 ;C24324
+	jsl $C626F6                             ;C24326
+	jsl $C35E5A                             ;C2432A
+	jsl $C35F6D                             ;C2432E
+	jsl $C35EF8                             ;C24332
+	plp                                     ;C24336
+	rtl                                     ;C24337
 @lbl_C24338:
 	plp
 	rtl
@@ -7606,9 +7613,19 @@ func_C25649:
 @lbl_C256B8:
 	cmp.b #$1F
 	bne @lbl_C256D6
-	.db $A9,$13,$85,$00,$22,$8E,$1B,$C2,$A5,$00,$D0,$03,$64,$00,$60,$A9   ;C256BC
-	.db $13,$85,$00,$22,$91,$15,$C2,$64   ;C256CC  
-	.db $00,$60                           ;C256D4
+	lda #$13                                ;C256BC
+	sta $00                                 ;C256BE
+	jsl $C21B8E                             ;C256C0
+	lda $00                                 ;C256C4
+	bne @lbl_C256CB                         ;C256C6
+	stz $00                                 ;C256C8
+	rts                                     ;C256CA
+@lbl_C256CB:
+	lda #$13                                ;C256CB
+	sta $00                                 ;C256CD
+	jsl $C21591                             ;C256CF
+	stz $00                                 ;C256D3
+	rts                                     ;C256D5
 @lbl_C256D6:
 	cmp.b #$26
 	bne @lbl_C256F6
