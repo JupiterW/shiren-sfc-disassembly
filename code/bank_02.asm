@@ -1335,35 +1335,217 @@ func_C20BF9:
 	jsl.l func_C20086
 	plp
 	rtl
-	.db $08,$E2,$30,$A6,$00,$BF,$59,$87,$7E,$30,$0E,$85,$00,$DA,$22,$F4   ;C20C16
-	.db $06,$C3,$FA,$A9,$FF,$9F,$59,$87,$7E,$86,$00,$DA,$22,$35,$0F,$C2   ;C20C26  
-	.db $FA,$BF,$C9,$85,$7E,$EB,$BF,$B5,$85,$7E,$C2,$10,$AA,$86,$00,$DA   ;C20C36
-	.db $22,$AF,$59,$C3,$FA,$A5,$01,$C9,$80,$D0,$40,$64,$00,$A9,$0C,$85   ;C20C46  
-	.db $01,$DA,$22,$9F,$F6,$C3,$FA,$A5,$00,$C9,$0A,$D0,$0C,$DA,$22,$82   ;C20C56  
-	.db $D2,$C3,$FA,$A5,$00,$30,$E4,$A9,$0A,$85,$01,$64,$02,$A9,$E7,$85   ;C20C66  
-	.db $00,$DA,$22,$95,$02,$C3,$FA,$A5,$00,$C9,$FF,$F0,$0E,$85,$02,$86   ;C20C76
-	.db $00,$22,$A2,$5B,$C3,$A9,$00,$8F,$B9,$89,$7E,$A9,$FF,$85,$00,$28   ;C20C86
-	.db $6B,$C2,$20,$E2,$10,$A5,$00,$48,$A5,$02,$48,$22,$AF,$59,$C3,$A4   ;C20C96
-	.db $02,$30,$1A,$84,$00,$22,$28,$65,$C3,$A4,$00,$F0,$10,$68,$85,$02   ;C20CA6
-	.db $68,$85,$00,$A0,$0C,$84,$03,$22,$7D,$00,$C2,$28,$6B,$68,$85,$02   ;C20CB6
-	.db $68,$85,$00,$A5,$00,$48,$64,$02,$22,$D1,$59,$C3,$E2,$20,$A5,$00   ;C20CC6
-	.db $05,$02,$A2,$0C,$89,$07,$F0,$12,$A2,$18,$89,$1C,$F0,$0C,$A2,$24   ;C20CD6  
-	.db $89,$70,$F0,$06,$A2,$30,$89,$C1,$D0,$36,$CA,$E2,$20,$BF,$2F,$0D   ;C20CE6
-	.db $C2,$85,$02,$A9,$0C,$85,$03,$CA,$CA,$C2,$20,$A3,$01,$18,$7F,$2F   ;C20CF6
-	.db $0D,$C2,$85,$00,$48,$DA,$22,$7D,$00,$C2,$FA,$68,$A4,$00,$30,$10   ;C20D06  
-	.db $85,$00,$84,$02,$DA,$22,$7A,$5B,$C3,$FA,$BF,$2F,$0D,$C2,$D0,$CA   ;C20D16  
-	.db $C2,$20,$68,$A0,$FF,$84,$00,$28,$6B,$00,$00,$01,$01,$00,$03,$00   ;C20D26
-	.db $FF,$07,$01,$FF,$05,$00,$00,$03,$FF,$FF,$01,$00,$FF,$05,$FF,$FE   ;C20D36  
-	.db $07,$00,$00,$05,$FF,$FF,$07,$00,$01,$03,$FF,$00,$01,$00,$00,$07   ;C20D46  
-	.db $01,$00,$05,$00,$01,$01,$01,$01,$03,$C2,$20,$E2,$10,$A5,$00,$48   ;C20D56  
-	.db $E2,$20,$A3,$01,$85,$00,$A3,$02,$3A,$83,$02,$85,$01,$22,$AF,$59   ;C20D66
-	.db $C3,$A5,$00,$10,$06,$A5,$02,$89,$90,$F0,$E7,$A3,$02,$1A,$83,$02   ;C20D76  
-	.db $A3,$01,$85,$00,$A3,$02,$85,$01,$22,$AF,$59,$C3,$A5,$00,$10,$33   ;C20D86  
-	.db $A5,$02,$89,$90,$D0,$2D,$A3,$01,$85,$00,$A3,$02,$85,$01,$A9,$06   ;C20D96  
-	.db $85,$02,$A9,$29,$85,$03,$22,$7D,$00,$C2,$A5,$00,$30,$15,$85,$02   ;C20DA6  
-	.db $A3,$01,$85,$00,$A3,$02,$85,$01,$22,$7A,$5B,$C3,$A3,$02,$1A,$83   ;C20DB6  
-	.db $02,$80,$BD,$68,$68,$A0,$FF,$84   ;C20DC6
-	.db $00,$28,$6B                       ;C20DCE
+	php                                     ;C20C16
+	sep #$30                                ;C20C17
+	ldx $00                                 ;C20C19
+	lda $7E8759,x                           ;C20C1B
+	bmi @lbl_C20C2F                         ;C20C1F
+	sta $00                                 ;C20C21
+	phx                                     ;C20C23
+	jsl $C306F4                             ;C20C24
+	plx                                     ;C20C28
+	lda #$FF                                ;C20C29
+	sta $7E8759,x                           ;C20C2B
+@lbl_C20C2F:
+	stx $00                                 ;C20C2F
+	phx                                     ;C20C31
+	jsl $C20F35                             ;C20C32
+	plx                                     ;C20C36
+	lda $7E85C9,x                           ;C20C37
+	xba                                     ;C20C3B
+	lda $7E85B5,x                           ;C20C3C
+	rep #$10                                ;C20C40
+	tax                                     ;C20C42
+	stx $00                                 ;C20C43
+	phx                                     ;C20C45
+	jsl $C359AF                             ;C20C46
+	plx                                     ;C20C4A
+	lda $01                                 ;C20C4B
+	cmp #$80                                ;C20C4D
+	bne @lbl_C20C91                         ;C20C4F
+@lbl_C20C51:
+	stz $00                                 ;C20C51
+	lda #$0C                                ;C20C53
+	sta $01                                 ;C20C55
+	phx                                     ;C20C57
+	jsl $C3F69F                             ;C20C58
+	plx                                     ;C20C5C
+	lda $00                                 ;C20C5D
+	cmp #$0A                                ;C20C5F
+	bne @lbl_C20C6F                         ;C20C61
+	phx                                     ;C20C63
+	jsl $C3D282                             ;C20C64
+	plx                                     ;C20C68
+	lda $00                                 ;C20C69
+	bmi @lbl_C20C51                         ;C20C6B
+	lda #$0A                                ;C20C6D
+@lbl_C20C6F:
+	sta $01                                 ;C20C6F
+	stz $02                                 ;C20C71
+	lda #$E7                                ;C20C73
+	sta $00                                 ;C20C75
+	phx                                     ;C20C77
+	jsl $C30295                             ;C20C78
+	plx                                     ;C20C7C
+	lda $00                                 ;C20C7D
+	cmp #$FF                                ;C20C7F
+	beq @lbl_C20C91                         ;C20C81
+	sta $02                                 ;C20C83
+	stx $00                                 ;C20C85
+	jsl $C35BA2                             ;C20C87
+	lda #$00                                ;C20C8B
+	sta $7E89B9                             ;C20C8D
+@lbl_C20C91:
+	lda #$FF                                ;C20C91
+	sta $00                                 ;C20C93
+	plp                                     ;C20C95
+	rtl                                     ;C20C96
+	rep #$20                                ;C20C97
+	sep #$10                                ;C20C99
+	lda $00                                 ;C20C9B
+	pha                                     ;C20C9D
+	lda $02                                 ;C20C9E
+	pha                                     ;C20CA0
+	jsl $C359AF                             ;C20CA1
+	ldy $02                                 ;C20CA5
+	bmi @lbl_C20CC3                         ;C20CA7
+	sty $00                                 ;C20CA9
+	jsl $C36528                             ;C20CAB
+	ldy $00                                 ;C20CAF
+	beq @lbl_C20CC3                         ;C20CB1
+	pla                                     ;C20CB3
+	sta $02                                 ;C20CB4
+	pla                                     ;C20CB6
+	sta $00                                 ;C20CB7
+	ldy #$0C                                ;C20CB9
+	sty $03                                 ;C20CBB
+	jsl $C2007D                             ;C20CBD
+	plp                                     ;C20CC1
+	rtl                                     ;C20CC2
+@lbl_C20CC3:
+	pla                                     ;C20CC3
+	sta $02                                 ;C20CC4
+	pla                                     ;C20CC6
+	sta $00                                 ;C20CC7
+	lda $00                                 ;C20CC9
+	pha                                     ;C20CCB
+	stz $02                                 ;C20CCC
+	jsl $C359D1                             ;C20CCE
+	sep #$20                                ;C20CD2
+	lda $00                                 ;C20CD4
+	ora $02                                 ;C20CD6
+	ldx #$0C                                ;C20CD8
+	bit #$07                                ;C20CDA
+	beq @lbl_C20CF0                         ;C20CDC
+	ldx #$18                                ;C20CDE
+	bit #$1C                                ;C20CE0
+	beq @lbl_C20CF0                         ;C20CE2
+	ldx #$24                                ;C20CE4
+	bit #$70                                ;C20CE6
+	beq @lbl_C20CF0                         ;C20CE8
+	ldx #$30                                ;C20CEA
+	bit #$C1                                ;C20CEC
+	bne @lbl_C20D26                         ;C20CEE
+@lbl_C20CF0:
+	dex                                     ;C20CF0
+	sep #$20                                ;C20CF1
+	lda $C20D2F,x                           ;C20CF3
+	sta $02                                 ;C20CF7
+	lda #$0C                                ;C20CF9
+	sta $03                                 ;C20CFB
+	dex                                     ;C20CFD
+	dex                                     ;C20CFE
+	rep #$20                                ;C20CFF
+	lda $01,s                               ;C20D01
+	clc                                     ;C20D03
+	adc $C20D2F,x                           ;C20D04
+	sta $00                                 ;C20D08
+	pha                                     ;C20D0A
+	phx                                     ;C20D0B
+	jsl $C2007D                             ;C20D0C
+	plx                                     ;C20D10
+	pla                                     ;C20D11
+	ldy $00                                 ;C20D12
+	bmi @lbl_C20D26                         ;C20D14
+	sta $00                                 ;C20D16
+	sty $02                                 ;C20D18
+	phx                                     ;C20D1A
+	jsl $C35B7A                             ;C20D1B
+	plx                                     ;C20D1F
+	lda $C20D2F,x                           ;C20D20
+	bne @lbl_C20CF0                         ;C20D24
+@lbl_C20D26:
+	rep #$20                                ;C20D26
+	pla                                     ;C20D28
+	ldy #$FF                                ;C20D29
+	sty $00                                 ;C20D2B
+	plp                                     ;C20D2D
+	rtl                                     ;C20D2E
+	.db $00,$00,$01,$01,$00,$03,$00,$FF,$07,$01,$FF,$05,$00,$00,$03,$FF,$FF,$01,$00,$FF,$05,$FF,$FE,$07,$00,$00,$05,$FF,$FF,$07,$00,$01,$03,$FF,$00,$01,$00,$00,$07,$01,$00,$05,$00,$01,$01,$01,$01,$03   ;C20D2F
+	rep #$20                                ;C20D5F
+	sep #$10                                ;C20D61
+	lda $00                                 ;C20D63
+	pha                                     ;C20D65
+	sep #$20                                ;C20D66
+@lbl_C20D68:
+	lda $01,s                               ;C20D68
+	sta $00                                 ;C20D6A
+	lda $02,s                               ;C20D6C
+	dec a                                   ;C20D6E
+	sta $02,s                               ;C20D6F
+	sta $01                                 ;C20D71
+	jsl $C359AF                             ;C20D73
+	lda $00                                 ;C20D77
+	bpl @lbl_C20D81                         ;C20D79
+	lda $02                                 ;C20D7B
+	bit #$90                                ;C20D7D
+	beq @lbl_C20D68                         ;C20D7F
+@lbl_C20D81:
+	lda $02,s                               ;C20D81
+	inc a                                   ;C20D83
+	sta $02,s                               ;C20D84
+@lbl_C20D86:
+	lda $01,s                               ;C20D86
+	sta $00                                 ;C20D88
+	lda $02,s                               ;C20D8A
+	sta $01                                 ;C20D8C
+	jsl $C359AF                             ;C20D8E
+	lda $00                                 ;C20D92
+	bpl @lbl_C20DC9                         ;C20D94
+	lda $02                                 ;C20D96
+	bit #$90                                ;C20D98
+	bne @lbl_C20DC9                         ;C20D9A
+	lda $01,s                               ;C20D9C
+	sta $00                                 ;C20D9E
+	lda $02,s                               ;C20DA0
+	sta $01                                 ;C20DA2
+	lda #$06                                ;C20DA4
+	sta $02                                 ;C20DA6
+	lda #$29                                ;C20DA8
+	sta $03                                 ;C20DAA
+	jsl $C2007D                             ;C20DAC
+	lda $00                                 ;C20DB0
+	bmi @lbl_C20DC9                         ;C20DB2
+	sta $02                                 ;C20DB4
+	lda $01,s                               ;C20DB6
+	sta $00                                 ;C20DB8
+	lda $02,s                               ;C20DBA
+	sta $01                                 ;C20DBC
+	jsl $C35B7A                             ;C20DBE
+	lda $02,s                               ;C20DC2
+	inc a                                   ;C20DC4
+	sta $02,s                               ;C20DC5
+	bra @lbl_C20D86                         ;C20DC7
+@lbl_C20DC9:
+	pla                                     ;C20DC9
+	pla                                     ;C20DCA
+	ldy #$FF                                ;C20DCB
+	sty $00                                 ;C20DCD
+	plp                                     ;C20DCF
+	rtl                                     ;C20DD0
+.ACCU 16
+.ACCU 8
+.INDEX 16
 
 func_C20DD1:
 	php

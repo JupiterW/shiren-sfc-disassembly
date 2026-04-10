@@ -224,6 +224,9 @@ def _align_raw_segment(
     req_start: int,
     req_end: int,
     state: DecodeState,
+    *,
+    exact_start: bool = False,
+    exact_end: bool = False,
 ) -> tuple[int, int, DecodeState]:
     decode_state = copy.deepcopy(state)
     boundaries: list[tuple[int, int, DecodeState]] = []
@@ -236,19 +239,21 @@ def _align_raw_segment(
 
     aligned_start = req_start
     start_state = copy.deepcopy(state)
-    for idx, (insn_addr, offset, snap) in enumerate(boundaries):
-        next_addr = raw_start + (boundaries[idx + 1][1] if idx + 1 < len(boundaries) else len(data))
-        if insn_addr <= req_start < next_addr:
-            aligned_start = insn_addr
-            start_state = snap
-            break
+    if not exact_start:
+        for idx, (insn_addr, offset, snap) in enumerate(boundaries):
+            next_addr = raw_start + (boundaries[idx + 1][1] if idx + 1 < len(boundaries) else len(data))
+            if insn_addr <= req_start < next_addr:
+                aligned_start = insn_addr
+                start_state = snap
+                break
 
     aligned_end = req_end
-    for idx, (insn_addr, offset, _) in enumerate(boundaries):
-        next_addr = raw_start + (boundaries[idx + 1][1] if idx + 1 < len(boundaries) else len(data))
-        if insn_addr <= req_end < next_addr:
-            aligned_end = next_addr - 1
-            break
+    if not exact_end:
+        for idx, (insn_addr, offset, _) in enumerate(boundaries):
+            next_addr = raw_start + (boundaries[idx + 1][1] if idx + 1 < len(boundaries) else len(data))
+            if insn_addr <= req_end < next_addr:
+                aligned_end = next_addr - 1
+                break
 
     return aligned_start, aligned_end, start_state
 
@@ -375,7 +380,17 @@ def _rewrite_output_branches(out: list[str]) -> list[str]:
     return rewritten
 
 
-def build_candidate(lines: list[str], start_addr: int, end_addr: int, m_width: int, x_width: int, table16: int) -> tuple[int, int, list[str]]:
+def build_candidate(
+    lines: list[str],
+    start_addr: int,
+    end_addr: int,
+    m_width: int,
+    x_width: int,
+    table16: int,
+    *,
+    exact_start: bool = False,
+    exact_end: bool = False,
+) -> tuple[int, int, list[str]]:
     start_idx: int | None = None
     end_idx: int | None = None
     out: list[str] = []
@@ -445,7 +460,15 @@ def build_candidate(lines: list[str], start_addr: int, end_addr: int, m_width: i
                 continue
             req_start = max(start_addr, raw_start)
             req_end = min(end_addr, raw_end)
-            seg_start, seg_end, seg_state = _align_raw_segment(combined, raw_start, req_start, req_end, state)
+            seg_start, seg_end, seg_state = _align_raw_segment(
+                combined,
+                raw_start,
+                req_start,
+                req_end,
+                state,
+                exact_start=exact_start,
+                exact_end=exact_end,
+            )
             prefix = combined[: seg_start - raw_start]
             suffix = combined[seg_end - raw_start + 1 :]
             if prefix:
@@ -513,6 +536,8 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--m-width", type=int, choices=(8, 16), default=8, help="initial accumulator width")
     parser.add_argument("--x-width", type=int, choices=(8, 16), default=8, help="initial index width")
     parser.add_argument("--table16", type=int, default=0, help="decode first N words of the first raw segment as .dw jump-table targets")
+    parser.add_argument("--exact-start", action="store_true", help="do not realign the requested start backward to a decoded instruction boundary")
+    parser.add_argument("--exact-end", action="store_true", help="do not realign the requested end forward to a decoded instruction boundary")
     parser.add_argument("--apply", action="store_true", help="rewrite the selected cluster in place")
     parser.add_argument("--quiet", action="store_true", help="suppress candidate output; useful with --apply")
     args = parser.parse_args(argv)
@@ -526,7 +551,16 @@ def main(argv: list[str]) -> int:
     if start_addr > end_addr:
         raise SystemExit("start must be <= end")
 
-    start_idx, end_idx, out = build_candidate(lines, start_addr, end_addr, args.m_width, args.x_width, args.table16)
+    start_idx, end_idx, out = build_candidate(
+        lines,
+        start_addr,
+        end_addr,
+        args.m_width,
+        args.x_width,
+        args.table16,
+        exact_start=args.exact_start,
+        exact_end=args.exact_end,
+    )
 
     if args.apply:
         new_lines = lines[:start_idx] + out + lines[end_idx:]
