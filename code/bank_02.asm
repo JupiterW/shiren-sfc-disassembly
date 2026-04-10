@@ -2945,7 +2945,7 @@ func_C22E2D:
 	stz $01                                 ;C22FB1
 	phb                                     ;C22FB3
 	jsl.l DisplayMessage
-	.db $AB               ;C22FB4  
+	plb                                     ;C22FB8
 @lbl_C22FB9:
 	lda.w $8998
 	beq @lbl_C22FD3
@@ -2977,7 +2977,7 @@ func_C22E2D:
 	sta $01                                 ;C22FF4
 	phb                                     ;C22FF6
 	jsl.l DisplayMessage
-	.db $AB                   ;C22FF8  
+	plb                                     ;C22FFB
 @lbl_C22FFC:
 	lda.w $8744
 	beq @lbl_C2301B
