@@ -992,11 +992,21 @@ RestorativeHerbUseEffect:
 	ldy #$009B                              ;C30FB4
 	sty $00                                 ;C30FB7
 	jsl.l DisplayMessage
-	.db $68,$F0,$12,$A0,$13,$00,$84,$00,$22,$FF,$3F,$C2,$A0,$67,$00,$84   ;C30FBD
-	.db $00
+	pla                                     ;C30FBD
+	.db $F0,$12   ;C30FBE
+	ldy #$0013                              ;C30FC0
+	sty $00                                 ;C30FC3
+	jsl $C23FFF                             ;C30FC5
+	ldy #$0067                              ;C30FC9
+	sty $00                                 ;C30FCC
 	jsl.l DisplayMessage
-	.db $68,$F0,$12,$A0,$13,$00,$84,$00,$22,$73,$40   ;C30FCD
-	.db $C2,$A0,$6C,$00,$84,$00
+	pla                                     ;C30FD2
+	.db $F0,$12   ;C30FD3
+	ldy #$0013                              ;C30FD5
+	sty $00                                 ;C30FD8
+	jsl $C24073                             ;C30FDA
+	ldy #$006C                              ;C30FDE
+	sty $00                                 ;C30FE1
 	jsl.l DisplayMessage
 	rts                                     ;C30FE7
 	sep #$30                                ;C30FE8
@@ -1092,8 +1102,14 @@ StrengthHerbUseEffect:
 	.db $68,$85,$02,$A5,$02   ;C310A2  
 	.db $85,$00,$22,$71,$32,$C2,$60   ;C310B2
 HappinessHerbUseEffect:
-	.db $E2,$20,$A9,$13,$85,$00,$E2,$20,$A9   ;C310B9
-	.db $01,$85,$01,$22,$79,$35,$C2,$60   ;C310C2
+	sep #$20                                ;C310B9
+	lda #$13                                ;C310BB
+	sta $00                                 ;C310BD
+	sep #$20                                ;C310BF
+	lda #$01                                ;C310C1
+	sta $01                                 ;C310C3
+	jsl $C23579                             ;C310C5
+	rts                                     ;C310C9
 AngelSeedUseEffect:
 	.db $E2,$20,$A9,$13,$85,$00,$E2,$20   ;C310CA
 	.db $A9,$05,$85,$01,$22,$79,$35,$C2,$60   ;C310D2
@@ -2355,8 +2371,16 @@ EarthBlessScrollUseEffect:
 	phb                                     ;C31BA5
 	jsl.l DisplayMessage
 	.db $AB   ;C31B9B  
-	.db $FA,$BD,$8C,$8C,$1A,$9D,$8C,$8C,$A9,$AB,$85,$00,$64,$01,$86,$02   ;C31BAB
-	.db $DA,$8B
+	plx                                     ;C31BAB
+	lda $8C8C,x                             ;C31BAC
+	inc a                                   ;C31BAF
+	sta $8C8C,x                             ;C31BB0
+	lda #$AB                                ;C31BB3
+	sta $00                                 ;C31BB5
+	stz $01                                 ;C31BB7
+	stx $02                                 ;C31BB9
+	phx                                     ;C31BBB
+	phb                                     ;C31BBC
 	jsl.l DisplayMessage
 	.db $AB,$FA,$BD,$0C,$8C,$F0,$0D,$9E,$0C,$8C   ;C31BBB
 	.db $A9,$52,$85,$00,$64,$01
@@ -4476,8 +4500,17 @@ func_C32CCB:
 	sta.b wTemp02
 	plp
 	rtl
-	.db $08,$E2,$20,$7B,$A5,$00,$0A,$C2,$30,$AA,$BF,$01,$03,$C3,$85,$00   ;C32CEC
-	.db $28,$6B                           ;C32CFC
+	php                                     ;C32CEC
+	sep #$20                                ;C32CED
+	tdc                                     ;C32CEF
+	lda $00                                 ;C32CF0
+	asl a                                   ;C32CF2
+	rep #$30                                ;C32CF3
+	tax                                     ;C32CF5
+	lda $C30301,x                           ;C32CF6
+	sta $00                                 ;C32CFA
+	plp                                     ;C32CFC
+	rtl                                     ;C32CFD
 
 func_C32CFE:
 	php
