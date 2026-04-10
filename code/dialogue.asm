@@ -14,7 +14,10 @@ func_C10000:
 	ldy.b wTemp04
 	cpy.b wTemp03
 	beq @lbl_C10029
-	.db $68,$85,$02,$A9,$EB,$08,$85,$00
+	pla                                     ;C10016
+	sta $02                                 ;C10017
+	lda #$08EB                              ;C10019
+	sta $00                                 ;C1001C
 	jsl.l DisplayMessage
 	.db $22,$37,$24,$C6   ;C10017
 	.db $28,$6B                           ;C10027
@@ -175,8 +178,11 @@ func_C10189:
 .ACCU 8
 .INDEX 16
 	jsl.l DisplayMessage
-	.db $60,$C2,$20   ;C10218  
-	.db $A9,$98,$06,$85,$00
+	rts                                     ;C10225
+	rep #$20                                ;C10226
+	lda #$0698                              ;C10228
+	sta $00                                 ;C1022B
+.ACCU 8
 	jsl.l DisplayMessage
 	rts                                     ;C10231
 	sep #$20                                ;C10232
@@ -227,7 +233,11 @@ func_C10189:
 .ACCU 8
 .INDEX 16
 	jsl.l DisplayMessage
-	.db $60,$C2,$20,$A9,$9F,$06,$85,$00
+	rts                                     ;C1029F
+	rep #$20                                ;C102A0
+	lda #$069F                              ;C102A2
+	sta $00                                 ;C102A5
+.ACCU 8
 	jsl.l DisplayMessage
 	rts                                     ;C102AB
 	rep #$20                                ;C102AC
@@ -302,7 +312,11 @@ func_C10189:
 	sta $00                                 ;C10344
 .ACCU 8
 	jsl.l DisplayMessage
-	.db $60,$C2,$20,$A9,$9A,$06,$85,$00
+	rts                                     ;C1034A
+	rep #$20                                ;C1034B
+	lda #$069A                              ;C1034D
+	sta $00                                 ;C10350
+.ACCU 8
 	jsl.l DisplayMessage
 	.db $A9,$A0   ;C10348  
 	.db $06,$85,$00
@@ -347,7 +361,10 @@ func_C10189:
 	ldy #$06A6                              ;C103B2
 	sty $00                                 ;C103B5
 	jsl.l DisplayMessage
-	.db $60,$A0,$03,$09,$84,$00,$86,$02
+	rts                                     ;C103BB
+	ldy #$0903                              ;C103BC
+	sty $00                                 ;C103BF
+	stx $02                                 ;C103C1
 	jsl.l DisplayMessage
 	jsl $C33FF7                             ;C103C7
 	rts                                     ;C103CB
@@ -387,7 +404,10 @@ func_C10189:
 	jsl.l _SetEvent
 	.db $C2,$20,$A9,$A9,$06,$85,$00
 	jsl.l DisplayMessage
-	.db $20,$36,$04,$A9,$AA,$06,$85,$00
+	jsr $0436                               ;C10429
+	lda #$AA                                ;C1042C
+	asl $85                                 ;C1042E
+	.db $00   ;C10430
 	jsl.l DisplayMessage
 	rts                                     ;C10435
 	php                                     ;C10436
@@ -522,10 +542,15 @@ func_C104AB:
 	jsl.l DisplayMessage
 	.db $A0,$F3,$07,$84,$00
 	jsl.l DisplayMessage
-	.db $A9,$89,$85,$00   ;C10550  
-	.db $A9,$02,$85,$02
+	lda #$89                                ;C1055C
+	sta $00                                 ;C1055E
+	lda #$02                                ;C10560
+	sta $02                                 ;C10562
 	jsl.l _SetEvent
-	.db $A9,$0C,$85,$00,$A9,$03,$85,$02   ;C10560
+	lda #$0C                                ;C10568
+	sta $00                                 ;C1056A
+	lda #$03                                ;C1056C
+	sta $02                                 ;C1056E
 	jsl.l _SetEvent
 	.db $60,$A0,$F5,$07,$84,$00
 	jsl.l DisplayMessage
@@ -625,7 +650,10 @@ func_C104AB:
 	jsl.l func_C240A7
 	rts
 @lbl_C10661:
-	.db $3A,$D0,$0A,$A0,$CD,$06,$84,$00
+	dec a                                   ;C10661
+	.db $D0,$0A   ;C10662
+	ldy #$06CD                              ;C10664
+	sty $00                                 ;C10667
 	jsl.l DisplayMessage
 	rts                                     ;C1066D
 	dec a                                   ;C1066E
@@ -709,7 +737,10 @@ func_C104AB:
 	ldy #$06DC                              ;C1071D
 	sty $00                                 ;C10720
 	jsl.l DisplayMessage
-	.db $60,$84,$02,$A0,$DD,$06,$84,$00
+	rts                                     ;C10726
+	sty $02                                 ;C10727
+	ldy #$06DD                              ;C10729
+	sty $00                                 ;C1072C
 	jsl.l DisplayMessage
 	.db $60,$A0,$DE,$06,$84,$00
 	jsl.l DisplayMessage
@@ -1047,11 +1078,15 @@ func_C108B1:
 	ldy #$06E9                              ;C10A41
 	sty $00                                 ;C10A44
 	jsl.l DisplayMessage
-	.db $A9,$84   ;C10A3C  
-	.db $85,$00,$A9,$01,$85,$02
+	lda #$84                                ;C10A4A
+	sta $00                                 ;C10A4C
+	lda #$01                                ;C10A4E
+	sta $02                                 ;C10A50
 	jsl.l _SetEvent
-	.db $A9,$04,$85,$00,$A9,$01   ;C10A4C  
-	.db $85,$02
+	lda #$04                                ;C10A56
+	sta $00                                 ;C10A58
+	lda #$01                                ;C10A5A
+	sta $02                                 ;C10A5C
 	jsl.l _SetEvent
 	.db $60,$A0,$EA,$06,$84,$00
 	jsl.l DisplayMessage
@@ -1105,10 +1140,15 @@ func_C108B1:
 	ldy #$06EC                              ;C10ADC
 	sty $00                                 ;C10ADF
 	jsl.l DisplayMessage
-	.db $A9,$84,$85,$00,$A9,$01,$85   ;C10ADC
-	.db $02
+	lda #$84                                ;C10AE5
+	sta $00                                 ;C10AE7
+	lda #$01                                ;C10AE9
+	sta $02                                 ;C10AEB
 	jsl.l _SetEvent
-	.db $A9,$04,$85,$00,$A9,$02,$85,$02
+	lda #$04                                ;C10AF1
+	sta $00                                 ;C10AF3
+	lda #$02                                ;C10AF5
+	sta $02                                 ;C10AF7
 	jsl.l _SetEvent
 	.db $60,$A0,$ED,$06,$84,$00
 	jsl.l DisplayMessage
@@ -1301,7 +1341,10 @@ func_C108B1:
 	lda #$01                                ;C10CDA
 	sta $02                                 ;C10CDC
 	jsl.l _SetEvent
-	.db $A9,$04,$85,$00,$A9,$03,$85,$02
+	lda #$04                                ;C10CE2
+	sta $00                                 ;C10CE4
+	lda #$03                                ;C10CE6
+	sta $02                                 ;C10CE8
 	jsl.l _SetEvent
 	.db $60,$A0,$F5,$06,$84,$00
 	jsl.l DisplayMessage
@@ -1381,12 +1424,18 @@ func_C108B1:
 	lda #$01                                ;C10DA9
 	sta $02                                 ;C10DAB
 	jsl.l _SetEvent
-	.db $A9,$04,$85,$00,$A9,$04,$85,$02
+	lda #$04                                ;C10DB1
+	sta $00                                 ;C10DB3
+	lda #$04                                ;C10DB5
+	sta $02                                 ;C10DB7
 	jsl.l _SetEvent
 	.db $A0,$F9,$06,$84,$00
 	jsl.l DisplayMessage
-	.db $60,$3A,$D0,$5E,$A9,$84   ;C10DBC  
-	.db $85,$00
+	rts                                     ;C10DC6
+	dec a                                   ;C10DC7
+	.db $D0,$5E   ;C10DC8
+	lda #$84                                ;C10DCA
+	sta $00                                 ;C10DCC
 	jsl.l _GetEvent
 	lda $00                                 ;C10DD2
 	.db $D0,$22   ;C10DD4
@@ -7556,7 +7605,11 @@ NPCScriptFunction_C14479:
 	ldy #$08CC                              ;C149DD
 	sty $00                                 ;C149E0
 	jsl.l DisplayMessage
-	.db $60,$E2,$20,$C2,$10,$A9,$09,$85,$00   ;C149DF
+	rts                                     ;C149E6
+	sep #$20                                ;C149E7
+	rep #$10                                ;C149E9
+	lda #$09                                ;C149EB
+	sta $00                                 ;C149ED
 	jsl.l _GetEvent
 	lda $00                                 ;C149F3
 	cmp #$05                                ;C149F5
@@ -7583,7 +7636,10 @@ NPCScriptFunction_C14479:
 	sty.b wTemp00
 	jsl.l DisplayMessage
 	rts
-	.db $E2,$20,$C2,$10,$A0,$B3,$07,$84,$00
+	sep #$20                                ;C14A35
+	rep #$10                                ;C14A37
+	ldy #$07B3                              ;C14A39
+	sty $00                                 ;C14A3C
 	jsl.l DisplayMessage
 	rts                                     ;C14A42
 	sep #$20                                ;C14A43
@@ -8032,7 +8088,11 @@ func_C14D64:
 	plp                                     ;C14E06
 	rtl                                     ;C14E07
 @lbl_C14E08:
-	.db $E2,$20,$C2,$10,$A0,$25,$08,$84,$00
+	sep #$20                                ;C14E08
+	rep #$10                                ;C14E0A
+	ldy #$0825                              ;C14E0C
+	sty $00                                 ;C14E0F
+.INDEX 8
 	jsl.l DisplayMessage
 	.db $A0,$2F,$01   ;C14E08
 	.db $84,$00
