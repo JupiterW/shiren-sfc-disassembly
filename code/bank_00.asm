@@ -427,7 +427,7 @@ Jumptable_C0672D:
 	.dw $6777
 
 func_C0673F:
-	.db $60
+	rts                                     ;C0673F
 	
 func_C06740:
 	lda #$0041                              ;C06740
@@ -1179,7 +1179,8 @@ func_C06CDA:
 	sta.w $833C,x
 	jmp.w func_C06BE6
 @lbl_C06CF2:
-	.db $28,$6B
+	plp                                     ;C06CF2
+	rtl                                     ;C06CF3
 
 func_C06CF4:
 	php
@@ -1991,7 +1992,7 @@ func_C07339:
 	cmp.l $7E81A0
 	beq @lbl_C073B4
 ;C073A2  
-	.db $80,$06
+	.db $80,$06   ;C073A2
 @lbl_C073A4:
 	bpl @lbl_C073B4
 	lda $7E81A0                             ;C073A6
@@ -2818,7 +2819,7 @@ func_C079F6:
 	ldx.b #$04
 	bra @lbl_C07A9A
 @lbl_C07A98:
-	.db $A2,$FF
+	ldx #$FF                                ;C07A98
 @lbl_C07A9A:
 	pla
 	pla
