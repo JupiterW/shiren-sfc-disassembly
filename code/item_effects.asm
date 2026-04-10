@@ -2318,8 +2318,14 @@ AirBlessScrollUseEffect:
 	phx                                     ;C31B0F
 	phb                                     ;C31B10
 	jsl.l DisplayMessage
-	.db $AB,$FA,$BD,$0C,$8C,$F0,$0D,$9E,$0C,$8C   ;C31B0F
-	.db $A9,$52,$85,$00,$64,$01
+	.db $AB   ;C31B14
+	plx                                     ;C31B15
+	lda $8C0C,x                             ;C31B16
+	.db $F0,$0D   ;C31B19
+	stz $8C0C,x                             ;C31B1B
+	lda #$52                                ;C31B1E
+	sta $00                                 ;C31B20
+	stz $01                                 ;C31B22
 	jsl.l DisplayMessage
 	.db $A9,$01,$80,$9B,$A9,$5C   ;C31B1F
 	.db $85,$00,$64,$01
@@ -2399,8 +2405,14 @@ EarthBlessScrollUseEffect:
 	phx                                     ;C31BBB
 	phb                                     ;C31BBC
 	jsl.l DisplayMessage
-	.db $AB,$FA,$BD,$0C,$8C,$F0,$0D,$9E,$0C,$8C   ;C31BBB
-	.db $A9,$52,$85,$00,$64,$01
+	.db $AB   ;C31BC0
+	plx                                     ;C31BC1
+	lda $8C0C,x                             ;C31BC2
+	.db $F0,$0D   ;C31BC5
+	stz $8C0C,x                             ;C31BC7
+	lda #$52                                ;C31BCA
+	sta $00                                 ;C31BCC
+	stz $01                                 ;C31BCE
 	jsl.l DisplayMessage
 	.db $A9,$01,$80,$97,$A9,$5C   ;C31BCB
 	.db $85,$00,$64,$01
@@ -3504,7 +3516,14 @@ func_C324F9:
 	plp
 	rtl
 @lbl_C3252F:
-	.db $84,$00,$5A,$22,$92,$01,$C3,$7A,$A9,$57,$85,$00,$64,$01,$84,$02   ;C3252F  
+	sty $00                                 ;C3252F
+	phy                                     ;C32531
+	jsl $C30192                             ;C32532
+	ply                                     ;C32536
+	lda #$57                                ;C32537
+	sta $00                                 ;C32539
+	stz $01                                 ;C3253B
+	sty $02                                 ;C3253D
 	jsl.l DisplayMessage
 	.db $28   ;C32543
 	rtl                                     ;C32544
@@ -3807,7 +3826,13 @@ JarUseEffect:
 @lbl_C3277B:
 	rts
 @lbl_C3277C:
-	.db $E2,$30,$B9,$8C,$8C,$3A,$99,$8C,$8C,$86,$00,$22,$F4,$06,$C3,$60
+	sep #$30                                ;C3277C
+	lda $8C8C,y                             ;C3277E
+	dec a                                   ;C32781
+	sta $8C8C,y                             ;C32782
+	stx $00                                 ;C32785
+	jsl $C306F4                             ;C32787
+	rts                                     ;C3278B
 @lbl_C3278C:
 	sep #$30 ;AXY->8
 	phy
