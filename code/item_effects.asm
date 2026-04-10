@@ -3109,7 +3109,10 @@ PostponeStaffUseEffect:
 	jsl.l func_C27E92
 	rts
 @lbl_C320A8:
-	.db $FA,$86,$00,$22,$90,$43,$C2,$60   ;C320A8
+	plx                                     ;C320A8
+	stx $00                                 ;C320A9
+	jsl $C24390                             ;C320AB
+	rts                                     ;C320AF
 PainSplitStaffUseEffect:
 	sep #$30 ;AXY->8
 	jsl.l func_C28451
@@ -3848,7 +3851,10 @@ JarUseEffect:
 	bne @lbl_C326C6
 	lda.l wShirenStatus.cantPickUpItems
 	beq @lbl_C326C6
-	.db $A9,$2B,$85,$00,$A9,$01,$85,$01   ;C326B9
+	lda #$2B                                ;C326B9
+	sta $00                                 ;C326BB
+	lda #$01                                ;C326BD
+	sta $01                                 ;C326BF
 	jsl.l DisplayMessage
 	rts
 @lbl_C326C6:
@@ -4446,7 +4452,10 @@ TryPrepareSelectedItemForJarInsertion:
 	ldy.b wTemp00
 	bne @lbl_C32B3A
 ;C32B2A
-	.db $68,$86,$02,$A9,$C6,$00,$85,$00
+	pla                                     ;C32B2A
+	stx $02                                 ;C32B2B
+	lda #$00C6                              ;C32B2D
+	sta $00                                 ;C32B30
 	jsl.l DisplayMessage
 	.db $64,$00,$28,$60
 @lbl_C32B3A:
@@ -4659,7 +4668,10 @@ TryClearAssignedCategoryItem:
 	lda.w wItemIsCursed,y
 	beq @lbl_C32CAE
 ;C32C9E
-	.db $A9,$0D,$85,$00,$64,$01,$84,$02
+	lda #$0D                                ;C32C9E
+	sta $00                                 ;C32CA0
+	stz $01                                 ;C32CA2
+	sty $02                                 ;C32CA4
 	jsl.l DisplayMessage
 	.db $64,$00,$28,$6B
 @lbl_C32CAE:
@@ -4746,7 +4758,10 @@ func_C32CFE:
 	plp
 	rtl
 @lbl_C32D50:
-	.db $A9,$A9,$85,$00,$64,$01,$86,$02   ;C32D50
+	lda #$A9                                ;C32D50
+	sta $00                                 ;C32D52
+	stz $01                                 ;C32D54
+	stx $02                                 ;C32D56
 	jsl.l DisplayMessage
 	.db $28,$6B           ;C32D58  
 @lbl_C32D5E:
