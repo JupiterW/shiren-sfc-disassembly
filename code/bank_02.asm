@@ -6351,13 +6351,50 @@ func_C25152:
 	.db $A5,$00,$48,$A9,$13,$85,$00,$22,$91,$15,$C2,$A9,$D3,$85,$00,$64   ;C2549F  
 	.db $01,$A9,$13,$85,$02
 	jsl.l DisplayMessage
-	.db $FA,$30,$60,$BF,$35,$88,$7E   ;C254AF  
-	.db $D0,$5A,$AF,$2C,$86,$7E,$3A,$D0,$0F,$C2,$20,$A9,$64,$00,$85,$00   ;C254BF  
-	.db $E2,$20,$22,$BE,$33,$C2,$80,$26,$3A,$D0,$0F,$C2,$20,$A9,$2C,$01   ;C254CF
-	.db $85,$00,$E2,$20,$22,$BE,$33,$C2,$80,$14,$C2,$30,$A9,$64,$00,$85   ;C254DF  
-	.db $00,$22,$95,$33,$C2,$A2,$4E,$00,$AF,$45,$89,$7E,$80,$09,$C2,$30   ;C254EF
-	.db $A2,$50,$00,$AF,$43,$89,$7E,$85,$00,$A9,$0A,$00,$85,$02,$22,$26   ;C254FF
-	.db $E5,$C3,$A5,$00,$85,$02,$86,$00
+	plx                                     ;C254B8
+	.db $30,$60   ;C254B9
+	lda $7E8835,x                           ;C254BB
+	.db $D0,$5A   ;C254BF
+	lda $7E862C                             ;C254C1
+	dec a                                   ;C254C5
+	bne @lbl_C254D7                         ;C254C6
+	rep #$20                                ;C254C8
+	lda #$0064                              ;C254CA
+	sta $00                                 ;C254CD
+	sep #$20                                ;C254CF
+	jsl $C233BE                             ;C254D1
+	bra @lbl_C254FD                         ;C254D5
+@lbl_C254D7:
+	dec a                                   ;C254D7
+	bne @lbl_C254E9                         ;C254D8
+	rep #$20                                ;C254DA
+	lda #$012C                              ;C254DC
+	sta $00                                 ;C254DF
+	sep #$20                                ;C254E1
+	jsl $C233BE                             ;C254E3
+	bra @lbl_C254FD                         ;C254E7
+@lbl_C254E9:
+	rep #$30                                ;C254E9
+	lda #$0064                              ;C254EB
+	sta $00                                 ;C254EE
+	jsl $C23395                             ;C254F0
+	ldx #$004E                              ;C254F4
+	lda $7E8945                             ;C254F7
+	bra @lbl_C25506                         ;C254FB
+@lbl_C254FD:
+	rep #$30                                ;C254FD
+	ldx #$0050                              ;C254FF
+	lda $7E8943                             ;C25502
+@lbl_C25506:
+	sta $00                                 ;C25506
+	lda #$000A                              ;C25508
+	sta $02                                 ;C2550B
+	jsl $C3E526                             ;C2550D
+	lda $00                                 ;C25511
+	sta $02                                 ;C25513
+	stx $00                                 ;C25515
+.ACCU 8
+.INDEX 8
 	jsl.l DisplayMessage
 	.db $64,$00,$60,$E2   ;C2550F  
 	.db $30                               ;C2551F  
