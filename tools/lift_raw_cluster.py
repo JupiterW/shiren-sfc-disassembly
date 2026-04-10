@@ -20,6 +20,8 @@ from __future__ import annotations
 import argparse
 import re
 import sys
+from dataclasses import dataclass
+import copy
 from pathlib import Path
 
 from promote_raw_item_handler_label import (
@@ -36,6 +38,33 @@ from raw_db_decode import DecodeState, decode_one, parse_addr
 
 ROOT = Path(__file__).resolve().parents[1]
 RAW_LINE_RE = re.compile(r"^\s*\.db\b")
+SHORT_BRANCH_OPS = {
+    0xF0: "beq",
+    0xD0: "bne",
+    0x10: "bpl",
+    0x30: "bmi",
+    0x70: "bvs",
+    0x80: "bra",
+    0x90: "bcc",
+    0xB0: "bcs",
+}
+LONG_BRANCH_OPS = {
+    0x82: "brl",
+}
+OUT_ADDR_RE = re.compile(r";([0-9A-F]{6})\s*$")
+OUT_BRANCH_RE = re.compile(r"^(\s*)(beq|bne|bpl|bmi|bvs|bra|bcc|bcs|brl)\s+\$([0-9A-F]{5,6})(\s*;[0-9A-F]{6}\s*)$", re.IGNORECASE)
+
+
+@dataclass
+class DecodedInsn:
+    addr: int
+    size: int
+    text: str
+    opcode: int
+
+
+INLINE_TABLE_LOAD_RE = re.compile(r"^lda \$([0-9A-F]{4,6}),x$", re.IGNORECASE)
+IMM_RE = re.compile(r"#\$([0-9A-F]+)", re.IGNORECASE)
 
 
 def _resolve_file(path_text: str) -> Path:
@@ -46,12 +75,7 @@ def _resolve_file(path_text: str) -> Path:
 
 
 def _fmt_operand(operand: str) -> str:
-    text = operand.strip()
-    if not text:
-        return text
-    if text.startswith("$C"):
-        return f"${text[2:]}"
-    return text
+    return operand.strip()
 
 
 def _fmt_instruction(text: str) -> str:
@@ -63,7 +87,7 @@ def _fmt_instruction(text: str) -> str:
 
 def _emit_decoded_lines(
     data: list[int], base_addr: int, state: DecodeState, table16: int
-) -> list[str]:
+) -> tuple[list[str], dict[int, str]]:
     out: list[str] = []
     i = 0
 
@@ -77,17 +101,150 @@ def _emit_decoded_lines(
             out.append(f"\t.dw ${bank | target:06X}")
         i = table16 * 2
 
+    decoded: list[DecodedInsn] = []
     while i < len(data):
         size, text = decode_one(data, i, base_addr, state)
-        addr = base_addr + i
-        if text.startswith(".db "):
-            chunk = data[i : i + size]
-            out.append(format_db_line(chunk, addr))
+        insn = DecodedInsn(addr=base_addr + i, size=max(size, 1), text=text, opcode=data[i])
+        decoded.append(insn)
+        i += insn.size
+
+        if len(decoded) < 3:
+            continue
+        if decoded[-1].opcode != 0x60 or decoded[-2].opcode != 0x48:
+            continue
+
+        load_insn = decoded[-3]
+        load_match = INLINE_TABLE_LOAD_RE.match(load_insn.text)
+        if load_match is None:
+            continue
+
+        table_start = insn.addr + insn.size
+        load_target = int(load_match.group(1), 16)
+        if load_target not in {table_start, table_start & 0xFFFF}:
+            continue
+
+        table_count: int | None = None
+        for prev in reversed(decoded[:-3]):
+            if prev.opcode != 0xC9:
+                continue
+            imm_match = IMM_RE.search(prev.text)
+            if imm_match is None:
+                continue
+            table_count = int(imm_match.group(1), 16)
+            break
+        if table_count is None or table_count <= 0 or table_count > 32:
+            continue
+        if i + table_count * 2 > len(data):
+            continue
+
+        for idx in range(table_count):
+            entry_off = i + idx * 2
+            target = data[entry_off] | (data[entry_off + 1] << 8)
+            decoded.append(
+                DecodedInsn(
+                    addr=base_addr + entry_off,
+                    size=2,
+                    text=f".dw ${target:04X}",
+                    opcode=-1,
+                )
+            )
+        i += table_count * 2
+
+    branch_labels: dict[int, str] = {}
+    for insn in decoded:
+        if insn.opcode in SHORT_BRANCH_OPS and insn.size >= 2:
+            disp = data[insn.addr - base_addr + 1]
+            if disp >= 0x80:
+                disp -= 0x100
+            target = insn.addr + 2 + disp
+        elif insn.opcode in LONG_BRANCH_OPS and insn.size >= 3:
+            disp = data[insn.addr - base_addr + 1] | (data[insn.addr - base_addr + 2] << 8)
+            if disp >= 0x8000:
+                disp -= 0x10000
+            target = insn.addr + 3 + disp
         else:
-            out.append(f"{_fmt_instruction(text):<40} ;{addr:06X}")
+            continue
+        if base_addr <= target < base_addr + len(data):
+            branch_labels.setdefault(target, f"@lbl_{target:06X}")
+
+    offset = 0
+    for insn in decoded:
+        if insn.addr in branch_labels:
+            out.append(f"{branch_labels[insn.addr]}:")
+        branch_external = False
+        if insn.opcode in SHORT_BRANCH_OPS and insn.size >= 2:
+            disp = data[offset + 1]
+            if disp >= 0x80:
+                disp -= 0x100
+            target = insn.addr + 2 + disp
+            branch_external = target not in branch_labels and not (base_addr <= target < base_addr + len(data))
+        elif insn.opcode in LONG_BRANCH_OPS and insn.size >= 3:
+            disp = data[offset + 1] | (data[offset + 2] << 8)
+            if disp >= 0x8000:
+                disp -= 0x10000
+            target = insn.addr + 3 + disp
+            branch_external = target not in branch_labels and not (base_addr <= target < base_addr + len(data))
+
+        if insn.text.startswith(".db ") or branch_external:
+            chunk = data[offset : offset + insn.size]
+            out.append(format_db_line(chunk, insn.addr))
+        else:
+            text = insn.text
+            if insn.opcode in SHORT_BRANCH_OPS and insn.size >= 2:
+                disp = data[offset + 1]
+                if disp >= 0x80:
+                    disp -= 0x100
+                target = insn.addr + 2 + disp
+                label = branch_labels.get(target)
+                if label is not None:
+                    text = f"{SHORT_BRANCH_OPS[insn.opcode]} {label}"
+            elif insn.opcode in LONG_BRANCH_OPS and insn.size >= 3:
+                disp = data[offset + 1] | (data[offset + 2] << 8)
+                if disp >= 0x8000:
+                    disp -= 0x10000
+                target = insn.addr + 3 + disp
+                label = branch_labels.get(target)
+                if label is not None:
+                    text = f"{LONG_BRANCH_OPS[insn.opcode]} {label}"
+            out.append(f"{_fmt_instruction(text):<40} ;{insn.addr:06X}")
+        offset += insn.size
+
+    return out, branch_labels
+
+
+def _align_raw_segment(
+    data: list[int],
+    raw_start: int,
+    req_start: int,
+    req_end: int,
+    state: DecodeState,
+) -> tuple[int, int, DecodeState]:
+    decode_state = copy.deepcopy(state)
+    boundaries: list[tuple[int, int, DecodeState]] = []
+    i = 0
+    while i < len(data):
+        insn_addr = raw_start + i
+        boundaries.append((insn_addr, i, copy.deepcopy(decode_state)))
+        size, _ = decode_one(data, i, raw_start, decode_state)
         i += max(size, 1)
 
-    return out
+    aligned_start = req_start
+    start_state = copy.deepcopy(state)
+    for idx, (insn_addr, offset, snap) in enumerate(boundaries):
+        next_addr = raw_start + (boundaries[idx + 1][1] if idx + 1 < len(boundaries) else len(data))
+        if insn_addr <= req_start < next_addr:
+            aligned_start = insn_addr
+            start_state = snap
+            break
+
+    aligned_end = req_end
+    for idx, (insn_addr, offset, _) in enumerate(boundaries):
+        next_addr = raw_start + (boundaries[idx + 1][1] if idx + 1 < len(boundaries) else len(data))
+        if insn_addr <= req_end < next_addr:
+            aligned_end = next_addr - 1
+            break
+
+    return aligned_start, aligned_end, start_state
 
 
 def _compute_line_starts(lines: list[str]) -> list[int | None]:
@@ -124,6 +281,15 @@ def _advance_state_from_asm_line(stripped: str, state: DecodeState) -> None:
     parts = stripped.split(None, 1)
     op = parts[0].lower()
     arg = parts[1] if len(parts) > 1 else ""
+
+    # Handle .ACCU / .INDEX directives emitted by previous lifts
+    if op == ".accu" and arg in ("8", "16"):
+        state.m_width = int(arg)
+        return
+    if op == ".index" and arg in ("8", "16"):
+        state.x_width = int(arg)
+        return
+
     if op not in {"rep", "sep"}:
         return
     if "#" not in arg:
@@ -140,15 +306,70 @@ def _advance_state_from_asm_line(stripped: str, state: DecodeState) -> None:
         state.x_width = 8 if op == "sep" else 16
 
 
+def _rewrite_output_branches(out: list[str]) -> list[str]:
+    labels: dict[int, str] = {}
+    line_addrs: dict[int, int] = {}
+    for idx, line in enumerate(out):
+        match = OUT_ADDR_RE.search(line)
+        if not match:
+            continue
+        addr = int(match.group(1), 16)
+        line_addrs[addr] = idx
+
+    for line in out:
+        match = OUT_BRANCH_RE.match(line)
+        if not match:
+            continue
+        target = int(match.group(3), 16)
+        if target not in line_addrs and target < 0x100000:
+            banked = target | 0xC00000
+            if banked in line_addrs:
+                target = banked
+        if target in line_addrs:
+            labels.setdefault(target, f"@lbl_{target:06X}")
+
+    if not labels:
+        return out
+
+    rewritten: list[str] = []
+    for idx, line in enumerate(out):
+        match = OUT_ADDR_RE.search(line)
+        if match:
+            addr = int(match.group(1), 16)
+            label = labels.get(addr)
+            if label is not None:
+                rewritten.append(f"{label}:")
+
+        branch_match = OUT_BRANCH_RE.match(line)
+        if branch_match:
+            indent, op, target_hex, suffix = branch_match.groups()
+            target = int(target_hex, 16)
+            if target not in line_addrs and target < 0x100000:
+                banked = target | 0xC00000
+                if banked in line_addrs:
+                    target = banked
+            label = labels.get(target)
+            if label is not None:
+                line = f"{indent}{op} {label}{suffix}"
+        rewritten.append(line)
+
+    return rewritten
+
+
 def build_candidate(lines: list[str], start_addr: int, end_addr: int, m_width: int, x_width: int, table16: int) -> tuple[int, int, list[str]]:
     start_idx: int | None = None
     end_idx: int | None = None
     out: list[str] = []
     line_starts = _compute_line_starts(lines)
     state = DecodeState(m_width=m_width, x_width=x_width)
+    pre_raw_state: DecodeState | None = None
     used_table16 = False
+    skip_until = -1
+    pending_labels: dict[int, str] = {}
 
     for idx, line in enumerate(lines):
+        if idx <= skip_until:
+            continue
         stripped = line.strip()
         line_start = line_starts[idx]
         line_size = estimate_asm_line_size(stripped)
@@ -158,6 +379,7 @@ def build_candidate(lines: list[str], start_addr: int, end_addr: int, m_width: i
             start_idx = idx
 
         if start_idx is None:
+            _advance_state_from_asm_line(stripped, state)
             continue
 
         if line_start is None:
@@ -168,41 +390,99 @@ def build_candidate(lines: list[str], start_addr: int, end_addr: int, m_width: i
             end_idx = idx
             break
 
+        if line_start in pending_labels:
+            out.append(f"{pending_labels.pop(line_start)}:")
+
         if RAW_LINE_RE.match(stripped):
-            bytes_ = _db_bytes_from_line(line)
-            if not bytes_:
+            if pre_raw_state is None:
+                pre_raw_state = copy.deepcopy(state)
+            raw_lines: list[tuple[int, list[int]]] = []
+            j = idx
+            while j < len(lines):
+                next_line = lines[j]
+                next_stripped = next_line.strip()
+                if not RAW_LINE_RE.match(next_stripped):
+                    break
+                next_start = line_starts[j]
+                next_bytes = _db_bytes_from_line(next_line)
+                if next_start is None or not next_bytes:
+                    break
+                raw_lines.append((next_start, next_bytes))
+                j += 1
+
+            skip_until = j - 1
+            if not raw_lines:
                 out.append(line.rstrip("\n"))
                 continue
-            raw_start = line_start
-            if raw_start is None:
-                out.append(line.rstrip("\n"))
-                continue
-            raw_end = raw_start + len(bytes_) - 1
+
+            raw_start = raw_lines[0][0]
+            combined: list[int] = []
+            for _, next_bytes in raw_lines:
+                combined.extend(next_bytes)
+            raw_end = raw_start + len(combined) - 1
             if raw_end < start_addr or raw_start > end_addr:
-                out.append(line.rstrip("\n"))
+                for raw_line_idx in range(idx, j):
+                    out.append(lines[raw_line_idx].rstrip("\n"))
                 continue
-            seg_start = max(start_addr, raw_start)
-            seg_end = min(end_addr, raw_end)
-            prefix = bytes_[: seg_start - raw_start]
-            suffix = bytes_[seg_end - raw_start + 1 :]
+            req_start = max(start_addr, raw_start)
+            req_end = min(end_addr, raw_end)
+            seg_start, seg_end, seg_state = _align_raw_segment(combined, raw_start, req_start, req_end, state)
+            prefix = combined[: seg_start - raw_start]
+            suffix = combined[seg_end - raw_start + 1 :]
             if prefix:
                 out.append(format_db_line(prefix, raw_start))
-            middle = bytes_[seg_start - raw_start : seg_end - raw_start + 1]
-            out.extend(_emit_decoded_lines(middle, seg_start, state, table16 if not used_table16 and seg_start == start_addr else 0))
+            middle = combined[seg_start - raw_start : seg_end - raw_start + 1]
+            post_decode_state = copy.deepcopy(seg_state)
+            decoded_lines, branch_labels = _emit_decoded_lines(
+                middle,
+                seg_start,
+                post_decode_state,
+                table16 if not used_table16 and seg_start == start_addr else 0,
+            )
+            # Update state to reflect what the decoded instructions do to
+            # flag tracking (seg_state was deepcopied, post_decode_state
+            # was mutated by _emit_decoded_lines via decode_one)
+            state.m_width = post_decode_state.m_width
+            state.x_width = post_decode_state.x_width
+            out.extend(decoded_lines)
+            for target, label in branch_labels.items():
+                pending_labels.setdefault(target, label)
             if table16 and seg_start == start_addr:
                 used_table16 = True
             if suffix:
                 out.append(format_db_line(suffix, seg_end + 1))
             continue
 
+        # Leaving a raw region — restore the assembler's flag state to what
+        # it was before the .db block, since .db lines are opaque to
+        # wla-65816's M/X tracking.  Without this, rep/sep inside the
+        # lifted block would pollute the assembler's flag state for all
+        # subsequent code.
+        if pre_raw_state is not None:
+            if pre_raw_state.m_width != state.m_width:
+                out.append(f".ACCU {pre_raw_state.m_width}")
+            if pre_raw_state.x_width != state.x_width:
+                out.append(f".INDEX {pre_raw_state.x_width}")
+            state = copy.deepcopy(pre_raw_state)
+            pre_raw_state = None
+
         _advance_state_from_asm_line(stripped, state)
         out.append(line.rstrip("\n"))
+
+    # Handle raw block at the end of the region
+    if pre_raw_state is not None:
+        if pre_raw_state.m_width != state.m_width:
+            out.append(f".ACCU {pre_raw_state.m_width}")
+        if pre_raw_state.x_width != state.x_width:
+            out.append(f".INDEX {pre_raw_state.x_width}")
+        pre_raw_state = None
 
     if start_idx is None:
         raise SystemExit(f"no source region found for start address {start_addr:06X}")
     if end_idx is None:
         end_idx = len(lines)
 
+    out = _rewrite_output_branches(out)
     return start_idx, end_idx, out
 
 

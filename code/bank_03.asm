@@ -2395,18 +2395,18 @@ ItemThrowEffectFunctionTable:
 	.dw $3667 ;Stormward
 	.dw $3667 ;26
 	.dw $3667 ;27
-	.dw $39B0 ;MedicinalHerb
-	.dw $39B6 ;RestorativeHerb
-	.dw $10BE ;HappinessHerb
+	.dw MedicinalHerbThrowEffect-1 ;MedicinalHerb
+	.dw RestorativeHerbThrowEffect-1 ;RestorativeHerb
+	.dw HappinessHerbThrowEffect-1 ;HappinessHerb
 	.dw $399B ;SightHerb
-	.dw $3972 ;DragonHerb
+	.dw DragonHerbThrowEffect-1 ;DragonHerb
 	.dw $3877 ;VictoryHerb
 	.dw $10CF ;AngelSeed
 	.dw $3877 ;RevivalHerb
-	.dw $2028 ;InvisibilityHerb
-	.dw $10E0 ;BitterHerb
-	.dw $10F1 ;MisfortuneHerb
-	.dw $1157 ;IllLuckHerb
+	.dw InvisibilityHerbThrowEffect-1 ;InvisibilityHerb
+	.dw BitterHerbThrowEffect-1 ;BitterHerb
+	.dw MisfortuneHerbThrowEffect-1 ;MisfortuneHerb
+	.dw IllLuckHerbThrowEffect-1 ;IllLuckHerb
 	.dw $0A19 ;KignyHerb
 	.dw $3877 ;AmnesiaHerb
 	.dw $3877 ;36
@@ -2415,7 +2415,7 @@ ItemThrowEffectFunctionTable:
 	.dw $3877 ;LittleBellySeed
 	.dw $3877 ;TalkSeed
 	.dw $3877 ;StrengthHerb
-	.dw $39F8 ;AntidoteHerb
+	.dw AntidoteHerbThrowEffect-1 ;AntidoteHerb
 	.dw $1309 ;PoisonHerb
 	.dw $1366 ;ConfusionHerb
 	.dw $13C3 ;SleepHerb
