@@ -281,6 +281,15 @@ def _advance_state_from_asm_line(stripped: str, state: DecodeState) -> None:
     parts = stripped.split(None, 1)
     op = parts[0].lower()
     arg = parts[1] if len(parts) > 1 else ""
+
+    # Handle .ACCU / .INDEX directives emitted by previous lifts
+    if op == ".accu" and arg in ("8", "16"):
+        state.m_width = int(arg)
+        return
+    if op == ".index" and arg in ("8", "16"):
+        state.x_width = int(arg)
+        return
+
     if op not in {"rep", "sep"}:
         return
     if "#" not in arg:
@@ -353,6 +362,7 @@ def build_candidate(lines: list[str], start_addr: int, end_addr: int, m_width: i
     out: list[str] = []
     line_starts = _compute_line_starts(lines)
     state = DecodeState(m_width=m_width, x_width=x_width)
+    pre_raw_state: DecodeState | None = None
     used_table16 = False
     skip_until = -1
     pending_labels: dict[int, str] = {}
@@ -384,6 +394,8 @@ def build_candidate(lines: list[str], start_addr: int, end_addr: int, m_width: i
             out.append(f"{pending_labels.pop(line_start)}:")
 
         if RAW_LINE_RE.match(stripped):
+            if pre_raw_state is None:
+                pre_raw_state = copy.deepcopy(state)
             raw_lines: list[tuple[int, list[int]]] = []
             j = idx
             while j < len(lines):
@@ -420,12 +432,18 @@ def build_candidate(lines: list[str], start_addr: int, end_addr: int, m_width: i
             if prefix:
                 out.append(format_db_line(prefix, raw_start))
             middle = combined[seg_start - raw_start : seg_end - raw_start + 1]
+            post_decode_state = copy.deepcopy(seg_state)
             decoded_lines, branch_labels = _emit_decoded_lines(
                 middle,
                 seg_start,
-                seg_state,
+                post_decode_state,
                 table16 if not used_table16 and seg_start == start_addr else 0,
             )
+            # Update state to reflect what the decoded instructions do to
+            # flag tracking (seg_state was deepcopied, post_decode_state
+            # was mutated by _emit_decoded_lines via decode_one)
+            state.m_width = post_decode_state.m_width
+            state.x_width = post_decode_state.x_width
             out.extend(decoded_lines)
             for target, label in branch_labels.items():
                 pending_labels.setdefault(target, label)
@@ -435,8 +453,29 @@ def build_candidate(lines: list[str], start_addr: int, end_addr: int, m_width: i
                 out.append(format_db_line(suffix, seg_end + 1))
             continue
 
+        # Leaving a raw region — restore the assembler's flag state to what
+        # it was before the .db block, since .db lines are opaque to
+        # wla-65816's M/X tracking.  Without this, rep/sep inside the
+        # lifted block would pollute the assembler's flag state for all
+        # subsequent code.
+        if pre_raw_state is not None:
+            if pre_raw_state.m_width != state.m_width:
+                out.append(f".ACCU {pre_raw_state.m_width}")
+            if pre_raw_state.x_width != state.x_width:
+                out.append(f".INDEX {pre_raw_state.x_width}")
+            state = copy.deepcopy(pre_raw_state)
+            pre_raw_state = None
+
         _advance_state_from_asm_line(stripped, state)
         out.append(line.rstrip("\n"))
+
+    # Handle raw block at the end of the region
+    if pre_raw_state is not None:
+        if pre_raw_state.m_width != state.m_width:
+            out.append(f".ACCU {pre_raw_state.m_width}")
+        if pre_raw_state.x_width != state.x_width:
+            out.append(f".INDEX {pre_raw_state.x_width}")
+        pre_raw_state = None
 
     if start_idx is None:
         raise SystemExit(f"no source region found for start address {start_addr:06X}")

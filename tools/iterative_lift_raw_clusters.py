@@ -82,21 +82,21 @@ def is_data_like_candidate(candidate: str) -> bool:
     return True
 
 
-def commit_if_needed(rel: Path, message: str) -> tuple[bool, str | None]:
+def commit_if_needed(rel: Path, message: str) -> tuple[bool, str | None, bool]:
     add_proc = run_argv(["git", "add", str(rel)])
     if add_proc.returncode != 0:
-        return False, "git-add"
+        return False, "git-add", False
 
     cached_diff = run_argv(["git", "diff", "--cached", "--quiet", "--", str(rel)])
     if cached_diff.returncode == 0:
-        return True, None
+        return True, None, False
     if cached_diff.returncode not in (0, 1):
-        return False, "git-diff"
+        return False, "git-diff", False
 
     commit_proc = run_argv(["git", "commit", "-m", message])
     if commit_proc.returncode != 0:
-        return False, "git-commit"
-    return True, None
+        return False, "git-commit", False
+    return True, None, True
 
 
 def sorted_clusters(path: Path, min_bytes: int, max_bytes: int | None, kind: str) -> list:
@@ -297,9 +297,10 @@ def main(argv: list[str]) -> int:
 
         verify = run(args.verify_cmd)
         if verify.returncode == 0:
+            committed = False
             if args.commit:
                 commit_msg = format_batch_message(args.commit_template, rel, items)
-                ok, reason = commit_if_needed(rel, commit_msg)
+                ok, reason, committed = commit_if_needed(rel, commit_msg)
                 if not ok:
                     restore(path, before)
                     if len(items) > 1:
@@ -314,10 +315,18 @@ def main(argv: list[str]) -> int:
             baseline = snapshot(path)
             if len(items) == 1:
                 start_addr, end_addr = items[0]
-                print(f"KEPT  {start_addr:06X}-{end_addr:06X}")
+                if args.commit:
+                    status = "KEPT+COMMIT" if committed else "KEPT-NOOP"
+                else:
+                    status = "KEPT"
+                print(f"{status}  {start_addr:06X}-{end_addr:06X}")
             else:
+                if args.commit:
+                    status = "KEPT+COMMIT" if committed else "KEPT-NOOP"
+                else:
+                    status = "KEPT"
                 print(
-                    f"KEPT  {items[0][0]:06X}-{items[-1][1]:06X} "
+                    f"{status}  {items[0][0]:06X}-{items[-1][1]:06X} "
                     f"batch={len(items)}"
                 )
             return True
