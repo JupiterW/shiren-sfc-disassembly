@@ -2403,7 +2403,7 @@ ItemThrowEffectFunctionTable:
 	.dw $3877 ;VictoryHerb
 	.dw $10CF ;AngelSeed
 	.dw $3877 ;RevivalHerb
-	.dw $2028 ;InvisibilityHerb
+	.dw InvisibilityHerbThrowEffect-1 ;InvisibilityHerb
 	.dw $10E0 ;BitterHerb
 	.dw $10F1 ;MisfortuneHerb
 	.dw $1157 ;IllLuckHerb

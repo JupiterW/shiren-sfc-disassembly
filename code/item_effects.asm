@@ -3080,6 +3080,7 @@ InvisibilityHerbUseEffect:
 	sta $00                                 ;C32022
 	jsl.l DisplayMessage
 	rts                                     ;C32028
+InvisibilityHerbThrowEffect:
 	sep #$20                                ;C32029
 	lda #$15                                ;C3202B
 	sta $01                                 ;C3202D
