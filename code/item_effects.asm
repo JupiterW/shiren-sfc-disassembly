@@ -4810,7 +4810,11 @@ func_C32CFE:
 	lda #$01                                ;C32DC2
 	sta $01                                 ;C32DC4
 	jsl.l DisplayMessage
-	.db $28,$6B,$A9,$D7,$85,$00,$64,$01
+	plp                                     ;C32DCA
+	rtl                                     ;C32DCB
+	lda #$D7                                ;C32DCC
+	sta $00                                 ;C32DCE
+	stz $01                                 ;C32DD0
 	jsl.l DisplayMessage
 	plp                                     ;C32DD6
 	rtl                                     ;C32DD7
@@ -4942,14 +4946,10 @@ func_C32CFE:
 	clc                                     ;C32EBE
 	.db $01   ;C32EBF
 	ora $1A01,y                             ;C32EC0
-	.db $01   ;C32EC3
-	.db $1B   ;C32EC4
-	.db $01   ;C32EC5
-	.db $1C   ;C32EC6
-	.db $01   ;C32EC7
-	.db $1D   ;C32EC8
-	.db $01   ;C32EC9
-	.db $08   ;C32ECA
+	ora ($1B,x)                             ;C32EC3
+	ora ($1C,x)                             ;C32EC5
+	ora ($1D,x)                             ;C32EC7
+	ora ($08,x)                             ;C32EC9
 	sep #$30                                ;C32ECB
 	ldx $00                                 ;C32ECD
 	lda $7E8F8C,x                           ;C32ECF
@@ -5219,7 +5219,9 @@ func_C3303C:
 	lda.b wTemp03,s
 	beq @lbl_C330C5
 ;C330B2  
-	.db $BF,$8C,$8E,$7E,$D0,$C5,$80,$0B
+	lda $7E8E8C,x                           ;C330B2
+	.db $D0,$C5   ;C330B6
+	.db $80,$0B   ;C330B8
 @lbl_C330BA:
 	rep #$20                                ;C330BA
 	lda $04                                 ;C330BC
@@ -6149,8 +6151,11 @@ func_C335FE:
 	stx $00                                 ;C3375C
 .INDEX 8
 	jsl.l DisplayMessage
-	.db $A2,$03,$09,$86,$00,$68   ;C33758  
-	.db $85,$02
+	ldx #$03                                ;C33762
+	ora #$86                                ;C33764
+	.db $00   ;C33766
+	pla                                     ;C33767
+	sta $02                                 ;C33768
 	jsl.l DisplayMessage
 	.db $A2,$A4,$06,$86,$00
 	jsl.l DisplayMessage
@@ -6196,8 +6201,10 @@ func_C335FE:
 	jsl.l DisplayMessage
 	.db $A0,$22,$09,$84,$00
 	jsl.l DisplayMessage
-	.db $A9   ;C337C8  
-	.db $08,$85,$00,$A9,$01,$85,$02
+	lda #$08                                ;C337D7
+	sta $00                                 ;C337D9
+	lda #$01                                ;C337DB
+	sta $02                                 ;C337DD
 	jsl.l _SetEvent
 	.db $A9,$87,$85,$00,$A9   ;C337D8
 	.db $03,$85,$02
