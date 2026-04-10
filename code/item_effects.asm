@@ -563,7 +563,7 @@ func_C30BD3:
 	pla
 	bpl @lbl_C30C7D
 ;C30C66  
-	.db $80,$0A
+	.db $80,$0A   ;C30C66
 @lbl_C30C68:
 	lda #$5C                                ;C30C68
 	sta $00                                 ;C30C6A
@@ -713,7 +713,7 @@ func_C30D11:
 	sta $00                                 ;C30D69
 	stz $01                                 ;C30D6B
 	jsl.l DisplayMessage
-	.db $80,$D9                   ;C30D6F  
+	.db $80,$D9   ;C30D71
 @lbl_C30D73:
 	lda.l DATA8_C341BB,x
 	cmp.b #$00
@@ -1117,8 +1117,7 @@ StrengthHerbUseEffect:
 	jsl $C21167                             ;C3108F
 	lda $01                                 ;C31093
 	sec                                     ;C31095
-	.db $E5   ;C31096
-	.db $00   ;C31097
+	sbc $00                                 ;C31096
 	cmp #$03                                ;C31098
 	bcc @lbl_C3109E                         ;C3109A
 	lda #$03                                ;C3109C
@@ -1199,8 +1198,7 @@ MisfortuneHerbUseEffect:
 	plx                                     ;C3112A
 	pla                                     ;C3112B
 	sec                                     ;C3112C
-	.db $E5   ;C3112D
-	.db $01   ;C3112E
+	sbc $01                                 ;C3112D
 	sta $02                                 ;C3112F
 	stz $03                                 ;C31131
 	stx $00                                 ;C31133
@@ -3301,7 +3299,7 @@ NeedScrollUseEffect:
 	ora.b wTemp00
 	beq @lbl_C321D2
 ;C321CF  
-	.db $4C,$95,$0F
+	jmp $0F95                               ;C321CF
 @lbl_C321D2:
 	jsl.l func_C21184
 	lda.b wTemp00
@@ -3316,7 +3314,7 @@ NeedScrollUseEffect:
 	cmp.b #$01
 	bne @lbl_C321EE
 ;C321EB  
-	.db $4C,$04,$10
+	jmp $1004                               ;C321EB
 @lbl_C321EE:
 	jsl.l GetCategoryShortcutItemIds
 	ldx.b wTemp02
@@ -3335,7 +3333,7 @@ NeedScrollUseEffect:
 	lda $7E8C0C,x                           ;C3220A
 	.db $F0,$03   ;C3220E
 @lbl_C32210:
-	.db $4C,$70,$1C
+	jmp $1C70                               ;C32210
 @lbl_C32213:
 	jsl.l func_C21167
 	lda.b wTemp02
@@ -3978,14 +3976,14 @@ JarUseEffect:
 	cmp.b #$BA
 	bne @lbl_C3274D
 ;C3274A  
-	.db $4C,$49,$28
+	jmp $2849                               ;C3274A
 @lbl_C3274D:
 	cmp.b #$BF
 	beq @lbl_C3278C
 	cmp.b #$B6
 	bne @lbl_C32758
 ;C32755  
-	.db $4C,$D6,$27
+	jmp $27D6                               ;C32755
 @lbl_C32758:
 	lda.w wItemModification1,y
 	dec a
@@ -4007,7 +4005,7 @@ JarUseEffect:
 	cmp.b #$C0
 	bne @lbl_C3277B
 ;C32778  
-	.db $4C,$2D,$2A
+	jmp $2A2D                               ;C32778
 @lbl_C3277B:
 	rts
 @lbl_C3277C:
@@ -4062,9 +4060,7 @@ JarUseEffect:
 	sep #$30                                ;C327D6
 	lda $8C8C,y                             ;C327D8
 	dec a                                   ;C327DB
-	.db $99   ;C327DC
-	.db $8C   ;C327DD
-	.db $8C   ;C327DE
+	sta $8C8C,y                             ;C327DC
 	phy                                     ;C327DF
 	bra @lbl_C327E3                         ;C327E0
 @lbl_C327E2:
@@ -4079,9 +4075,7 @@ JarUseEffect:
 	lda $8C8C,y                             ;C327EF
 	beq @lbl_C3283B                         ;C327F2
 	dec a                                   ;C327F4
-	.db $99   ;C327F5
-	.db $8C   ;C327F6
-	.db $8C   ;C327F7
+	sta $8C8C,y                             ;C327F5
 	lda $8B8C,x                             ;C327F8
 	sta $00                                 ;C327FB
 	lda $8C8C,x                             ;C327FD
@@ -4130,9 +4124,7 @@ JarUseEffect:
 	sep #$30                                ;C32849
 	lda $8C8C,y                             ;C3284B
 	dec a                                   ;C3284E
-	.db $99   ;C3284F
-	.db $8C   ;C32850
-	.db $8C   ;C32851
+	sta $8C8C,y                             ;C3284F
 	lda $7E8E8C,x                           ;C32852
 	bne @lbl_C32879                         ;C32856
 	phx                                     ;C32858
@@ -5732,7 +5724,7 @@ ExecutePreparedThrowEffect:
 	cmp.b #$12
 	bne @lbl_C333D5
 @lbl_C333D2:
-	.db $4C,$ED,$34
+	jmp $34ED                               ;C333D2
 @lbl_C333D5:
 	sep #$20 ;A->8
 	lda.b wTemp03,s
@@ -6002,9 +5994,7 @@ DATA8_C334CD:
 	and #$00FF                              ;C335CF
 	asl a                                   ;C335D2
 	tax                                     ;C335D3
-	.db $F4   ;C335D4
-	.db $F2   ;C335D5
-	.db $35   ;C335D6
+	pea $35F2                               ;C335D4
 	lda $C3472B,x                           ;C335D7
 	cmp #$377B                              ;C335DB
 	beq @lbl_C335EA                         ;C335DE
