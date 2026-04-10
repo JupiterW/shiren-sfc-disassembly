@@ -2121,8 +2121,11 @@ SleepScrollUseEffect:
 	lda #$1E                                ;C318BB
 	sta $00                                 ;C318BD
 	jsl.l _GetEvent
-	.db $A5,$00,$D0,$0B,$A9,$5C   ;C318B9
-	.db $85,$00,$64,$01
+	lda $00                                 ;C318C3
+	.db $D0,$0B   ;C318C5
+	lda #$5C                                ;C318C7
+	sta $00                                 ;C318C9
+	stz $01                                 ;C318CB
 	jsl.l DisplayMessage
 	rts                                     ;C318D1
 	jsl $C28851                             ;C318D2
