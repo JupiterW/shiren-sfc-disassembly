@@ -1256,8 +1256,18 @@ LifeHerbUseEffect:
 	jsl $C240BC                             ;C311DE
 	rts                                     ;C311E2
 PoisonHerbUseEffect:
-	.db $C2,$20,$E2,$10,$A0,$C7,$84,$00,$22,$A6,$3B,$C2,$C2,$20,$E2   ;C311E3
-	.db $10,$A9,$3F,$00,$85,$00,$A0,$05,$84,$02
+	rep #$20                                ;C311E3
+	sep #$10                                ;C311E5
+	ldy #$C7                                ;C311E7
+	sty $00                                 ;C311E9
+	jsl $C23BA6                             ;C311EB
+	rep #$20                                ;C311EF
+	sep #$10                                ;C311F1
+	lda #$003F                              ;C311F3
+	sta $00                                 ;C311F6
+	ldy #$05                                ;C311F8
+	sty $02                                 ;C311FA
+.ACCU 8
 	jsl.l DisplayMessage
 	lda #$FB                                ;C31200
 	sbc $A00285,x                           ;C31202
