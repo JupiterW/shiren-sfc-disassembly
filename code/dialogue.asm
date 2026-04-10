@@ -20,7 +20,8 @@ func_C10000:
 	sta $00                                 ;C1001C
 	jsl.l DisplayMessage
 	jsl $C62437                             ;C10022
-	.db $28,$6B   ;C10026
+	.db $28   ;C10026
+	rtl                                     ;C10027
 @lbl_C10029:
 	pla
 	sta.b wTemp00
@@ -160,7 +161,7 @@ func_C10189:
 	ldy #$08E0                              ;C101CE
 	sty $00                                 ;C101D1
 	jsl.l DisplayMessage
-	.db $60                           ;C101E2  
+	rts                                     ;C101E2
 @lbl_C101E4:
 	GetEvent Event1B
 	cmp.b #$02
@@ -477,7 +478,8 @@ func_C10189:
 	ldx #$005C                              ;C10495
 	stx $00                                 ;C10498
 	jsl.l DisplayMessage
-	.db $28,$60   ;C10498  
+	plp                                     ;C1049E
+	rts                                     ;C1049F
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
 	txa
@@ -499,7 +501,7 @@ func_C104AB:
 	ldy #$07EC                              ;C104C2
 	sty $00                                 ;C104C5
 	jsl.l DisplayMessage
-	.db $60                           ;C104CA  
+	rts                                     ;C104CB
 @lbl_C104CC:
 	tdc
 	lda.b wTemp03,s
@@ -628,7 +630,7 @@ func_C104AB:
 	ldy #$07FA                              ;C105F3
 	sty $00                                 ;C105F6
 	jsl.l DisplayMessage
-	.db $60               ;C105F8  
+	rts                                     ;C105FC
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
 	lda.l wCharEventFlags,x
@@ -652,7 +654,7 @@ func_C104AB:
 	ldy #$06CC                              ;C1062B
 	sty $00                                 ;C1062E
 	jsl.l DisplayMessage
-	.db $60       ;C1062E  
+	rts                                     ;C10634
 @lbl_C10635:
 	lda.b #$03
 	sta.b wTemp00
@@ -771,7 +773,7 @@ func_C104AB:
 	ldy #$06DE                              ;C10733
 	sty $00                                 ;C10736
 	jsl.l DisplayMessage
-	.db $60                   ;C10739  
+	rts                                     ;C1073C
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
 	phx
@@ -822,7 +824,7 @@ func_C104AB:
 	ldy #$087F                              ;C107A9
 	sty $00                                 ;C107AC
 	jsl.l DisplayMessage
-	.db $60                   ;C107AF  
+	rts                                     ;C107B2
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
 	phx
@@ -930,7 +932,7 @@ func_C104AB:
 	ldy #$06D5                              ;C1089C
 	sty $00                                 ;C1089F
 	jsl.l DisplayMessage
-	.db $60                               ;C108A5
+	rts                                     ;C108A5
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
 	txa
@@ -958,12 +960,12 @@ func_C108B1:
 	lda.l wCharEventFlags,x
 	beq @lbl_C108D5
 ;C108D2  
-	.db $4C,$6D,$0A
+	jmp $0A6D                               ;C108D2
 @lbl_C108D5:
 	GetEvent Event84
 	beq @lbl_C108E4
 ;C108E1  
-	.db $4C,$63,$0A
+	jmp $0A63                               ;C108E1
 @lbl_C108E4:
 	lda.b wTemp03,s
 	inc a
@@ -1053,7 +1055,7 @@ func_C108B1:
 	ldy #$06E7                              ;C109B4
 	sty $00                                 ;C109B7
 	jsl.l DisplayMessage
-	.db $80,$09                           ;C109BD  
+	.db $80,$09   ;C109BD
 @lbl_C109BF:
 	ldy.w #$06E5
 	sty.b wTemp00
@@ -1890,7 +1892,7 @@ func_C10E5D:
 	ldy #$0701                              ;C111D5
 	sty $00                                 ;C111D8
 	jsl.l DisplayMessage
-	.db $60       ;C111D8  
+	rts                                     ;C111DE
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
 	txa
@@ -1905,7 +1907,7 @@ func_C111EA:
 	lda.l wCharEventFlags,x
 	beq @lbl_C111F7
 ;C111F4  
-	.db $4C,$EA,$12
+	jmp $12EA                               ;C111F4
 @lbl_C111F7:
 	GetEvent Event_Kechi_85
 	cmp.b #$02
@@ -1925,12 +1927,12 @@ func_C111EA:
 	ldy #$0705                              ;C1121F
 	sty $00                                 ;C11222
 	jsl.l DisplayMessage
-	.db $60                           ;C11233  
+	rts                                     ;C11233
 @lbl_C11235:
 	ldy #$0706                              ;C11235
 	sty $00                                 ;C11238
 	jsl.l DisplayMessage
-	.db $60                           ;C1123D  
+	rts                                     ;C1123E
 @lbl_C1123F:
 	ldy.w #$00C8
 	sty.b wTemp00
@@ -1991,8 +1993,7 @@ func_C111EA:
 	ldy #$090B                              ;C112D1
 	sty $00                                 ;C112D4
 	jsl.l DisplayMessage
-	.db $4C,$A7   ;C112CC  
-	.db $12                               ;C112DC  
+	jmp $12A7                               ;C112DA
 @lbl_C112DD:
 	SetEvent Event_Kechi $01
 	rts
@@ -2466,7 +2467,7 @@ func_C111EA:
 	ldy #$0723                              ;C11735
 	sty $00                                 ;C11738
 	jsl.l DisplayMessage
-	.db $60               ;C1173A  
+	rts                                     ;C1173E
 
 func_C1173F:
 	ldy.w #$0709
@@ -2677,7 +2678,8 @@ func_C1173F:
 	lda #$02                                ;C11931
 	sta $02                                 ;C11933
 	jsl.l _SetEvent
-	.db $68,$60                           ;C11939
+	pla                                     ;C11939
+	rts                                     ;C1193A
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
 	txa
@@ -2692,7 +2694,7 @@ func_C11946:
 	lda.l wCharEventFlags,x
 	beq @lbl_C11953
 ;C11950  
-	.db $4C,$4C,$1B
+	jmp $1B4C                               ;C11950
 @lbl_C11953:
 	GetEvent Event_Pekeji_86
 	cmp.b #$02
@@ -2867,7 +2869,7 @@ func_C11A07:
 	lda #$01                                ;C11B08
 	sta $02                                 ;C11B0A
 	jsl.l _SetEvent
-	.db $60               ;C11B0C  
+	rts                                     ;C11B10
 
 func_C11B11:
 	cmp.b #$05
@@ -2875,7 +2877,7 @@ func_C11B11:
 	ldy #$0735                              ;C11B15
 	sty $00                                 ;C11B18
 	jsl.l DisplayMessage
-	.db $60                           ;C11B1D  
+	rts                                     ;C11B1E
 @lbl_C11B1F:
 	ldy.w #$0727
 	sty.b wTemp00
@@ -2885,7 +2887,7 @@ func_C11B11:
 	ldy #$0728                              ;C11B2C
 	sty $00                                 ;C11B2F
 	jsl.l DisplayMessage
-	.db $60                           ;C11B34  
+	rts                                     ;C11B35
 @lbl_C11B36:
 	ldy.w #$0729
 	sty.b wTemp00
@@ -3927,7 +3929,7 @@ func_C124BB:
 	cmp.b #$02
 	bcc @lbl_C124CA
 ;C124C7  
-	.db $4C,$B4,$25
+	jmp $25B4                               ;C124C7
 @lbl_C124CA:
 	phx
 	GetEvent Event_Naoki_88
@@ -3963,7 +3965,7 @@ func_C124BB:
 	cmp.b #$03
 	bcc @lbl_C12521
 ;C1251E  
-	.db $4C,$A9,$25
+	jmp $25A9                               ;C1251E
 @lbl_C12521:
 	jsr.w func_C12ABD
 	bcs @lbl_C12531
@@ -6869,7 +6871,7 @@ UNREACH_C13D7C:
 	GetEvent Event8E
 	beq @lbl_C14056
 ;C14053  
-	.db $4C,$FC,$41
+	jmp $41FC                               ;C14053
 @lbl_C14056:
 	GetEvent Event8A
 	beq @lbl_C14065
@@ -6880,7 +6882,7 @@ UNREACH_C13D7C:
 	cmp.b #$17
 	bne @lbl_C14078
 ;C14075  
-	.db $4C,$88,$41
+	jmp $4188                               ;C14075
 @lbl_C14078:
 	GetEvent Event_Fei
 	beq @lbl_C14091
@@ -6946,7 +6948,7 @@ func_C140E5:
 	lda #$17                                ;C14129
 	sta $00                                 ;C1412B
 	jsl.l _SetEvent
-	.db $A9,$00   ;C14133  
+	lda #$00                                ;C14133
 @lbl_C1413B:
 	sta.b wTemp02
 	lda.b #Event16
@@ -7071,7 +7073,8 @@ UNREACH_C1423B:
 	.dw Data_c1424b
 
 Data_c1424b:
-	.db $02,$FF
+	.db $02   ;C1424B
+	.db $FF   ;C1424C
 Data_c1424d:
 	.db $00   ;C1424D
 	ora ($02,x)                             ;C1424E
@@ -7087,7 +7090,9 @@ Data_c14256:
 	.db $02   ;C14258
 	.db $FF   ;C14259
 Data_c1425a:
-	.db $02,$02,$FF
+	.db $02   ;C1425A
+	.db $02   ;C1425B
+	.db $FF   ;C1425C
 	
 Data_c1425d:
 	sep #$20                                ;C1425D
@@ -7310,7 +7315,8 @@ NPCScriptFunction_C1445C:
 	lda #$01                                ;C1446F
 	sta $02                                 ;C14471
 	jsl.l _SetEvent
-	.db $28,$60           ;C14473
+	plp                                     ;C14477
+	rts                                     ;C14478
 	
 NPCScriptFunction_C14479:
 	php
@@ -8339,7 +8345,8 @@ NPCScriptFunction_C14479:
 	phx                                     ;C14D5C
 .ACCU 8
 	jsl.l DisplayMessage
-	.db $FA,$80,$AC           ;C14D5E  
+	plx                                     ;C14D60
+	.db $80,$AC   ;C14D61
 
 func_C14D64:
 	php
