@@ -1111,11 +1111,23 @@ HappinessHerbUseEffect:
 	jsl $C23579                             ;C310C5
 	rts                                     ;C310C9
 AngelSeedUseEffect:
-	.db $E2,$20,$A9,$13,$85,$00,$E2,$20   ;C310CA
-	.db $A9,$05,$85,$01,$22,$79,$35,$C2,$60   ;C310D2
+	sep #$20                                ;C310CA
+	lda #$13                                ;C310CC
+	sta $00                                 ;C310CE
+	sep #$20                                ;C310D0
+	lda #$05                                ;C310D2
+	sta $01                                 ;C310D4
+	jsl $C23579                             ;C310D6
+	rts                                     ;C310DA
 BitterHerbUseEffect:
-	.db $E2,$20,$A9,$13,$85,$00,$E2   ;C310DB
-	.db $20,$A9,$FF,$85,$01,$22,$79,$35,$C2,$60   ;C310E2
+	sep #$20                                ;C310DB
+	lda #$13                                ;C310DD
+	sta $00                                 ;C310DF
+	sep #$20                                ;C310E1
+	lda #$FF                                ;C310E3
+	sta $01                                 ;C310E5
+	jsl $C23579                             ;C310E7
+	rts                                     ;C310EB
 MisfortuneHerbUseEffect:
 	sep #$20                                ;C310EC
 	lda #$13                                ;C310EE
