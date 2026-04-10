@@ -610,9 +610,18 @@ DATA8_C20277:
 	.db $99,$59,$87                       ;C2058A  
 @lbl_C2058D:
 	rts
-	.db $E2,$30,$A9,$01,$99,$81,$87,$99,$AD,$88,$60,$E2,$30,$B9,$19,$86   ;C2058E
-	.db $3A,$99,$6D,$87,$A9,$01,$99,$81   ;C2059E
-	.db $87,$60                           ;C205A6  
+	sep #$30                                ;C2058E
+	lda #$01                                ;C20590
+	sta $8781,y                             ;C20592
+	sta $88AD,y                             ;C20595
+	rts                                     ;C20598
+	sep #$30                                ;C20599
+	lda $8619,y                             ;C2059B
+	dec a                                   ;C2059E
+	sta $876D,y                             ;C2059F
+	lda #$01                                ;C205A2
+	sta $8781,y                             ;C205A4
+	rts                                     ;C205A7
 	sep #$30 ;AXY->8
 	lda.b #$00
 	sta.w wCharIsAwake,y
@@ -3856,9 +3865,20 @@ func_C2389E:
 	lda.l MonsterEvolutionTable+1,x
 	cmp.w wCharLevel,y
 	bne @lbl_C238CE
-	.db $84,$00,$BF,$EE,$38,$C2,$85,$01,$BF,$EF,$38,$C2,$85,$02,$5A,$8B   ;C238B3  
-	.db $22,$D4,$80,$C2,$AB,$7A,$28,$68   ;C238C3  
-	.db $68,$80,$0A                       ;C238CB
+	sty $00                                 ;C238B7
+	lda $C238EE,x                           ;C238B9
+	sta $01                                 ;C238BD
+	lda $C238EF,x                           ;C238BF
+	sta $02                                 ;C238C3
+	phy                                     ;C238C5
+	phb                                     ;C238C6
+	jsl $C280D4                             ;C238C7
+	plb                                     ;C238CB
+	ply                                     ;C238CC
+	plp                                     ;C238CD
+	pla                                     ;C238CE
+	pla                                     ;C238CF
+	.db $80,$0A   ;C238D0
 @lbl_C238CE:
 	inx
 	inx
@@ -7088,9 +7108,18 @@ func_C25152:
 	sta $02                                 ;C2523E
 	sta $03                                 ;C25240
 	jsl.l DisplayMessage
-	.db $A9,$13,$85,$00,$AF,$2C,$86,$7E,$AA,$BF,$5D,$52   ;C25242  
-	.db $C2,$85,$02,$64,$03,$22,$09,$32   ;C25252
-	.db $C2,$64,$00,$60,$32,$32,$32       ;C2525A
+	lda #$13                                ;C25246
+	sta $00                                 ;C25248
+	lda $7E862C                             ;C2524A
+	tax                                     ;C2524E
+	lda $C2525D,x                           ;C2524F
+	sta $02                                 ;C25253
+	stz $03                                 ;C25255
+	jsl $C23209                             ;C25257
+	stz $00                                 ;C2525B
+	rts                                     ;C2525D
+	and ($32)                               ;C2525E
+	.db $32   ;C25260
 @lbl_C25261:
 	cmp.b #$2D
 	bne @lbl_C252A4
@@ -12401,11 +12430,25 @@ func_C2942A:
 .include "data/player/level_exp_table.asm"
 
 UNREACH_C2CAD9:
-	.db $0A,$05,$03,$30,$02,$01,$01,$01
-	.db $08
-	.db $0A,$05,$03,$30,$02,$01,$01,$01
-	.db $0A,$0A,$05,$03,$30,$02,$01,$01
-	.db $02,$10
+	.db $0A   ;C39444
+	ora $03                                 ;C39445
+	bmi @lbl_C3944B                         ;C39447
+	ora ($01,x)                             ;C39449
+@lbl_C3944B:
+	ora ($08,x)                             ;C3944B
+	asl a                                   ;C3944D
+	ora $03                                 ;C3944E
+	bmi @lbl_C39454                         ;C39450
+	ora ($01,x)                             ;C39452
+@lbl_C39454:
+	ora ($0A,x)                             ;C39454
+	asl a                                   ;C39456
+	ora $03                                 ;C39457
+	bmi @lbl_C3945D                         ;C39459
+	ora ($01,x)                             ;C3945B
+@lbl_C3945D:
+	.db $02   ;C3945D
+	.db $10   ;C3945E
 
 func_C2CAF4:
 	php
