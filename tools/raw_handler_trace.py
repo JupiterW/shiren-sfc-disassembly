@@ -100,6 +100,9 @@ def build_label_defs() -> tuple[dict[int, LabelDef], dict[str, LabelDef]]:
 def find_regions(path: Path) -> list[Region]:
     regions: list[Region] = []
     for line_no, line in enumerate(load_lines(path), 1):
+        stripped = line.strip()
+        if not (stripped.startswith(".db") or stripped.startswith(".dw")):
+            continue
         comment = COMMENT_ADDR_RE.search(line)
         if not comment:
             continue

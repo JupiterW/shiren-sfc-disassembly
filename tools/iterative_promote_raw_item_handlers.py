@@ -28,6 +28,10 @@ def run(cmd: str) -> subprocess.CompletedProcess[str]:
     return subprocess.run(cmd, shell=True, cwd=ROOT, text=True, capture_output=True)
 
 
+def run_argv(argv: list[str]) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(argv, cwd=ROOT, text=True, capture_output=True)
+
+
 def snapshot_files() -> dict[Path, str]:
     return {path: path.read_text(encoding="utf-8") for path in TOUCHED}
 
@@ -45,6 +49,25 @@ def make_symbol(const_name: str, effect: str) -> str | None:
     return f"{base}{suffix}"
 
 
+def commit_if_needed(paths: list[Path], message: str) -> tuple[bool, str | None, bool]:
+    rels = [str(path.relative_to(ROOT)) for path in paths]
+
+    add_proc = run_argv(["git", "add", *rels])
+    if add_proc.returncode != 0:
+        return False, "git-add", False
+
+    cached_diff = run_argv(["git", "diff", "--cached", "--quiet", "--", *rels])
+    if cached_diff.returncode == 0:
+        return True, None, False
+    if cached_diff.returncode not in (0, 1):
+        return False, "git-diff", False
+
+    commit_proc = run_argv(["git", "commit", "-m", message, "--only", "--", *rels])
+    if commit_proc.returncode != 0:
+        return False, "git-commit", False
+    return True, None, True
+
+
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("category")
@@ -52,6 +75,12 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--limit", type=int)
     parser.add_argument("--stop-on-fail", action="store_true")
+    parser.add_argument("--commit", action="store_true", help="git add/commit bank_03 + item_effects after each kept verified promotion")
+    parser.add_argument(
+        "--commit-message",
+        default="Promote {const_name} {effect} handler to {symbol}",
+        help="git commit message template for kept promotions",
+    )
     args = parser.parse_args(argv)
 
     infos = [i for i in build_item_infos() if i.category_code == parse_category_arg(args.category)]
@@ -101,8 +130,32 @@ def main(argv: list[str]) -> int:
         proc = subprocess.run(cmd, cwd=ROOT, text=True, capture_output=True)
         if proc.returncode == 0:
             kept += 1
+            committed = False
+            if args.commit:
+                msg = args.commit_message.format(
+                    const_name=const_name,
+                    effect=args.effect,
+                    symbol=symbol,
+                )
+                ok, reason, committed = commit_if_needed(TOUCHED, msg)
+                if not ok:
+                    print(f"FAIL  {const_name} -> {symbol}")
+                    print(f"commit step failed: {reason}")
+                    restore(attempt_base)
+                    verify = run("make -B -j1 PYTHON=.venv/bin/python && shasum -c shiren.sha1")
+                    if verify.returncode != 0:
+                        print(verify.stdout)
+                        print(verify.stderr, file=sys.stderr)
+                        return 1
+                    if args.stop_on_fail:
+                        break
+                    continue
             baseline = snapshot_files()
-            print(f"KEPT  {const_name} -> {symbol}")
+            if args.commit:
+                status = "KEPT+COMMIT" if committed else "KEPT-NOOP"
+            else:
+                status = "KEPT"
+            print(f"{status}  {const_name} -> {symbol}")
             continue
         print(f"FAIL  {const_name} -> {symbol}")
         if proc.stdout:
@@ -110,7 +163,7 @@ def main(argv: list[str]) -> int:
         if proc.stderr:
             print(proc.stderr.strip())
         restore(attempt_base)
-        verify = run("make -B -j PYTHON=.venv/bin/python && shasum -c shiren.sha1")
+        verify = run("make -B -j1 PYTHON=.venv/bin/python && shasum -c shiren.sha1")
         if verify.returncode != 0:
             print(verify.stdout)
             print(verify.stderr, file=sys.stderr)

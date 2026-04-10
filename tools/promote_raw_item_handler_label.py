@@ -37,6 +37,7 @@ DW_TOKEN_RE = re.compile(r"\$([0-9A-F]{4})")
 COMMENT_ADDR_RE = re.compile(r";C?(?P<addr>[0-9A-F]{5,6})\b")
 LABEL_RE = re.compile(r"^[A-Za-z0-9_@.]+:\s*$")
 LABEL_ADDR_RE = re.compile(r"C(?P<addr>[0-9A-F]{5,6})")
+LABEL_NAME_RE = re.compile(r"^(?P<label>[A-Za-z0-9_@.]+):\s*$")
 
 
 def _db_bytes_from_line(line: str) -> list[int]:
@@ -98,6 +99,50 @@ def parse_label_addr(line: str) -> int | None:
     if len(token) == 5:
         token = f"C{token}"
     return int(token, 16)
+
+
+def parse_label_name(line: str) -> str | None:
+    stripped = line.strip()
+    match = LABEL_NAME_RE.match(stripped)
+    if not match:
+        return None
+    return match.group("label")
+
+
+def replace_label_refs(text: str, old: str, new: str) -> str:
+    return re.sub(rf"(?<![A-Za-z0-9_@.]){re.escape(old)}(?![A-Za-z0-9_@.])", new, text)
+
+
+def normalize_local_labels(lines: list[str], insert_idx: int) -> None:
+    parent_start: int | None = None
+    for scan in range(insert_idx - 1, -1, -1):
+        label = parse_label_name(lines[scan])
+        if label and not label.startswith("@"):
+            parent_start = scan
+            break
+    if parent_start is None:
+        return
+
+    parent_end = len(lines)
+    for scan in range(parent_start + 1, len(lines)):
+        label = parse_label_name(lines[scan])
+        if label and not label.startswith("@"):
+            parent_end = scan
+            break
+
+    renames: list[tuple[str, str]] = []
+    for scan in range(parent_start + 1, parent_end):
+        label = parse_label_name(lines[scan])
+        if not label or not label.startswith("@"):
+            continue
+        renames.append((label, label[1:]))
+
+    if not renames:
+        return
+
+    for old, new in renames:
+        for scan in range(parent_start, parent_end):
+            lines[scan] = replace_label_refs(lines[scan], old, new)
 
 
 def db_line_end_addr(line: str) -> int | None:
@@ -209,6 +254,7 @@ def promote_asm_entry(path: Path, entry_addr: int, new_symbol: str, dry_run: boo
             break
         if insert_at >= len(lines):
             break
+        normalize_local_labels(lines, insert_at)
         lines.insert(insert_at, f"{new_symbol}:")
         if not dry_run:
             write_lines(path, lines)
@@ -264,6 +310,7 @@ def promote_mixed_region_entry(path: Path, entry_addr: int, new_symbol: str, dry
                     write_lines(path, lines)
                 return idx + 1, "\n".join(replacement)
         if current_addr == entry_addr:
+            normalize_local_labels(lines, idx)
             lines.insert(idx, f"{new_symbol}:")
             if not dry_run:
                 write_lines(path, lines)
@@ -329,7 +376,7 @@ def promote_raw_entry(path: Path, entry_addr: int, new_symbol: str, dry_run: boo
 
 def verify() -> None:
     subprocess.run(
-        "make -B -j PYTHON=.venv/bin/python && shasum -c shiren.sha1",
+        "make -B -j1 PYTHON=.venv/bin/python && shasum -c shiren.sha1",
         shell=True,
         check=True,
         cwd=ROOT,

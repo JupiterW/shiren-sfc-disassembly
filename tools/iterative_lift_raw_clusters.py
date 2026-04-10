@@ -16,7 +16,7 @@ import sys
 from pathlib import Path
 
 from list_raw_clusters import RAW_RE, find_clusters
-from lift_raw_cluster import ROOT, _compute_line_starts, _resolve_file
+from lift_raw_cluster import ROOT, _compute_line_starts, _resolve_file, build_candidate
 from promote_raw_item_handler_label import estimate_asm_line_size, load_lines
 
 
@@ -198,6 +198,12 @@ def overlaps_any_skip(start_addr: int, end_addr: int, skip_ranges: list[tuple[in
     return False
 
 
+def is_noop_candidate(lines: list[str], start_addr: int, end_addr: int) -> bool:
+    start_idx, end_idx, out = build_candidate(lines, start_addr, end_addr, 8, 8, 0)
+    current = [line.rstrip("\n") for line in lines[start_idx:end_idx]]
+    return out == current
+
+
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--file", required=True, help="asm file to process")
@@ -260,14 +266,20 @@ def main(argv: list[str]) -> int:
     )
     work_items = [item for item in work_items if not overlaps_any_skip(item[0], item[1], args.skip_range)]
 
-    # Pre-filter data-like items before batching to avoid wasted make cycles
-    skipped = 0
+    # Pre-filter data-like and no-op items before batching to avoid wasted make cycles
+    skipped_data_like = 0
+    skipped_noop = 0
     filtered_items: list[tuple[int, int]] = []
+    original_lines = load_lines(path)
     for item in work_items:
         preview = preview_lift(rel, item[0], item[1])
         if preview.returncode == 0 and is_data_like_candidate(preview.stdout):
             print(f"SKIP  {item[0]:06X}-{item[1]:06X} data-like")
-            skipped += 1
+            skipped_data_like += 1
+            continue
+        if is_noop_candidate(original_lines, item[0], item[1]):
+            print(f"SKIP  {item[0]:06X}-{item[1]:06X} noop")
+            skipped_noop += 1
             continue
         filtered_items.append(item)
     work_items = filtered_items
@@ -353,7 +365,13 @@ def main(argv: list[str]) -> int:
         if not ok and args.stop_on_fail:
             break
 
-    print(f"kept lifts: {kept}/{len(work_items)}" + (f" (skipped {skipped} data-like)" if skipped else ""))
+    skipped_parts: list[str] = []
+    if skipped_data_like:
+        skipped_parts.append(f"{skipped_data_like} data-like")
+    if skipped_noop:
+        skipped_parts.append(f"{skipped_noop} noop")
+    skipped_suffix = f" (skipped {', '.join(skipped_parts)})" if skipped_parts else ""
+    print(f"kept lifts: {kept}/{len(work_items)}{skipped_suffix}")
     if failures:
         print("failures:")
         for start_addr, end_addr, reason in failures:
