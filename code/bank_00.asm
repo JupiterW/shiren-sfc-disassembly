@@ -367,8 +367,12 @@ func_C0666B:
 	clc
 	rtl
 @lbl_C066E3:
-	.db $29,$7F,$85,$02,$22,$F0,$C7,$81   ;C066E3
-	.db $28,$18,$6B                       ;C066EB
+	and #$7F                                ;C066E3
+	sta $02                                 ;C066E5
+	jsl $81C7F0                             ;C066E7
+	plp                                     ;C066EB
+	clc                                     ;C066EC
+	rtl                                     ;C066ED
 @lbl_C066EE:
 	lda.b wTemp04
 	sta.b wTemp00
@@ -386,7 +390,10 @@ func_C0666B:
 	lda.b wTemp02
 	bne @lbl_C06710
 ;C06709  
-	.db $22,$7A,$B7,$80,$28,$18,$6B
+	jsl $80B77A                             ;C06709
+	plp                                     ;C0670D
+	clc                                     ;C0670E
+	rtl                                     ;C0670F
 @lbl_C06710:
 	jsl.l func_80B7E1
 	plp
@@ -423,9 +430,10 @@ func_C0673F:
 	.db $60
 	
 func_C06740:
-	.db $A9
-	.db $41,$00,$85,$00,$22,$49,$80,$81   ;C06739
-	.db $60                               ;C06749
+	lda #$0041                              ;C06740
+	sta $00                                 ;C06743
+	jsl $818049                             ;C06745
+	rts                                     ;C06749
 
 func_C0674A:
 	lda.w #$0041
@@ -605,7 +613,7 @@ func_C068B2:
 	lda.b wTemp00
 	beq @lbl_C068BE
 ;C068BA  
-	.db $22,$00,$8A,$80
+	jsl $808A00                             ;C068BA
 @lbl_C068BE:
 	plp
 	rtl
@@ -734,7 +742,8 @@ func_C0697C:
 	cpy.b #$7B
 	bne @lbl_C069BE
 ;C069B9
-	.db $A9,$0D,$80,$01
+	lda #$0D                                ;C069B9
+	.db $80,$01   ;C069BB
 @lbl_C069BD:
 	tdc
 @lbl_C069BE:
@@ -753,7 +762,8 @@ func_C0697C:
 	beq @lbl_C069E2
 	bcc @lbl_C069E2
 ;C069DD
-	.db $7B,$9F,$3C,$82,$7E
+	tdc                                     ;C069DD
+	sta $7E823C,x                           ;C069DE
 @lbl_C069E2:
 	plp
 	rtl
@@ -935,8 +945,12 @@ func_C06AC9:
 @lbl_C06B3D:
 	plp
 	rtl
-	.db $08,$C2,$20,$7B,$8F,$42,$84,$7E   ;C06B3F
-	.db $28,$6B                           ;C06B47
+	php                                     ;C06B3F
+	rep #$20                                ;C06B40
+	tdc                                     ;C06B42
+	sta $7E8442                             ;C06B43
+	plp                                     ;C06B47
+	rtl                                     ;C06B48
 
 func_C06B49:
 	php
@@ -966,9 +980,13 @@ func_C06B49:
 	cmp.b #$7B
 	bne @lbl_C06B95
 ;C06B86
-	.db $A9,$0D,$9D,$BD,$81,$80,$08
+	lda #$0D                                ;C06B86
+	sta $81BD,x                             ;C06B88
+	.db $80,$08   ;C06B8B
 @lbl_C06B8D:
-	.db $BD,$3D,$82,$09,$80,$9D,$3D,$82
+	lda $823D,x                             ;C06B8D
+	ora #$80                                ;C06B90
+	sta $823D,x                             ;C06B92
 @lbl_C06B95:
 	inx
 	inx
@@ -1013,7 +1031,8 @@ func_C06BCA:
 	cpx.b #$80
 	bcc @lbl_C06BDC
 ;C06BDA
-	.db $28,$6B
+	plp                                     ;C06BDA
+	rtl                                     ;C06BDB
 @lbl_C06BDC:
 	lda.b wTemp04
 	sta.w $82BC,x
@@ -1076,7 +1095,8 @@ func_C06BE6:
 	lda.b wTemp02
 	beq @lbl_C06C59
 ;C06C54
-	.db $A9,$06,$9D,$3D,$82
+	lda #$06                                ;C06C54
+	sta $823D,x                             ;C06C56
 @lbl_C06C59:
 	lda.b wTemp06
 	ora.b wTemp00
@@ -1141,8 +1161,11 @@ func_C06CC2:
 	ldx.b wTemp06
 	stx.b wTemp01
 	bra func_C06CDA
-	.db $08,$E2,$10,$A4,$01,$22,$FF,$10   ;C06CCF
-	.db $C2,$84,$01                       ;C06CD7
+	php                                     ;C06CCF
+	sep #$10                                ;C06CD0
+	ldy $01                                 ;C06CD2
+	jsl $C210FF                             ;C06CD4
+	sty $01                                 ;C06CD8
 func_C06CDA:
 	rep #$20 ;A->16
 	ldx.b #$7E
@@ -1184,7 +1207,8 @@ func_C06CF4:
 	lda.b #$01
 	bra @lbl_C06D33
 @lbl_C06D29:
-	.db $A9,$05,$80,$06
+	lda #$05                                ;C06D29
+	.db $80,$06   ;C06D2B
 @lbl_C06D2D:
 	ldx.b wTemp04
 	lda.l DATA8_C06DD6,x
@@ -1195,8 +1219,11 @@ func_C06CF4:
 	beq @lbl_C06D4F
 	lda.b wTemp07
 	beq @lbl_C06D4D
-	.db $B9,$D6,$80,$85,$01,$22,$3D,$93   ;C06D3F  
-	.db $81,$A5,$01,$99,$D6,$80           ;C06D47  
+	lda $80D6,y                             ;C06D3F
+	sta $01                                 ;C06D42
+	jsl $81933D                             ;C06D44
+	lda $01                                 ;C06D48
+	sta $80D6,y                             ;C06D4A
 @lbl_C06D4D:
 	lda.b wTemp06
 @lbl_C06D4F:
@@ -1233,7 +1260,8 @@ func_C06CF4:
 	lda.b #$01
 	bra @lbl_C06D9A
 @lbl_C06D90:
-	.db $A9,$05,$80,$06
+	lda #$05                                ;C06D90
+	.db $80,$06   ;C06D92
 @lbl_C06D94:
 	ldx.b wTemp04
 	lda.l DATA8_C06DD9,x
@@ -1353,7 +1381,9 @@ func_C06E4C:
 	clc
 	rtl
 @lbl_C06E6D:
-	.db $28,$38,$6B                       ;C06E6D
+	plp                                     ;C06E6D
+	sec                                     ;C06E6E
+	rtl                                     ;C06E6F
 
 func_C06E70:
 	php
@@ -1393,13 +1423,13 @@ func_C06E70:
 	lda.w $81AA
 	beq @lbl_C06EC0
 ;C06EBD  
-	.db $CE,$AA,$81
+	dec $81AA                               ;C06EBD
 @lbl_C06EC0:
 	plp
 	clc
 	rtl
 @lbl_C06EC3:
-	.db $9C,$AA,$81
+	stz $81AA                               ;C06EC3
 @lbl_C06EC6:
 	plp
 	sec
@@ -1413,8 +1443,14 @@ func_C06EC9:
 	sta.l $7E81B8
 	plp
 	rtl
-	.db $08,$C2,$20,$7B,$8F,$64,$84,$7E   ;C06ED7
-	.db $8F,$62,$84,$7E,$28,$6B           ;C06EDF  
+	php                                     ;C06ED7
+	rep #$20                                ;C06ED8
+	tdc                                     ;C06EDA
+	sta $7E8464                             ;C06EDB
+	sta $7E8462                             ;C06EDF
+	plp                                     ;C06EE3
+	rtl                                     ;C06EE4
+.ACCU 8
 
 func_C06EE5:
 	php
@@ -1434,7 +1470,7 @@ func_C06EE5:
 	lda.w $8448
 	beq @lbl_C06F10
 ;C06F0D
-	.db $20,$85,$6F
+	jsr $6F85                               ;C06F0D
 @lbl_C06F10:
 	ldx.w $8454
 	beq func_C06F2F
@@ -1626,8 +1662,10 @@ func_C06F2F:
 	sta.b wTemp06
 	bra @lbl_C070E6
 @lbl_C070DD:
-	.db $A9,$10,$00,$38,$ED,$56,$84,$85   ;C070DD
-	.db $04                               ;C070E5  
+	lda #$0010                              ;C070DD
+	sec                                     ;C070E0
+	sbc $8456                               ;C070E1
+	sta $04                                 ;C070E4
 @lbl_C070E6:
 	call_savebank func_808A5C
 	bra func_C070F1
@@ -1899,8 +1937,11 @@ func_C072EF:
 	jsl.l func_C5CFFB
 	plp
 	rtl
-	.db $08,$C2,$30,$A9,$01,$00,$8F,$A2   ;C0732D
-	.db $81,$7E,$80,$08                   ;C07335  
+	php                                     ;C0732D
+	rep #$30                                ;C0732E
+	lda #$0001                              ;C07330
+	sta $7E81A2                             ;C07333
+	.db $80,$08   ;C07337
 
 func_C07339:
 	php
@@ -1953,8 +1994,12 @@ func_C07339:
 	.db $80,$06
 @lbl_C073A4:
 	bpl @lbl_C073B4
-	.db $AF,$A0,$81,$7E,$48,$20,$54,$75   ;C073A6  
-	.db $68,$85,$00,$20,$05,$7C           ;C073AE
+	lda $7E81A0                             ;C073A6
+	pha                                     ;C073AA
+	jsr $7554                               ;C073AB
+	pla                                     ;C073AE
+	sta $00                                 ;C073AF
+	jsr $7C05                               ;C073B1
 @lbl_C073B4:
 	jsl.l func_C28B23
 	ldx.w #$0001
@@ -2045,8 +2090,9 @@ func_C07339:
 	jsl.l func_81C29C
 	jsl.l func_80B5DD
 	bcc @lbl_C07496
-	.db $22,$4A,$85,$80,$22,$23,$BE,$80   ;C0748C  
-	.db $80,$0A                           ;C07494  
+	jsl $80854A                             ;C0748C
+	jsl $80BE23                             ;C07490
+	.db $80,$0A   ;C07494
 @lbl_C07496:
 	jsl.l func_80854A
 	lda.l $7E81B0
@@ -2220,7 +2266,7 @@ func_C075BB:
 	bit.w #$F0FF
 	beq @lbl_C07603
 @lbl_C07600:
-	.db $4C,$43,$76
+	jmp $7643                               ;C07600
 @lbl_C07603:
 	lda.l $7E81B0
 	bne @lbl_C07600
@@ -2270,7 +2316,7 @@ func_C07656:
 	lda.b wTemp00
 	beq @lbl_C07662
 ;C0765E  
-	.db $22,$00,$8A,$80
+	jsl $808A00                             ;C0765E
 @lbl_C07662:
 	rts
 
@@ -2314,7 +2360,7 @@ func_C0768A:
 	lda.l $7E81B0
 	beq @lbl_C076B8
 ;C076B5  
-	.db $4C,$43,$76
+	jmp $7643                               ;C076B5
 @lbl_C076B8:
 	jsl.l func_C06EE5
 	lda.b wTemp04
@@ -2472,7 +2518,9 @@ func_C076E9:
 	cpy.w #$0003
 	bcc @lbl_C07812
 @lbl_C0780C:
-	.db $22,$B3,$7B,$C0,$28,$6B
+	jsl $C07BB3                             ;C0780C
+	plp                                     ;C07810
+	rtl                                     ;C07811
 @lbl_C07812:
 	stz.w $80BE
 	jsl.l func_81A0AB
@@ -2528,7 +2576,8 @@ func_C07819:
 	jsl.l func_81A074
 	jsl.l func_80B5DD
 	bcc @lbl_C078C6
-	.db $22,$4A,$85,$80,$80,$3A           ;C07894  
+	jsl $80854A                             ;C07894
+	.db $80,$3A   ;C07898
 	jsl.l func_80E69B
 	bra @lbl_C07870
 @lbl_C078A0:
@@ -2718,8 +2767,12 @@ func_C079F6:
 	bne @lbl_C07A40
 	cpy.b #$83
 	beq @lbl_C07A54
-	.db $22,$AF,$59,$C3,$A5,$02,$89,$80   ;C07A32  
-	.db $F0,$18,$A2,$06,$80,$5A           ;C07A3A  
+	jsl $C359AF                             ;C07A32
+	lda $02                                 ;C07A36
+	bit #$80                                ;C07A38
+	.db $F0,$18   ;C07A3A
+	ldx #$06                                ;C07A3C
+	.db $80,$5A   ;C07A3E
 @lbl_C07A40:
 	jsl.l func_C359AF
 	lda.b wTemp02
@@ -3133,7 +3186,8 @@ func_C07DB7:
 	lda.b #$03
 	bra @lbl_C07DE4
 @lbl_C07DDA:
-	.db $A9,$07,$80,$06
+	lda #$07                                ;C07DDA
+	.db $80,$06   ;C07DDC
 @lbl_C07DDE:
 	ldx.b wTemp04
 	lda.l DATA8_C07E8B,x
@@ -3150,7 +3204,8 @@ func_C07DB7:
 	tya
 	beq @lbl_C07DFD
 ;C07DF9
-	.db $A9,$80,$04,$03
+	lda #$80                                ;C07DF9
+	tsb $03                                 ;C07DFB
 @lbl_C07DFD:
 	lda.b wTemp01
 	inc a
