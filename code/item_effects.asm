@@ -1211,8 +1211,7 @@ MisfortuneHerbUseEffect:
 	plx                                     ;C31142
 	pla                                     ;C31143
 	sec                                     ;C31144
-	.db $E5   ;C31145
-	.db $00   ;C31146
+	sbc $00                                 ;C31145
 	sta $02                                 ;C31147
 	stz $03                                 ;C31149
 	stx $00                                 ;C3114B
@@ -1282,7 +1281,8 @@ LifeHerbUseEffect:
 	sta $00                                 ;C311C7
 	stz $01                                 ;C311C9
 	jsl.l DisplayMessage
-	.db $22,$A2   ;C311C2
+	.db $22   ;C311CF
+	.db $A2   ;C311D0
 	eor $A9C2,x                             ;C311D2
 	ora ($85,s),y                           ;C311D5
 	.db $00   ;C311D7
@@ -1312,8 +1312,7 @@ PoisonHerbUseEffect:
 	jsl $C23209                             ;C31209
 	lda #$FF                                ;C3120D
 	sbc $220085,x                           ;C3120F
-	.db $71   ;C31213
-	.db $32   ;C31214
+	adc ($32),y                             ;C31213
 	rep #$A4                                ;C31215
 	.db $00   ;C31217
 	.db $F0,$0B   ;C31218
@@ -1360,16 +1359,14 @@ PoisonHerbUseEffect:
 	jsl $C21167                             ;C31280
 	lda #$01                                ;C31284
 	sec                                     ;C31286
-	.db $E5   ;C31287
-	.db $00   ;C31288
+	sbc $00                                 ;C31287
 	pha                                     ;C31289
 	lda #$13                                ;C3128A
 	sta $00                                 ;C3128C
 	jsl $C21128                             ;C3128E
 	lda #$01                                ;C31292
 	sec                                     ;C31294
-	.db $E5   ;C31295
-	.db $00   ;C31296
+	sbc $00                                 ;C31295
 	pha                                     ;C31297
 	eor #$FF                                ;C31298
 	inc a                                   ;C3129A
