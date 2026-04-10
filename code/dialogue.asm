@@ -157,7 +157,8 @@ func_C10189:
 	plx
 	bit.b #$01
 	beq @lbl_C101E4
-	.db $A0,$E0,$08,$84,$00
+	ldy #$08E0                              ;C101CE
+	sty $00                                 ;C101D1
 	jsl.l DisplayMessage
 	.db $60                           ;C101E2  
 @lbl_C101E4:
@@ -170,7 +171,8 @@ func_C10189:
 	SetEvent Event1B $01
 	rts
 @lbl_C10208:
-	.db $A0,$C4,$08,$84,$00
+	ldy #$08C4                              ;C10208
+	sty $00                                 ;C1020B
 	jsl.l DisplayMessage
 	rts                                     ;C10211
 	sep #$30                                ;C10212
@@ -292,8 +294,9 @@ func_C10189:
 	sta $00                                 ;C1030E
 .ACCU 8
 	jsl.l DisplayMessage
-	.db $A9,$9B,$06,$85   ;C10308
-	.db $00
+	lda #$9B                                ;C10314
+	asl $85                                 ;C10316
+	.db $00   ;C10318
 	jsl.l DisplayMessage
 	sep #$20                                ;C1031D
 	plx                                     ;C1031F
@@ -322,8 +325,9 @@ func_C10189:
 	sta $00                                 ;C10350
 .ACCU 8
 	jsl.l DisplayMessage
-	.db $A9,$A0   ;C10348  
-	.db $06,$85,$00
+	lda #$A0                                ;C10356
+	asl $85                                 ;C10358
+	.db $00   ;C1035A
 	jsl.l DisplayMessage
 	sep #$20                                ;C1035F
 	plx                                     ;C10361
@@ -5183,7 +5187,9 @@ func_C12ABD:
 	ldy #$08FA                              ;C130BD
 	sty $00                                 ;C130C0
 	jsl.l DisplayMessage
-	.db $60,$A0,$C6,$07,$84,$00
+	rts                                     ;C130C6
+	ldy #$07C6                              ;C130C7
+	sty $00                                 ;C130CA
 	jsl.l DisplayMessage
 	rts                                     ;C130D0
 	sep #$20                                ;C130D1
@@ -5212,8 +5218,10 @@ func_C12ABD:
 	ldy #$07BA                              ;C13107
 	sty $00                                 ;C1310A
 	jsl.l DisplayMessage
-	.db $60,$DA,$A9   ;C13103  
-	.db $17,$85,$00
+	rts                                     ;C13110
+	phx                                     ;C13111
+	lda #$17                                ;C13112
+	sta $00                                 ;C13114
 	jsl.l _GetEvent
 	lda $00                                 ;C1311A
 	plx                                     ;C1311C
@@ -5222,7 +5230,9 @@ func_C12ABD:
 	ldy #$08FB                              ;C13121
 	sty $00                                 ;C13124
 	jsl.l DisplayMessage
-	.db $60,$A0,$C7,$07,$84,$00
+	rts                                     ;C1312A
+	ldy #$07C7                              ;C1312B
+	sty $00                                 ;C1312E
 	jsl.l DisplayMessage
 	rts                                     ;C13134
 	sep #$20                                ;C13135
@@ -5563,7 +5573,9 @@ func_C13304:
 	cmp.b #$63
 	bne @lbl_C1341F
 ;C13419  
-	.db $A5,$01,$C9,$1C,$F0,$18
+	lda $01                                 ;C13419
+	cmp #$1C                                ;C1341B
+	.db $F0,$18   ;C1341D
 @lbl_C1341F:
 	lda.b wTemp00
 	cmp.b #$03
@@ -5776,8 +5788,9 @@ func_C13304:
 	ldy #$07E0                              ;C13615
 	sty $00                                 ;C13618
 	jsl.l DisplayMessage
-	.db $60   ;C1360F
-	.db $A0,$E2,$07,$84,$00
+	rts                                     ;C1361E
+	ldy #$07E2                              ;C1361F
+	sty $00                                 ;C13622
 	jsl.l DisplayMessage
 	jsl $C62405                             ;C13628
 	lda $04,s                               ;C1362C
@@ -5897,7 +5910,9 @@ func_C13304:
 	ldy #$07E7                              ;C1374F
 	sty $00                                 ;C13752
 	jsl.l DisplayMessage
-	.db $60,$A0,$E8,$07,$84,$00
+	rts                                     ;C13758
+	ldy #$07E8                              ;C13759
+	sty $00                                 ;C1375C
 	jsl.l DisplayMessage
 	jsl $C62405                             ;C13762
 	lda $04,s                               ;C13766
@@ -6160,9 +6175,13 @@ func_C13304:
 	ldy #$08F1                              ;C139BE
 	sty $00                                 ;C139C1
 	jsl.l DisplayMessage
-	.db $60,$A0,$07,$08,$84,$00
+	rts                                     ;C139C7
+	ldy #$0807                              ;C139C8
+	sty $00                                 ;C139CB
 	jsl.l DisplayMessage
-	.db $60,$A0,$82,$08,$84,$00
+	rts                                     ;C139D1
+	ldy #$0882                              ;C139D2
+	sty $00                                 ;C139D5
 	jsl.l DisplayMessage
 	.db $60                   ;C139D8
 
@@ -6316,7 +6335,9 @@ FortuneTellerTipsText:
 	ldy #$08FD                              ;C13B33
 	sty $00                                 ;C13B36
 	jsl.l DisplayMessage
-	.db $60,$A0,$20,$08,$84,$00
+	rts                                     ;C13B3C
+	ldy #$0820                              ;C13B3D
+	sty $00                                 ;C13B40
 	jsl.l DisplayMessage
 	.db $60                   ;C13B47  
 
@@ -6348,8 +6369,9 @@ FortuneTellerTipsText:
 	ldy #$08FF                              ;C13B87
 	sty $00                                 ;C13B8A
 	jsl.l DisplayMessage
-	.db $60,$A0,$22   ;C13B83
-	.db $08,$84,$00
+	rts                                     ;C13B90
+	ldy #$0822                              ;C13B91
+	sty $00                                 ;C13B94
 	jsl.l DisplayMessage
 	.db $60   ;C13B93
 	sep #$20 ;A->8
@@ -6380,8 +6402,9 @@ FortuneTellerTipsText:
 	ldy #$08DF                              ;C13BD7
 	sty $00                                 ;C13BDA
 	jsl.l DisplayMessage
-	.db $60,$A0,$24   ;C13BD3
-	.db $08,$84,$00
+	rts                                     ;C13BE0
+	ldy #$0824                              ;C13BE1
+	sty $00                                 ;C13BE4
 	jsl.l DisplayMessage
 	rts                                     ;C13BEA
 	sep #$20                                ;C13BEB
@@ -6397,7 +6420,9 @@ FortuneTellerTipsText:
 	ldy #$08F8                              ;C13BFF
 	sty $00                                 ;C13C02
 	jsl.l DisplayMessage
-	.db $60,$A0,$1F,$08,$84,$00
+	rts                                     ;C13C08
+	ldy #$081F                              ;C13C09
+	sty $00                                 ;C13C0C
 	jsl.l DisplayMessage
 	.db $60   ;C13C03
 	sep #$20 ;A->8
@@ -7045,8 +7070,9 @@ Data_c1425d:
 	ldy #$085A                              ;C142DD
 	sty $00                                 ;C142E0
 	jsl.l DisplayMessage
-	.db $60,$A0,$5C,$08   ;C142DA
-	.db $84,$00
+	rts                                     ;C142E6
+	ldy #$085C                              ;C142E7
+	sty $00                                 ;C142EA
 	jsl.l DisplayMessage
 	lda #$13                                ;C142F0
 	sta $00                                 ;C142F2
@@ -7168,7 +7194,9 @@ Data_c1425d:
 	ldy #$0869                              ;C14420
 	sty $00                                 ;C14423
 	jsl.l DisplayMessage
-	.db $60,$A0,$6B,$08,$84,$00
+	rts                                     ;C14429
+	ldy #$086B                              ;C1442A
+	sty $00                                 ;C1442D
 	jsl.l DisplayMessage
 	lda #$13                                ;C14433
 	sta $00                                 ;C14435
@@ -7232,8 +7260,9 @@ NPCScriptFunction_C14479:
 	ldy #$08DB                              ;C144B8
 	sty $00                                 ;C144BB
 	jsl.l DisplayMessage
-	.db $60,$A0,$BA   ;C144B4
-	.db $06,$84,$00
+	rts                                     ;C144C1
+	ldy #$06BA                              ;C144C2
+	sty $00                                 ;C144C5
 	jsl.l DisplayMessage
 	lda #$851C                              ;C144CB
 	.db $00   ;C144CE
@@ -7307,8 +7336,9 @@ NPCScriptFunction_C14479:
 	sty $00                                 ;C1455B
 .ACCU 16
 	jsl.l DisplayMessage
-	.db $60,$A0,$9B   ;C14554  
-	.db $08,$84,$00
+	rts                                     ;C14561
+	ldy #$089B                              ;C14562
+	sty $00                                 ;C14565
 	jsl.l DisplayMessage
 	rts                                     ;C1456B
 	sep #$20                                ;C1456C
@@ -7339,7 +7369,10 @@ NPCScriptFunction_C14479:
 	ldy #$08E1                              ;C1459C
 	sty $00                                 ;C1459F
 	jsl.l DisplayMessage
-	.db $60,$DA,$A9,$0C,$85,$00
+	rts                                     ;C145A5
+	phx                                     ;C145A6
+	lda #$850C                              ;C145A7
+	.db $00   ;C145AA
 	jsl.l _GetEvent
 	lda $00                                 ;C145AF
 	plx                                     ;C145B1
@@ -7355,8 +7388,9 @@ NPCScriptFunction_C14479:
 	ldy #$089E                              ;C145C6
 	sty $00                                 ;C145C9
 	jsl.l DisplayMessage
-	.db $60,$A0,$F7,$07,$84   ;C145C4  
-	.db $00
+	rts                                     ;C145CF
+	ldy #$07F7                              ;C145D0
+	sty $00                                 ;C145D3
 	jsl.l DisplayMessage
 	rts                                     ;C145D9
 	sep #$20                                ;C145DA
@@ -7373,7 +7407,9 @@ NPCScriptFunction_C14479:
 	ldy #$08E2                              ;C145EE
 	sty $00                                 ;C145F1
 	jsl.l DisplayMessage
-	.db $60,$A0,$9F,$08,$84,$00
+	rts                                     ;C145F7
+	ldy #$089F                              ;C145F8
+	sty $00                                 ;C145FB
 	jsl.l DisplayMessage
 	rts                                     ;C14601
 	sep #$20                                ;C14602
@@ -7498,7 +7534,9 @@ NPCScriptFunction_C14479:
 	ldy #$08E7                              ;C146F0
 	sty $00                                 ;C146F3
 	jsl.l DisplayMessage
-	.db $60,$A0,$AE,$08,$84,$00
+	rts                                     ;C146F9
+	ldy #$08AE                              ;C146FA
+	sty $00                                 ;C146FD
 	jsl.l DisplayMessage
 	rts                                     ;C14703
 	sep #$20                                ;C14704
@@ -7514,7 +7552,9 @@ NPCScriptFunction_C14479:
 	ldy #$08E8                              ;C14718
 	sty $00                                 ;C1471B
 	jsl.l DisplayMessage
-	.db $60,$A0,$AF,$08,$84,$00
+	rts                                     ;C14721
+	ldy #$08AF                              ;C14722
+	sty $00                                 ;C14725
 	jsl.l DisplayMessage
 	.db $60                       ;C14729  
 	sep #$20 ;A->8
@@ -7572,8 +7612,9 @@ NPCScriptFunction_C14479:
 	ldy #$08B4                              ;C147AD
 	sty $00                                 ;C147B0
 	jsl.l DisplayMessage
-	.db $60,$A0,$B5,$08,$84   ;C147B3  
-	.db $00
+	rts                                     ;C147B6
+	ldy #$08B5                              ;C147B7
+	sty $00                                 ;C147BA
 	jsl.l DisplayMessage
 	.db $60           ;C147BB
 	sep #$20 ;A->8
@@ -7606,8 +7647,9 @@ NPCScriptFunction_C14479:
 	ldy #$08B7                              ;C14803
 	sty $00                                 ;C14806
 	jsl.l DisplayMessage
-	.db $60,$A0,$B8,$08,$84   ;C14809  
-	.db $00
+	rts                                     ;C1480C
+	ldy #$08B8                              ;C1480D
+	sty $00                                 ;C14810
 	jsl.l DisplayMessage
 	.db $60           ;C14811
 	sep #$20 ;A->8
@@ -7655,8 +7697,9 @@ NPCScriptFunction_C14479:
 	ldy #$08BC                              ;C14870
 	sty $00                                 ;C14873
 	jsl.l DisplayMessage
-	.db $60,$A0,$BD,$08   ;C1486D
-	.db $84,$00
+	rts                                     ;C14879
+	ldy #$08BD                              ;C1487A
+	sty $00                                 ;C1487D
 	jsl.l DisplayMessage
 	rts                                     ;C14883
 	sep #$20                                ;C14884
@@ -7701,7 +7744,9 @@ NPCScriptFunction_C14479:
 	ldy #$08C2                              ;C148D9
 	sty $00                                 ;C148DC
 	jsl.l DisplayMessage
-	.db $60,$A0,$C3,$08,$84,$00
+	rts                                     ;C148E2
+	ldy #$08C3                              ;C148E3
+	sty $00                                 ;C148E6
 	jsl.l DisplayMessage
 	rts                                     ;C148EC
 	sep #$20                                ;C148ED
@@ -7780,7 +7825,9 @@ NPCScriptFunction_C14479:
 	lda #$01                                ;C149AA
 	sta $02                                 ;C149AC
 	jsl.l _SetEvent
-	.db $60,$A0,$C9,$08,$84,$00
+	rts                                     ;C149B2
+	ldy #$08C9                              ;C149B3
+	sty $00                                 ;C149B6
 	jsl.l DisplayMessage
 	rts                                     ;C149BC
 	sep #$20                                ;C149BD
@@ -7812,8 +7859,9 @@ NPCScriptFunction_C14479:
 	ldy #$08CD                              ;C149F9
 	sty $00                                 ;C149FC
 	jsl.l DisplayMessage
-	.db $60,$A0,$CF,$08,$84   ;C149FF  
-	.db $00
+	rts                                     ;C14A02
+	ldy #$08CF                              ;C14A03
+	sty $00                                 ;C14A06
 	jsl.l DisplayMessage
 	.db $60           ;C14A07
 	sep #$20 ;A->8
@@ -7864,8 +7912,9 @@ NPCScriptFunction_C14479:
 	ldy #$08ED                              ;C14A79
 	sty $00                                 ;C14A7C
 	jsl.l DisplayMessage
-	.db $60,$A0,$EE   ;C14A75  
-	.db $08,$84,$00
+	rts                                     ;C14A82
+	ldy #$08EE                              ;C14A83
+	sty $00                                 ;C14A86
 	jsl.l DisplayMessage
 	rts                                     ;C14A8C
 	rts                                     ;C14A8D
