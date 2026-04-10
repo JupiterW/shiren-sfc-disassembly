@@ -664,7 +664,10 @@ func_C30D11:
 	sep #$30 ;AXY->8
 	cmp.b #$0A
 	bne @lbl_C30D29
-	.db $A9,$01,$85,$00,$64,$01,$84,$02
+	lda #$01                                ;C30D17
+	sta $00                                 ;C30D19
+	stz $01                                 ;C30D1B
+	sty $02                                 ;C30D1D
 	jsl.l DisplayMessage
 	.db $A9,$01,$85,$00   ;C30D17
 	.db $28,$6B                           ;C30D27
@@ -1264,7 +1267,10 @@ LifeHerbUseEffect:
 	stz.b wTemp03
 	jsl.l func_C2323C
 	rts
-	.db $E2,$20,$A9,$65,$85,$00,$64,$01   ;C311C3
+	sep #$20                                ;C311C3
+	lda #$65                                ;C311C5
+	sta $00                                 ;C311C7
+	stz $01                                 ;C311C9
 	jsl.l DisplayMessage
 	.db $22,$A2   ;C311C2
 	eor $A9C2,x                             ;C311D2
@@ -2018,8 +2024,10 @@ TrapScrollUseEffect:
 	lda #$0068                              ;C3180B
 	sta $00                                 ;C3180E
 	jsl.l DisplayMessage
-	.db $60,$C2,$20,$A9   ;C31809  
-	.db $5C,$00,$85,$00
+	rts                                     ;C31814
+	rep #$20                                ;C31815
+	lda #$005C                              ;C31817
+	sta $00                                 ;C3181A
 	jsl.l DisplayMessage
 	.db $60                               ;C31821
 LightScrollUseEffect:
@@ -2576,7 +2584,10 @@ BlessingScrollUseEffect:
 	jsl.l DisplayMessage
 	.db $60                       ;C31CA2  
 @lbl_C31CA5:
-	.db $FA,$30,$18,$BD,$0C,$8C,$F0,$13
+	plx                                     ;C31CA5
+	.db $30,$18   ;C31CA6
+	lda $8C0C,x                             ;C31CA8
+	.db $F0,$13   ;C31CAB
 @lbl_C31CAD:
 	stz.w wItemIsCursed,x
 	lda.b #$8F
