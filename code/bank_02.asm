@@ -932,7 +932,8 @@ func_C20844:
 	cmp.b #$02
 	bne @lbl_C20874
 ;C2086F
-	.db $A9,$03,$99,$35,$88
+	lda #$03                                ;C2086F
+	sta $8835,y                             ;C20871
 @lbl_C20874:
 	rts
 	sep #$30                                ;C20875
@@ -3570,7 +3571,8 @@ func_C23456:
 	lda.l $7E899B
 	beq @lbl_C23476
 ;C23471  
-	.db $AF,$B1,$89,$7E,$AA
+	lda $7E89B1                             ;C23471
+	tax                                     ;C23475
 @lbl_C23476:
 	lda.l PlayerStrengthStatTable,x
 	pha
@@ -5120,7 +5122,8 @@ DropSelectedInventoryItem:
 	cpy.b #$80
 	beq @lbl_C23FCE
 @lbl_C23FBA:
-	.db $A9,$54,$00,$85,$00
+	lda #$0054                              ;C23FBA
+	sta $00                                 ;C23FBD
 	jsl.l DisplayMessage
 	jsl $C28FBC                             ;C23FC3
 	lda #$0002                              ;C23FC7
@@ -6314,8 +6317,10 @@ func_C2487E:
 @lbl_C248AC:
 	.db $A9   ;C248AC
 	;C248AD
-	.db $01,$85,$00,$28
-	.db $6B
+	ora ($85,x)                             ;C248AD
+	.db $00   ;C248AF
+	plp                                     ;C248B0
+	rtl                                     ;C248B1
 
 func_C248B2:
 	php
