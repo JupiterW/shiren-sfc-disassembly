@@ -11489,12 +11489,52 @@ DATA8_C3DA1C:
 	bpl @lbl_C3DC98
 	pla
 	rts
-	.db $A5,$00,$48,$22,$28,$11,$C2,$A5,$00,$3A,$F0,$0C,$85,$02,$68,$85   ;C3DCFF  
-	.db $00,$85,$01,$22,$DF,$28,$C2,$60,$68,$85,$00,$48,$22,$EB,$82,$C2   ;C3DD0F
-	.db $68,$85,$00,$22,$35,$0F,$C2,$60,$A0,$01,$00,$5A,$22,$88,$85,$C2   ;C3DD1F
-	.db $7A,$A5,$00,$F0,$01,$88,$A9,$13,$85,$00,$22,$28,$11,$C2,$A5,$00   ;C3DD2F
-	.db $4A,$69,$00,$C0,$01,$00,$D0,$03,$4A,$69,$00,$85,$02,$A9,$13,$85   ;C3DD3F
-	.db $00,$85,$01,$22,$DF,$28,$C2,$60   ;C3DD4F
+	lda $00                                 ;C3DCFF
+	pha                                     ;C3DD01
+	jsl $C21128                             ;C3DD02
+	lda $00                                 ;C3DD06
+	dec a                                   ;C3DD08
+	beq @lbl_C3DD17                         ;C3DD09
+	sta $02                                 ;C3DD0B
+	pla                                     ;C3DD0D
+	sta $00                                 ;C3DD0E
+	sta $01                                 ;C3DD10
+	jsl $C228DF                             ;C3DD12
+	rts                                     ;C3DD16
+@lbl_C3DD17:
+	pla                                     ;C3DD17
+	sta $00                                 ;C3DD18
+	pha                                     ;C3DD1A
+	jsl $C282EB                             ;C3DD1B
+	pla                                     ;C3DD1F
+	sta $00                                 ;C3DD20
+	jsl $C20F35                             ;C3DD22
+	rts                                     ;C3DD26
+	ldy #$0001                              ;C3DD27
+	phy                                     ;C3DD2A
+	jsl $C28588                             ;C3DD2B
+	ply                                     ;C3DD2F
+	lda $00                                 ;C3DD30
+	beq @lbl_C3DD35                         ;C3DD32
+	dey                                     ;C3DD34
+@lbl_C3DD35:
+	lda #$13                                ;C3DD35
+	sta $00                                 ;C3DD37
+	jsl $C21128                             ;C3DD39
+	lda $00                                 ;C3DD3D
+	lsr a                                   ;C3DD3F
+	adc #$00                                ;C3DD40
+	cpy #$0001                              ;C3DD42
+	bne @lbl_C3DD4A                         ;C3DD45
+	lsr a                                   ;C3DD47
+	adc #$00                                ;C3DD48
+@lbl_C3DD4A:
+	sta $02                                 ;C3DD4A
+	lda #$13                                ;C3DD4C
+	sta $00                                 ;C3DD4E
+	sta $01                                 ;C3DD50
+	jsl $C228DF                             ;C3DD52
+	rts                                     ;C3DD56
 
 func_C3DD57:
 	ldy.w #$0001
