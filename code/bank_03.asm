@@ -11512,13 +11512,58 @@ func_C3DD85:
 	sta.b wTemp00
 	jsl.l func_C27EB7
 	rts
-	.db $E2,$20,$A5,$00,$48,$A9,$13,$85,$02,$22,$50,$25,$C6,$A3,$01,$85   ;C3DF4F
-	.db $00,$22,$AC,$10,$C2,$A5,$04,$C9,$08,$F0,$10,$68,$85,$00,$A9,$13   ;C3DF5F
-	.db $85,$01,$A9,$1E,$85,$02,$22,$EF,$28,$C2,$60,$68,$85,$00,$22,$D4   ;C3DF6F  
-	.db $10,$C2,$A9,$7F,$85,$00,$A9,$04,$85,$01,$A9,$46,$85,$02,$A5,$04   ;C3DF7F  
-	.db $85,$06,$A5,$05,$85,$07,$22,$CA,$26,$C6,$60,$E2,$20,$A5,$00,$48   ;C3DF8F  
-	.db $A9,$05,$85,$01,$22,$80,$40,$C2,$A3,$01,$85,$00,$A9,$1A,$85,$02   ;C3DF9F
-	.db $22,$50,$25,$C6,$68,$85,$02,$A9,$ED,$85,$00,$64,$01
+	sep #$20                                ;C3DF4F
+	lda $00                                 ;C3DF51
+	pha                                     ;C3DF53
+	lda #$13                                ;C3DF54
+	sta $02                                 ;C3DF56
+	jsl $C62550                             ;C3DF58
+	lda $01,s                               ;C3DF5C
+	sta $00                                 ;C3DF5E
+	jsl $C210AC                             ;C3DF60
+	lda $04                                 ;C3DF64
+	cmp #$08                                ;C3DF66
+	beq @lbl_C3DF7A                         ;C3DF68
+	pla                                     ;C3DF6A
+	sta $00                                 ;C3DF6B
+	lda #$13                                ;C3DF6D
+	sta $01                                 ;C3DF6F
+	lda #$1E                                ;C3DF71
+	sta $02                                 ;C3DF73
+	jsl $C228EF                             ;C3DF75
+	rts                                     ;C3DF79
+@lbl_C3DF7A:
+	pla                                     ;C3DF7A
+	sta $00                                 ;C3DF7B
+	jsl $C210D4                             ;C3DF7D
+	lda #$7F                                ;C3DF81
+	sta $00                                 ;C3DF83
+	lda #$04                                ;C3DF85
+	sta $01                                 ;C3DF87
+	lda #$46                                ;C3DF89
+	sta $02                                 ;C3DF8B
+	lda $04                                 ;C3DF8D
+	sta $06                                 ;C3DF8F
+	lda $05                                 ;C3DF91
+	sta $07                                 ;C3DF93
+	jsl $C626CA                             ;C3DF95
+	rts                                     ;C3DF99
+	sep #$20                                ;C3DF9A
+	lda $00                                 ;C3DF9C
+	pha                                     ;C3DF9E
+	lda #$05                                ;C3DF9F
+	sta $01                                 ;C3DFA1
+	jsl $C24080                             ;C3DFA3
+	lda $01,s                               ;C3DFA7
+	sta $00                                 ;C3DFA9
+	lda #$1A                                ;C3DFAB
+	sta $02                                 ;C3DFAD
+	jsl $C62550                             ;C3DFAF
+	pla                                     ;C3DFB3
+	sta $02                                 ;C3DFB4
+	lda #$ED                                ;C3DFB6
+	sta $00                                 ;C3DFB8
+	stz $01                                 ;C3DFBA
 	jsl.l DisplayMessage
 	.db $60                           ;C3DFC0
 	sep #$20 ;A->8
