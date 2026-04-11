@@ -259,8 +259,10 @@ FindFreeCustomNameSlot:
 	plp
 	rtl
 
-; TODO: purpose unclear - custom name buffer pointer setup; for non-$68 items finds wItemCustomNamesBuffer slot and computes buffer address in wTemp00/wTemp02; for type $68 stores slot to $7E:935F and points to scratch buffer at $9360
-func_C301F0:
+; Sets up scratch buffer for item renaming. Returns buffer pointer in wTemp00/wTemp02.
+; For blank scrolls: uses fixed buffer at $7E9360
+; For other items: allocates slot in wItemCustomNamesBuffer
+SetupItemRenameBuffer:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
