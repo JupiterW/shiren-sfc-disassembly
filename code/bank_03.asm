@@ -12541,9 +12541,28 @@ func_C3E1D5:
 	iny
 	bra @lbl_C3E258
 @lbl_C3E232:
-	.db $A5,$B1,$F0,$0E,$1A,$88,$97,$AE,$45,$B1,$47,$AE,$87,$AE,$E6,$B1   ;C3E232  
-	.db $80,$22,$A9,$1C,$97,$AE,$47,$AE,$87,$AE,$C8,$A9,$01,$85,$B1,$97   ;C3E242  
-	.db $AE,$47,$AE,$87,$AE,$C8           ;C3E252  
+	lda $B1                                 ;C3E232
+	beq @lbl_C3E244                         ;C3E234
+	inc a                                   ;C3E236
+	dey                                     ;C3E237
+	sta [$AE],y                             ;C3E238
+	eor $B1                                 ;C3E23A
+	eor [$AE]                               ;C3E23C
+	sta [$AE]                               ;C3E23E
+	inc $B1                                 ;C3E240
+	.db $80,$22   ;C3E242
+@lbl_C3E244:
+	lda #$1C                                ;C3E244
+	sta [$AE],y                             ;C3E246
+	eor [$AE]                               ;C3E248
+	sta [$AE]                               ;C3E24A
+	iny                                     ;C3E24C
+	lda #$01                                ;C3E24D
+	sta $B1                                 ;C3E24F
+	sta [$AE],y                             ;C3E251
+	eor [$AE]                               ;C3E253
+	sta [$AE]                               ;C3E255
+	iny                                     ;C3E257
 @lbl_C3E258:
 	lda.b #$FF
 	sta.b [$AE],y
@@ -14579,9 +14598,30 @@ func_C3F2FD:
 	plp
 	rtl
 @lbl_C3F310:
-	.db $C2,$20,$A5,$00,$48,$A5,$02,$48,$A5,$04,$48,$A5,$06,$48,$84,$00   ;C3F310
-	.db $22,$1F,$09,$C3,$A4,$00,$68,$85,$06,$68,$85,$04,$68,$85,$02,$68   ;C3F320  
-	.db $85,$00,$84,$01,$28,$6B           ;C3F330  
+	rep #$20                                ;C3F310
+	lda $00                                 ;C3F312
+	pha                                     ;C3F314
+	lda $02                                 ;C3F315
+	pha                                     ;C3F317
+	lda $04                                 ;C3F318
+	pha                                     ;C3F31A
+	lda $06                                 ;C3F31B
+	pha                                     ;C3F31D
+	sty $00                                 ;C3F31E
+	jsl $C3091F                             ;C3F320
+	ldy $00                                 ;C3F324
+	pla                                     ;C3F326
+	sta $06                                 ;C3F327
+	pla                                     ;C3F329
+	sta $04                                 ;C3F32A
+	pla                                     ;C3F32C
+	sta $02                                 ;C3F32D
+	pla                                     ;C3F32F
+	sta $00                                 ;C3F330
+	sty $01                                 ;C3F332
+	plp                                     ;C3F334
+	rtl                                     ;C3F335
+.ACCU 8
 
 func_C3F336:
 	php
