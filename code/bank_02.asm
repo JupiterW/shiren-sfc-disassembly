@@ -4520,7 +4520,7 @@ TryAddSelectedItemToInventory:
 	phy
 	; Reject one special blank-scroll case before continuing with the broader
 	; selection flow that this helper feeds.
-	jsl.l func_C30824
+	jsl.l CheckIsNamedSanctuaryScrollAlt
 	ply
 	lda.b wTemp00
 	bne @lbl_C23A2F
@@ -4981,7 +4981,7 @@ HandleCategoryShortcutSelectionAction:
 	sty.b wTemp00
 	phx
 	phy
-	jsl.l func_C30824
+	jsl.l CheckIsNamedSanctuaryScrollAlt
 	ply
 	plx
 	lda.b wTemp00
@@ -6163,7 +6163,7 @@ HandleThrowItemAction:
 	.db $B0,$7A   ;C245F1
 	sta $7E896E                             ;C245F3
 	sta $00                                 ;C245F7
-	jsl $C30824                             ;C245F9
+	jsl.l CheckIsNamedSanctuaryScrollAlt                             ;C245F9
 	lda $00                                 ;C245FD
 	.db $D0,$12   ;C245FF
 	lda $7E896E                             ;C24601
@@ -9598,7 +9598,7 @@ func_C2785E:
 	pha
 	lda.b wTemp04
 	pha
-	jsl.l func_C307C9
+	jsl.l CheckIsNamedSanctuaryScroll
 	pla
 	sta.b wTemp04
 	pla

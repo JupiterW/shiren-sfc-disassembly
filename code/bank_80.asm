@@ -5866,7 +5866,7 @@ func_80B4DE:
 	cmp.b #$E6
 	beq @lbl_80B54F
 	lda.b wTemp01
-	cmp.b #$7B
+	cmp.b #Item_InvisibleItem
 	beq @lbl_C0B52D
 	lda.b wTemp00
 	cmp.b #$0C
@@ -5940,7 +5940,7 @@ func_80B569:
 	cmp.b #$E6
 	beq @lbl_80B5C8
 	lda.b wTemp01
-	cmp.b #$7B
+	cmp.b #Item_InvisibleItem
 	beq @lbl_C0B5B4
 	lda.b wTemp00
 	cmp.b #$0C
@@ -6414,7 +6414,7 @@ func_80B8FE:
 	cmp.b #$E6
 	beq @lbl_80B963
 	lda.b wTemp01
-	cmp.b #$7B
+	cmp.b #Item_InvisibleItem
 	beq @lbl_C0B940
 	lda.b wTemp00
 	cmp.b #$0C

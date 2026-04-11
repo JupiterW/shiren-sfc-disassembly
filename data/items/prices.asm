@@ -72,7 +72,7 @@ ScrollBuySellPrices:
 	item_price Item_78, 0, 0
 	item_price Item_79, 0, 0
 	item_price Item_7A, 0, 0
-	item_price Item_7B, 0, 0
+	item_price Item_InvisibleItem, 0, 0
 
 ;rice ball buy/sell prices
 ;d9a394

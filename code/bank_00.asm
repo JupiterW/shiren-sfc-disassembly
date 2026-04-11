@@ -977,7 +977,7 @@ func_C06B49:
 	cmp.b #$E6
 	beq @lbl_C06B8D
 	lda.b wTemp01
-	cmp.b #$7B
+	cmp.b #Item_InvisibleItem
 	bne @lbl_C06B95
 ;C06B86
 	lda #$0D                                ;C06B86

@@ -524,7 +524,7 @@ SpawnFloorItemFromTable:
 @lbl_C3040E:
 	pla
 	sta.b wTemp00
-	jsr.w func_C3050C
+	jsr.w PickRandomCategoryItem
 	jsl.l SpawnFloorItem
 	plp
 	rtl
@@ -636,8 +636,10 @@ RollRandomItemFromTable:
 	plp
 	rts
 
-; TODO: purpose unclear - category-specific item picker; takes category in wTemp00, looks up DATA8_C30559 for matching dungeon entry, rolls random item from sub-table, returns item type in wTemp01 and $E0 in wTemp00
-func_C3050C:
+; Picks a random item from a dungeon-specific sub-table for the given category.
+; Called when GetDungeonItemRange returns $E0 (sentinel for category-based spawns).
+; Returns item type in wTemp01 and Item_MonsterMeat ($E0) in wTemp00.
+PickRandomCategoryItem:
 	php
 	sep #$30 ;AXY->8
 	ldy.b wTemp00
@@ -932,7 +934,7 @@ GetItemDisplayInfo:
 @lbl_C30765:
 	sta.b wTemp06
 	lda.b wTemp01
-	cmp.b #$7B
+	cmp.b #Item_InvisibleItem
 	beq @lbl_C3077D
 	cmp.b #$68
 	beq @lbl_C30789
@@ -965,17 +967,17 @@ GetItemDisplayInfo:
 	plp
 	rtl
 
-; TODO: purpose unclear - checks item type of slot wTemp01; if type $7B and wShirenStatus.swordStrength==0
-; sets bit 7 on wTemp01; if type $E7 (Gitan) and wItemIsCursed==$0C sets wTemp01=$83. Flag setter for
-; special item types but exact semantic unknown.
-func_C3079A:
+; Sets special flags on wTemp01 slot index based on item type.
+; Item_InvisibleItem: if canSeeInvisibleObjects==0, sets bit 7 on wTemp01 (hides item from Shiren).
+; Nduba meat ($E7): if wItemIsCursed==$0C, sets wTemp01=$83 (special Nduba state).
+AdjustItemSlotFlags:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp01
 	cpx.b #$7F
 	bcs @lbl_C307C7
 	lda.l wItemType,x
-	cmp.b #$7B
+	cmp.b #Item_InvisibleItem
 	bne @lbl_C307B7
 	lda $7E8975                             ;C307AB
 	bne @lbl_C307B5                         ;C307AF
@@ -993,10 +995,9 @@ func_C3079A:
 	plp
 	rtl
 
-; TODO: purpose unclear - for item at wTemp01: if type != $68 returns wTemp06=1; if type == $68
-; saves its stats to scratch RAM $9360-$9366 and calls CheckIfItemNameEqualToTextEntry, returning
-; wTemp06=0 on match. Type $68 identity and call context unknown.
-func_C307C9:
+; Checks if the item at wTemp01 is a blank scroll ($68) named "Sanctuary" (text $04CC).
+; Returns wTemp06=0 if it matches, wTemp06=1 otherwise (including non-blank-scroll items).
+CheckIsNamedSanctuaryScroll:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp01
@@ -1042,9 +1043,9 @@ func_C307C9:
 NullItemHandler:
 rtl
 
-; TODO: purpose unclear - same logic as func_C307C9 but uses wTemp00 as item slot and returns
-; result in wTemp00 instead of wTemp06. Pair/variant of func_C307C9 with different register convention.
-func_C30824:
+; Variant of CheckIsNamedSanctuaryScroll using wTemp00 as both item slot and result register.
+; Returns wTemp00=0 if blank scroll ($68) named "Sanctuary", wTemp00=1 otherwise.
+CheckIsNamedSanctuaryScrollAlt:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -3567,7 +3568,7 @@ func_C35A73:
 	lda.w $9EDF,y
 	sta.b wTemp01
 	phy
-	jsl.l func_C3079A
+	jsl.l AdjustItemSlotFlags
 	ply
 	lda.w $945F,y
 	sta.b wTemp00

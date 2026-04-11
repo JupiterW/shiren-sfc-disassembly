@@ -841,7 +841,7 @@ func_C30D11:
 	sep #$30 ;AXY->8
 	plx
 	lda.l wItemType,x
-	cmp.b #$7B
+	cmp.b #Item_InvisibleItem
 	beq @lbl_C30E65
 	stx.b wTemp00
 	jsl.l FreeFloorItemSlot
@@ -4487,7 +4487,7 @@ TryPrepareSelectedItemForJarInsertion:
 	ldx.b wTemp01
 	stx.b wTemp00
 	phx
-	jsl.l func_C30824
+	jsl.l CheckIsNamedSanctuaryScrollAlt
 	plx
 	ldy.b wTemp00
 	bne @lbl_C32B3A
