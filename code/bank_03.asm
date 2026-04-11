@@ -11303,9 +11303,20 @@ func_C3D772:
 	.db $7F,$C2,$68,$85,$00,$A9,$20,$85,$02,$22,$50,$25,$C6,$A9,$F1,$85   ;C3D7D6  
 	.db $00,$64,$01
 	jsl.l DisplayMessage
-	.db $60,$E2,$20,$22,$DF,$69,$C3,$A5,$00   ;C3D7ED
-	.db $D0,$1B,$A9,$13,$85,$00,$A9,$03,$85,$02,$22,$F6,$26,$C6,$22,$F6   ;C3D7F6  
-	.db $66,$C3,$A9,$E8,$85,$00,$64,$01
+	rts                                     ;C3D7ED
+	sep #$20                                ;C3D7EE
+	jsl $C369DF                             ;C3D7F0
+	lda $00                                 ;C3D7F4
+	.db $D0,$1B   ;C3D7F6
+	lda #$13                                ;C3D7F8
+	sta $00                                 ;C3D7FA
+	lda #$03                                ;C3D7FC
+	sta $02                                 ;C3D7FE
+	jsl $C626F6                             ;C3D800
+	jsl $C366F6                             ;C3D804
+	lda #$E8                                ;C3D808
+	sta $00                                 ;C3D80A
+	stz $01                                 ;C3D80C
 	jsl.l DisplayMessage
 	.db $60,$A9,$F0,$85   ;C3D812
 	.db $00,$64,$01
@@ -12513,9 +12524,23 @@ func_C3E1D5:
 	ldy.b w00ac
 	cpy.w #$12D4
 	bcc @lbl_C3E203
-	.db $C0,$74,$13,$90,$0A,$A9,$03,$85,$00,$22,$7D,$28,$C6,$28,$6B,$A9   ;C3E1E1
-	.db $01,$C0,$24,$13,$90,$02,$A9,$02,$A6,$00,$85,$00,$22,$7D,$28,$C6   ;C3E1F1  
-	.db $86,$00                           ;C3E201  
+	cpy #$1374                              ;C3E1E1
+	bcc @lbl_C3E1F0                         ;C3E1E4
+	lda #$03                                ;C3E1E6
+	sta $00                                 ;C3E1E8
+	jsl $C6287D                             ;C3E1EA
+	plp                                     ;C3E1EE
+	rtl                                     ;C3E1EF
+@lbl_C3E1F0:
+	lda #$01                                ;C3E1F0
+	cpy #$1324                              ;C3E1F2
+	bcc @lbl_C3E1F9                         ;C3E1F5
+	lda #$02                                ;C3E1F7
+@lbl_C3E1F9:
+	ldx $00                                 ;C3E1F9
+	sta $00                                 ;C3E1FB
+	jsl $C6287D                             ;C3E1FD
+	stx $00                                 ;C3E201
 @lbl_C3E203:
 	lda.b wTemp00
 	cmp.b #$1C
