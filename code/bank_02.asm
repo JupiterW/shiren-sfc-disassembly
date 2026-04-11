@@ -124,7 +124,7 @@ func_C200B0:
 	stx $00                                 ;C200C9
 	sta $01                                 ;C200CB
 	phx                                     ;C200CD
-	jsl $C23579                             ;C200CE
+	jsl ApplyCharacterLevelGains                             ;C200CE
 	plx                                     ;C200D2
 	jsl $C62545                             ;C200D3
 	stx $00                                 ;C200D7
@@ -3208,7 +3208,7 @@ func_C22E2D:
 ;C2304E  
 	asl $00                                 ;C2304E
 @lbl_C23050:
-	jsl.l func_C233BE
+	jsl.l ModifyShirenHunger
 @lbl_C23054:
 	lda.l $7E86B8
 	bne @lbl_C2305E
@@ -3444,7 +3444,11 @@ ModifyCharacterHP:
 	plp
 	rtl
 
-func_C2323C:
+; Modifies a character's max HP by adding a signed 16-bit delta.
+; Caps at 250 ($FA), floors at 1. Also heals the character by the max HP increase.
+; Input: wTemp00 = character index, wTemp02 = signed 16-bit delta (wTemp03 = sign extension)
+; Output: MaxHP modified in-place, character healed
+ModifyCharacterMaxHP:
 	php
 	sep #$30 ;AXY->8
 	bankswitch 0x7E
@@ -3525,7 +3529,11 @@ ModifyShirenStrength:
 	plp                                     ;C232BD
 	rtl                                     ;C232BE
 
-func_C232BF:
+; Modifies Shiren's max strength cap by adding a signed delta.
+; Caps at 99 ($63), floors at 1. Then heals strength to the new max.
+; Input: wTemp00 = signed delta
+; Output: maxStrength modified, strength healed to new max
+ModifyShirenMaxStrength:
 	php
 	sep #$30 ;AXY->8
 	lda.l wShirenStatus.maxStrength
@@ -3650,7 +3658,11 @@ func_C2338A:
 	plp
 	rtl
 
-func_C23395:
+; Modifies Shiren's max hunger capacity by adding a signed delta.
+; Caps at 2000 ($07D0), floors at 0. Then heals hunger to the new max.
+; Input: wTemp00 = signed 16-bit delta
+; Output: maxHunger modified, hunger healed to new max
+ModifyShirenMaxHunger:
 	php
 	rep #$30 ;AXY->16
 	lda.l wShirenStatus.maxHunger
@@ -3667,13 +3679,17 @@ func_C23395:
 @lbl_C233AC:
 	sta.l wShirenStatus.maxHunger
 	stz.b wTemp00
-	jsl.l func_C233BE
+	jsl.l ModifyShirenHunger
 	lda.l wShirenStatus.maxHunger
 	sta.b wTemp00
 	plp
 	rtl
 
-func_C233BE:
+; Modifies Shiren's current hunger by adding a signed delta.
+; Caps at maxHunger, floors at 0. Shows starvation warnings at 200/100 hunger.
+; Input: wTemp00 = signed 16-bit delta
+; Output: hunger modified in-place
+ModifyShirenHunger:
 	php
 	rep #$30 ;AXY->16
 	lda.l wShirenStatus.hunger
@@ -3883,7 +3899,7 @@ func_C234DF:
 	beq @lbl_C23528
 	lda.b #$01
 	sta.b wTemp01
-	jsl.l func_C23579
+	jsl.l ApplyCharacterLevelGains
 	plp
 	rtl
 @lbl_C23528:
@@ -3929,7 +3945,11 @@ func_C234DF:
 	plp
 	rtl
 
-func_C23579:
+; Applies level-up stat gains to a character using lookup tables.
+; For Shiren ($13), uses complex tables (C2CAxx) to boost HP, strength, etc.
+; Input: wTemp00 = character index, wTemp01 = levels to gain (signed)
+; Output: Character stats modified
+ApplyCharacterLevelGains:
 	php
 	sep #$30 ;AXY->8
 	bankswitch 0x7E
@@ -4157,7 +4177,7 @@ func_C236CD:
 	sty.b wTemp00
 	pha
 	phy
-	call_savebank func_C2323C
+	call_savebank ModifyCharacterMaxHP
 	ply
 	pla
 	sta.b wTemp02
@@ -4211,7 +4231,7 @@ func_C236CD:
 	sta.b wTemp03
 	sty.b wTemp00
 	phy
-	call_savebank func_C2323C
+	call_savebank ModifyCharacterMaxHP
 	ply
 	lda.w wCharAttack,y
 	lsr a
@@ -7886,7 +7906,7 @@ func_C25152:
 	stx $00                                 ;C252C7
 	lda #$FF                                ;C252C9
 	sta $01                                 ;C252CB
-	jsl $C23579                             ;C252CD
+	jsl ApplyCharacterLevelGains                             ;C252CD
 @lbl_C252D1:
 	stz $00                                 ;C252D1
 	rts                                     ;C252D3
@@ -8130,7 +8150,7 @@ func_C25152:
 	lda #$0064                              ;C254CA
 	sta $00                                 ;C254CD
 	sep #$20                                ;C254CF
-	jsl $C233BE                             ;C254D1
+	jsl ModifyShirenHunger                             ;C254D1
 	bra @lbl_C254FD                         ;C254D5
 @lbl_C254D7:
 	dec a                                   ;C254D7
@@ -8139,13 +8159,13 @@ func_C25152:
 	lda #$012C                              ;C254DC
 	sta $00                                 ;C254DF
 	sep #$20                                ;C254E1
-	jsl $C233BE                             ;C254E3
+	jsl ModifyShirenHunger                             ;C254E3
 	bra @lbl_C254FD                         ;C254E7
 @lbl_C254E9:
 	rep #$30                                ;C254E9
 	lda #$0064                              ;C254EB
 	sta $00                                 ;C254EE
-	jsl $C23395                             ;C254F0
+	jsl ModifyShirenMaxHunger                             ;C254F0
 	ldx #$004E                              ;C254F4
 	lda $7E8945                             ;C254F7
 	bra @lbl_C25506                         ;C254FB

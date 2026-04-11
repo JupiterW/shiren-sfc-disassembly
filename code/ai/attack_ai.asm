@@ -318,7 +318,7 @@ func_C215AB:
 	sta.b wTemp01
 	stx.b wTemp00
 	phx
-	jsl.l func_C23579
+	jsl.l ApplyCharacterLevelGains
 	plx
 	stx.b wTemp00
 	lda.b #$01
@@ -2088,7 +2088,7 @@ DATA8_C21B97:
 	;sec
 	;sbc wCharLevel,x
 	;sta.b wTemp01
-	;jsl.l func_C23579
+	;jsl.l ApplyCharacterLevelGains
 	;stz.b wTemp00
 	;plp
 	;rtl
@@ -2457,7 +2457,7 @@ DATA8_C21B97:
 	;sty.b wTemp00
 	;lda.b #$01
 	;sta.b wTemp01
-	;jsl.l func_C23579
+	;jsl.l ApplyCharacterLevelGains
 	;stz.b wTemp00
 	;plp
 	;rtl

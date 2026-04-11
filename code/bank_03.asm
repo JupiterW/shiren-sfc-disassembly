@@ -13710,7 +13710,7 @@ func_C3D772:
 	rep #$20                                ;C3D87C
 	lda #$FF9C                              ;C3D87E
 	sta $00                                 ;C3D880
-	jsl $C233BE                             ;C3D882
+	jsl ModifyShirenHunger                             ;C3D882
 	lda #$0051                              ;C3D886
 	sta $00                                 ;C3D888
 .ACCU 8
@@ -14466,7 +14466,7 @@ func_C3DD85:
 	stx $00                                 ;C3DE47
 	lda #$01                                ;C3DE49
 	sta $01                                 ;C3DE4B
-	jsl $C23579                             ;C3DE4D
+	jsl ApplyCharacterLevelGains                             ;C3DE4D
 	rts                                     ;C3DE51
 	sep #$30                                ;C3DE52
 	ldx $00                                 ;C3DE54
@@ -14493,7 +14493,7 @@ func_C3DD85:
 	stx $00                                 ;C3DE7D
 	lda #$01                                ;C3DE7F
 	sta $01                                 ;C3DE81
-	jsl $C23579                             ;C3DE83
+	jsl ApplyCharacterLevelGains                             ;C3DE83
 	rts                                     ;C3DE87
 	sep #$20                                ;C3DE88
 	rep #$10                                ;C3DE8A

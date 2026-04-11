@@ -13,7 +13,7 @@ MonsterMeatUseEffect:
 	lda.b #$64
 	sta.b wTemp00
 	stz.b wTemp01
-	jsl.l func_C233BE
+	jsl.l ModifyShirenHunger
 	rts
 @lbl_C3089F:
 	jmp.w func_C315AE
@@ -323,7 +323,7 @@ BigBellySeedUseEffect:
 	rep #$20 ;A->16
 	lda.w #$0064
 	sta.b wTemp00
-	jsl.l func_C23395
+	jsl.l ModifyShirenMaxHunger
 	sep #$20 ;A->8
 	lda.b #$0A
 	sta.b wTemp02
@@ -341,7 +341,7 @@ LittleBellySeedUseEffect:
 	rep #$20 ;A->16
 	lda.w #$FF9C
 	sta.b wTemp00
-	jsl.l func_C23395
+	jsl.l ModifyShirenMaxHunger
 	sep #$20 ;A->8
 	lda.b #$0A
 	sta.b wTemp02
@@ -741,7 +741,7 @@ func_C30D11:
 	stz.b wTemp01
 	phx
 	phy
-	call_savebank func_C233BE
+	call_savebank ModifyShirenHunger
 	ply
 	plx
 	bra @lbl_C30DE9
@@ -921,7 +921,7 @@ MedicinalHerbUseEffect:
 	sta.b wTemp00
 	ldy.w #$0001
 	sty.b wTemp02
-	jsl.l func_C2323C
+	jsl.l ModifyCharacterMaxHP
 	lda.b #$13
 	sta.b wTemp00
 	ldy.w #$0001
@@ -967,7 +967,7 @@ RestorativeHerbUseEffect:
 	sta.b wTemp00
 	ldy.w #$0002
 	sty.b wTemp02
-	jsl.l func_C2323C
+	jsl.l ModifyCharacterMaxHP
 	lda.b #$13
 	sta.b wTemp00
 	ldy.w #$0002
@@ -1081,7 +1081,7 @@ StrengthHerbUseEffect:
 	jsl.l DisplayMessage
 	lda #$01                                ;C3103C
 	sta $00                                 ;C3103E
-	jsl $C232BF                             ;C31040
+	jsl ModifyShirenMaxStrength                             ;C31040
 	lda #$01                                ;C31044
 	sta $00                                 ;C31046
 	jsl ModifyShirenStrength                             ;C31048
@@ -1109,7 +1109,7 @@ StrengthHerbUseEffect:
 	jsl.l DisplayMessage
 	lda #$03                                ;C3107E
 	sta $00                                 ;C31080
-	jsl $C232BF                             ;C31082
+	jsl ModifyShirenMaxStrength                             ;C31082
 	lda #$03                                ;C31086
 	sta $00                                 ;C31088
 	jsl ModifyShirenStrength                             ;C3108A
@@ -1143,7 +1143,7 @@ HappinessHerbThrowEffect:
 	sep #$20                                ;C310BF
 	lda #$01                                ;C310C1
 	sta $01                                 ;C310C3
-	jsl $C23579                             ;C310C5
+	jsl ApplyCharacterLevelGains                             ;C310C5
 	rts                                     ;C310C9
 AngelSeedUseEffect:
 	sep #$20                                ;C310CA
@@ -1152,7 +1152,7 @@ AngelSeedUseEffect:
 	sep #$20                                ;C310D0
 	lda #$05                                ;C310D2
 	sta $01                                 ;C310D4
-	jsl $C23579                             ;C310D6
+	jsl ApplyCharacterLevelGains                             ;C310D6
 	rts                                     ;C310DA
 BitterHerbUseEffect:
 	sep #$20                                ;C310DB
@@ -1162,7 +1162,7 @@ BitterHerbThrowEffect:
 	sep #$20                                ;C310E1
 	lda #$FF                                ;C310E3
 	sta $01                                 ;C310E5
-	jsl $C23579                             ;C310E7
+	jsl ApplyCharacterLevelGains                             ;C310E7
 	rts                                     ;C310EB
 MisfortuneHerbUseEffect:
 	sep #$20                                ;C310EC
@@ -1172,7 +1172,7 @@ MisfortuneHerbThrowEffect:
 	sep #$20                                ;C310F2
 	lda #$FD                                ;C310F4
 	sta $01                                 ;C310F6
-	jsl $C23579                             ;C310F8
+	jsl ApplyCharacterLevelGains                             ;C310F8
 	rts                                     ;C310FC
 	sep #$20                                ;C310FD
 	lda #$13                                ;C310FF
@@ -1193,7 +1193,7 @@ MisfortuneHerbThrowEffect:
 	inc a                                   ;C3111A
 	sta $01                                 ;C3111B
 	phx                                     ;C3111D
-	jsl $C23579                             ;C3111E
+	jsl ApplyCharacterLevelGains                             ;C3111E
 	plx                                     ;C31122
 	stx $00                                 ;C31123
 	phx                                     ;C31125
@@ -1206,7 +1206,7 @@ MisfortuneHerbThrowEffect:
 	stz $03                                 ;C31131
 	stx $00                                 ;C31133
 	phx                                     ;C31135
-	jsl $C2323C                             ;C31136
+	jsl ModifyCharacterMaxHP                             ;C31136
 	plx                                     ;C3113A
 	stx $00                                 ;C3113B
 	phx                                     ;C3113D
@@ -1234,19 +1234,19 @@ IllLuckHerbThrowEffect:
 	lda #$9D                                ;C31164
 	sta $01                                 ;C31166
 	phx                                     ;C31168
-	jsl $C23579                             ;C31169
+	jsl ApplyCharacterLevelGains                             ;C31169
 	plx                                     ;C3116D
 	stx $00                                 ;C3116E
 	lda #$9D                                ;C31170
 	sta $01                                 ;C31172
 	phx                                     ;C31174
-	jsl $C23579                             ;C31175
+	jsl ApplyCharacterLevelGains                             ;C31175
 	plx                                     ;C31179
 	stx $00                                 ;C3117A
 	lda #$9D                                ;C3117C
 	sta $01                                 ;C3117E
 	phx                                     ;C31180
-	jsl $C23579                             ;C31181
+	jsl ApplyCharacterLevelGains                             ;C31181
 	plx                                     ;C31185
 	stx $00                                 ;C31186
 	phx                                     ;C31188
@@ -1278,7 +1278,7 @@ LifeHerbUseEffect:
 	lda.b #$05
 	sta.b wTemp02
 	stz.b wTemp03
-	jsl.l func_C2323C
+	jsl.l ModifyCharacterMaxHP
 	rts
 	sep #$20                                ;C311C3
 	lda #$65                                ;C311C5
@@ -1721,7 +1721,7 @@ DragonHerbUseEffect:
 	stx $00                                 ;C31552
 	lda #$01                                ;C31554
 	sta $01                                 ;C31556
-	jsl $C23579                             ;C31558
+	jsl ApplyCharacterLevelGains                             ;C31558
 	rts                                     ;C3155C
 SightHerbUseEffect:
 	rep #$20 ;A->16
@@ -1741,13 +1741,13 @@ SightHerbUseEffect:
 	jsl.l DisplayMessage
 	lda #$07D0                              ;C31585
 	sta $00                                 ;C31588
-	jsl $C233BE                             ;C3158A
+	jsl ModifyShirenHunger                             ;C3158A
 	ldx #$32                                ;C3158E
 	.db $00   ;C31590
 	jsr $15DF                               ;C31591
 	lda #$07D0                              ;C31594
 	sta $00                                 ;C31597
-	jsl $C233BE                             ;C31599
+	jsl ModifyShirenHunger                             ;C31599
 	rts                                     ;C3159D
 OnigiriUseEffect:
 	rep #$30 ;AXY->16
@@ -1769,7 +1769,7 @@ func_C315AE:
 	lda.w #$03E8
 func_C315BC:
 	sta.b wTemp00
-	jsl.l func_C233BE
+	jsl.l ModifyShirenHunger
 	jsl.l GetShirenCoreStatus
 	lda.b wTemp06
 	pha
@@ -1802,7 +1802,7 @@ func_C315DF:
 @lbl_C315F9:
 	pla                                     ;C315F9
 	sta $00                                 ;C315FA
-	jsl $C23395                             ;C315FC
+	jsl ModifyShirenMaxHunger                             ;C315FC
 	lda #$000A                              ;C31600
 	sta $02                                 ;C31603
 	jsl $C3E526                             ;C31605
@@ -1814,7 +1814,7 @@ func_C315DF:
 	jsl.l DisplayMessage
 	lda #$2710                              ;C31619
 	sta $00                                 ;C3161C
-	jsl $C233BE                             ;C3161E
+	jsl ModifyShirenHunger                             ;C3161E
 	sec                                     ;C31622
 	rts                                     ;C31623
 SpecialOnigiriUseEffect:
@@ -1916,7 +1916,7 @@ SpoiledOnigiriUseEffect:
 	jsl $C23BA6                             ;C316F4
 	lda #$012C                              ;C316F8
 	sta $00                                 ;C316FB
-	jsl $C233BE                             ;C316FD
+	jsl ModifyShirenHunger                             ;C316FD
 	lda #$004C                              ;C31701
 	sta $00                                 ;C31704
 	jsl.l DisplayMessage
@@ -2723,7 +2723,7 @@ BlessingScrollUseEffect:
 	bmi @lbl_C31D6F                         ;C31D5E
 	sta $00                                 ;C31D60
 	pha                                     ;C31D62
-	jsl $C232BF                             ;C31D63
+	jsl ModifyShirenMaxStrength                             ;C31D63
 	pla                                     ;C31D67
 	sta $00                                 ;C31D68
 	jsl ModifyShirenStrength                             ;C31D6A
@@ -2734,7 +2734,7 @@ BlessingScrollUseEffect:
 	jsl ModifyShirenStrength                             ;C31D72
 	pla                                     ;C31D76
 	sta $00                                 ;C31D77
-	jsl $C232BF                             ;C31D79
+	jsl ModifyShirenMaxStrength                             ;C31D79
 	rts                                     ;C31D7D
 	jsl $C283B3                             ;C31D7E
 	rts                                     ;C31D82
@@ -3020,7 +3020,7 @@ MisfortuneStaffUseEffect:
 	sta.b wTemp01
 	lda.b wTemp00
 	pha
-	jsl.l func_C23579
+	jsl.l ApplyCharacterLevelGains
 	pla
 	sta.b wTemp00
 	lda.b #$01
@@ -3480,7 +3480,7 @@ HandsFullScrollUseEffect:
 	lda #$03                                ;C32347
 	sta $02                                 ;C32349
 	stz $03                                 ;C3234B
-	jsl $C2323C                             ;C3234D
+	jsl ModifyCharacterMaxHP                             ;C3234D
 	lda #$13                                ;C32351
 	sta $00                                 ;C32353
 	lda #$03                                ;C32355
@@ -3489,7 +3489,7 @@ HandsFullScrollUseEffect:
 	jsl ModifyCharacterHP                             ;C3235B
 	lda #$03                                ;C3235F
 	sta $00                                 ;C32361
-	jsl $C232BF                             ;C32363
+	jsl ModifyShirenMaxStrength                             ;C32363
 	lda #$03                                ;C32367
 	sta $00                                 ;C32369
 	jsl ModifyShirenStrength                             ;C3236B
@@ -3537,13 +3537,13 @@ HandsFullScrollUseEffect:
 	lda #$FF                                ;C323D0
 	sta $02                                 ;C323D2
 	sta $03                                 ;C323D4
-	jsl $C2323C                             ;C323D6
+	jsl ModifyCharacterMaxHP                             ;C323D6
 	lda #$FF                                ;C323DA
 	sta $00                                 ;C323DC
 	jsl ModifyShirenStrength                             ;C323DE
 	lda #$FF                                ;C323E2
 	sta $00                                 ;C323E4
-	jsl $C232BF                             ;C323E6
+	jsl ModifyShirenMaxStrength                             ;C323E6
 	rts                                     ;C323EA
 	rep #$20                                ;C323EB
 	jsl $C36562                             ;C323ED
@@ -3629,7 +3629,7 @@ HandsFullScrollUseEffect:
 	rep #$20                                ;C324A8
 	lda #$0313                              ;C324AA
 	sta $00                                 ;C324AD
-	jsl $C23579                             ;C324AF
+	jsl ApplyCharacterLevelGains                             ;C324AF
 	rts                                     ;C324B3
 	rep #$20                                ;C324B4
 	lda #$00C4                              ;C324B6
@@ -3637,7 +3637,7 @@ HandsFullScrollUseEffect:
 	jsl.l DisplayMessage
 	lda #$03E8                              ;C324C0
 	sta $00                                 ;C324C3
-	jsl $C233BE                             ;C324C5
+	jsl ModifyShirenHunger                             ;C324C5
 	lda #$0013                              ;C324C9
 	sta $00                                 ;C324CC
 	lda #$00FF                              ;C324CE
@@ -3783,7 +3783,7 @@ func_C324F9:
 	lda #$01                                ;C325E4
 	sta $00                                 ;C325E6
 	phy                                     ;C325E8
-	jsl $C232BF                             ;C325E9
+	jsl ModifyShirenMaxStrength                             ;C325E9
 	ply                                     ;C325ED
 	lda #$01                                ;C325EE
 	sta $00                                 ;C325F0
@@ -3875,7 +3875,7 @@ func_C324F9:
 	lda #$FF                                ;C32694
 	sta $00                                 ;C32696
 	phy                                     ;C32698
-	jsl $C232BF                             ;C32699
+	jsl ModifyShirenMaxStrength                             ;C32699
 	ply                                     ;C3269D
 	lda #$FF                                ;C3269E
 	sta $00                                 ;C326A0
@@ -6050,7 +6050,7 @@ func_C335FE:
 	lda #$01                                ;C33641
 	sta $01                                 ;C33643
 	phy                                     ;C33645
-	jsl $C23579                             ;C33646
+	jsl ApplyCharacterLevelGains                             ;C33646
 	ply                                     ;C3364A
 @lbl_C3364B:
 	lda.b #$00

@@ -215,7 +215,7 @@ func_C10189:
 	jsl.l DisplayMessage
 	lda #$01                                ;C10262
 	sta $00                                 ;C10264
-	jsl $C232BF                             ;C10266
+	jsl ModifyShirenMaxStrength                             ;C10266
 	lda #$01                                ;C1026A
 	sta $00                                 ;C1026C
 	jsl ModifyShirenStrength                             ;C1026E
@@ -2522,7 +2522,7 @@ func_C1173F:
 	jsl ModifyShirenStrength                             ;C117BF
 	ldy #$FED4                              ;C117C3
 	sty $00                                 ;C117C6
-	jsl $C233BE                             ;C117C8
+	jsl ModifyShirenHunger                             ;C117C8
 	ldy #$012F                              ;C117CC
 	sty $00                                 ;C117CF
 	jsl.l DisplayMessage
@@ -3997,15 +3997,15 @@ func_C124BB:
 @lbl_C12574:
 	lda.b #$03
 	sta.b wTemp00
-	jsl.l func_C232BF
+	jsl.l ModifyShirenMaxStrength
 	lda.b #$13
 	sta.b wTemp00
 	ldy.w #$0005
 	sty.b wTemp02
-	jsl.l func_C2323C
+	jsl.l ModifyCharacterMaxHP
 	ldy.w #$2710
 	sty.b wTemp00
-	jsl.l func_C233BE
+	jsl.l ModifyShirenHunger
 	ldy.w #$076E
 	sty.b wTemp00
 	jsl.l DisplayMessage
@@ -4840,13 +4840,13 @@ func_C12ABD:
 	sta $00                                 ;C12D42
 	ldy #$FFF6                              ;C12D44
 	sty $02                                 ;C12D47
-	jsl $C2323C                             ;C12D49
+	jsl ModifyCharacterMaxHP                             ;C12D49
 	ldy #$D8F0                              ;C12D4D
 	sty $00                                 ;C12D50
-	jsl $C233BE                             ;C12D52
+	jsl ModifyShirenHunger                             ;C12D52
 	ldy #$0064                              ;C12D56
 	sty $00                                 ;C12D59
-	jsl $C233BE                             ;C12D5B
+	jsl ModifyShirenHunger                             ;C12D5B
 	ldy #$0788                              ;C12D5F
 	sty $00                                 ;C12D62
 	jsl.l DisplayMessage
@@ -5419,7 +5419,7 @@ func_C13228:
 	jsl.l func_C62B19
 	ldy.w #$2710
 	sty.b wTemp00
-	jsl.l func_C233BE
+	jsl.l ModifyShirenHunger
 	lda.b #$63
 	sta.b wTemp00
 	jsl.l ModifyShirenStrength
