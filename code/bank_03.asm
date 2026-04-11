@@ -10674,14 +10674,68 @@ Jumptable_C3D555:
 	pla
 	rts
 @lbl_C3D701:
-	.db $68,$83,$06,$8A,$83,$08,$A9,$41,$00,$85,$02,$22,$42,$26,$C6,$80   ;C3D701
-	.db $2B,$48,$A3,$03,$85,$00,$A3,$05,$85,$02,$22,$10,$64,$C3,$A5,$00   ;C3D711
-	.db $48,$10,$0D,$68,$68,$48,$22,$CE,$25,$C6,$68,$3A,$D0,$F7,$80,$10   ;C3D721
-	.db $22,$1C,$3B,$C2,$A6,$00,$30,$EB,$20,$72,$D7,$68,$68,$3A,$D0,$D1   ;C3D731  
-	.db $68,$7A,$A3,$01,$85,$00,$A9,$80,$00,$85,$02,$22,$A2,$5B,$C3,$A3   ;C3D741
-	.db $03,$85,$00,$A0,$0B,$84,$01,$A9,$4A,$06,$85,$02,$A3,$01,$85,$04   ;C3D751  
-	.db $85,$06,$22,$CA,$26,$C6,$68,$85,$02,$68,$85,$00,$22,$70,$31,$C3   ;C3D761  
-	.db $60                               ;C3D771
+	pla                                     ;C3D701
+	sta $06,s                               ;C3D702
+	txa                                     ;C3D704
+	sta $08,s                               ;C3D705
+	lda #$0041                              ;C3D707
+	sta $02                                 ;C3D70A
+	jsl $C62642                             ;C3D70C
+	bra @lbl_C3D73D                         ;C3D710
+@lbl_C3D712:
+	pha                                     ;C3D712
+	lda $03,s                               ;C3D713
+	sta $00                                 ;C3D715
+	lda $05,s                               ;C3D717
+	sta $02                                 ;C3D719
+	jsl $C36410                             ;C3D71B
+	lda $00                                 ;C3D71F
+	pha                                     ;C3D721
+	bpl @lbl_C3D731                         ;C3D722
+@lbl_C3D724:
+	pla                                     ;C3D724
+	pla                                     ;C3D725
+@lbl_C3D726:
+	pha                                     ;C3D726
+	jsl $C625CE                             ;C3D727
+	pla                                     ;C3D72B
+	dec a                                   ;C3D72C
+	bne @lbl_C3D726                         ;C3D72D
+	bra @lbl_C3D741                         ;C3D72F
+@lbl_C3D731:
+	jsl $C23B1C                             ;C3D731
+	ldx $00                                 ;C3D735
+	bmi @lbl_C3D724                         ;C3D737
+	jsr $D772                               ;C3D739
+	pla                                     ;C3D73C
+@lbl_C3D73D:
+	pla                                     ;C3D73D
+	dec a                                   ;C3D73E
+	bne @lbl_C3D712                         ;C3D73F
+@lbl_C3D741:
+	pla                                     ;C3D741
+	ply                                     ;C3D742
+	lda $01,s                               ;C3D743
+	sta $00                                 ;C3D745
+	lda #$0080                              ;C3D747
+	sta $02                                 ;C3D74A
+	jsl $C35BA2                             ;C3D74C
+	lda $03,s                               ;C3D750
+	sta $00                                 ;C3D752
+	ldy #$0B                                ;C3D754
+	sty $01                                 ;C3D756
+	lda #$064A                              ;C3D758
+	sta $02                                 ;C3D75B
+	lda $01,s                               ;C3D75D
+	sta $04                                 ;C3D75F
+	sta $06                                 ;C3D761
+	jsl $C626CA                             ;C3D763
+	pla                                     ;C3D767
+	sta $02                                 ;C3D768
+	pla                                     ;C3D76A
+	sta $00                                 ;C3D76B
+	jsl $C33170                             ;C3D76D
+	rts                                     ;C3D771
 
 func_C3D772:
 	stx.b wTemp00
