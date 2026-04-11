@@ -76,7 +76,7 @@ func_C3F69F:
 	jsl.l Random
 	pla
 	sta.b wTemp01
-	jsl.l func_C3E3CB
+	jsl.l MultiplyPackedBytesToWord
 	tya
 	clc
 	adc.b wTemp01

@@ -11774,7 +11774,7 @@ func_C48E3D:
 	sta.b wTemp00
 	lda.b wTemp05,s
 	sta.b wTemp01
-	jsl.l func_C3E3CB
+	jsl.l MultiplyPackedBytesToWord
 	lda.b wTemp00
 	clc
 	adc.b #$06
@@ -11783,7 +11783,7 @@ func_C48E3D:
 	sta.b wTemp00
 	lda.b wTemp06,s
 	sta.b wTemp01
-	jsl.l func_C3E3CB
+	jsl.l MultiplyPackedBytesToWord
 	lda.b wTemp00
 	clc
 	adc.b #$0C
@@ -11827,7 +11827,7 @@ func_C48E3D:
 	sta.b wTemp00
 	lda.b wTemp04,s
 	sta.b wTemp01
-	jsl.l func_C3E3CB
+	jsl.l MultiplyPackedBytesToWord
 	lda.b wTemp00
 	clc
 	adc.b wTemp02,s
@@ -14625,7 +14625,7 @@ func_C4A997:
 	sta.b wTemp00
 	lda.b #$12
 	sta.b wTemp01
-	jsl.l func_C3E3CB
+	jsl.l MultiplyPackedBytesToWord
 	lda.b wTemp00
 	clc
 	adc.b #$0B
@@ -15114,7 +15114,7 @@ func_C4AD8D:
 	sta.b wTemp00
 	lda.b #$10
 	sta.b wTemp01
-	jsl.l func_C3E3CB
+	jsl.l MultiplyPackedBytesToWord
 	lda.b wTemp00
 	clc
 	adc.b #$0B
@@ -15741,7 +15741,7 @@ func_C4B29C:
 	sta.b wTemp00
 	lda.b #$12
 	sta.b wTemp01
-	jsl.l func_C3E3CB
+	jsl.l MultiplyPackedBytesToWord
 	lda.b wTemp00
 	clc
 	adc.b #$0B

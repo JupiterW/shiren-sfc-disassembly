@@ -747,13 +747,13 @@ func_C305F3:
 	sep #$20 ;A->8
 	lda.b wTemp01,s
 	sta.b wTemp01
-	jsl.l func_C3E3CB
+	jsl.l MultiplyPackedBytesToWord
 	lda.b wTemp01
 	sta.b wTemp01,s
 	stx.b wTemp00
 	lda.b wTemp02,s
 	sta.b wTemp01
-	jsl.l func_C3E3CB
+	jsl.l MultiplyPackedBytesToWord
 	lda.b #$00
 	sta.b wTemp02,s
 	rep #$20 ;A->16
@@ -1629,7 +1629,7 @@ ItemBuySellPriceHandler_Arrow:
 	lda.l ArrowBuySellPrices,x
 	ora.b wTemp04
 	sta.b wTemp00
-	jsl.l func_C3E3CB
+	jsl.l MultiplyPackedBytesToWord
 	pla
 	pla
 	plp
@@ -4879,7 +4879,7 @@ func_C36410:
 	and.w #$00FF
 	ora.w #$1400
 	sta.b wTemp00
-	jsl.l func_C3E3CB
+	jsl.l MultiplyPackedBytesToWord
 	lda.b wTemp00
 	pha
 	ldy.w #$0012
@@ -8757,7 +8757,7 @@ func_C38011:
 	jsl.l func_C3F69F
 	plx
 	stx.b wTemp01
-	jsl.l func_C3E3CB
+	jsl.l MultiplyPackedBytesToWord
 	asl.b wTemp00
 	stz.b wTemp01
 	rep #$20 ;A->16
@@ -15199,7 +15199,7 @@ func_C3E3BC:
 	plp
 	rtl
 
-func_C3E3CB:
+MultiplyPackedBytesToWord:
 	php
 	sep #$20 ;A->8
 	lda.b wTemp01
