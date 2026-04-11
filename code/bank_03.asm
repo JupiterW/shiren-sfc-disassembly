@@ -3919,10 +3919,31 @@ func_C35E5A:
 	inc.w $BE5F
 	plp
 	rtl
-	.db $E2,$20,$C2,$10,$A0,$7F,$09,$B9,$5F,$A9,$29,$F0,$C9,$C0,$D0,$1A   ;C35EC9
-	.db $A9,$10,$99,$5F,$A9,$B9,$DF,$B3,$09,$80,$99,$DF,$B3,$C2,$20,$98   ;C35ED9
-	.db $E2,$20,$29,$C0,$AA,$A9,$80,$9D   ;C35EE9
-	.db $1B,$B4,$88,$10,$DA,$28,$6B       ;C35EF1
+	sep #$20                                ;C35EC9
+	rep #$10                                ;C35ECB
+	ldy #$097F                              ;C35ECD
+@lbl_C35ED0:
+	lda $A95F,y                             ;C35ED0
+	and #$F0                                ;C35ED3
+	cmp #$C0                                ;C35ED5
+	bne @lbl_C35EF3                         ;C35ED7
+	lda #$10                                ;C35ED9
+	sta $A95F,y                             ;C35EDB
+	lda $B3DF,y                             ;C35EDE
+	ora #$80                                ;C35EE1
+	sta $B3DF,y                             ;C35EE3
+	rep #$20                                ;C35EE6
+	tya                                     ;C35EE8
+	sep #$20                                ;C35EE9
+	and #$C0                                ;C35EEB
+	tax                                     ;C35EED
+	lda #$80                                ;C35EEE
+	sta $B41B,x                             ;C35EF0
+@lbl_C35EF3:
+	dey                                     ;C35EF3
+	bpl @lbl_C35ED0                         ;C35EF4
+	plp                                     ;C35EF6
+	rtl                                     ;C35EF7
 
 func_C35EF8:
 	php
