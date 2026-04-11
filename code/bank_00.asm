@@ -731,7 +731,7 @@ func_C0697C:
 	cmp.b #$FF
 	beq @lbl_C069BD
 	phx
-	jsl.l func_C30710
+	jsl.l GetItemDisplayInfo
 	plx
 	lda.b wTemp00
 	inc a
@@ -971,7 +971,7 @@ func_C06B49:
 	sta.w $833C,x
 	sep #$20 ;A->8
 	phx
-	call_savebank func_C30710
+	call_savebank GetItemDisplayInfo
 	plx
 	lda.b wTemp05
 	cmp.b #$E6

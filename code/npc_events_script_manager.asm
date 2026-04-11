@@ -2219,7 +2219,7 @@ func_C16C7D:
 	ply
 	sty.b wTemp00
 	phx
-	jsl.l func_C306F4
+	jsl.l FreeFloorItemSlot
 	plx
 	lda.l DATA8_C16BEB,x
 	sta.b wTemp00

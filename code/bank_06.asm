@@ -660,7 +660,7 @@ func_C6059A:
 	sep #$30 ;AXY->8
 	lda.b #$01
 	sta.l wShowMessageEffects
-	jsl.l func_C353B3
+	jsl.l InitFloorTileArrays
 	jsl.l func_C30000
 	jsl.l func_C20000
 	jsl.l func_80DF10
@@ -689,7 +689,7 @@ func_C605DC:
 func_C605FB:
 	lda.b #$FF
 	sta.l $7ED606
-	jsl.l func_C353D4
+	jsl.l ResetFloorData
 	jsl.l func_C602C1
 	jsl.l func_C3D2CC
 	lda.l wFloorNum
@@ -925,7 +925,7 @@ func_C6080E:
 	jsl.l func_C35C9A
 	jsl.l func_C16C7D
 	jsl.l func_C16B75
-	jsl.l func_C35488
+	jsl.l DetermineNextFloor
 	lda.l wShuffleDungeonIndex
 	cmp.b #$0A
 	bne @lbl_C60891
@@ -2826,7 +2826,7 @@ func_C62D0F:
 	stx.b wTemp00
 	phx
 	phy
-	call_savebank func_C30710
+	call_savebank GetItemDisplayInfo
 	ply
 	plx
 	lda.b wTemp00
@@ -3000,7 +3000,7 @@ func_C62D0F:
 	sep #$20 ;A->8
 	lda.l $7ED637
 	sta.b wTemp00
-	call_savebank func_C30710
+	call_savebank GetItemDisplayInfo
 	lda.b wTemp01
 	sta.l $7ED637
 	lda.b wTemp02
@@ -3024,7 +3024,7 @@ func_C62D0F:
 	sep #$20 ;A->8
 	lda.l $7ED63C
 	sta.b wTemp00
-	call_savebank func_C30710
+	call_savebank GetItemDisplayInfo
 	lda.b wTemp01
 	sta.l $7ED63C
 	lda.b wTemp02

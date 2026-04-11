@@ -10830,7 +10830,7 @@ func_C485FC:
 	bankswitch 0x7F
 	ldy.b w7f0000
 	phy
-	call_savebank func_C30710
+	call_savebank GetItemDisplayInfo
 	ply
 	lda.b w7f0002
 	pha
@@ -12639,7 +12639,7 @@ func_C495CD:
 	sep #$30 ;AXY->8
 	ldy.b wTemp00
 	phy
-	jsl.l func_C30710
+	jsl.l GetItemDisplayInfo
 	ply
 	lda.b wTemp06
 	bit.b #$04
@@ -13134,7 +13134,7 @@ func_C49BF7:
 	sta.w $ABF3
 	sta.b w7f0000
 	phx
-	call_savebank func_C30710
+	call_savebank GetItemDisplayInfo
 	lda.b w7f0004+1
 	sta.w $ABF7
 	lda.b w7f0006
@@ -13204,7 +13204,7 @@ func_C49BF7:
 	bne @lbl_C49CAD
 	lda.w $ABF3
 	sta.b w7f0000
-	call_savebank func_C30710
+	call_savebank GetItemDisplayInfo
 	lda.b w7f0002
 	cmp.b #$FF
 	bne @lbl_C49CAD
@@ -14386,7 +14386,7 @@ func_C4A7C2:
 	sta.b w00d2
 	ldx.b w00d0
 	stx.b wTemp00
-	jsl.l func_C30710
+	jsl.l GetItemDisplayInfo
 	ldx.b wTemp00
 	stx.b w00d1
 	ldx.b #$01
@@ -16827,7 +16827,7 @@ func_C4BC1F:
 	sta.b wTemp00
 	stz.w $D268
 	phy
-	call_savebank func_C30710
+	call_savebank GetItemDisplayInfo
 	ply
 	ldx.w #$0006
 @lbl_C4BC33:

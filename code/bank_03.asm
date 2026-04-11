@@ -337,7 +337,7 @@ func_C301F0:
 	rtl
 
 
-func_C30295:
+SpawnFloorItem:
 	php
 	sep #$30 ;AXY->8
 	bankswitch 0x7E
@@ -345,12 +345,12 @@ func_C30295:
 @lbl_C3029E:
 	lda.w wItemType,y
 	cmp.b #$FF
-	beq func_C302AA
+	beq InitFloorItemSlot
 	dey
 	bpl @lbl_C3029E
 ;C302A8
 	.db $80,$53
-func_C302AA:
+InitFloorItemSlot:
 	lda.b #$00
 	sta.w wItemTimesIdentified,y
 	lda.b wTemp00
@@ -422,7 +422,7 @@ func_C30351:
 	sep #$30 ;AXY->8
 	bankswitch 0x7E
 	ldy.b #$7F
-	jmp.w func_C302AA
+	jmp.w InitFloorItemSlot
 
 func_C3035D:
 	php
@@ -456,7 +456,7 @@ func_C3035D:
 	stz.b wTemp01
 @lbl_C30398:
 	stx.b wTemp00
-	jsl.l func_C30295
+	jsl.l SpawnFloorItem
 	plp
 	rtl
 
@@ -520,7 +520,7 @@ func_C303E9:
 	pla
 	sta.b wTemp00
 	jsr.w func_C3050C
-	jsl.l func_C30295
+	jsl.l SpawnFloorItem
 	plp
 	rtl
 
@@ -763,7 +763,7 @@ func_C305F3:
 	sta.b wTemp01
 	ldx.b #$E5
 	stx.b wTemp00
-	jsl.l func_C30295
+	jsl.l SpawnFloorItem
 	plp
 	rtl
 
@@ -862,7 +862,7 @@ func_C306C9:
 	plp
 	rtl
 
-func_C306F4:
+FreeFloorItemSlot:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -881,7 +881,7 @@ func_C306F4:
 	plp
 	rtl
 
-func_C30710:
+GetItemDisplayInfo:
 	php
 	sep #$30 ;AXY->8
 	bankswitch 0x7E
@@ -958,6 +958,9 @@ func_C30710:
 	plp
 	rtl
 
+; TODO: purpose unclear - checks item type of slot wTemp01; if type $7B and wShirenStatus.swordStrength==0
+; sets bit 7 on wTemp01; if type $E7 (Gitan) and wItemIsCursed==$0C sets wTemp01=$83. Flag setter for
+; special item types but exact semantic unknown.
 func_C3079A:
 	php
 	sep #$30 ;AXY->8
@@ -983,6 +986,9 @@ func_C3079A:
 	plp
 	rtl
 
+; TODO: purpose unclear - for item at wTemp01: if type != $68 returns wTemp06=1; if type == $68
+; saves its stats to scratch RAM $9360-$9366 and calls CheckIfItemNameEqualToTextEntry, returning
+; wTemp06=0 on match. Type $68 identity and call context unknown.
 func_C307C9:
 	php
 	sep #$30 ;AXY->8
@@ -1025,9 +1031,12 @@ func_C307C9:
 	plp                                     ;C30821
 	rtl                                     ;C30822
 
+; TODO: purpose unclear - RTL stub, no body. Possibly a placeholder or dead code.
 func_C30823:
 	rtl
 
+; TODO: purpose unclear - same logic as func_C307C9 but uses wTemp00 as item slot and returns
+; result in wTemp00 instead of wTemp06. Pair/variant of func_C307C9 with different register convention.
 func_C30824:
 	php
 	sep #$30 ;AXY->8
@@ -1077,7 +1086,7 @@ func_C30824:
 RestoreItemFromThrowTemp:
 	php
 	sep #$30 ;AXY->8
-	jsl.l func_C30295
+	jsl.l SpawnFloorItem
 	ldy.b wTemp00
 	bmi @lbl_C33A4E
 	bankswitch 0x7E
@@ -1265,7 +1274,7 @@ MergeItemModifications:
 	sta.l wItemModification1,x
 	lda.b wTemp01
 	sta.b wTemp00
-	jsl.l func_C306F4
+	jsl.l FreeFloorItemSlot
 	plp
 	rtl
 	php                                     ;C33B85
@@ -1423,7 +1432,7 @@ GetItemBuySellPrice:
 	asl a
 	pha
 	sep #$20 ;A->8
-	jsl.l func_C30710
+	jsl.l GetItemDisplayInfo
 	lda.b wTemp01
 	cmp.b #$E7
 	bne @lbl_C33CC5
@@ -2921,7 +2930,7 @@ ItemThrowEffectFunctionTable:
 
 .include "data/dungeon_item_spawn_tables.asm"
 
-func_C353B3:
+InitFloorTileArrays:
 	php
 	sep #$20 ;A->8
 	bankswitch 0x7E
@@ -2939,7 +2948,7 @@ func_C353B3:
 	plp
 	rtl
 
-func_C353D4:
+ResetFloorData:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -2953,7 +2962,7 @@ func_C353D4:
 	bmi @lbl_C353F5
 	sta.b wTemp00
 	phy
-	jsl.l func_C306F4
+	jsl.l FreeFloorItemSlot
 	ply
 @lbl_C353F5:
 	lda.b #$80
@@ -3000,7 +3009,7 @@ func_C353D4:
 func_C3544E:
 	php
 	sep #$30 ;AXY->8
-	jsl.l func_C35488
+	jsl.l DetermineNextFloor
 	jsr.w func_C35561
 	asl a
 	tax
@@ -3027,7 +3036,7 @@ Jumptable_C3546C:
 	.dw $596D
 	.dw $5980
 
-func_C35488:
+DetermineNextFloor:
 	php
 	sep #$30 ;AXY->8
 	jsl.l Get7ED5EC
@@ -4148,7 +4157,7 @@ func_C35EF8:
 	bmi @lbl_C35F26
 	sta.b wTemp00
 	phy
-	call_savebank func_C30710
+	call_savebank GetItemDisplayInfo
 	ply
 	lda.b wTemp01
 	cmp.b #$E7
@@ -13486,7 +13495,7 @@ Jumptable_C3D555:
 	jsr.w func_C3D772
 	stx.b wTemp00
 	phx
-	jsl.l func_C30710
+	jsl.l GetItemDisplayInfo
 	plx
 	ldy.b wTemp00
 	cpy.b #$0B
@@ -13573,7 +13582,7 @@ Jumptable_C3D555:
 func_C3D772:
 	stx.b wTemp00
 	phx
-	jsl.l func_C30710
+	jsl.l GetItemDisplayInfo
 	plx
 	ldy.b wTemp00
 	stx.b wTemp00
@@ -14197,7 +14206,7 @@ DATA8_C3DA1C:
 	rep #$20 ;A->16
 	phx
 	phy
-	jsl.l func_C306F4
+	jsl.l FreeFloorItemSlot
 	ply
 	plx
 	lda.b wTemp06
@@ -17148,7 +17157,7 @@ func_C3F2FD:
 	sep #$30 ;AXY->8
 	ldy.b wTemp00
 	phy
-	jsl.l func_C30710
+	jsl.l GetItemDisplayInfo
 	ply
 	lda.b wTemp01
 	cmp.b #$68
@@ -17186,7 +17195,7 @@ func_C3F336:
 	sep #$30 ;AXY->8
 	ldy.b wTemp00
 	phy
-	jsl.l func_C30710
+	jsl.l GetItemDisplayInfo
 	ply
 	lda.b wTemp01
 	cmp.b #$68

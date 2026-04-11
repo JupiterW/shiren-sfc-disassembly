@@ -42,7 +42,7 @@ func_C2001E:
 	bmi @lbl_C2004D
 	sta.b wTemp00
 	phx
-	jsl.l func_C306F4
+	jsl.l FreeFloorItemSlot
 	plx
 	lda.b #$FF
 	sta.l $7E8759,x
@@ -4409,7 +4409,7 @@ func_C23959:
 	sep #$30 ;AXY->8
 	ldy.b wTemp00
 	phy
-	jsl.l func_C30710
+	jsl.l GetItemDisplayInfo
 	ply
 	lda.b wTemp00
 	cmp.b #$04
@@ -4443,7 +4443,7 @@ func_C23959:
 	sta.b wTemp00
 	phx
 	phy
-	jsl.l func_C30710
+	jsl.l GetItemDisplayInfo
 	ply
 	plx
 	cpy.b wTemp01
@@ -4496,7 +4496,7 @@ func_C23959:
 	jsl.l DisplayMessage
 	ply
 	sty.b wTemp00
-	jsl.l func_C306F4
+	jsl.l FreeFloorItemSlot
 	stz.b wTemp00
 	plp
 	rtl
@@ -5074,7 +5074,7 @@ HandleContainedItemSelectionAction:
 	tax
 	stx.b wTemp00
 	phx
-	jsl.l func_C30710
+	jsl.l GetItemDisplayInfo
 	plx
 	lda.b wTemp01
 	cmp.b #$BC
@@ -6546,7 +6546,7 @@ func_C248B2:
 	pha
 	phx
 	phy
-	jsl.l func_C30710
+	jsl.l GetItemDisplayInfo
 	ply
 	plx
 	pla
@@ -7233,7 +7233,7 @@ func_C24D8B:
 	sta.b wTemp00
 	phx
 	phy
-	jsl.l func_C30710
+	jsl.l GetItemDisplayInfo
 	ply
 	plx
 	lda.b wTemp00
@@ -8720,7 +8720,7 @@ func_C2598A:
 	pha
 	phx
 	phy
-	jsl.l func_C30710
+	jsl.l GetItemDisplayInfo
 	ply
 	plx
 	pla
@@ -8773,7 +8773,7 @@ func_C2598A:
 	sty.b wTemp00
 	phy
 	pha
-	jsl.l func_C30710
+	jsl.l GetItemDisplayInfo
 	pla
 	ldx.b wTemp01
 	ldy.b wTemp00
@@ -8923,7 +8923,7 @@ func_C25AFD:
 	pha
 	ldy.b wTemp00
 	phy
-	jsl.l func_C30710
+	jsl.l GetItemDisplayInfo
 	ply
 	ldx.b wTemp00
 	cpx.b #$0B
@@ -10596,7 +10596,7 @@ func_C2801B:
 	lda.b #$FF
 	sta.l $7E8759,x
 	phx
-	jsl.l func_C306F4
+	jsl.l FreeFloorItemSlot
 	plx
 @lbl_C28065:
 	lda.l $7E85A1,x
@@ -10670,7 +10670,7 @@ func_C280D4:
 	lda.b #$FF
 	sta.l $7E8759,x
 	phx
-	jsl.l func_C306F4
+	jsl.l FreeFloorItemSlot
 	plx
 @lbl_C380F3:
 	lda.b #$00
@@ -12029,7 +12029,7 @@ func_C28A92:
 @lbl_C28A99:
 	sta.b wTemp00
 	phx
-	jsl.l func_C306F4
+	jsl.l FreeFloorItemSlot
 	plx
 	inx
 @lbl_C28AA2:
@@ -12329,7 +12329,7 @@ SortShirenInventory:
 	sep #$30 ;AXY->8
 	restorebank
 	; Reorder Shiren's inventory entries in wShirenStatus.itemAmounts using
-	; item metadata from func_C30710 and the priority table at DATA8_C28E40.
+	; item metadata from GetItemDisplayInfo and the priority table at DATA8_C28E40.
 	lda.b #$00
 	pha
 	pha
@@ -12343,7 +12343,7 @@ func_C28D34:
 	sta.b wTemp02,s
 	sta.b wTemp00
 	phx
-	call_savebank func_C30710
+	call_savebank GetItemDisplayInfo
 	plx
 	lda.b wTemp01
 	sta.b wTemp03,s
@@ -12355,7 +12355,7 @@ func_C28D4C:
 	lda.l wShirenStatus.itemAmounts,x
 	sta.b wTemp00
 	phx
-	call_savebank func_C30710
+	call_savebank GetItemDisplayInfo
 	plx
 	lda.b wTemp01
 	cmp.b wTemp03,s
@@ -12446,14 +12446,14 @@ func_C28DDC:
 	bmi @lbl_C28E34
 	sta.b wTemp00
 	phx
-	call_savebank func_C30710
+	call_savebank GetItemDisplayInfo
 	plx
 	ldy.b wTemp00
 	lda.l wShirenStatus.itemAmounts,x
 	sta.b wTemp00
 	phx
 	phy
-	call_savebank func_C30710
+	call_savebank GetItemDisplayInfo
 	ply
 	plx
 	lda.w DATA8_C28E40,y

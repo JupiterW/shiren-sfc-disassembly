@@ -4328,7 +4328,7 @@ func_81BF32:
 	cmp.b #$FF
 	beq @lbl_81BF6D
 	sta.b wTemp00
-	call_savebank func_C30710
+	call_savebank GetItemDisplayInfo
 	lda.b wTemp01
 	sec
 	sbc.b #$16
@@ -4370,7 +4370,7 @@ func_81BF32:
 	cmp.b #$FF
 	beq @lbl_81BFB8
 	sta.b wTemp00
-	call_savebank func_C30710
+	call_savebank GetItemDisplayInfo
 	lda.b wTemp01
 @lbl_81BFB8:
 	inc a

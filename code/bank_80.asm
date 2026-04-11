@@ -5860,7 +5860,7 @@ func_80B4DE:
 @lbl_80B50C:
 	sta.b wTemp00
 	phx
-	call_savebank func_C30710
+	call_savebank GetItemDisplayInfo
 	plx
 	lda.b wTemp05
 	cmp.b #$E6
@@ -5934,7 +5934,7 @@ func_80B569:
 @lbl_80B593:
 	sta.b wTemp00
 	phx
-	call_savebank func_C30710
+	call_savebank GetItemDisplayInfo
 	plx
 	lda.b wTemp05
 	cmp.b #$E6
@@ -6408,7 +6408,7 @@ func_80B8FE:
 @lbl_80B920:
 	sta.b wTemp00
 	phx
-	call_savebank func_C30710
+	call_savebank GetItemDisplayInfo
 	plx
 	lda.b wTemp05
 	cmp.b #$E6

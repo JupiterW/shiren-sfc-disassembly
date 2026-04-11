@@ -580,7 +580,7 @@ func_C262D5:
 	bmi @lbl_C2670D
 	sta.b wTemp00
 	phx
-	jsl.l func_C306F4
+	jsl.l FreeFloorItemSlot
 	plx
 @lbl_C2670D:
 	lda.l wCharXPos,x
@@ -737,7 +737,7 @@ func_C2679E:
 	lda.b wTemp01
 	sta.b wTemp00
 	phx
-	jsl.l func_C306F4
+	jsl.l FreeFloorItemSlot
 	plx
 	lda.b #$40
 	sta.b wTemp00

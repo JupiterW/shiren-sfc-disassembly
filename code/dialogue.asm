@@ -1527,7 +1527,7 @@ func_C10E35:
 @lbl_C10E3A:
 	sta.b wTemp00
 	phx
-	jsl.l func_C30710
+	jsl.l GetItemDisplayInfo
 	plx
 	lda.b wTemp00
 	cmp.b #$0B
@@ -3686,7 +3686,7 @@ func_C122A5:
 	phy
 	stx.b wTemp00
 	phx
-	jsl.l func_C30710
+	jsl.l GetItemDisplayInfo
 	plx
 	ldy.b wTemp00
 	stx.b wTemp00
@@ -3940,7 +3940,7 @@ func_C124BB:
 	sta.b wTemp00
 	stz.b wTemp01
 	stz.b wTemp02
-	jsl.l func_C30295
+	jsl.l SpawnFloorItem
 	lda.b wTemp00
 	bmi @lbl_C12510
 	pha
@@ -4556,7 +4556,7 @@ func_C12ABD:
 @lbl_C12AC2:
 	sta.b wTemp00
 	phx
-	jsl.l func_C30710
+	jsl.l GetItemDisplayInfo
 	plx
 	lda.b wTemp01
 	cmp.b #$E0
@@ -4578,7 +4578,7 @@ func_C12ABD:
 	jsl.l RemoveItemFromCategoryShortcutSlots
 	pla
 	sta.b wTemp00
-	jsl.l func_C306F4
+	jsl.l FreeFloorItemSlot
 	sec
 	rts
 
@@ -5604,7 +5604,7 @@ func_C13304:
 	lda.l wShirenStatus.itemAmounts,x
 	phx
 	sta.b wTemp00
-	jsl.l func_C30710
+	jsl.l GetItemDisplayInfo
 	lda.b wTemp02
 	cmp.b #$63
 	bne @lbl_C1341F
@@ -5673,7 +5673,7 @@ func_C13304:
 @lbl_C1349D:
 	lda.b wTemp01,s
 	sta.b wTemp00
-	jsl.l func_C30710
+	jsl.l GetItemDisplayInfo
 	lda.b wTemp02
 	cmp.b #$63
 	bne @lbl_C134C2
@@ -8564,7 +8564,7 @@ func_C14FD0:
 	ldx.b wTemp00
 	lda.l wShirenStatus.itemAmounts,x
 	sta.b wTemp00
-	jsl.l func_C30710
+	jsl.l GetItemDisplayInfo
 	lda.b wTemp00
 	cmp.b #$02
 	bne @lbl_C1508F

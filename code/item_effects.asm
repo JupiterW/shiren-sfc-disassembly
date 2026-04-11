@@ -702,7 +702,7 @@ func_C30D11:
 	sty.b wTemp00
 	phx
 	phy
-	call_savebank func_C30710
+	call_savebank GetItemDisplayInfo
 	ply
 	plx
 	lda.b wTemp05
@@ -844,7 +844,7 @@ func_C30D11:
 	cmp.b #$7B
 	beq @lbl_C30E65
 	stx.b wTemp00
-	jsl.l func_C306F4
+	jsl.l FreeFloorItemSlot
 	stz.b wTemp00
 	plp
 	rtl
@@ -1418,7 +1418,7 @@ func_C312DE:
 	cmp.b #$FF
 	bne @lbl_C312FD
 	sta.b wTemp00
-	jsl.l func_C306F4
+	jsl.l FreeFloorItemSlot
 @lbl_C312FD:
 	plp
 	rtl
@@ -2875,7 +2875,7 @@ BufusStaffUseEffect:
 	sty.b wTemp01
 	ldx.b wTemp05
 	stx.b wTemp02
-	jsl.l func_C30295
+	jsl.l SpawnFloorItem
 	ldx.b wTemp00
 	cpx.b #$FF
 	beq @lbl_C31EB3
@@ -4020,7 +4020,7 @@ JarUseEffect:
 	phy
 	phb
 	stx.b wTemp00
-	jsl.l func_C306F4
+	jsl.l FreeFloorItemSlot
 	jsl.l Random
 	lda.b wTemp00
 	cmp.b #$02
@@ -4558,7 +4558,7 @@ HidingJarUseEffect:
 	jsl.l func_C30192
 	plx
 	stx.b wTemp00
-	jsl.l func_C306F4
+	jsl.l FreeFloorItemSlot
 	pla
 	pla
 	stz.b wTemp00
@@ -4780,7 +4780,7 @@ func_C32CFE:
 	beq @lbl_C32D6A
 	stx.b wTemp00
 	phx
-	jsl.l func_C30710
+	jsl.l GetItemDisplayInfo
 	plx
 	lda.l wItemFuseAbility1,x
 	bit.b #$04
@@ -5397,7 +5397,7 @@ func_C33170:
 	pla
 	jsr.w func_C331B2
 	stx.b wTemp00
-	jsl.l func_C306F4
+	jsl.l FreeFloorItemSlot
 	plp
 	rtl
 @lbl_C3319B:
@@ -5819,7 +5819,7 @@ ExecutePreparedThrowEffect:
 	sep #$30 ;AXY->8
 	lda.b wTemp06,s
 	sta.b wTemp00
-	jsl.l func_C306F4
+	jsl.l FreeFloorItemSlot
 	bra @lbl_C334C5
 @lbl_C33495:
 	rep #$20 ;A->16

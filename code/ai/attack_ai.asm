@@ -416,7 +416,7 @@ func_C215AB:
 	;lda.l $7E894F,x
 	;sta.b wTemp00
 	;phx
-	;jsl.l func_C306F4
+	;jsl.l FreeFloorItemSlot
 	;plx
 	;lda.b #$40
 	;sta.b wTemp00
@@ -832,7 +832,7 @@ func_C215AB:
 	;beq @lbl_C21A18
 	;sta.b wTemp00
 	;phx
-	;jsl.l func_C30710
+	;jsl.l GetItemDisplayInfo
 	;plx
 	;lda.b wTemp01
 	;cmp.b #$9B
@@ -1295,7 +1295,7 @@ DATA8_C21B97:
 	lda.l wShirenStatus.itemAmounts,x
 	sta.b wTemp00
 	phx
-	jsl.l func_C306F4
+	jsl.l FreeFloorItemSlot
 	plx
 	lda.b #$AF
 	sta.b wTemp00
@@ -1843,7 +1843,7 @@ DATA8_C21B97:
 	;bmi @lbl_C2216F
 	;sta.b wTemp00
 	;phx
-	;jsl.l func_C306F4
+	;jsl.l FreeFloorItemSlot
 	;plx
 	;tya
 	;sta.l wCharHeldItem,x
@@ -1933,7 +1933,7 @@ DATA8_C21B97:
 	;sta.b wTemp00
 	;phx
 	;phy
-	;jsl.l func_C306F4
+	;jsl.l FreeFloorItemSlot
 	;ply
 	;plx
 	;tya
@@ -1949,7 +1949,7 @@ DATA8_C21B97:
 	;sty.b wTemp00
 	;phx
 	;phy
-	;jsl.l func_C30710
+	;jsl.l GetItemDisplayInfo
 	;ply
 	;plx
 	;lda.b wTemp00
