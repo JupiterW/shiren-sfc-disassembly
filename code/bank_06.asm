@@ -444,7 +444,7 @@ func_C6037B:
 	lda.b #Event0E
 	sta.b wTemp00
 	jsl.l _SetEvent
-	jsl.l func_C3001F
+	jsl.l RandomizeItemAppearances
 	lda.b #$00
 	sta.l wShowMessageEffects
 	lda.b #$01
@@ -661,7 +661,7 @@ func_C6059A:
 	lda.b #$01
 	sta.l wShowMessageEffects
 	jsl.l InitFloorTileArrays
-	jsl.l func_C30000
+	jsl.l ClearItemTable
 	jsl.l func_C20000
 	jsl.l func_80DF10
 	jsl.l func_80F2FE
@@ -695,7 +695,7 @@ func_C605FB:
 	lda.l wFloorNum
 	cmp.b #$01
 	bne @lbl_C60619
-	jsl.l func_C300D2
+	jsl.l PreIdentifyDungeonItems
 @lbl_C60619:
 	jsl.l func_C332D7
 	lda.l $7ED5ED

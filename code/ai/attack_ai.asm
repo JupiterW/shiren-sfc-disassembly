@@ -357,7 +357,7 @@ func_C215AB:
 	;lda.b #$40
 	;sta.b wTemp00
 	;phx
-	;jsl.l func_C3035D
+	;jsl.l SpawnFloorItemWithRandomMod
 	;plx
 	;lda.b wTemp00
 	;bmi @lbl_C216C5
@@ -421,7 +421,7 @@ func_C215AB:
 	;lda.b #$40
 	;sta.b wTemp00
 	;phx
-	;jsl.l func_C3035D
+	;jsl.l SpawnFloorItemWithRandomMod
 	;plx
 	;lda.b wTemp00
 	;sta.l $7E894F,x
@@ -1114,7 +1114,7 @@ DATA8_C21B97:
 	sta.b wTemp01
 	stz.b wTemp02
 	phx
-	jsl.l func_C30351
+	jsl.l SpawnItemAtTempSlot
 	plx
 	lda.b wTemp00
 	bmi @lbl_C21C5F
@@ -1300,7 +1300,7 @@ DATA8_C21B97:
 	lda.b #$AF
 	sta.b wTemp00
 	phx
-	jsl.l func_C3035D
+	jsl.l SpawnFloorItemWithRandomMod
 	plx
 	lda.b wTemp00
 	sta.l wShirenStatus.itemAmounts,x
@@ -1437,7 +1437,7 @@ DATA8_C21B97:
 	sta.b wTemp01
 	stz.b wTemp02
 	phx
-	jsl.l func_C30351
+	jsl.l SpawnItemAtTempSlot
 	plx
 	lda.b wTemp00
 	bmi @lbl_C21EA7
@@ -2128,7 +2128,7 @@ DATA8_C21B97:
 	sta.b wTemp01
 	stz.b wTemp02
 	phx
-	jsl.l func_C30351
+	jsl.l SpawnItemAtTempSlot
 	plx
 	lda.b wTemp00
 	bmi @lbl_C22361

@@ -311,7 +311,7 @@ AmnesiaHerbUseEffect:
 @lbl_C30A8D:
 	dex 
 	bpl @lbl_C30A79
-	jsl.l func_C300D2
+	jsl.l PreIdentifyDungeonItems
 	rts
 
 ;c30a95
@@ -3676,7 +3676,7 @@ func_C324F9:
 	ply
 	sty.b wTemp00
 	phy
-	jsl.l func_C30192
+	jsl.l IdentifyItem
 	ply
 	lda.b #$10
 	sta.b wTemp00
@@ -4035,7 +4035,7 @@ JarUseEffect:
 	jsl $C3035D                             ;C327AE
 	.db $80,$04   ;C327B2
 @lbl_C327B4:
-	jsl.l func_C3041A
+	jsl.l SpawnRandomDungeonFloorItem
 	ldx.b wTemp00
 	plb
 	ply
@@ -4555,7 +4555,7 @@ HidingJarUseEffect:
 	plx
 	stx.b wTemp00
 	phx
-	jsl.l func_C30192
+	jsl.l IdentifyItem
 	plx
 	stx.b wTemp00
 	jsl.l FreeFloorItemSlot

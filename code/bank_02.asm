@@ -203,7 +203,7 @@ func_C200E1:
 	beq @lbl_C201A1
 	phx
 	phy
-	call_savebank func_C303D0
+	call_savebank SpawnRandomFloorItemOrGitan
 	ply
 	plx
 	lda.b wTemp00
@@ -491,7 +491,7 @@ DATA8_C20277:
 	rts                                     ;C20475
 	sep #$30 ;AXY->8
 	phy
-	call_savebank func_C3041A
+	call_savebank SpawnRandomDungeonFloorItem
 	ply
 	lda.b wTemp00
 	sta.w wCharHeldItem,y
@@ -665,7 +665,7 @@ DATA8_C20277:
 	lda.l DATA8_C20611,x
 	sta.b wTemp00
 	phy
-	call_savebank func_C3035D
+	call_savebank SpawnFloorItemWithRandomMod
 	ply
 @lbl_C205EE:
 	lda.b wTemp00
@@ -681,7 +681,7 @@ DATA8_C20277:
 	lda.b #$01
 	sta.b wTemp00
 	phy
-	call_savebank func_C303E9
+	call_savebank SpawnFloorItemFromTable
 	ply
 	bra @lbl_C205EE
 
@@ -13244,7 +13244,7 @@ func_C2939C:
 	phb
 	stz.b wTemp02
 	phx
-	jsl.l func_C30351
+	jsl.l SpawnItemAtTempSlot
 	plx
 	lda.b wTemp00
 	bra @lbl_C29404
@@ -13284,7 +13284,7 @@ func_C2942A:
 	sta.b wTemp01
 	stz.b wTemp02
 	phx
-	jsl.l func_C30351
+	jsl.l SpawnItemAtTempSlot
 	plx
 	lda.l wCharDir,x
 	sta.b wTemp01

@@ -13157,7 +13157,7 @@ func_C49BF7:
 	lda.b w7f0000+1
 	cmp.b #$68
 	beq @lbl_C49C42
-	jsl.l func_C301CE
+	jsl.l FindFreeCustomNameSlot
 	lda.b w7f0000
 	bpl @lbl_C49C42
 ;C49C3F  

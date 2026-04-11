@@ -1875,7 +1875,7 @@ NPCScriptFunction_C168E8:
 	bpl @lbl_C16937
 	lda.b #$AF
 	sta.b wTemp00
-	jsl.l func_C3035D
+	jsl.l SpawnFloorItemWithRandomMod
 	lda.b wTemp00
 	bmi @lbl_C16937
 	jsl.l func_C10157
@@ -2003,7 +2003,7 @@ NPCScriptFunction_C16A7D:
 	lda.b #$02
 	sta.b wTemp00
 	phx
-	jsl.l func_C303E9
+	jsl.l SpawnFloorItemFromTable
 	plx
 	ldy.b wTemp00
 	bmi @lbl_C16AB8
@@ -2054,7 +2054,7 @@ NPCScriptFunction_C16B2B:
 	lda.b #$01
 	sta.b wTemp00
 	phx
-	jsl.l func_C303E9
+	jsl.l SpawnFloorItemFromTable
 	plx
 	ldy.b wTemp00
 	bmi @lbl_C16B66

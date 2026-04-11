@@ -742,7 +742,7 @@ func_C2679E:
 	lda.b #$40
 	sta.b wTemp00
 	phx
-	jsl.l func_C3035D
+	jsl.l SpawnFloorItemWithRandomMod
 	plx
 	lda.b wTemp00
 	sta.b wTemp02

@@ -1,7 +1,7 @@
 .bank $03
 .org $0000 ;$C30000
 
-func_C30000:
+ClearItemTable:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -20,7 +20,7 @@ func_C30000:
 	plp
 	rtl
 
-func_C3001F:
+RandomizeItemAppearances:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -84,27 +84,27 @@ func_C3001F:
 	sta.b wTemp00
 	lda.b #$3C
 	sta.b wTemp01
-	jsl.l func_C30142
+	jsl.l ShuffleItemAppearanceRange
 	lda.b #$56
 	sta.b wTemp00
 	lda.b #$6F
 	sta.b wTemp01
-	jsl.l func_C30142
+	jsl.l ShuffleItemAppearanceRange
 	lda.b #$7C
 	sta.b wTemp00
 	lda.b #$86
 	sta.b wTemp01
-	jsl.l func_C30142
+	jsl.l ShuffleItemAppearanceRange
 	lda.b #$93
 	sta.b wTemp00
 	lda.b #$A1
 	sta.b wTemp01
-	jsl.l func_C30142
+	jsl.l ShuffleItemAppearanceRange
 	lda.b #$B4
 	sta.b wTemp00
 	lda.b #$C5
 	sta.b wTemp01
-	jsl.l func_C30142
+	jsl.l ShuffleItemAppearanceRange
 	ldx.b #$E5
 @lbl_C300C3:
 	lda.l wItemHasCustomName,x
@@ -115,7 +115,7 @@ func_C3001F:
 	plp
 	rtl
 
-func_C300D2:
+PreIdentifyDungeonItems:
 	php
 	sep #$30 ;AXY->8
 	jsl.l GetCurrentDungeon
@@ -163,7 +163,7 @@ func_C300D2:
 	plp
 	rtl
 
-func_C30142:
+ShuffleItemAppearanceRange:
 	php
 	sep #$30 ;AXY->8
 	bankswitch 0x7E
@@ -205,7 +205,7 @@ func_C30142:
 	plp                                     ;C30190
 	rtl                                     ;C30191
 
-func_C30192:
+IdentifyItem:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -238,7 +238,7 @@ func_C30192:
 	plp
 	rtl
 
-func_C301CE:
+FindFreeCustomNameSlot:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -259,8 +259,9 @@ func_C301CE:
 	plp
 	rtl
 
+; TODO: purpose unclear - custom name buffer pointer setup; for non-$68 items finds wItemCustomNamesBuffer slot and computes buffer address in wTemp00/wTemp02; for type $68 stores slot to $7E:935F and points to scratch buffer at $9360
 func_C301F0:
-	php 
+	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
 	lda.l wItemType,x
@@ -314,8 +315,9 @@ func_C301F0:
 	sta wTemp00
 	plp 
 	rtl
+; TODO: purpose unclear - applies rename scratch buffer to item; reads $7E:935F slot reference and writes $9360-$9365 scratch data (mod1, mod2, fuse1, fuse2, cursed, timesIdentified) back into actual item stats
 @lbl_C30259:
-	php 
+	php
 	sep #$30 ;AXY->8
 	lda.l $7E935F
 	bmi @lbl_C30293
@@ -417,14 +419,14 @@ ItemDefaultFuseAbility2ByType:
 	.db $00,$04                           ;C30349
 	.db $00,$00,$00,$00,$00,$00           ;C3034B
 
-func_C30351:
+SpawnItemAtTempSlot:
 	php
 	sep #$30 ;AXY->8
 	bankswitch 0x7E
 	ldy.b #$7F
 	jmp.w InitFloorItemSlot
 
-func_C3035D:
+SpawnFloorItemWithRandomMod:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -479,22 +481,22 @@ UNREACH_C303A0:
 	.db $03,$FD,$FD,$FD                   ;C303CB
 	.db $FD                               ;C303CF  
 
-func_C303D0:
+SpawnRandomFloorItemOrGitan:
 	php
 	sep #$30 ;AXY->8
 	jsl.l Random
 	lda.b wTemp00
 	cmp.b #$40
 	bcc @lbl_C303E3
-	jsl.l func_C3041A
+	jsl.l SpawnRandomDungeonFloorItem
 	plp
 	rtl
 @lbl_C303E3:
-	jsl.l func_C305F3
+	jsl.l SpawnFloorGitan
 	plp
 	rtl
 
-func_C303E9:
+SpawnFloorItemFromTable:
 	php
 	sep #$30 ;AXY->8
 	lda.b wTemp00
@@ -507,12 +509,12 @@ func_C303E9:
 	cpx.b #$E0
 	beq @lbl_C3040E
 	phx
-	jsr.w func_C3059A
+	jsr.w CheckItemSpawnGated
 	plx
 	lda.b wTemp00
 	beq @lbl_C303EF
 	stx.b wTemp00
-	jsl.l func_C3035D
+	jsl.l SpawnFloorItemWithRandomMod
 	pla
 	plp
 	rtl
@@ -524,19 +526,19 @@ func_C303E9:
 	plp
 	rtl
 
-func_C3041A:
+SpawnRandomDungeonFloorItem:
 	php
 	sep #$30 ;AXY->8
 @lbl_C3041D:
-	jsr.w func_C304B4
+	jsr.w RollDungeonItemType
 	ldx.b wTemp00
 	phx
-	jsr.w func_C3059A
+	jsr.w CheckItemSpawnGated
 	plx
 	lda.b wTemp00
 	beq @lbl_C3041D
 	stx.b wTemp00
-	jsl.l func_C3035D
+	jsl.l SpawnFloorItemWithRandomMod
 	plp
 	rtl
 
@@ -592,7 +594,7 @@ func_C30433:
 @lbl_C304B2:
 	bra func_C304DE
 
-func_C304B4:
+RollDungeonItemType:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -631,6 +633,7 @@ func_C304DE:
 	plp
 	rts
 
+; TODO: purpose unclear - category-specific item picker; takes category in wTemp00, looks up DATA8_C30559 for matching dungeon entry, rolls random item from sub-table, returns item type in wTemp01 and $E0 in wTemp00
 func_C3050C:
 	php
 	sep #$30 ;AXY->8
@@ -692,7 +695,7 @@ UNREACH_C3055D:
 	.db $A7,$52,$27,$04,$01,$F5,$52,$32,$04,$02,$59,$53,$2D,$FF,$FF,$61   ;C30588  
 	.db $51,$14                           ;C30598  
 
-func_C3059A:
+CheckItemSpawnGated:
 	php
 	sep #$30 ;AXY->8
 	lda.b wTemp00
@@ -736,7 +739,7 @@ func_C3059A:
 	.db $B0,$D6   ;C305EF
 	.db $80,$DA   ;C305F1
 
-func_C305F3:
+SpawnFloorGitan:
 	php
 	rep #$20 ;A->16
 	sep #$10 ;XY->8
@@ -767,10 +770,11 @@ func_C305F3:
 	plp
 	rtl
 
+; TODO: purpose unclear - calls SpawnFloorGitan then negates mod1/mod2 (bit-inverted with $FFFF overflow cap); possibly spawns a large or special Gitan variant
 func_C30630:
 	php
 	sep #$30 ;AXY->8
-	jsl.l func_C305F3
+	jsl.l SpawnFloorGitan
 	ldx.b wTemp00
 	lda.l wItemModification2,x
 	xba
@@ -789,7 +793,7 @@ func_C30630:
 	plp
 	rtl
 
-func_C30659:
+UpgradeItemModification:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -799,7 +803,7 @@ func_C30659:
 	inc a
 	sta.l wItemModification1,x
 @lbl_C3066B:
-	jsl.l func_C30192
+	jsl.l IdentifyItem
 	plp
 	rtl
 
@@ -9602,7 +9606,7 @@ func_C389AA:
 	ldx.b wTemp00
 	phx
 	phy
-	jsl.l func_C303D0
+	jsl.l SpawnRandomFloorItemOrGitan
 	ply
 	plx
 	lda.b wTemp00
@@ -11629,7 +11633,7 @@ func_C3988B:
 	bmi @lbl_C398BF
 	phx
 	phy
-	jsl.l func_C303D0
+	jsl.l SpawnRandomFloorItemOrGitan
 	ply
 	plx
 	lda.b wTemp00
@@ -12144,14 +12148,14 @@ func_C39AAA:
 	bmi @lbl_C39C73
 	phx
 	phy
-	jsl.l func_C305F3
+	jsl.l SpawnFloorGitan
 	ply
 	plx
 	bra @lbl_C39C7B
 @lbl_C39C73:
 	phx
 	phy
-	jsl.l func_C3041A
+	jsl.l SpawnRandomDungeonFloorItem
 	ply
 	plx
 @lbl_C39C7B:
@@ -12531,7 +12535,7 @@ func_C39E1D:
 	bne @lbl_C39F3D
 	phx
 	phy
-	jsl.l func_C305F3
+	jsl.l SpawnFloorGitan
 	ply
 	plx
 	lda.b wTemp00
@@ -17207,7 +17211,7 @@ func_C3F336:
 	bit.b #$04
 	bne @lbl_C3F35D
 	phy
-	jsl.l func_C301CE
+	jsl.l FindFreeCustomNameSlot
 	ply
 	lda.b wTemp00
 	bmi @lbl_C3F385

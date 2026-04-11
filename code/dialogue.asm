@@ -127,8 +127,8 @@ func_C10189:
 	php
 	sep #$30 ;AXY->8
 	jsl.l func_C28A92
-	jsl.l func_C3001F
-	jsl.l func_C300D2
+	jsl.l RandomizeItemAppearances
+	jsl.l PreIdentifyDungeonItems
 	plp
 	rts
 	php                                     ;C1019A
@@ -3710,7 +3710,7 @@ func_C122CA:
 	ldx.b wTemp00
 	lda.l DATA8_C122EB,x
 	sta.b wTemp00
-	jsl.l func_C3035D
+	jsl.l SpawnFloorItemWithRandomMod
 	ldx.b wTemp00
 	bmi @lbl_C122E7
 	lda.b #$01
@@ -3950,7 +3950,7 @@ func_C124BB:
 	pla
 	sta.b wTemp00
 	pha
-	jsl.l func_C30192
+	jsl.l IdentifyItem
 	pla
 	sta.b wTemp00
 	jsl.l func_C10157
@@ -5725,7 +5725,7 @@ func_C13304:
 	bcc @lbl_C1353F
 	lda.b wTemp01,s
 	sta.b wTemp00
-	jsl.l func_C30659
+	jsl.l UpgradeItemModification
 	ldy.w #$07D9
 	sty.b wTemp00
 	jsl.l DisplayMessage
@@ -6657,7 +6657,7 @@ UNREACH_C13D7C:
 	jsl.l DisplayMessage
 	lda.b #$AF
 	sta.b wTemp00
-	jsl.l func_C3035D
+	jsl.l SpawnFloorItemWithRandomMod
 	lda.b wTemp00
 	bmi @lbl_C13E1D
 	sta.b wTemp02
@@ -6679,7 +6679,7 @@ UNREACH_C13D7C:
 	jsl.l DisplayMessage
 	lda.b #$AF
 	sta.b wTemp00
-	jsl.l func_C3035D
+	jsl.l SpawnFloorItemWithRandomMod
 	lda.b wTemp00
 	bmi @lbl_C13E5E
 	sta.b wTemp02
@@ -6967,7 +6967,7 @@ func_C140E5:
 	ldy #$0001                              ;C1415D
 @lbl_C14160:
 	sty.b wTemp00
-	jsl.l func_C303E9
+	jsl.l SpawnFloorItemFromTable
 	lda.b wTemp00
 	bmi @lbl_C1417D
 	sta.b wTemp02
