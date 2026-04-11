@@ -5012,7 +5012,7 @@ func_C36549:
 	sta $00                                 ;C36577
 	phy                                     ;C36579
 	phb                                     ;C3657A
-	jsl $C20F35                             ;C3657B
+	jsl HandleCharacterDeath                             ;C3657B
 	plb                                     ;C3657F
 	ply                                     ;C36580
 	jsl $C36BCE                             ;C36581
@@ -5607,7 +5607,7 @@ func_C36928:
 	pha                                     ;C36975
 	stx $00                                 ;C36976
 	phy                                     ;C36978
-	jsl $C20F35                             ;C36979
+	jsl HandleCharacterDeath                             ;C36979
 	ply                                     ;C3697D
 	sty $00                                 ;C3697E
 	jsl $C210AC                             ;C36980
@@ -5718,7 +5718,7 @@ func_C36928:
 	sty $00                                 ;C36A41
 	phx                                     ;C36A43
 	phy                                     ;C36A44
-	jsl $C20F35                             ;C36A45
+	jsl HandleCharacterDeath                             ;C36A45
 	ply                                     ;C36A49
 	plx                                     ;C36A4A
 @lbl_C36A4B:
@@ -14156,7 +14156,7 @@ DATA8_C3DA1C:
 	lda $01,s                               ;C3DC0B
 	sta $00                                 ;C3DC0D
 	phx                                     ;C3DC0F
-	jsl $C20F35                             ;C3DC10
+	jsl HandleCharacterDeath                             ;C3DC10
 	plx                                     ;C3DC14
 	stx $00                                 ;C3DC15
 	lda #$80                                ;C3DC17
@@ -14271,7 +14271,7 @@ DATA8_C3DA1C:
 	lda.b wTemp01,s
 	sta.b wTemp00
 	phx
-	jsl.l func_C20F35
+	jsl.l HandleCharacterDeath
 	plx
 	stx.b wTemp00
 	lda.b #$80
@@ -14303,7 +14303,7 @@ DATA8_C3DA1C:
 	jsl $C282EB                             ;C3DD1B
 	pla                                     ;C3DD1F
 	sta $00                                 ;C3DD20
-	jsl $C20F35                             ;C3DD22
+	jsl HandleCharacterDeath                             ;C3DD22
 	rts                                     ;C3DD26
 	ldy #$0001                              ;C3DD27
 	phy                                     ;C3DD2A
@@ -14375,7 +14375,7 @@ func_C3DD85:
 	lda $02,s                               ;C3DDA0
 	sta $00                                 ;C3DDA2
 	phx                                     ;C3DDA4
-	jsl $C20F35                             ;C3DDA5
+	jsl HandleCharacterDeath                             ;C3DDA5
 	plx                                     ;C3DDA9
 	lda #$E0                                ;C3DDAA
 	sta $00                                 ;C3DDAC
@@ -14402,7 +14402,7 @@ func_C3DD85:
 	jsl.l func_C62550
 	pla
 	sta.b wTemp00
-	jsl.l func_C20F35
+	jsl.l HandleCharacterDeath
 	rts
 	sep #$30                                ;C3DDDE
 	ldx $00                                 ;C3DDE0
@@ -14460,7 +14460,7 @@ func_C3DD85:
 	jsl $C282EB                             ;C3DE3B
 	plx                                     ;C3DE3F
 	stx $00                                 ;C3DE40
-	jsl $C20F35                             ;C3DE42
+	jsl HandleCharacterDeath                             ;C3DE42
 	rts                                     ;C3DE46
 @lbl_C3DE47:
 	stx $00                                 ;C3DE47
@@ -14487,7 +14487,7 @@ func_C3DD85:
 	jsl $C282EB                             ;C3DE71
 	plx                                     ;C3DE75
 	stx $00                                 ;C3DE76
-	jsl $C20F35                             ;C3DE78
+	jsl HandleCharacterDeath                             ;C3DE78
 	rts                                     ;C3DE7C
 @lbl_C3DE7D:
 	stx $00                                 ;C3DE7D
@@ -14557,7 +14557,7 @@ func_C3DD85:
 @lbl_C3DF06:
 	pla                                     ;C3DF06
 	sta $00                                 ;C3DF07
-	jsl $C20F35                             ;C3DF09
+	jsl HandleCharacterDeath                             ;C3DF09
 	rts                                     ;C3DF0D
 	sep #$20                                ;C3DF0E
 	lda #$13                                ;C3DF10

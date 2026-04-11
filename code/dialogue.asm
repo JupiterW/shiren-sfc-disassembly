@@ -268,7 +268,7 @@ func_C10189:
 	jsl $C282EB                             ;C102D1
 	ply                                     ;C102D5
 	sty $00                                 ;C102D6
-	jsl $C20F35                             ;C102D8
+	jsl HandleCharacterDeath                             ;C102D8
 	lda #$0901                              ;C102DC
 	sta $00                                 ;C102DF
 .ACCU 8
@@ -350,7 +350,7 @@ func_C10189:
 	jsl $C282EB                             ;C10383
 	ply                                     ;C10387
 	sty $00                                 ;C10388
-	jsl $C20F35                             ;C1038A
+	jsl HandleCharacterDeath                             ;C1038A
 	rts                                     ;C1038E
 	sep #$20                                ;C1038F
 	rep #$10                                ;C10391
@@ -669,7 +669,7 @@ func_C104AB:
 	jsl.l DisplayMessage
 	plx
 	stx.b wTemp00
-	jsl.l func_C20F35
+	jsl.l HandleCharacterDeath
 	lda.b #$13
 	sta.b wTemp00
 	lda.b #$32
@@ -2129,7 +2129,7 @@ func_C111EA:
 	jsl $C282EB                             ;C11415
 	pla                                     ;C11419
 	sta $00                                 ;C1141A
-	jsl $C20F35                             ;C1141C
+	jsl HandleCharacterDeath                             ;C1141C
 	jsl $C62405                             ;C11420
 	lda $03,s                               ;C11424
 	sta $00                                 ;C11426
@@ -2156,7 +2156,7 @@ func_C111EA:
 	jsl $C282EB                             ;C11456
 	pla                                     ;C1145A
 	sta $00                                 ;C1145B
-	jsl $C20F35                             ;C1145D
+	jsl HandleCharacterDeath                             ;C1145D
 	jsl $C62405                             ;C11461
 	lda $03,s                               ;C11465
 	sta $00                                 ;C11467
@@ -2183,7 +2183,7 @@ func_C111EA:
 	jsl $C282EB                             ;C11496
 	pla                                     ;C1149A
 	sta $00                                 ;C1149B
-	jsl $C20F35                             ;C1149D
+	jsl HandleCharacterDeath                             ;C1149D
 	jsl $C62405                             ;C114A1
 	lda $03,s                               ;C114A5
 	sta $00                                 ;C114A7
@@ -2209,7 +2209,7 @@ func_C111EA:
 	jsl $C282EB                             ;C114D5
 	pla                                     ;C114D9
 	sta $00                                 ;C114DA
-	jsl $C20F35                             ;C114DC
+	jsl HandleCharacterDeath                             ;C114DC
 	lda #$85                                ;C114E0
 	sta $00                                 ;C114E2
 	lda #$02                                ;C114E4
@@ -2342,21 +2342,21 @@ func_C111EA:
 	clc                                     ;C11610
 	adc #$04                                ;C11611
 	sta $00                                 ;C11613
-	jsl $C20F35                             ;C11615
+	jsl HandleCharacterDeath                             ;C11615
 	lda $03,s                               ;C11619
 	clc                                     ;C1161B
 	adc #$03                                ;C1161C
 	sta $00                                 ;C1161E
-	jsl $C20F35                             ;C11620
+	jsl HandleCharacterDeath                             ;C11620
 	lda $03,s                               ;C11624
 	inc a                                   ;C11626
 	inc a                                   ;C11627
 	sta $00                                 ;C11628
-	jsl $C20F35                             ;C1162A
+	jsl HandleCharacterDeath                             ;C1162A
 	lda $03,s                               ;C1162E
 	inc a                                   ;C11630
 	sta $00                                 ;C11631
-	jsl $C20F35                             ;C11633
+	jsl HandleCharacterDeath                             ;C11633
 	jsl $C62405                             ;C11637
 	lda #$05                                ;C1163B
 	sta $00                                 ;C1163D
@@ -3023,7 +3023,7 @@ func_C11B11:
 	jsl $C2938C                             ;C11C7E
 	lda $03,s                               ;C11C82
 	sta $00                                 ;C11C84
-	jsl $C20F35                             ;C11C86
+	jsl HandleCharacterDeath                             ;C11C86
 	lda #$02                                ;C11C8A
 	sta $01                                 ;C11C8C
 	jsl $C62AEE                             ;C11C8E
@@ -3069,7 +3069,7 @@ func_C11B11:
 	jsl $C2938C                             ;C11CFB
 	lda $03,s                               ;C11CFF
 	sta $00                                 ;C11D01
-	jsl $C20F35                             ;C11D03
+	jsl HandleCharacterDeath                             ;C11D03
 	lda #$02                                ;C11D07
 	sta $01                                 ;C11D09
 	jsl $C62AEE                             ;C11D0B
@@ -3339,7 +3339,7 @@ func_C11B11:
 	jsl $C2938C                             ;C11FA7
 	lda $03,s                               ;C11FAB
 	sta $00                                 ;C11FAD
-	jsl $C20F35                             ;C11FAF
+	jsl HandleCharacterDeath                             ;C11FAF
 	lda #$02                                ;C11FB3
 	sta $01                                 ;C11FB5
 	jsl $C62AEE                             ;C11FB7

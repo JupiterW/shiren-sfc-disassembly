@@ -48,7 +48,7 @@ func_C2001E:
 	sta.l $7E8759,x
 @lbl_C2004D:
 	stx.b wTemp00
-	jsl.l func_C20F35
+	jsl.l HandleCharacterDeath
 	plp
 	rtl
 
@@ -1349,7 +1349,7 @@ func_C20BF9:
 @lbl_C20C2F:
 	stx $00                                 ;C20C2F
 	phx                                     ;C20C31
-	jsl $C20F35                             ;C20C32
+	jsl HandleCharacterDeath                             ;C20C32
 	plx                                     ;C20C36
 	lda $7E85C9,x                           ;C20C37
 	xba                                     ;C20C3B
@@ -1703,7 +1703,7 @@ func_C20E89:
 @lbl_C20F1E:
 	sta.b wTemp00
 	pha
-	jsl.l func_C20F35
+	jsl.l HandleCharacterDeath
 	pla
 	dec a
 	bpl @lbl_C20F1E
@@ -1713,7 +1713,10 @@ func_C20E89:
 	plp
 	rtl
 
-func_C20F35:
+; Handles character death: sets HP to 0, drops held items, plays death animation.
+; Special handling for Shiren (game over) vs monsters (defeat).
+; Input: wTemp00 = character index
+HandleCharacterDeath:
 	php
 	sep #$30 ;AXY->8
 	bankswitch 0x7E
@@ -3440,7 +3443,7 @@ ModifyCharacterHP:
 	plp
 	rtl
 @lbl_C23236:
-	jsl.l func_C20F35
+	jsl.l HandleCharacterDeath
 	plp
 	rtl
 
@@ -3941,7 +3944,7 @@ func_C234DF:
 	lda.b wTemp04
 	sta.w wCharExpByte2,y
 	sty.b wTemp00
-	jsl.l func_C23684
+	jsl.l RecalculateCharacterLevel
 	plp
 	rtl
 
@@ -3991,7 +3994,7 @@ ApplyCharacterLevelGains:
 	sbc #$00                                ;C235CE
 	sta $8669,y                             ;C235D0
 @lbl_C235D3:
-	jsl $C23684                             ;C235D3
+	jsl RecalculateCharacterLevel                             ;C235D3
 	plp                                     ;C235D7
 	rtl                                     ;C235D8
 @lbl_C235D9:
@@ -4087,8 +4090,11 @@ func_C23656:
 	plp                                     ;C23682
 	rtl                                     ;C23683
 
-;$00: character table index
-func_C23684:
+; Recalculates a character's level based on their current EXP.
+; Uses LevelExpTable (24-bit values) to find the correct level.
+; Input: wTemp00 = character index
+; Output: wCharTrueLevel updated
+RecalculateCharacterLevel:
 	php
 	sep #$30 ;AXY->8
 	bankswitch 0x7E
@@ -8362,7 +8368,7 @@ func_C25649:
 	lda #$00                                ;C2568D
 	sta $7E8781,x                           ;C2568F
 	stx $00                                 ;C25693
-	jsl $C20F35                             ;C25695
+	jsl HandleCharacterDeath                             ;C25695
 	lda $7E85C8                             ;C25699
 	sta $00                                 ;C2569D
 	lda $7E85DC                             ;C2569F
@@ -10564,7 +10570,7 @@ func_C27FD5:
 	beq @lbl_C28016
 	stx.b wTemp00
 	phx
-	jsl.l func_C20F35
+	jsl.l HandleCharacterDeath
 	plx
 	lda.l $7E85B5,x
 	sta.b wTemp00
@@ -10644,7 +10650,7 @@ func_C2801B:
 	ldx.b wTemp00
 	sta.b wTemp00
 	phx
-	jsl.l func_C20F35
+	jsl.l HandleCharacterDeath
 	plx
 	jsl.l func_C62AAF
 	lda.b wTemp00
@@ -10713,7 +10719,7 @@ func_C280D4:
 	sta.l $7E899A
 	stx.b wTemp00
 	phx
-	jsl.l func_C20F35
+	jsl.l HandleCharacterDeath
 	plx
 	pla
 	sta.l $7E899A
@@ -10862,7 +10868,7 @@ func_C2816C:
 	plx                                     ;C38235
 	stx $00                                 ;C38236
 	phx                                     ;C38238
-	jsl $C20F35                             ;C38239
+	jsl HandleCharacterDeath                             ;C38239
 	plx                                     ;C3823D
 	lda $7E85C9,x                           ;C3823E
 	xba                                     ;C38242
@@ -10913,7 +10919,7 @@ func_C2816C:
 @lbl_C3829A:
 	stx $00                                 ;C3829A
 	phx                                     ;C3829C
-	jsl $C20F35                             ;C3829D
+	jsl HandleCharacterDeath                             ;C3829D
 	plx                                     ;C382A1
 	bra @lbl_C382AA                         ;C382A2
 @lbl_C382A4:
@@ -11010,7 +11016,7 @@ func_C282EB:
 	plx                                     ;C38358
 	stx $00                                 ;C38359
 	phx                                     ;C3835B
-	jsl $C20F35                             ;C3835C
+	jsl HandleCharacterDeath                             ;C3835C
 	plx                                     ;C38360
 	lda $7E8641,x                           ;C38361
 	sta $02                                 ;C38365
@@ -12047,7 +12053,7 @@ func_C289F5:
 	plx                                     ;C38A7C
 	stx $00                                 ;C38A7D
 	phx                                     ;C38A7F
-	jsl $C20F35                             ;C38A80
+	jsl HandleCharacterDeath                             ;C38A80
 	plx                                     ;C38A84
 @lbl_C38A85:
 	dex                                     ;C38A85

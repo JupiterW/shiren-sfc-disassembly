@@ -2861,7 +2861,7 @@ BufusStaffUseEffect:
 	phy
 	stx.b wTemp00
 	phx
-	jsl.l func_C20F35
+	jsl.l HandleCharacterDeath
 	plx
 	stx.b wTemp00
 	phx

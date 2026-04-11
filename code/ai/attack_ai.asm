@@ -309,7 +309,7 @@ func_C215AB:
 	plx
 	stx.b wTemp00
 	phy
-	jsl.l func_C20F35
+	jsl.l HandleCharacterDeath
 	ply
 	tyx
 	lda.b #$00
