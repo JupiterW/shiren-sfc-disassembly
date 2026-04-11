@@ -1437,20 +1437,20 @@ GetItemBuySellPrice:
 	jmp.w (ItemBuySellPriceHandlers,x)
 
 ItemBuySellPriceHandlers:
-	.dw GetHerbBuySellPrice
-	.dw $3D03
-	.dw $3D1D
-	.dw $3D37
-	.dw $3DE6
-	.dw $3E0E
-	.dw $3EBD
-	.dw $3ED7
-	.dw $3F1E
-	.dw $3F24
-	.dw $3F67
-	.dw $3F71
+	.dw ItemBuySellPriceHandler_Herb
+	.dw ItemBuySellPriceHandler_Scroll
+	.dw ItemBuySellPriceHandler_RiceBall
+	.dw ItemBuySellPriceHandler_Weapon
+	.dw ItemBuySellPriceHandler_Arrow
+	.dw ItemBuySellPriceHandler_Shield
+	.dw ItemBuySellPriceHandler_Armband
+	.dw ItemBuySellPriceHandler_Staff
+	.dw ItemBuySellPriceHandler_Gitan
+	.dw ItemBuySellPriceHandler_MonsterMeat
+	.dw ItemBuySellPriceHandler_Misc ; GoldenFeather/HappinessBox/StrangeBox/Item_E4
+	.dw ItemBuySellPriceHandler_Jar
 
-GetHerbBuySellPrice:
+ItemBuySellPriceHandler_Herb:
 	lda.b wTemp00
 	xba
 	and.w #$00FF
@@ -1467,6 +1467,7 @@ GetHerbBuySellPrice:
 	pla
 	plp
 	rtl
+ItemBuySellPriceHandler_Scroll:
 	lda.b wTemp00
 	xba
 	and.w #$00FF
@@ -1483,6 +1484,7 @@ GetHerbBuySellPrice:
 	pla
 	plp
 	rtl
+ItemBuySellPriceHandler_RiceBall:
 	lda.b wTemp00
 	xba
 	and.w #$00FF
@@ -1499,6 +1501,7 @@ GetHerbBuySellPrice:
 	pla
 	plp
 	rtl
+ItemBuySellPriceHandler_Weapon:
 	lda.b wTemp02
 	and.w #$00FF
 	sta.b wTemp04
@@ -1594,6 +1597,7 @@ GetHerbBuySellPrice:
 	pla
 	plp
 	rtl
+ItemBuySellPriceHandler_Arrow:
 	lda.b wTemp02
 	and.w #$00FF
 	xba
@@ -1616,6 +1620,7 @@ GetHerbBuySellPrice:
 	pla
 	plp
 	rtl
+ItemBuySellPriceHandler_Shield:
 	lda.b wTemp02
 	and.w #$00FF
 	sta.b wTemp04
@@ -1701,6 +1706,7 @@ GetHerbBuySellPrice:
 	pla
 	plp
 	rtl
+ItemBuySellPriceHandler_Armband:
 	lda.b wTemp00
 	xba
 	and.w #$00FF
@@ -1717,6 +1723,7 @@ GetHerbBuySellPrice:
 	pla
 	plp
 	rtl
+ItemBuySellPriceHandler_Staff:
 	lda.b wTemp00
 	xba
 	and.w #$00FF
@@ -1758,11 +1765,13 @@ GetHerbBuySellPrice:
 	pla
 	plp
 	rtl
+ItemBuySellPriceHandler_Gitan:
 	stz $00                                 ;C33F1E
 	pla                                     ;C33F20
 	pla                                     ;C33F21
 	plp                                     ;C33F22
 	rtl                                     ;C33F23
+ItemBuySellPriceHandler_MonsterMeat:
 	lda.b wTemp02
 	xba
 	and.w #$00FF
@@ -1801,12 +1810,14 @@ GetHerbBuySellPrice:
 	pla
 	plp
 	rtl
+ItemBuySellPriceHandler_Misc:
 	lda $D9A890                             ;C33F67
 	sta $00                                 ;C33F6B
 	pla                                     ;C33F6D
 	pla                                     ;C33F6E
 	plp                                     ;C33F6F
 	rtl                                     ;C33F70
+ItemBuySellPriceHandler_Jar:
 	lda.b wTemp00
 	xba
 	and.w #$00FF
