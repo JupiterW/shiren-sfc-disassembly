@@ -439,7 +439,8 @@ func_C3035D:
 @lbl_C3037E:
 	tay
 	bpl @lbl_C3038B
-	.db $22,$E6,$27,$C6,$A5,$00           ;C30381
+	jsl $C627E6                             ;C30381
+	lda $00                                 ;C30385
 	cmp.b #$00
 	bne @lbl_C3038B
 @lbl_C3038B:
@@ -1017,7 +1018,9 @@ func_C307C9:
 	jsl.l CheckIfItemNameEqualToTextEntry
 	bcs @lbl_C307D6
 ;C3081F
-	.db $64,$06,$28,$6B
+	stz $06                                 ;C3081F
+	plp                                     ;C30821
+	rtl                                     ;C30822
 
 func_C30823:
 	rtl
@@ -1060,7 +1063,9 @@ func_C30824:
 	jsl.l CheckIfItemNameEqualToTextEntry
 	bcs @lbl_C30831
 	;C3087A
-	.db $64,$00,$28,$6B
+	stz $00                                 ;C3087A
+	plp                                     ;C3087C
+	rtl                                     ;C3087D
 	
 
 
@@ -1753,7 +1758,11 @@ func_C33CE9:
 	pla
 	plp
 	rtl
-	.db $64,$00,$68,$68,$28,$6B           ;C33F1E  
+	stz $00                                 ;C33F1E
+	pla                                     ;C33F20
+	pla                                     ;C33F21
+	plp                                     ;C33F22
+	rtl                                     ;C33F23
 	lda.b wTemp02
 	xba
 	and.w #$00FF
@@ -1930,7 +1939,10 @@ func_C34044:
 	bit.b #$02
 	bne @lbl_C34057
 ;C34051
-	.db $A9,$01,$85,$00,$28,$6B
+	lda #$01                                ;C34051
+	sta $00                                 ;C34053
+	plp                                     ;C34055
+	rtl                                     ;C34056
 @lbl_C34057:
 	lda.l wItemModification2,x
 	bne @lbl_C3406D
@@ -1991,7 +2003,8 @@ func_C3407C:
 	cmp.b #$02
 	bcc @lbl_C340C3
 ;C340BE  
-	.db $20,$FA,$40,$80,$19
+	jsr $40FA                               ;C340BE
+	.db $80,$19   ;C340C1
 @lbl_C340C3:
 	dec a
 	beq @lbl_C340D2
@@ -1999,7 +2012,7 @@ func_C3407C:
 	cmp.b #$FF
 	beq @lbl_C340D0
 ;C340CD  
-	.db $20,$01,$41
+	jsr $4101                               ;C340CD
 @lbl_C340D0:
 	bra @lbl_C340DC
 @lbl_C340D2:
@@ -2007,7 +2020,7 @@ func_C3407C:
 	cmp.b #$FF
 	bne @lbl_C340DC
 ;C340D9  
-	.db $20,$0D,$41
+	jsr $410D                               ;C340D9
 @lbl_C340DC:
 	dey
 	bpl @lbl_C340B7
@@ -2016,7 +2029,7 @@ func_C3407C:
 	lda.w $935F,y
 	beq @lbl_C340E9
 ;C340E6  
-	.db $20,$FA,$40
+	jsr $40FA                               ;C340E6
 @lbl_C340E9:
 	iny
 	cpy.b #$FF
@@ -4362,7 +4375,9 @@ func_C360D7:
 	dey
 	bpl @lbl_C360E7
 ;C360E2  
-	.db $20,$2E,$61,$28,$6B
+	jsr $612E                               ;C360E2
+	plp                                     ;C360E5
+	rtl                                     ;C360E6
 @lbl_C360E7:
 	jsl.l Random
 	lda.b wTemp00
@@ -4493,7 +4508,9 @@ func_C36287:
 	dey
 	bpl @lbl_C36297
 ;C36292  
-	.db $20,$D4,$62,$28,$6B
+	jsr $62D4                               ;C36292
+	plp                                     ;C36295
+	rtl                                     ;C36296
 @lbl_C36297:
 	jsl.l Random
 	lda.b wTemp00
@@ -5279,7 +5296,9 @@ func_C3688B:
 	lda.b #$01
 	rts
 func_C36891:
-	.db $20,$ED,$68,$A9,$01,$60           ;C36891  
+	jsr $68ED                               ;C36891
+	lda #$01                                ;C36894
+	rts                                     ;C36896
 func_C36897:
 	lda.b #$00
 	rts
@@ -7677,12 +7696,12 @@ Data_c3874b:
 	.db $1C,$38
 
 Data_c3874f:
-	.db $0F,$0F
-	.db $20,$20
+	ora $20200F                             ;C3874F
 
 Data_c38753:
 	.db $11,$11
-	.db $22,$22
+	.db $22   ;C38753
+	.db $22   ;C38754
 	
 func_C38757:
 	php
@@ -8057,7 +8076,8 @@ func_C389DB:
 	cmp #$18                                ;C38A32
 	.db $B0,$D6   ;C38A34
 @lbl_C38A36:
-	.db $22,$03,$62,$C3,$80,$E6           ;C38A36  
+	jsl $C36203                             ;C38A36
+	.db $80,$E6   ;C38A3A
 
 func_C38A3C:
 	php
@@ -9535,7 +9555,8 @@ func_C398C4:
 	bit.b #$01
 	beq @lbl_C398DF
 ;C398DB
-	.db $A9,$20,$83,$01
+	lda #$20                                ;C398DB
+	sta $01,s                               ;C398DD
 @lbl_C398DF:
 	ldx.w #$0503
 	stx.b wTemp00
@@ -11514,8 +11535,10 @@ func_C3D772:
 	sta $00                                 ;C3D80A
 	stz $01                                 ;C3D80C
 	jsl.l DisplayMessage
-	.db $60,$A9,$F0,$85   ;C3D812
-	.db $00,$64,$01
+	rts                                     ;C3D812
+	lda #$F0                                ;C3D813
+	sta $00                                 ;C3D815
+	stz $01                                 ;C3D817
 	jsl.l DisplayMessage
 	rts                                     ;C3D81D
 	sep #$20                                ;C3D81E
@@ -11633,7 +11656,7 @@ func_C3D772:
 	bit.b #$01
 	beq @lbl_C3D915
 ;C3D911  
-	.db $22,$A2,$5F,$C3
+	jsl $C35FA2                             ;C3D911
 @lbl_C3D915:
 	lda.b #$F2
 	sta.b wTemp00
@@ -12618,7 +12641,9 @@ func_C3E097:
 	lda #$0105                              ;C3E0BE
 	sta $00                                 ;C3E0C1
 	jsl.l DisplayMessage
-	.db $22,$72,$84,$C2,$60,$60       ;C3E0C7
+	jsl $C28472                             ;C3E0C7
+	rts                                     ;C3E0CB
+	rts                                     ;C3E0CC
 
 func_C3E0CD:
 	sep #$30 ;AXY->8
@@ -14748,7 +14773,10 @@ func_C3F1F0:
 	clc
 	rtl
 func_C3F1F3:
-	.db $68,$28,$38,$6B                   ;C3F1F3
+	pla                                     ;C3F1F3
+	plp                                     ;C3F1F4
+	sec                                     ;C3F1F5
+	rtl                                     ;C3F1F6
 
 BuildContainedItemActionCommand:
 	php
