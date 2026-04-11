@@ -5340,7 +5340,7 @@ func_C330FC:
 	bne @lbl_C3313B
 	pha
 	phx
-	jsl.l func_C33A21
+	jsl.l RestoreItemFromThrowTemp
 	plx
 	pla
 	ldy.b wTemp00

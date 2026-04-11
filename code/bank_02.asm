@@ -1693,7 +1693,7 @@ func_C20E89:
 	lda.b #$00
 	sta.b wTemp01
 	phx
-	jsl.l func_C33A92
+	jsl.l SetItemGoods
 	plx
 	dex
 	bpl @lbl_C20F07
@@ -2865,7 +2865,7 @@ func_C22D42:
 	lda.b #$00
 	sta.b wTemp01
 	phx
-	jsl.l func_C33A92
+	jsl.l SetItemGoods
 	plx
 	dex
 	bpl @lbl_C22D80
@@ -4417,7 +4417,7 @@ func_C23959:
 	sty.b wTemp00
 	phx
 	phy
-	jsl.l func_C33AD5
+	jsl.l GetItemGoods
 	ply
 	plx
 	lda.b wTemp00
@@ -4433,7 +4433,7 @@ func_C23959:
 	sta.b wTemp00
 	phx
 	phy
-	jsl.l func_C33AD5
+	jsl.l GetItemGoods
 	ply
 	plx
 	lda.b wTemp00
@@ -4462,7 +4462,7 @@ func_C23959:
 	lda.l wShirenStatus.itemAmounts,x
 	sta.b wTemp00
 	phx
-	jsl.l func_C33B61
+	jsl.l MergeItemModifications
 	plx
 	stx.b wTemp00
 	plp
@@ -4548,7 +4548,7 @@ TryAddSelectedItemToInventory:
 	ply
 	sty.b wTemp00
 	phy
-	jsl.l func_C33AD5
+	jsl.l GetItemGoods
 	ply
 	lda.b wTemp00
 	cmp.b #$00
@@ -7062,7 +7062,7 @@ HandlePlayerActionCommand:
 	sty.b wTemp00
 	pha
 	phy
-	jsl.l func_C33AD5
+	jsl.l GetItemGoods
 	ply
 	pla
 	ldx.b wTemp00
@@ -8934,7 +8934,7 @@ func_C25AFD:
 	sty.b wTemp00
 @lbl_C25B23:
 	phy
-	jsl.l func_C33AD5
+	jsl.l GetItemGoods
 	ply
 	ldx.b wTemp00
 	cpx.b #$00
@@ -8968,13 +8968,13 @@ func_C25AFD:
 	ldx.b #$02
 	stx.b wTemp01
 	phy
-	jsl.l func_C33A92
+	jsl.l SetItemGoods
 	ply
 @lbl_C25B6B:
 	lda.b w000b,s
 	beq @lbl_C25B7B
 	sty.b wTemp00
-	jsl.l func_C33AE2
+	jsl.l GetPotNextItem
 	ldy.b wTemp00
 	cpy.b #$FF
 	bne @lbl_C25B23
@@ -12836,7 +12836,7 @@ func_C290BC:
 	sep #$20 ;A->8
 	stx.b wTemp00
 	phx
-	jsl.l func_C33AD5
+	jsl.l GetItemGoods
 	plx
 	lda.b wTemp00
 	cmp.b #$02
@@ -12885,13 +12885,13 @@ func_C290BC:
 	lda.b #$FF
 	sta.b wTemp01
 	phx
-	jsl.l func_C33A92
+	jsl.l SetItemGoods
 	plx
 @lbl_C2913E:
 	sep #$20 ;A->8
 @lbl_C29140:
 	stx.b wTemp00
-	jsl.l func_C33AE2
+	jsl.l GetPotNextItem
 	ldx.b wTemp00
 	cpx.b #$FF
 	beq @lbl_C2914F
@@ -12954,7 +12954,7 @@ func_C290BC:
 	stx.b wTemp00
 	phx
 	phy
-	jsl.l func_C33AD5
+	jsl.l GetItemGoods
 	ply
 	plx
 	lda.b wTemp00
@@ -12963,7 +12963,7 @@ func_C290BC:
 	sty.b wTemp01
 	phx
 	phy
-	jsl.l func_C33A92
+	jsl.l SetItemGoods
 	ply
 	plx
 @lbl_C291D2:
@@ -13069,7 +13069,7 @@ func_C29284:
 @lbl_C292A4:
 	stx.b wTemp00
 	phx
-	jsl.l func_C33AD5
+	jsl.l GetItemGoods
 	plx
 	lda.b wTemp00
 	cmp.b #$02
@@ -13078,7 +13078,7 @@ func_C29284:
 	lda.b #$00
 	sta.b wTemp01
 	phx
-	jsl.l func_C33A92
+	jsl.l SetItemGoods
 	plx
 @lbl_C292BE:
 	dex

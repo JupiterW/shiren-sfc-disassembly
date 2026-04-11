@@ -10857,7 +10857,7 @@ func_C485FC:
 	ldx.b #$00
 	sty.b w7f0000
 	phx
-	jsl.l func_C33AE2
+	jsl.l GetPotNextItem
 	plx
 	stz.b w7f0000+1
 	lda.b w7f0000
@@ -14495,7 +14495,7 @@ func_C4A7C2:
 @lbl_C4A8E7:
 	lda.b w00d0
 	sta.b wTemp00
-	jsl.l func_C33AD5
+	jsl.l GetItemGoods
 	plx
 	lda.b wTemp00
 	cmp.b #$00

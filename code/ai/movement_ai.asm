@@ -596,7 +596,7 @@ func_C262D5:
 	lda.b #$00
 	sta.b wTemp01
 	phx
-	jsl.l func_C33AB2
+	jsl.l SetContainedItemsGoods
 	plx
 	lda.l wCharXPos,x
 	sta.b wTemp00

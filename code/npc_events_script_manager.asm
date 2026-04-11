@@ -2011,7 +2011,7 @@ NPCScriptFunction_C16A7D:
 	sta.b wTemp01
 	phx
 	phy
-	jsl.l func_C33A92
+	jsl.l SetItemGoods
 	ply
 	plx
 	lda.l DATA8_C16ABA,x
@@ -2062,7 +2062,7 @@ NPCScriptFunction_C16B2B:
 	sta.b wTemp01
 	phx
 	phy
-	jsl.l func_C33A92
+	jsl.l SetItemGoods
 	ply
 	plx
 	lda.l DATA8_C16B68,x

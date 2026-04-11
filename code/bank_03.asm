@@ -1074,7 +1074,7 @@ func_C30824:
 
 .include "code/item_effects.asm"
 
-func_C33A21:
+RestoreItemFromThrowTemp:
 	php
 	sep #$30 ;AXY->8
 	jsl.l func_C30295
@@ -1127,7 +1127,7 @@ PrepareSelectedThrowableItem:
 	plp
 	rtl
 
-func_C33A92:
+SetItemGoods:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -1145,7 +1145,7 @@ func_C33A92:
 	plp
 	rtl
 
-func_C33AB2:
+SetContainedItemsGoods:
 	php
 	sep #$30 ;AXY->8
 	lda.b wTemp00
@@ -1166,7 +1166,7 @@ func_C33AB2:
 	plp
 	rtl
 
-func_C33AD5:
+GetItemGoods:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -1175,7 +1175,7 @@ func_C33AD5:
 	plp
 	rtl
 
-func_C33AE2:
+GetPotNextItem:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -1249,7 +1249,7 @@ InsertContainedItemByIndex:
 	plp
 	rtl
 
-func_C33B61:
+MergeItemModifications:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp01
@@ -1318,6 +1318,8 @@ func_C33B61:
 	ora ($BA)                               ;C33BEB
 	.db $FF   ;C33BED
 
+; TODO: purpose unclear - involves wItemHasCustomName lookup; on overflow writes $FF into
+; wItemCustomNamesBuffer at computed offset. Callers at C300EC, C30118.
 func_C33BEE:
 	php
 	sep #$30 ;AXY->8
@@ -1334,6 +1336,8 @@ func_C33BEE:
 	plp
 	rtl
 
+; TODO: purpose unclear - for item type $68 returns mod/fuse/curse stats; otherwise reads
+; wItemHasCustomName and returns custom name buffer data. No external callers found.
 func_C33C0D:
 	php
 	sep #$30 ;AXY->8
@@ -1379,7 +1383,7 @@ func_C33C0D:
 	plp
 	rtl
 
-func_C33C6E:
+SerializeItemData:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -1393,7 +1397,7 @@ func_C33C6E:
 	plp
 	rtl
 
-func_C33C87:
+DeserializeItemData:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -1893,6 +1897,8 @@ ItemBuySellPriceHandler_Jar:
 	pla
 	plp
 	rtl
+; TODO: purpose unclear - scans unlabeled 262-byte table at $C34E00 backwards for a matching
+; item type and accumulates range-tier flags into $00. No external callers found.
 	php                                     ;C33FB8
 	sep #$20                                ;C33FB9
 	rep #$10                                ;C33FBB

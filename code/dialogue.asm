@@ -3716,7 +3716,7 @@ func_C122CA:
 	lda.b #$01
 	sta.b wTemp01
 	phx
-	jsl.l func_C33A92
+	jsl.l SetItemGoods
 	plx
 @lbl_C122E7:
 	stx.b wTemp00

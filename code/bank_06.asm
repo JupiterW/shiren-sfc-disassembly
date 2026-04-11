@@ -372,7 +372,7 @@ func_C6030D:
 	jsl.l func_C3E369
 	jsl.l func_C3F6BE
 	jsl.l func_C28F4F
-	jsl.l func_C33C6E
+	jsl.l SerializeItemData
 	lda.b #$6B
 	sta.b wTemp00
 	lda.b #$03
@@ -396,7 +396,7 @@ func_C6034E:
 	jsl.l func_C3E1C7
 	jsl.l func_C3F6D5
 	jsl.l func_C28F86
-	jsl.l func_C33C87
+	jsl.l DeserializeItemData
 	lda.b #$6B
 	sta.b wTemp00
 	lda.b #$03
@@ -2855,7 +2855,7 @@ func_C62D0F:
 	stx.b wTemp00
 	phx
 	phy
-	jsl.l func_C33AE2
+	jsl.l GetPotNextItem
 	ply
 	plx
 	ldx.b wTemp00
