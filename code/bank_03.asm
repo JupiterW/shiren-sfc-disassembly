@@ -16212,13 +16212,51 @@ GetLivePlayerActionCommand:
 @lbl_C3EAEC:
 	plp
 	rtl
-	.db $C2,$30,$64,$00,$18,$89,$00,$10,$F0,$01,$38,$26,$00,$18,$89,$00   ;C3EAEE
-	.db $40,$F0,$01,$38,$26,$00,$18,$89,$40,$00,$F0,$01,$38,$26,$00,$A5   ;C3EAFE
-	.db $00,$C9,$06,$00,$F0,$18,$C9,$07,$00,$D0,$29,$22,$19,$7D,$C0,$22   ;C3EB0E
-	.db $4E,$85,$C4,$22,$97,$A9,$C4,$22,$84,$85,$C4,$4C,$B8,$E9,$E2,$20   ;C3EB1E  
-	.db $A9,$01,$8F,$3F,$10,$00,$C2,$20,$A9,$00,$80,$85,$00,$22,$49,$80   ;C3EB2E
-	.db $81,$4C,$B8,$E9,$EB,$09,$E1,$00   ;C3EB3E  
-	.db $85,$00,$28,$6B                   ;C3EB46  
+	rep #$30                                ;C3EAEE
+	stz $00                                 ;C3EAF0
+	clc                                     ;C3EAF2
+	bit #$1000                              ;C3EAF3
+	beq @lbl_C3EAF9                         ;C3EAF6
+	sec                                     ;C3EAF8
+@lbl_C3EAF9:
+	rol $00                                 ;C3EAF9
+	clc                                     ;C3EAFB
+	bit #$4000                              ;C3EAFC
+	beq @lbl_C3EB02                         ;C3EAFF
+	sec                                     ;C3EB01
+@lbl_C3EB02:
+	rol $00                                 ;C3EB02
+	clc                                     ;C3EB04
+	bit #$0040                              ;C3EB05
+	beq @lbl_C3EB0B                         ;C3EB08
+	sec                                     ;C3EB0A
+@lbl_C3EB0B:
+	rol $00                                 ;C3EB0B
+	lda $00                                 ;C3EB0D
+	cmp #$0006                              ;C3EB0F
+	beq @lbl_C3EB2C                         ;C3EB12
+	cmp #$0007                              ;C3EB14
+	bne @lbl_C3EB42                         ;C3EB17
+	jsl.l $C07D19                           ;C3EB19
+	jsl.l $C4854E                           ;C3EB1D
+	jsl.l $C4A997                           ;C3EB21
+	jsl.l $C48584                           ;C3EB25
+	jmp $E9B8                               ;C3EB29
+@lbl_C3EB2C:
+	sep #$20                                ;C3EB2C
+	lda #$01                                ;C3EB2E
+	sta.l $00103F                           ;C3EB30
+	rep #$20                                ;C3EB34
+	lda #$8000                              ;C3EB36
+	sta $00                                 ;C3EB39
+	jsl.l $818049                           ;C3EB3B
+	jmp $E9B8                               ;C3EB3F
+@lbl_C3EB42:
+	xba                                     ;C3EB42
+	ora #$00E1                              ;C3EB43
+	sta $00                                 ;C3EB46
+	plp                                     ;C3EB48
+	rtl                                     ;C3EB49
 
 MapDPadBitsToDirection:
 	php
