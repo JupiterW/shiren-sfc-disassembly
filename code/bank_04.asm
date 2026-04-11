@@ -13366,7 +13366,7 @@ func_C49DB5:
 @lbl_C49DF7:
 	lda.l $7FABF3
 	sta.b wTemp00
-	jsl.l func_C32CCB
+	jsl.l LoadItemFuseAbilitiesAndDefaults
 	rep #$20 ;A->16
 	lda.b wTemp00
 	bit.w #$8000
@@ -13548,7 +13548,7 @@ DATA8_C49F5D:
 @lbl_C49FAF:
 	lda.l $7FABF3
 	sta.b wTemp00
-	jsl.l func_C32CCB
+	jsl.l LoadItemFuseAbilitiesAndDefaults
 	rep #$20 ;A->16
 	lda.b wTemp00
 	bit.w #$8000
@@ -14379,7 +14379,7 @@ func_C4A7C2:
 	ldx.b wTemp00
 	stx.b w00d0
 	jsl.l func_C4A627
-	jsl.l func_C32CCB
+	jsl.l LoadItemFuseAbilitiesAndDefaults
 	lda.b wTemp02
 	eor.w #$FFFF
 	and.b wTemp00

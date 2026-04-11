@@ -4735,7 +4735,11 @@ TryClearAssignedCategoryItem:
 	plp
 	rtl
 
-func_C32CCB:
+; wTemp00: item slot index
+; returns:
+;   wTemp00/wTemp01 = current fuse ability bytes
+;   wTemp02/wTemp03 = default fuse ability bytes for the item type
+LoadItemFuseAbilitiesAndDefaults:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -4747,7 +4751,7 @@ func_C32CCB:
 	asl a
 	tax
 	rep #$20 ;A->16
-	lda.l DATA8_C30301,x
+	lda.l ItemDefaultFuseAbility1ByType,x
 	sta.b wTemp02
 	plp
 	rtl

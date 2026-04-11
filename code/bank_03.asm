@@ -384,18 +384,21 @@ func_C302AA:
 	txa
 	asl a
 	tax
-	lda.l DATA8_C30301,x
+	lda.l ItemDefaultFuseAbility1ByType,x
 	sta.w wItemFuseAbility1,y
-	lda.l DATA8_C30302,x
+	lda.l ItemDefaultFuseAbility2ByType,x
 	sta.w wItemFuseAbility2,y
 	sty.b wTemp00
 	plp
 	rtl
 
-DATA8_C30301:
+; Default fuse-ability bytes per item type, stored as interleaved
+; (ability1, ability2) pairs so callers can read either byte separately
+; or the full 16-bit pair at once.
+ItemDefaultFuseAbility1ByType:
 	.db $00                               ;C30301
 
-DATA8_C30302:
+ItemDefaultFuseAbility2ByType:
 	.db $00,$00,$00,$10,$00,$00,$00,$01   ;C30302
 	.db $00,$00,$00,$00,$00               ;C3030A
 	.db $02,$00,$20,$02,$40,$00,$80,$00   ;C3030F
@@ -1520,7 +1523,7 @@ ItemBuySellPriceHandler_Weapon:
 	lda.b wTemp03,s
 	sta.b wTemp00
 	phx
-	jsl.l func_C32CCB
+	jsl.l LoadItemFuseAbilitiesAndDefaults
 	plx
 	lda.b wTemp01,s
 	phx
@@ -1650,7 +1653,7 @@ ItemBuySellPriceHandler_Shield:
 	lda.b wTemp03,s
 	sta.b wTemp00
 	phx
-	jsl.l func_C32CCB
+	jsl.l LoadItemFuseAbilitiesAndDefaults
 	plx
 	lda.b wTemp01,s
 	phx

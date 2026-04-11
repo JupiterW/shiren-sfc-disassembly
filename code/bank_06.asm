@@ -2991,7 +2991,7 @@ func_C62D0F:
 	lda.l $7ED637
 	bmi @lbl_C62FCC
 	sta.b wTemp00
-	jsl.l func_C32CCB
+	jsl.l LoadItemFuseAbilitiesAndDefaults
 	rep #$20 ;A->16
 	lda.b wTemp00
 	eor.b wTemp02
@@ -3015,7 +3015,7 @@ func_C62D0F:
 	lda.l $7ED63C
 	bmi @lbl_C63010
 	sta.b wTemp00
-	jsl.l func_C32CCB
+	jsl.l LoadItemFuseAbilitiesAndDefaults
 	rep #$20 ;A->16
 	lda.b wTemp00
 	eor.b wTemp02
