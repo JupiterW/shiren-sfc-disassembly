@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Validate and optionally fix ROM address comments in ASM files.
 
-Uses the ROM binary as objective ground truth. For each non-local label with a
+Uses baserom.sfc as objective ground truth (the unmodified original ROM,
+never overwritten by the build system — unlike shiren.sfc which is rebuilt
+from ASM and would produce false mismatches against in-progress edits). For each non-local label with a
 ROM address encoded in its name (e.g. func_C2D8F0, DecompressGraphics_C5F0AC),
 computes the HiROM file offset, then walks forward accumulating instruction
 sizes. For .db/.dw lines the byte content is compared directly against the ROM
@@ -38,7 +40,7 @@ from promote_raw_item_handler_label import (
 )
 
 ROOT = Path(__file__).resolve().parent.parent
-ROM_PATH = ROOT / "shiren.sfc"
+ROM_PATH = ROOT / "baserom.sfc"
 
 LABEL_NAME_RE = re.compile(r"^([A-Za-z0-9_@.]+):\s*$")
 # Matches a C followed by exactly 5 uppercase hex digits anywhere in a label name
@@ -256,7 +258,7 @@ def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--file", required=True, help="ASM file to validate")
     parser.add_argument("--rom", default=str(ROM_PATH),
-                        help="ROM binary to use as ground truth (default: shiren.sfc)")
+                        help="ROM binary to use as ground truth (default: baserom.sfc)")
     parser.add_argument("--fix", action="store_true",
                         help="rewrite wrong address comments in place")
     parser.add_argument("--anchor",

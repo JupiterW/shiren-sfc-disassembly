@@ -362,7 +362,9 @@ def _rewrite_output_branches(out: list[str]) -> list[str]:
             addr = int(match.group(1), 16)
             label = labels.get(addr)
             if label is not None:
-                rewritten.append(f"{label}:")
+                label_line = f"{label}:"
+                if not rewritten or rewritten[-1] != label_line:
+                    rewritten.append(label_line)
 
         branch_match = OUT_BRANCH_RE.match(line)
         if branch_match:
@@ -481,6 +483,11 @@ def build_candidate(
                 post_decode_state,
                 table16 if not used_table16 and seg_start == start_addr else 0,
             )
+            entry_label = branch_labels.get(seg_start)
+            if entry_label is not None and out and out[-1] == f"{entry_label}:":
+                if decoded_lines and decoded_lines[0] == f"{entry_label}:":
+                    decoded_lines = decoded_lines[1:]
+                branch_labels.pop(seg_start, None)
             # Update state to reflect what the decoded instructions do to
             # flag tracking (seg_state was deepcopied, post_decode_state
             # was mutated by _emit_decoded_lines via decode_one)
