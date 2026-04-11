@@ -1545,7 +1545,7 @@ ItemBuySellPriceHandler_Weapon:
 	bit.w #$0002
 	beq @lbl_C33D83
 ;C33D81  
-	.db $E6,$04
+	inc.b wTemp04                            ;C33D81
 @lbl_C33D83:
 	lda.b wTemp04
 	bne @lbl_C33D8B
@@ -1556,7 +1556,9 @@ ItemBuySellPriceHandler_Weapon:
 	bit.w #$0080
 	beq @lbl_C33D9A
 ;C33D93
-	.db $49,$FF,$00,$1A,$A0,$00,$80
+	eor #$00FF                              ;C33D93
+	inc a                                   ;C33D96
+	ldy #$8000                              ;C33D97
 @lbl_C33D9A:
 	sta.b wTemp02
 	tya
@@ -1569,7 +1571,8 @@ ItemBuySellPriceHandler_Weapon:
 	adc.l WeaponUpgradePriceBonus,x
 	bcc @lbl_C33DB1
 ;C33DAC
-	.db $A9,$E8,$FD,$80,$2F
+	lda #$FDE8                              ;C33DAC
+	bra @lbl_C33DE0                         ;C33DAF
 @lbl_C33DB1:
 	dec.b wTemp02
 	bne @lbl_C33DA5
@@ -1582,14 +1585,23 @@ ItemBuySellPriceHandler_Weapon:
 	cmp.w #$7D00
 	bcc @lbl_C33DC8
 ;C33DC3
-	.db $A9,$00,$7D,$80,$18
+	lda #$7D00                              ;C33DC3
+	bra @lbl_C33DE0                         ;C33DC6
 @lbl_C33DC8:
 	dec.b wTemp02
 	bne @lbl_C33DB9
 	bra @lbl_C33DE0
 @lbl_C33DCE:
-	.db $A5,$06,$38,$FF,$EC,$A3,$D9,$B0,$05,$A9,$00,$00,$80,$04,$C6,$02   ;C33DCE  
-	.db $D0,$F0                           ;C33DDE  
+	lda.b wTemp06                            ;C33DCE
+@lbl_C33DD0:
+	sec                                     ;C33DD0
+	sbc.l WeaponUpgradePriceBonus,x         ;C33DD1
+	bcs @lbl_C33DDC                         ;C33DD5
+	lda #$0000                              ;C33DD7
+	bra @lbl_C33DE0                         ;C33DDA
+@lbl_C33DDC:
+	dec.b wTemp02                           ;C33DDC
+	bne @lbl_C33DD0                         ;C33DDE
 @lbl_C33DE0:
 	sta.b wTemp00
 	pla
@@ -1663,7 +1675,7 @@ ItemBuySellPriceHandler_Shield:
 	bit.w #$0001
 	beq @lbl_C33E5A
 ;C33E58  
-	.db $E6,$04
+	inc $04                                 ;C33E58
 @lbl_C33E5A:
 	lda.b wTemp04
 	bne @lbl_C33E62
@@ -1674,15 +1686,26 @@ ItemBuySellPriceHandler_Shield:
 	bit.w #$0080
 	beq @lbl_C33E71
 ;C33E6A
-	.db $49,$FF,$00,$1A,$A0,$00,$80
+	eor #$00FF                              ;C33E6A
+	inc a                                   ;C33E6D
+	ldy #$8000                              ;C33E6E
 @lbl_C33E71:
 	sta.b wTemp02
 	tya
 	bmi @lbl_C33EA5
 	lda.b wTemp01,s
 	bne @lbl_C33E8E
-	.db $A5,$06,$18,$7F,$BC,$A4,$D9,$90,$05,$A9,$E8,$FD,$80,$2F,$C6,$02   ;C33E7A  
-	.db $D0,$F0,$80,$29                   ;C33E8A  
+	lda.b wTemp06                            ;C33E7A
+@lbl_C33E7C:
+	clc                                     ;C33E7C
+	adc.l ShieldUpgradePriceBonus,x         ;C33E7D
+	bcc @lbl_C33E88                         ;C33E81
+	lda #$FDE8                              ;C33E83
+	bra @lbl_C33EB7                         ;C33E86
+@lbl_C33E88:
+	dec.b wTemp02                           ;C33E88
+	bne @lbl_C33E7C                         ;C33E8A
+	bra @lbl_C33EB7                         ;C33E8C
 @lbl_C33E8E:
 	lda.b wTemp06
 @lbl_C33E90:
@@ -1691,14 +1714,23 @@ ItemBuySellPriceHandler_Shield:
 	cmp.w #$7D00
 	bcc @lbl_C33E9F
 ;C33E9A
-	.db $A9,$00,$7D,$80,$18
+	lda #$7D00                              ;C33E9A
+	bra @lbl_C33EB7                         ;C33E9D
 @lbl_C33E9F:
 	dec.b wTemp02
 	bne @lbl_C33E90
 	bra @lbl_C33EB7
 @lbl_C33EA5:
-	.db $A5,$06,$38,$FF,$BC,$A4,$D9,$B0,$05,$A9,$00,$00,$80,$04,$C6,$02   ;C33EA5  
-	.db $D0,$F0                           ;C33EB5  
+	lda.b wTemp06                            ;C33EA5
+@lbl_C33EA7:
+	sec                                     ;C33EA7
+	sbc.l ShieldUpgradePriceBonus,x         ;C33EA8
+	bcs @lbl_C33EB3                         ;C33EAC
+	lda #$0000                              ;C33EAE
+	bra @lbl_C33EB7                         ;C33EB1
+@lbl_C33EB3:
+	dec.b wTemp02                           ;C33EB3
+	bne @lbl_C33EA7                         ;C33EB5
 @lbl_C33EB7:
 	sta.b wTemp00
 	pla
