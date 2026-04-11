@@ -4878,17 +4878,103 @@ func_C36928:
 	sta.b wTemp00
 	ply
 	rts
-	.db $08,$E2,$30,$A4,$00,$64,$00,$64,$01,$5A,$22,$E7,$0B,$C2,$7A,$A6   ;C3694D
-	.db $00,$10,$02,$28,$6B,$DA,$22,$AC,$10,$C2,$FA,$A5,$03,$48,$86,$00   ;C3695D
-	.db $DA,$22,$28,$11,$C2,$FA,$A5,$05,$48,$86,$00,$5A,$22,$35,$0F,$C2   ;C3696D
-	.db $7A,$84,$00,$22,$AC,$10,$C2,$A5,$01,$48,$A5,$00,$48,$A9,$03,$48   ;C3697D
-	.db $A3,$02,$85,$00,$A3,$03,$85,$01,$22,$1A,$63,$C3,$A6,$00,$A4,$01   ;C3698D  
-	.db $30,$36,$22,$5F,$F6,$C3,$A5,$00,$29,$07,$85,$02,$86,$00,$84,$01   ;C3699D  
-	.db $A3,$05,$85,$03,$A3,$04,$85,$04,$DA,$5A,$22,$86,$00,$C2,$7A,$FA   ;C369AD  
-	.db $A5,$00,$30,$14,$48,$DA,$5A,$22,$AA,$7F,$C2,$7A,$FA,$68,$86,$00   ;C369BD  
-	.db $84,$01,$85,$02,$22,$7A,$5B,$C3,$68,$3A,$10,$B3,$68,$68,$68,$68   ;C369CD  
-	.db $28,$6B,$08,$E2,$20,$AF,$78,$C1,$7E,$85,$00,$28,$6B,$08,$E2,$30   ;C369DD
-	.db $AF,$8E,$BE,$7E,$D0,$0C,$A9,$5C,$85,$00,$64,$01
+	php                                     ;C3694D
+	sep #$30                                ;C3694E
+	ldy $00                                 ;C36950
+	stz $00                                 ;C36952
+	stz $01                                 ;C36954
+	phy                                     ;C36956
+	jsl $C20BE7                             ;C36957
+	ply                                     ;C3695B
+	ldx $00                                 ;C3695C
+	bpl @lbl_C36962                         ;C3695E
+	plp                                     ;C36960
+	rtl                                     ;C36961
+@lbl_C36962:
+	phx                                     ;C36962
+	jsl $C210AC                             ;C36963
+	plx                                     ;C36967
+	lda $03                                 ;C36968
+	pha                                     ;C3696A
+	stx $00                                 ;C3696B
+	phx                                     ;C3696D
+	jsl $C21128                             ;C3696E
+	plx                                     ;C36972
+	lda $05                                 ;C36973
+	pha                                     ;C36975
+	stx $00                                 ;C36976
+	phy                                     ;C36978
+	jsl $C20F35                             ;C36979
+	ply                                     ;C3697D
+	sty $00                                 ;C3697E
+	jsl $C210AC                             ;C36980
+	lda $01                                 ;C36984
+	pha                                     ;C36986
+	lda $00                                 ;C36987
+	pha                                     ;C36989
+	lda #$03                                ;C3698A
+@lbl_C3698C:
+	pha                                     ;C3698C
+	lda $02,s                               ;C3698D
+	sta $00                                 ;C3698F
+	lda $03,s                               ;C36991
+	sta $01                                 ;C36993
+	jsl $C3631A                             ;C36995
+	ldx $00                                 ;C36999
+	ldy $01                                 ;C3699B
+	bmi @lbl_C369D5                         ;C3699D
+	jsl $C3F65F                             ;C3699F
+	lda $00                                 ;C369A3
+	and #$07                                ;C369A5
+	sta $02                                 ;C369A7
+	stx $00                                 ;C369A9
+	sty $01                                 ;C369AB
+	lda $05,s                               ;C369AD
+	sta $03                                 ;C369AF
+	lda $04,s                               ;C369B1
+	sta $04                                 ;C369B3
+	phx                                     ;C369B5
+	phy                                     ;C369B6
+	jsl $C20086                             ;C369B7
+	ply                                     ;C369BB
+	plx                                     ;C369BC
+	lda $00                                 ;C369BD
+	bmi @lbl_C369D5                         ;C369BF
+	pha                                     ;C369C1
+	phx                                     ;C369C2
+	phy                                     ;C369C3
+	jsl $C27FAA                             ;C369C4
+	ply                                     ;C369C8
+	plx                                     ;C369C9
+	pla                                     ;C369CA
+	stx $00                                 ;C369CB
+	sty $01                                 ;C369CD
+	sta $02                                 ;C369CF
+	jsl $C35B7A                             ;C369D1
+@lbl_C369D5:
+	pla                                     ;C369D5
+	dec a                                   ;C369D6
+	bpl @lbl_C3698C                         ;C369D7
+	pla                                     ;C369D9
+	pla                                     ;C369DA
+	pla                                     ;C369DB
+	pla                                     ;C369DC
+	plp                                     ;C369DD
+	rtl                                     ;C369DE
+	php                                     ;C369DF
+	sep #$20                                ;C369E0
+	lda $7EC178                             ;C369E2
+	sta $00                                 ;C369E6
+	plp                                     ;C369E8
+	rtl                                     ;C369E9
+	php                                     ;C369EA
+	sep #$30                                ;C369EB
+	lda $7EBE8E                             ;C369ED
+	.db $D0,$0C   ;C369F1
+	lda #$5C                                ;C369F3
+	sta $00                                 ;C369F5
+	stz $01                                 ;C369F7
+.INDEX 16
 	jsl.l DisplayMessage
 	plp                                     ;C369FD
 	rtl                                     ;C369FE
@@ -9052,19 +9138,109 @@ func_C39C97:
 @lbl_C39CCC:
 	plp
 	rts
-	.db $BF,$66,$C1,$7E,$C9,$00,$D0,$F3,$BF,$7A,$BE,$7E,$38,$FF,$66,$BE   ;C39CCE  
-	.db $7E,$3A,$4A,$90,$E6,$BF,$84,$BE,$7E,$38,$FF,$70,$BE,$7E,$3A,$4A   ;C39CDE  
-	.db $90,$D9,$BF,$66,$C1,$7E,$09,$80,$9F,$66,$C1,$7E,$BF,$66,$BE,$7E   ;C39CEE  
-	.db $1A,$1A,$85,$00,$BF,$70,$BE,$7E,$1A,$1A,$85,$01,$BF,$7A,$BE,$7E   ;C39CFE
-	.db $3A,$3A,$85,$02,$BF,$84,$BE,$7E,$3A,$3A,$85,$03,$20,$3E,$9D,$BF   ;C39D0E
-	.db $66,$BE,$7E,$1A,$85,$00,$BF,$70,$BE,$7E,$1A,$85,$01,$BF,$7A,$BE   ;C39D1E  
-	.db $7E,$3A,$85,$02,$BF,$84,$BE,$7E,$3A,$85,$03,$20,$3E,$9D,$28,$60   ;C39D2E  
-	.db $DA,$A5,$00,$48,$A5,$01,$48,$A5,$02,$1A,$48,$A5,$03,$1A,$48,$A3   ;C39D3E
-	.db $03,$A8,$98,$C3,$01,$B0,$31,$A3,$04,$AA,$8A,$C3,$02,$B0,$25,$22   ;C39D4E  
-	.db $5F,$F6,$C3,$A5,$00,$30,$19,$86,$00,$84,$01,$20,$30,$A1,$A5,$00   ;C39D5E  
-	.db $D0,$0E,$86,$00,$84,$01,$A9,$B0,$85,$02,$DA,$22,$BE,$6C,$C3,$FA   ;C39D6E  
-	.db $E8,$E8,$80,$D6,$C8,$C8,$80,$CA   ;C39D7E
-	.db $68,$68,$68,$68,$FA,$60           ;C39D86
+	lda $7EC166,x                           ;C39CCE
+	cmp #$00                                ;C39CD2
+	.db $D0,$F3   ;C39CD4
+	lda $7EBE7A,x                           ;C39CD6
+	sec                                     ;C39CDA
+	sbc $7EBE66,x                           ;C39CDB
+	dec a                                   ;C39CDF
+	lsr a                                   ;C39CE0
+	.db $90,$E6   ;C39CE1
+	lda $7EBE84,x                           ;C39CE3
+	sec                                     ;C39CE7
+	sbc $7EBE70,x                           ;C39CE8
+	dec a                                   ;C39CEC
+	lsr a                                   ;C39CED
+	.db $90,$D9   ;C39CEE
+	lda $7EC166,x                           ;C39CF0
+	ora #$80                                ;C39CF4
+	sta $7EC166,x                           ;C39CF6
+	lda $7EBE66,x                           ;C39CFA
+	inc a                                   ;C39CFE
+	inc a                                   ;C39CFF
+	sta $00                                 ;C39D00
+	lda $7EBE70,x                           ;C39D02
+	inc a                                   ;C39D06
+	inc a                                   ;C39D07
+	sta $01                                 ;C39D08
+	lda $7EBE7A,x                           ;C39D0A
+	dec a                                   ;C39D0E
+	dec a                                   ;C39D0F
+	sta $02                                 ;C39D10
+	lda $7EBE84,x                           ;C39D12
+	dec a                                   ;C39D16
+	dec a                                   ;C39D17
+	sta $03                                 ;C39D18
+	jsr $9D3E                               ;C39D1A
+	lda $7EBE66,x                           ;C39D1D
+	inc a                                   ;C39D21
+	sta $00                                 ;C39D22
+	lda $7EBE70,x                           ;C39D24
+	inc a                                   ;C39D28
+	sta $01                                 ;C39D29
+	lda $7EBE7A,x                           ;C39D2B
+	dec a                                   ;C39D2F
+	sta $02                                 ;C39D30
+	lda $7EBE84,x                           ;C39D32
+	dec a                                   ;C39D36
+	sta $03                                 ;C39D37
+	jsr $9D3E                               ;C39D39
+	plp                                     ;C39D3C
+	rts                                     ;C39D3D
+	phx                                     ;C39D3E
+	lda $00                                 ;C39D3F
+	pha                                     ;C39D41
+	lda $01                                 ;C39D42
+	pha                                     ;C39D44
+	lda $02                                 ;C39D45
+	inc a                                   ;C39D47
+	pha                                     ;C39D48
+	lda $03                                 ;C39D49
+	inc a                                   ;C39D4B
+	pha                                     ;C39D4C
+	lda $03,s                               ;C39D4D
+	tay                                     ;C39D4F
+@lbl_C39D50:
+	tya                                     ;C39D50
+	cmp $01,s                               ;C39D51
+	bcs @lbl_C39D86                         ;C39D53
+	lda $04,s                               ;C39D55
+	tax                                     ;C39D57
+@lbl_C39D58:
+	txa                                     ;C39D58
+	cmp $02,s                               ;C39D59
+	bcs @lbl_C39D82                         ;C39D5B
+	jsl $C3F65F                             ;C39D5D
+	lda $00                                 ;C39D61
+	bmi @lbl_C39D7E                         ;C39D63
+	stx $00                                 ;C39D65
+	sty $01                                 ;C39D67
+	jsr $A130                               ;C39D69
+	lda $00                                 ;C39D6C
+	bne @lbl_C39D7E                         ;C39D6E
+	stx $00                                 ;C39D70
+	sty $01                                 ;C39D72
+	lda #$B0                                ;C39D74
+	sta $02                                 ;C39D76
+	phx                                     ;C39D78
+	jsl $C36CBE                             ;C39D79
+	plx                                     ;C39D7D
+@lbl_C39D7E:
+	inx                                     ;C39D7E
+	inx                                     ;C39D7F
+	bra @lbl_C39D58                         ;C39D80
+@lbl_C39D82:
+	iny                                     ;C39D82
+	iny                                     ;C39D83
+	bra @lbl_C39D50                         ;C39D84
+@lbl_C39D86:
+	pla                                     ;C39D86
+	pla                                     ;C39D87
+	pla                                     ;C39D88
+	pla                                     ;C39D89
+	plx                                     ;C39D8A
+	rts                                     ;C39D8B
 
 func_C39D8C:
 	php
@@ -9535,18 +9711,101 @@ func_C3A114:
 
 func_C3D219:
 	rtl
-	.db $08,$E2,$30,$22,$82,$D2,$C3,$A5,$00,$C9,$FF,$F0,$14,$85,$00,$22   ;C3D21A
-	.db $5D,$03,$C3,$A5,$00,$48,$22,$03,$62,$C3,$68,$85,$02,$22,$A2,$5B   ;C3D22A  
-	.db $C3,$22,$E6,$27,$C6,$A5,$00,$48,$22,$71,$27,$C6,$A5,$00,$48,$A2   ;C3D23A  
-	.db $00,$BF,$81,$D2,$C3,$30,$2C,$A8,$BF,$82,$D2,$C3,$C3,$02,$D0,$1E   ;C3D24A
-	.db $BF,$83,$D2,$C3,$C3,$01,$D0,$16,$DA,$84,$00,$22,$5D,$03,$C3,$A5   ;C3D25A  
-	.db $00,$48,$22,$03,$62,$C3,$68,$85,$02,$22,$A2,$5B,$C3,$FA,$E8,$E8   ;C3D26A
-	.db $E8,$80,$CE,$68,$68,$28,$6B,$FF,$08,$E2,$30,$A9,$FF,$85,$00,$28   ;C3D27A
-	.db $6B,$22,$71,$27,$C6,$A5,$00,$48,$22,$E6,$27,$C6,$A6,$00,$E0,$00   ;C3D28A
-	.db $F0,$0A,$E0,$01,$F0,$0C,$E0,$02,$F0,$0E,$80,$1E,$A0,$E1,$A9,$09   ;C3D29A  
-	.db $80,$0A,$A0,$E2,$A9,$20,$80,$04,$A0,$E3,$A9,$20,$C3,$01,$B0,$0A   ;C3D2AA  
-	.db $5A,$22,$7E,$48,$C2,$7A,$A5,$00,$F0,$02,$A0,$FF,$68,$84,$00,$28   ;C3D2BA
-	.db $6B                               ;C3D2CA
+	php                                     ;C3D21A
+	sep #$30                                ;C3D21B
+	jsl $C3D282                             ;C3D21D
+	lda $00                                 ;C3D221
+	cmp #$FF                                ;C3D223
+	beq @lbl_C3D23B                         ;C3D225
+	sta $00                                 ;C3D227
+	jsl $C3035D                             ;C3D229
+	lda $00                                 ;C3D22D
+	pha                                     ;C3D22F
+	jsl $C36203                             ;C3D230
+	pla                                     ;C3D234
+	sta $02                                 ;C3D235
+	jsl $C35BA2                             ;C3D237
+@lbl_C3D23B:
+	jsl $C627E6                             ;C3D23B
+	lda $00                                 ;C3D23F
+	pha                                     ;C3D241
+	jsl $C62771                             ;C3D242
+	lda $00                                 ;C3D246
+	pha                                     ;C3D248
+	ldx #$00                                ;C3D249
+@lbl_C3D24B:
+	lda $C3D281,x                           ;C3D24B
+	bmi @lbl_C3D27D                         ;C3D24F
+	tay                                     ;C3D251
+	lda $C3D282,x                           ;C3D252
+	cmp $02,s                               ;C3D256
+	bne @lbl_C3D278                         ;C3D258
+	lda $C3D283,x                           ;C3D25A
+	cmp $01,s                               ;C3D25E
+	bne @lbl_C3D278                         ;C3D260
+	phx                                     ;C3D262
+	sty $00                                 ;C3D263
+	jsl $C3035D                             ;C3D265
+	lda $00                                 ;C3D269
+	pha                                     ;C3D26B
+	jsl $C36203                             ;C3D26C
+	pla                                     ;C3D270
+	sta $02                                 ;C3D271
+	jsl $C35BA2                             ;C3D273
+	plx                                     ;C3D277
+@lbl_C3D278:
+	inx                                     ;C3D278
+	inx                                     ;C3D279
+	inx                                     ;C3D27A
+	bra @lbl_C3D24B                         ;C3D27B
+@lbl_C3D27D:
+	pla                                     ;C3D27D
+	pla                                     ;C3D27E
+	plp                                     ;C3D27F
+	rtl                                     ;C3D280
+	sbc $30E208,x                           ;C3D281
+	lda #$FF                                ;C3D285
+	sta $00                                 ;C3D287
+	plp                                     ;C3D289
+	rtl                                     ;C3D28A
+	jsl $C62771                             ;C3D28B
+	lda $00                                 ;C3D28F
+	pha                                     ;C3D291
+	jsl $C627E6                             ;C3D292
+	ldx $00                                 ;C3D296
+	cpx #$00                                ;C3D298
+	beq @lbl_C3D2A6                         ;C3D29A
+	cpx #$01                                ;C3D29C
+	beq @lbl_C3D2AC                         ;C3D29E
+	cpx #$02                                ;C3D2A0
+	beq @lbl_C3D2B2                         ;C3D2A2
+	bra @lbl_C3D2C4                         ;C3D2A4
+@lbl_C3D2A6:
+	ldy #$E1                                ;C3D2A6
+	lda #$09                                ;C3D2A8
+	bra @lbl_C3D2B6                         ;C3D2AA
+@lbl_C3D2AC:
+	ldy #$E2                                ;C3D2AC
+	lda #$20                                ;C3D2AE
+	bra @lbl_C3D2B6                         ;C3D2B0
+@lbl_C3D2B2:
+	ldy #$E3                                ;C3D2B2
+	lda #$20                                ;C3D2B4
+@lbl_C3D2B6:
+	cmp $01,s                               ;C3D2B6
+	bcs @lbl_C3D2C4                         ;C3D2B8
+	phy                                     ;C3D2BA
+	jsl $C2487E                             ;C3D2BB
+	ply                                     ;C3D2BF
+	lda $00                                 ;C3D2C0
+	beq @lbl_C3D2C6                         ;C3D2C2
+@lbl_C3D2C4:
+	ldy #$FF                                ;C3D2C4
+@lbl_C3D2C6:
+	pla                                     ;C3D2C6
+	sty $00                                 ;C3D2C7
+	plp                                     ;C3D2C9
+	rtl                                     ;C3D2CA
 
 func_C3D2CB:
 	rtl
