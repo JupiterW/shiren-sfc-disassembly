@@ -2962,7 +2962,7 @@ func_C62D0F:
 	sep #$20 ;A->8
 	lda.b #$13
 	sta.b wTemp00
-	call_savebank func_C21128
+	call_savebank GetCharacterStats
 	lda.b wTemp01
 	sta.l $7ED62D
 	lda.b #$00

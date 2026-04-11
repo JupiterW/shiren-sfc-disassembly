@@ -749,7 +749,7 @@ func_C104AB:
 	rts                                     ;C10700
 	stx $00                                 ;C10701
 	phx                                     ;C10703
-	jsl $C21128                             ;C10704
+	jsl.l GetCharacterStats                             ;C10704
 	plx                                     ;C10708
 	lda $01                                 ;C10709
 	lsr a                                   ;C1070B
@@ -2443,7 +2443,7 @@ func_C111EA:
 	rts                                     ;C11700
 	lda $03,s                               ;C11701
 	sta $00                                 ;C11703
-	jsl $C21128                             ;C11705
+	jsl.l GetCharacterStats                             ;C11705
 	lda $01                                 ;C11709
 	lsr a                                   ;C1170B
 	lsr a                                   ;C1170C
@@ -2490,7 +2490,7 @@ func_C1173F:
 	jsl.l func_C62405
 	lda.b #$13
 	sta.b wTemp00
-	jsl.l func_C21128
+	jsl.l GetCharacterStats
 	lda.b wTemp00
 	cmp.b wTemp01
 	bne @lbl_C1178A
@@ -3452,7 +3452,7 @@ func_C11B11:
 	.db $D0,$42   ;C120B8
 	lda $03,s                               ;C120BA
 	sta $00                                 ;C120BC
-	jsl $C21128                             ;C120BE
+	jsl.l GetCharacterStats                             ;C120BE
 	lda $01                                 ;C120C2
 	lsr a                                   ;C120C4
 	lsr a                                   ;C120C5
@@ -5430,7 +5430,7 @@ func_C13228:
 	pha
 	lda.b wTemp01,s
 	sta.b wTemp00
-	jsl.l func_C21128
+	jsl.l GetCharacterStats
 	lda.b wTemp00
 	beq @lbl_C132DB
 	lda.b wTemp01,s

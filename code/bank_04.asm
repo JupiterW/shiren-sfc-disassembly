@@ -12701,7 +12701,7 @@ func_C49602:
 @lbl_C49643:
 	lda.b #$13
 	sta.b w7f0000
-	call_savebank func_C21128
+	call_savebank GetCharacterStats
 	stz.b w7f0002
 	tdc
 	lda.b w7f0000
@@ -14160,7 +14160,7 @@ func_C4A565:
 	jsl.l func_C4A627
 	lda.w #$0013
 	sta.b wTemp00
-	jsl.l func_C21128
+	jsl.l GetCharacterStats
 	lda.b wTemp07
 	pha
 	jsl.l func_C21167
@@ -14177,7 +14177,7 @@ func_C4A565:
 	jsl.l func_C4A627
 	lda.w #$0013
 	sta.b wTemp00
-	jsl.l func_C21128
+	jsl.l GetCharacterStats
 	lda.b wTemp02
 	ldx.b wTemp04
 	ldy.b wTemp06
@@ -15047,7 +15047,7 @@ func_C4AD29:
 	jsl.l func_C4A627
 	lda.l $7FAC1D
 	sta.b wTemp00
-	jsl.l func_C21128
+	jsl.l GetCharacterStats
 	lda.b wTemp00
 	sta.b wTemp02
 	lda.b wTemp01
@@ -15061,7 +15061,7 @@ func_C4AD29:
 	jsl.l func_C4A627
 	lda.l $7FAC1D
 	sta.b wTemp00
-	jsl.l func_C21128
+	jsl.l GetCharacterStats
 	lda.b wTemp07
 	sta.b wTemp02
 	ldx.w #$0199

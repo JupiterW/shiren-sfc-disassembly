@@ -1941,7 +1941,10 @@ func_C210FF:
 	plp
 	rtl
 
-func_C21128:
+; Loads character stats to temp registers.
+; Input: wTemp00 = character index
+; Output: wTemp00=HP, wTemp01=MaxHP, wTemp02-04=Exp, wTemp05=Level, wTemp06=Def, wTemp07=Atk
+GetCharacterStats:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16

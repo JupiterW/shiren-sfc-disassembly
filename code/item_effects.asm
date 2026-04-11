@@ -890,7 +890,7 @@ MedicinalHerbUseEffect:
 	rep #$10 ;XY->16
 	lda.b #$13
 	sta.b wTemp00
-	jsl.l func_C21128
+	jsl.l GetCharacterStats
 	lda.b wTemp01
 	sec
 	sbc.b wTemp00
@@ -936,7 +936,7 @@ RestorativeHerbUseEffect:
 	rep #$10 ;XY->16
 	lda.b #$13
 	sta.b wTemp00
-	jsl.l func_C21128
+	jsl.l GetCharacterStats
 	lda.b wTemp01
 	sec
 	sbc.b wTemp00
@@ -1039,7 +1039,7 @@ RestorativeHerbUseEffect:
 	sep #$30                                ;C30FE8
 	lda #$13                                ;C30FEA
 	sta $00                                 ;C30FEC
-	jsl $C21128                             ;C30FEE
+	jsl.l GetCharacterStats                             ;C30FEE
 	lda $01                                 ;C30FF2
 	cmp $00                                 ;C30FF4
 	beq @lbl_C30FFD                         ;C30FF6
@@ -1180,7 +1180,7 @@ MisfortuneHerbThrowEffect:
 	sep #$30                                ;C31103
 	ldx $00                                 ;C31105
 	phx                                     ;C31107
-	jsl $C21128                             ;C31108
+	jsl.l GetCharacterStats                             ;C31108
 	plx                                     ;C3110C
 	lda $00                                 ;C3110D
 	pha                                     ;C3110F
@@ -1197,7 +1197,7 @@ MisfortuneHerbThrowEffect:
 	plx                                     ;C31122
 	stx $00                                 ;C31123
 	phx                                     ;C31125
-	jsl $C21128                             ;C31126
+	jsl.l GetCharacterStats                             ;C31126
 	plx                                     ;C3112A
 	pla                                     ;C3112B
 	sec                                     ;C3112C
@@ -1210,7 +1210,7 @@ MisfortuneHerbThrowEffect:
 	plx                                     ;C3113A
 	stx $00                                 ;C3113B
 	phx                                     ;C3113D
-	jsl $C21128                             ;C3113E
+	jsl.l GetCharacterStats                             ;C3113E
 	plx                                     ;C31142
 	pla                                     ;C31143
 	sec                                     ;C31144
@@ -1228,7 +1228,7 @@ IllLuckHerbThrowEffect:
 	sep #$30                                ;C31158
 	ldx $00                                 ;C3115A
 	phx                                     ;C3115C
-	jsl $C21128                             ;C3115D
+	jsl.l GetCharacterStats                             ;C3115D
 	plx                                     ;C31161
 	stx $00                                 ;C31162
 	lda #$9D                                ;C31164
@@ -1250,7 +1250,7 @@ IllLuckHerbThrowEffect:
 	plx                                     ;C31185
 	stx $00                                 ;C31186
 	phx                                     ;C31188
-	jsl $C21128                             ;C31189
+	jsl.l GetCharacterStats                             ;C31189
 	plx                                     ;C3118D
 	lda #$00                                ;C3118E
 	xba                                     ;C31190
@@ -1367,7 +1367,7 @@ PoisonHerbUseEffect:
 	pha                                     ;C31289
 	lda #$13                                ;C3128A
 	sta $00                                 ;C3128C
-	jsl $C21128                             ;C3128E
+	jsl.l GetCharacterStats                             ;C3128E
 	lda #$01                                ;C31292
 	sec                                     ;C31294
 	sbc $00                                 ;C31295
@@ -1437,7 +1437,7 @@ func_C312FF:
 	jmp $11EF                               ;C31312
 @lbl_C31315:
 	phx
-	jsl.l func_C21128
+	jsl.l GetCharacterStats
 	plx
 	lda.b wTemp07
 	lsr a
@@ -1891,7 +1891,7 @@ SpecialOnigiriUseEffect:
 	rep #$10                                ;C316C1
 	lda #$13                                ;C316C3
 	sta $00                                 ;C316C5
-	jsl $C21128                             ;C316C7
+	jsl.l GetCharacterStats                             ;C316C7
 	lda $01                                 ;C316CB
 	sec                                     ;C316CD
 	sbc $00                                 ;C316CE
@@ -2868,7 +2868,7 @@ BufusStaffUseEffect:
 	jsl.l func_C625B9
 	plx
 	stx.b wTemp00
-	jsl.l func_C21128
+	jsl.l GetCharacterStats
 	ply
 	ldx.b #$E0
 	stx.b wTemp00
@@ -2930,7 +2930,7 @@ Jumptable_C31EF3:
 func_C31EFB:
 	sep #$30 ;AXY->8
 	stx.b wTemp00
-	jsl.l func_C21128
+	jsl.l GetCharacterStats
 	lda.b wTemp05
 	dec a
 	asl a
@@ -3156,7 +3156,7 @@ PainSplitStaffUseEffect:
 	ldy $00                                 ;C320B9
 	ldx $01                                 ;C320BB
 	phx                                     ;C320BD
-	jsl $C21128                             ;C320BE
+	jsl.l GetCharacterStats                             ;C320BE
 	plx                                     ;C320C2
 	lda $00                                 ;C320C3
 	cmp #$01                                ;C320C5
@@ -3174,7 +3174,7 @@ PainSplitStaffUseEffect:
 @lbl_C320DB:
 	stx $00                                 ;C320DB
 	phx                                     ;C320DD
-	jsl $C21128                             ;C320DE
+	jsl.l GetCharacterStats                             ;C320DE
 	plx                                     ;C320E2
 	lda $00                                 ;C320E3
 	lsr a                                   ;C320E5
@@ -3193,7 +3193,7 @@ PainSplitStaffUseEffect:
 	ldx $01                                 ;C320FC
 	stx $00                                 ;C320FE
 	phx                                     ;C32100
-	jsl $C21128                             ;C32101
+	jsl.l GetCharacterStats                             ;C32101
 	plx                                     ;C32105
 	lda $00                                 ;C32106
 	lsr a                                   ;C32108
@@ -3247,7 +3247,7 @@ NeedScrollUseEffect:
 	ldy.b #$01
 	lda.b #$13
 	sta.b wTemp00
-	jsl.l func_C21128
+	jsl.l GetCharacterStats
 	lda.b wTemp01
 	sec
 	sbc.b wTemp00
@@ -4201,7 +4201,7 @@ func_C328E9:
 	rep #$10 ;XY->16
 	lda.b #$13
 	sta.b wTemp00
-	jsl.l func_C21128
+	jsl.l GetCharacterStats
 	lda.b wTemp01
 	sec
 	sbc.b wTemp00
@@ -6105,7 +6105,7 @@ func_C335FE:
 	ldx.b wTemp00
 	sty.b wTemp00
 	phx
-	jsl.l func_C21128
+	jsl.l GetCharacterStats
 	plx
 	lda.b wTemp07
 	sta.b wTemp02
@@ -6358,7 +6358,7 @@ func_C335FE:
 	cpx #$23                                ;C338A6
 	bne @lbl_C33878                         ;C338A8
 	pha                                     ;C338AA
-	jsl $C21128                             ;C338AB
+	jsl.l GetCharacterStats                             ;C338AB
 	lda $00                                 ;C338AF
 	and #$00FF                              ;C338B1
 	sta $02                                 ;C338B4

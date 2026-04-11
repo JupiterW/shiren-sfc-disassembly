@@ -1773,7 +1773,7 @@ func_C1681A:
 @lbl_C16824:
 	stx.b wTemp00
 	phx
-	jsl.l func_C21128
+	jsl.l GetCharacterStats
 	plx
 	lda.b wTemp00
 	beq @lbl_C1685B

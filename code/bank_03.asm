@@ -5601,7 +5601,7 @@ func_C36928:
 	pha                                     ;C3696A
 	stx $00                                 ;C3696B
 	phx                                     ;C3696D
-	jsl $C21128                             ;C3696E
+	jsl.l GetCharacterStats                             ;C3696E
 	plx                                     ;C36972
 	lda $05                                 ;C36973
 	pha                                     ;C36975
@@ -14286,7 +14286,7 @@ DATA8_C3DA1C:
 	rts
 	lda $00                                 ;C3DCFF
 	pha                                     ;C3DD01
-	jsl $C21128                             ;C3DD02
+	jsl.l GetCharacterStats                             ;C3DD02
 	lda $00                                 ;C3DD06
 	dec a                                   ;C3DD08
 	beq @lbl_C3DD17                         ;C3DD09
@@ -14315,7 +14315,7 @@ DATA8_C3DA1C:
 @lbl_C3DD35:
 	lda #$13                                ;C3DD35
 	sta $00                                 ;C3DD37
-	jsl $C21128                             ;C3DD39
+	jsl.l GetCharacterStats                             ;C3DD39
 	lda $00                                 ;C3DD3D
 	lsr a                                   ;C3DD3F
 	adc #$00                                ;C3DD40
@@ -14342,7 +14342,7 @@ func_C3DD57:
 @lbl_C3DD65:
 	lda.b #$13
 	sta.b wTemp00
-	jsl.l func_C21128
+	jsl.l GetCharacterStats
 	lda.b wTemp00
 	dec a
 	cpy.w #$0001
@@ -14363,7 +14363,7 @@ func_C3DD85:
 	lda $00                                 ;C3DD8A
 	pha                                     ;C3DD8C
 	phx                                     ;C3DD8D
-	jsl.l func_C21128                             ;C3DD8E
+	jsl.l GetCharacterStats                             ;C3DD8E
 	plx                                     ;C3DD92
 	lda $05                                 ;C3DD93
 	pha                                     ;C3DD95
@@ -14435,7 +14435,7 @@ func_C3DD85:
 @lbl_C3DE13:
 	stx $00                                 ;C3DE13
 	phx                                     ;C3DE15
-	jsl $C21128                             ;C3DE16
+	jsl.l GetCharacterStats                             ;C3DE16
 	plx                                     ;C3DE1A
 	stx $00                                 ;C3DE1B
 	lda $06                                 ;C3DE1D

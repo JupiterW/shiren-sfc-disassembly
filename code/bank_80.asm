@@ -11524,7 +11524,7 @@ func_80E81B:
 	beq @lbl_80E899
 	lda.w #$0013
 	sta.b wTemp00
-	jsl.l func_C21128
+	jsl.l GetCharacterStats
 	lda.b wTemp00
 	and.w #$00FF
 	sta.b wTemp04
@@ -11581,7 +11581,7 @@ func_80E8ED:
 	rep #$10 ;XY->16
 	lda.b #$13
 	sta.b wTemp00
-	jsl.l func_C21128
+	jsl.l GetCharacterStats
 	bankswitch 0x7F
 	lda.b #$01
 	sta.w $8E42
