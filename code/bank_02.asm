@@ -5702,7 +5702,7 @@ func_C24167:
 	.db $80,$1A   ;C24291
 	sta $00                                 ;C24293
 	pha                                     ;C24295
-	jsl $C34003                             ;C24296
+	jsl.l SaveAndClearItemCurseState                ;C24296
 	pla                                     ;C2429A
 	ldx $00                                 ;C2429B
 	.db $F0,$0E   ;C2429D
@@ -5722,7 +5722,7 @@ func_C24167:
 @lbl_C242B7:
 	sta $00                                 ;C242B7
 	phx                                     ;C242B9
-	jsl $C34003                             ;C242BA
+	jsl.l SaveAndClearItemCurseState                ;C242BA
 	plx                                     ;C242BE
 	inx                                     ;C242BF
 @lbl_C242C0:

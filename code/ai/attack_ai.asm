@@ -869,7 +869,7 @@ func_C215AB:
 	;bra @lbl_C21A4C
 	;sta.b wTemp00
 	;phx
-	;jsl.l func_C34016
+	;jsl.l TryCurseEquippableItem
 	;plx
 	;lda.b wTemp00
 	;bne @lbl_C21A4C
@@ -1178,7 +1178,7 @@ DATA8_C21B97:
 	;pha
 	;sta.b wTemp00
 	;phx
-	;jsl.l func_C34003
+	;jsl.l SaveAndClearItemCurseState
 	;plx
 	;lda.b wTemp00
 	;pha
@@ -1188,7 +1188,7 @@ DATA8_C21B97:
 	;beq @lbl_C21CCF
 	;lda.b wTemp01,s
 	;sta.b wTemp00
-	;jsl.l func_C34016
+	;jsl.l TryCurseEquippableItem
 	;lda.b #$13
 	;sta.b wTemp00
 	;lda.b #$01

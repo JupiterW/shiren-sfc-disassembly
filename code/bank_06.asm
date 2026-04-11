@@ -352,7 +352,7 @@ func_C602C1:
 func_C602DC:
 	php
 	sep #$20 ;A->8
-	jsl.l func_C3407C
+	jsl.l RepairOrphanedPotItems
 	lda.b wTemp00
 	bne @lbl_C602E9
 	plp

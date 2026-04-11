@@ -1932,6 +1932,7 @@ ItemBuySellPriceHandler_Jar:
 	sta $00                                 ;C33FF2
 	pla                                     ;C33FF4
 	bra @lbl_C33FCA                         ;C33FF5
+ApplyBlessingScrollEffect:
 	php                                     ;C33FF7
 	sep #$20                                ;C33FF8
 	lda #$7E                                ;C33FFA
@@ -1940,6 +1941,7 @@ ItemBuySellPriceHandler_Jar:
 	jsr $1C70                               ;C33FFE
 	plp                                     ;C34001
 	rtl                                     ;C34002
+SaveAndClearItemCurseState:
 	php                                     ;C34003
 	sep #$30                                ;C34004
 	ldx $00                                 ;C34006
@@ -1949,6 +1951,7 @@ ItemBuySellPriceHandler_Jar:
 	sta $7E8C0C,x                           ;C34010
 	plp                                     ;C34014
 	rtl                                     ;C34015
+TryCurseEquippableItem:
 	php                                     ;C34016
 	ldx $00                                 ;C34017
 	lda $7E8B8C,x                           ;C34019
@@ -2010,7 +2013,7 @@ ConsumeBlastShieldDurability:
 	plp
 	rtl
 
-func_C3407C:
+RepairOrphanedPotItems:
 	php
 	sep #$30 ;AXY->8
 	bankswitch 0x7E

@@ -375,7 +375,7 @@ func_C10189:
 	sty $00                                 ;C103BF
 	stx $02                                 ;C103C1
 	jsl.l DisplayMessage
-	jsl $C33FF7                             ;C103C7
+	jsl.l ApplyBlessingScrollEffect                 ;C103C7
 	rts                                     ;C103CB
 	sep #$30                                ;C103CC
 	lda $7E8871,x                           ;C103CE
