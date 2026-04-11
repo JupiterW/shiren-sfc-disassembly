@@ -9329,10 +9329,28 @@ func_C3991D:
 	jsl.l func_C62B58
 	lda.b wTemp00
 	beq @lbl_C39955
-	.db $22,$68,$43,$C2,$A5,$00,$F0,$0A,$A2,$03,$A9,$06,$8F,$76,$C1,$7E   ;C39928  
-	.db $80,$17,$A2,$01,$22,$E6,$27,$C6,$A5,$00,$C9,$01,$F0,$0B,$22,$5F   ;C39938  
-	.db $F6,$C3,$A5,$00,$89,$01,$F0,$01   ;C39948  
-	.db $E8,$86,$00,$28,$60               ;C39950
+	jsl $C24368                             ;C39928
+	lda $00                                 ;C3992C
+	beq @lbl_C3993A                         ;C3992E
+	ldx #$03                                ;C39930
+	lda #$06                                ;C39932
+	sta $7EC176                             ;C39934
+	bra @lbl_C39951                         ;C39938
+@lbl_C3993A:
+	ldx #$01                                ;C3993A
+	jsl $C627E6                             ;C3993C
+	lda $00                                 ;C39940
+	cmp #$01                                ;C39942
+	beq @lbl_C39951                         ;C39944
+	jsl $C3F65F                             ;C39946
+	lda $00                                 ;C3994A
+	bit #$01                                ;C3994C
+	beq @lbl_C39951                         ;C3994E
+	inx                                     ;C39950
+@lbl_C39951:
+	stx $00                                 ;C39951
+	plp                                     ;C39953
+	rts                                     ;C39954
 @lbl_C39955:
 	ldx.b #$00
 	lda.l $7EC179
@@ -10403,10 +10421,36 @@ func_C3A114:
 	ply
 	plx
 	rts
-	.db $DA,$5A,$08,$E2,$30,$A5,$01,$48,$A5,$00,$48,$A2,$03,$A3,$01,$18   ;C3A130
-	.db $7F,$ED,$92,$C3,$85,$00,$A3,$02,$18,$7F,$F5,$92,$C3,$85,$01,$20   ;C3A140  
-	.db $14,$A1,$A5,$00,$D0,$03,$CA,$10   ;C3A150  
-	.db $E4,$68,$68,$28,$7A,$FA,$60       ;C3A158  
+	phx                                     ;C3A130
+	phy                                     ;C3A131
+	php                                     ;C3A132
+	sep #$30                                ;C3A133
+	lda $01                                 ;C3A135
+	pha                                     ;C3A137
+	lda $00                                 ;C3A138
+	pha                                     ;C3A13A
+	ldx #$03                                ;C3A13B
+@lbl_C3A13D:
+	lda $01,s                               ;C3A13D
+	clc                                     ;C3A13F
+	adc $C392ED,x                           ;C3A140
+	sta $00                                 ;C3A144
+	lda $02,s                               ;C3A146
+	clc                                     ;C3A148
+	adc $C392F5,x                           ;C3A149
+	sta $01                                 ;C3A14D
+	jsr $A114                               ;C3A14F
+	lda $00                                 ;C3A152
+	bne @lbl_C3A159                         ;C3A154
+	dex                                     ;C3A156
+	bpl @lbl_C3A13D                         ;C3A157
+@lbl_C3A159:
+	pla                                     ;C3A159
+	pla                                     ;C3A15A
+	plp                                     ;C3A15B
+	ply                                     ;C3A15C
+	plx                                     ;C3A15D
+	rts                                     ;C3A15E
 
 .include "data/unknown_data_bank3_c3a15f.asm"
 .include "data/maps/feis_problems.asm"
@@ -12071,9 +12115,27 @@ func_C3DD85:
 	sta.b wTemp01
 	jsl.l func_C228DF
 	rts
-	.db $E2,$20,$A5,$00,$48,$A9,$10,$85,$02,$22,$F6,$26,$C6,$68,$85,$00   ;C3DFF6
-	.db $22,$90,$43,$C2,$60,$E2,$20,$A5,$00,$48,$A9,$0A,$85,$01,$22,$FF   ;C3E006  
-	.db $3F,$C2,$A9,$EB,$85,$00,$64,$01,$A3,$01,$85,$02
+	sep #$20                                ;C3DFF6
+	lda $00                                 ;C3DFF8
+	pha                                     ;C3DFFA
+	lda #$10                                ;C3DFFB
+	sta $02                                 ;C3DFFD
+	jsl $C626F6                             ;C3DFFF
+	pla                                     ;C3E003
+	sta $00                                 ;C3E004
+	jsl $C24390                             ;C3E006
+	rts                                     ;C3E00A
+	sep #$20                                ;C3E00B
+	lda $00                                 ;C3E00D
+	pha                                     ;C3E00F
+	lda #$0A                                ;C3E010
+	sta $01                                 ;C3E012
+	jsl $C23FFF                             ;C3E014
+	lda #$EB                                ;C3E018
+	sta $00                                 ;C3E01A
+	stz $01                                 ;C3E01C
+	lda $01,s                               ;C3E01E
+	sta $02                                 ;C3E020
 	jsl.l DisplayMessage
 	.db $68,$85,$00,$A9,$1B,$85,$02,$22   ;C3E026
 	.db $50,$25,$C6,$60                   ;C3E02E  
