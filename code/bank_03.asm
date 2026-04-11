@@ -1976,7 +1976,7 @@ ItemBuySellPriceHandler_Jar:
 .ACCU 16
 .INDEX 16
 
-func_C34044:
+ConsumeBlastShieldDurability:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00

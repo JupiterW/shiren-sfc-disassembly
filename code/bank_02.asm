@@ -7571,7 +7571,7 @@ func_C25056:
 	sep #$30 ;AXY->8
 	lda.l $7E8970
 	sta.b wTemp00
-	jsl.l func_C34044
+	jsl.l ConsumeBlastShieldDurability
 	lda.b wTemp00
 	bne @lbl_C25090
 	lda $7E8970                             ;C25067
