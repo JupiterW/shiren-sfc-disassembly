@@ -150,12 +150,12 @@ def decode_one(data: list[int], i: int, base_addr: int | None, state: DecodeStat
     def long_addr(name: str) -> tuple[int, str]:          # 24-bit absolute
         if b(3) is None: return _trunc()
         target = b(1) | (b(2) << 8) | (b(3) << 16)
-        return 4, f"{name} ${target:06X}"
+        return 4, f"{name}.l ${target:06X}"
 
     def long_x(name: str) -> tuple[int, str]:             # 24-bit absolute,x
         if b(3) is None: return _trunc()
         target = b(1) | (b(2) << 8) | (b(3) << 16)
-        return 4, f"{name} ${target:06X},x"
+        return 4, f"{name}.l ${target:06X},x"
 
     def short_call(name: str) -> tuple[int, str]:         # JSR abs
         return absolute(name)

@@ -87,7 +87,7 @@ func_C5F118:
 	adc.b wTemp00
 	bcc @lbl_C5F122
 ;C5F120  
-	.db $E6,$02
+	inc $02                                 ;C5F120
 @lbl_C5F122:
 	tay
 	sep #$20 ;A->8
@@ -251,7 +251,7 @@ func_C5F24B:
 	adc.b wTemp00
 	bcc @lbl_C5F253
 ;C5F251  
-	.db $E6,$02
+	inc $02                                 ;C5F251
 @lbl_C5F253:
 	tay
 	phb

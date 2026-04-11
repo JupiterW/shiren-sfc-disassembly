@@ -31,6 +31,7 @@ from promote_raw_item_handler_label import (
     load_lines,
     parse_comment_addr,
     parse_label_addr,
+    parse_label_name,
     write_lines,
 )
 from raw_db_decode import DecodeState, decode_one, parse_addr
@@ -150,6 +151,11 @@ def _emit_decoded_lines(
             )
         i += table_count * 2
 
+    # Only create labels for targets that land exactly on an instruction boundary.
+    # If a branch target falls mid-instruction (misaligned data decoded as code),
+    # the label would never be placed, causing an assembler "unknown label" error.
+    insn_addr_set: set[int] = {insn.addr for insn in decoded if insn.opcode != -1}
+
     branch_labels: dict[int, str] = {}
     for insn in decoded:
         if insn.opcode in SHORT_BRANCH_OPS and insn.size >= 2:
@@ -164,7 +170,7 @@ def _emit_decoded_lines(
             target = insn.addr + 3 + disp
         else:
             continue
-        if base_addr <= target < base_addr + len(data):
+        if target in insn_addr_set:
             branch_labels.setdefault(target, f"@lbl_{target:06X}")
 
     offset = 0
@@ -177,13 +183,13 @@ def _emit_decoded_lines(
             if disp >= 0x80:
                 disp -= 0x100
             target = insn.addr + 2 + disp
-            branch_external = target not in branch_labels and not (base_addr <= target < base_addr + len(data))
+            branch_external = target not in branch_labels
         elif insn.opcode in LONG_BRANCH_OPS and insn.size >= 3:
             disp = data[offset + 1] | (data[offset + 2] << 8)
             if disp >= 0x8000:
                 disp -= 0x10000
             target = insn.addr + 3 + disp
-            branch_external = target not in branch_labels and not (base_addr <= target < base_addr + len(data))
+            branch_external = target not in branch_labels
 
         if insn.text.startswith(".db ") or branch_external:
             chunk = data[offset : offset + insn.size]
@@ -218,6 +224,9 @@ def _align_raw_segment(
     req_start: int,
     req_end: int,
     state: DecodeState,
+    *,
+    exact_start: bool = False,
+    exact_end: bool = False,
 ) -> tuple[int, int, DecodeState]:
     decode_state = copy.deepcopy(state)
     boundaries: list[tuple[int, int, DecodeState]] = []
@@ -230,19 +239,21 @@ def _align_raw_segment(
 
     aligned_start = req_start
     start_state = copy.deepcopy(state)
-    for idx, (insn_addr, offset, snap) in enumerate(boundaries):
-        next_addr = raw_start + (boundaries[idx + 1][1] if idx + 1 < len(boundaries) else len(data))
-        if insn_addr <= req_start < next_addr:
-            aligned_start = insn_addr
-            start_state = snap
-            break
+    if not exact_start:
+        for idx, (insn_addr, offset, snap) in enumerate(boundaries):
+            next_addr = raw_start + (boundaries[idx + 1][1] if idx + 1 < len(boundaries) else len(data))
+            if insn_addr <= req_start < next_addr:
+                aligned_start = insn_addr
+                start_state = snap
+                break
 
     aligned_end = req_end
-    for idx, (insn_addr, offset, _) in enumerate(boundaries):
-        next_addr = raw_start + (boundaries[idx + 1][1] if idx + 1 < len(boundaries) else len(data))
-        if insn_addr <= req_end < next_addr:
-            aligned_end = next_addr - 1
-            break
+    if not exact_end:
+        for idx, (insn_addr, offset, _) in enumerate(boundaries):
+            next_addr = raw_start + (boundaries[idx + 1][1] if idx + 1 < len(boundaries) else len(data))
+            if insn_addr <= req_end < next_addr:
+                aligned_end = next_addr - 1
+                break
 
     return aligned_start, aligned_end, start_state
 
@@ -255,13 +266,26 @@ def _compute_line_starts(lines: list[str]) -> list[int | None]:
         label_addr = parse_label_addr(line)
         comment_addr = parse_comment_addr(line)
 
+        # Determine if this is a non-local label (authoritative ROM anchor).
+        # Non-local labels like func_C2D8F0 always reset the tracker — even
+        # when the address is lower than current_addr — because the file can
+        # contain code from multiple banks.  Local labels (@lbl_*) keep the
+        # >= check: they can reference cross-bank branch targets and blindly
+        # trusting them would corrupt the tracker.
+        label_name = parse_label_name(line)
+        is_nonlocal = (
+            label_name is not None
+            and not label_name.startswith("@")
+            and not label_name.startswith(".")
+        )
+
         if current_addr is None:
             if label_addr is not None:
                 current_addr = label_addr
             elif comment_addr is not None:
                 current_addr = comment_addr
         else:
-            if label_addr is not None and label_addr >= current_addr:
+            if label_addr is not None and (is_nonlocal or label_addr >= current_addr):
                 current_addr = label_addr
             elif comment_addr is not None and comment_addr >= current_addr:
                 current_addr = comment_addr
@@ -338,7 +362,9 @@ def _rewrite_output_branches(out: list[str]) -> list[str]:
             addr = int(match.group(1), 16)
             label = labels.get(addr)
             if label is not None:
-                rewritten.append(f"{label}:")
+                label_line = f"{label}:"
+                if not rewritten or rewritten[-1] != label_line:
+                    rewritten.append(label_line)
 
         branch_match = OUT_BRANCH_RE.match(line)
         if branch_match:
@@ -356,7 +382,17 @@ def _rewrite_output_branches(out: list[str]) -> list[str]:
     return rewritten
 
 
-def build_candidate(lines: list[str], start_addr: int, end_addr: int, m_width: int, x_width: int, table16: int) -> tuple[int, int, list[str]]:
+def build_candidate(
+    lines: list[str],
+    start_addr: int,
+    end_addr: int,
+    m_width: int,
+    x_width: int,
+    table16: int,
+    *,
+    exact_start: bool = False,
+    exact_end: bool = False,
+) -> tuple[int, int, list[str]]:
     start_idx: int | None = None
     end_idx: int | None = None
     out: list[str] = []
@@ -426,7 +462,15 @@ def build_candidate(lines: list[str], start_addr: int, end_addr: int, m_width: i
                 continue
             req_start = max(start_addr, raw_start)
             req_end = min(end_addr, raw_end)
-            seg_start, seg_end, seg_state = _align_raw_segment(combined, raw_start, req_start, req_end, state)
+            seg_start, seg_end, seg_state = _align_raw_segment(
+                combined,
+                raw_start,
+                req_start,
+                req_end,
+                state,
+                exact_start=exact_start,
+                exact_end=exact_end,
+            )
             prefix = combined[: seg_start - raw_start]
             suffix = combined[seg_end - raw_start + 1 :]
             if prefix:
@@ -439,6 +483,11 @@ def build_candidate(lines: list[str], start_addr: int, end_addr: int, m_width: i
                 post_decode_state,
                 table16 if not used_table16 and seg_start == start_addr else 0,
             )
+            entry_label = branch_labels.get(seg_start)
+            if entry_label is not None and out and out[-1] == f"{entry_label}:":
+                if decoded_lines and decoded_lines[0] == f"{entry_label}:":
+                    decoded_lines = decoded_lines[1:]
+                branch_labels.pop(seg_start, None)
             # Update state to reflect what the decoded instructions do to
             # flag tracking (seg_state was deepcopied, post_decode_state
             # was mutated by _emit_decoded_lines via decode_one)
@@ -494,6 +543,8 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--m-width", type=int, choices=(8, 16), default=8, help="initial accumulator width")
     parser.add_argument("--x-width", type=int, choices=(8, 16), default=8, help="initial index width")
     parser.add_argument("--table16", type=int, default=0, help="decode first N words of the first raw segment as .dw jump-table targets")
+    parser.add_argument("--exact-start", action="store_true", help="do not realign the requested start backward to a decoded instruction boundary")
+    parser.add_argument("--exact-end", action="store_true", help="do not realign the requested end forward to a decoded instruction boundary")
     parser.add_argument("--apply", action="store_true", help="rewrite the selected cluster in place")
     parser.add_argument("--quiet", action="store_true", help="suppress candidate output; useful with --apply")
     args = parser.parse_args(argv)
@@ -507,7 +558,16 @@ def main(argv: list[str]) -> int:
     if start_addr > end_addr:
         raise SystemExit("start must be <= end")
 
-    start_idx, end_idx, out = build_candidate(lines, start_addr, end_addr, args.m_width, args.x_width, args.table16)
+    start_idx, end_idx, out = build_candidate(
+        lines,
+        start_addr,
+        end_addr,
+        args.m_width,
+        args.x_width,
+        args.table16,
+        exact_start=args.exact_start,
+        exact_end=args.exact_end,
+    )
 
     if args.apply:
         new_lines = lines[:start_idx] + out + lines[end_idx:]

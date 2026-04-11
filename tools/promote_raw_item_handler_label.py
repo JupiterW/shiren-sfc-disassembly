@@ -163,6 +163,12 @@ def db_line_end_addr(line: str) -> int | None:
 def estimate_asm_line_size(stripped: str) -> int | None:
     if not stripped or stripped.startswith(";") or LABEL_RE.match(stripped):
         return 0
+    # Strip trailing inline comment (but not for .db/.dw where ; is rare and
+    # byte parsing handles its own comment stripping).
+    if ";" in stripped and ".db" not in stripped and ".dw" not in stripped:
+        stripped = stripped.split(";", 1)[0].rstrip()
+        if not stripped:
+            return 0
     if ".db " in stripped or stripped.startswith(".db"):
         bytes_ = _db_bytes_from_line(stripped)
         return len(bytes_) if bytes_ else None
@@ -221,6 +227,12 @@ def estimate_asm_line_size(stripped: str) -> int | None:
         return 3
     if op_base == "call_savebank":
         return 4
+
+    # inc/dec with an operand (not accumulator): .b = direct page (2), .w = absolute (3)
+    if op_base in {"inc", "dec"} and rest and rest != "a":
+        if ".w" in op:
+            return 3
+        return 2  # .b or bare operand → direct page
 
     if "#" in rest:
         if ".l" in op or ".l " in stripped:
