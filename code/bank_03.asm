@@ -3706,12 +3706,47 @@ func_C35C9A:
 	bpl @lbl_C35CE3
 	bra @lbl_C35D62
 @lbl_C35D16:
-	.db $A2,$10,$00,$C2,$20,$AD,$62,$BE,$18,$7F,$FB,$5D,$C3,$A8,$E2,$20   ;C35D16
-	.db $B9,$5F,$A9,$29,$F0,$C9,$C0,$D0,$18,$22,$CE,$6B,$C3,$A9,$00,$85   ;C35D26  
-	.db $02,$64,$03,$A9,$01,$85,$04,$DA,$5A,$8B,$22,$29,$68,$C3,$AB,$7A   ;C35D36
-	.db $FA,$B9,$DF,$B3,$09,$81,$99,$DF,$B3,$B9,$5F,$94,$30,$0A,$85,$00   ;C35D46
-	.db $DA,$8B,$22,$E4,$7D,$C2,$AB,$FA   ;C35D56
-	.db $CA,$CA,$10,$B7                   ;C35D5E
+	ldx #$0010                              ;C35D16
+@lbl_C35D19:
+	rep #$20                                ;C35D19
+	lda $BE62                               ;C35D1B
+	clc                                     ;C35D1E
+	adc $C35DFB,x                           ;C35D1F
+	tay                                     ;C35D23
+	sep #$20                                ;C35D24
+	lda $A95F,y                             ;C35D26
+	and #$F0                                ;C35D29
+	cmp #$C0                                ;C35D2B
+	bne @lbl_C35D47                         ;C35D2D
+	jsl $C36BCE                             ;C35D2F
+	lda #$00                                ;C35D33
+	sta $02                                 ;C35D35
+	stz $03                                 ;C35D37
+	lda #$01                                ;C35D39
+	sta $04                                 ;C35D3B
+	phx                                     ;C35D3D
+	phy                                     ;C35D3E
+	phb                                     ;C35D3F
+	jsl $C36829                             ;C35D40
+	plb                                     ;C35D44
+	ply                                     ;C35D45
+	plx                                     ;C35D46
+@lbl_C35D47:
+	lda $B3DF,y                             ;C35D47
+	ora #$81                                ;C35D4A
+	sta $B3DF,y                             ;C35D4C
+	lda $945F,y                             ;C35D4F
+	bmi @lbl_C35D5E                         ;C35D52
+	sta $00                                 ;C35D54
+	phx                                     ;C35D56
+	phb                                     ;C35D57
+	jsl $C27DE4                             ;C35D58
+	plb                                     ;C35D5C
+	plx                                     ;C35D5D
+@lbl_C35D5E:
+	dex                                     ;C35D5E
+	dex                                     ;C35D5F
+	bpl @lbl_C35D19                         ;C35D60
 @lbl_C35D62:
 	lda.w $BE64
 	pha
@@ -4308,11 +4343,43 @@ func_C36287:
 	jsl.l func_C36BCE
 	plp
 	rtl
-	.db $C2,$20,$22,$5F,$F6,$C3,$A5,$00,$EB,$48,$22,$5F,$F6,$C3,$68,$05   ;C362D4
-	.db $00,$29,$FF,$0F,$C9,$80,$09,$B0,$E9,$AA,$E2,$20,$BF,$5F,$A9,$7E   ;C362E4
-	.db $89,$80,$D0,$0A,$89,$10,$F0,$0C,$C9,$10,$D0,$D4,$80,$06,$29,$F0   ;C362F4
-	.db $C9,$C0,$D0,$CC,$BF,$DF,$9E,$7E,$C9,$C0,$B0,$04,$C9,$80,$D0,$C0   ;C36304
-	.db $9B,$22,$CE,$6B,$C3,$60           ;C36314
+@lbl_C362D4:
+	rep #$20                                ;C362D4
+@lbl_C362D6:
+	jsl $C3F65F                             ;C362D6
+	lda $00                                 ;C362DA
+	xba                                     ;C362DC
+	pha                                     ;C362DD
+	jsl $C3F65F                             ;C362DE
+	pla                                     ;C362E2
+	ora $00                                 ;C362E3
+	and #$0FFF                              ;C362E5
+	cmp #$0980                              ;C362E8
+	bcs @lbl_C362D6                         ;C362EB
+	tax                                     ;C362ED
+	sep #$20                                ;C362EE
+	lda $7EA95F,x                           ;C362F0
+	bit #$80                                ;C362F4
+	bne @lbl_C36302                         ;C362F6
+	bit #$10                                ;C362F8
+	beq @lbl_C36308                         ;C362FA
+	cmp #$10                                ;C362FC
+	bne @lbl_C362D4                         ;C362FE
+	bra @lbl_C36308                         ;C36300
+@lbl_C36302:
+	and #$F0                                ;C36302
+	cmp #$C0                                ;C36304
+	bne @lbl_C362D4                         ;C36306
+@lbl_C36308:
+	lda $7E9EDF,x                           ;C36308
+	cmp #$C0                                ;C3630C
+	bcs @lbl_C36314                         ;C3630E
+	cmp #$80                                ;C36310
+	bne @lbl_C362D4                         ;C36312
+@lbl_C36314:
+	txy                                     ;C36314
+	jsl $C36BCE                             ;C36315
+	rts                                     ;C36319
 
 func_C3631A:
 	php
@@ -6092,12 +6159,53 @@ func_C3701A:
 	pla
 	plp
 	rtl
-	.db $08,$E2,$30,$A6,$00,$BF,$84,$BE,$7E,$48,$BF,$7A,$BE,$7E,$48,$BF   ;C37063
-	.db $70,$BE,$7E,$1A,$48,$BF,$66,$BE,$7E,$1A,$AA,$A3,$01,$A8,$8A,$C3   ;C37073  
-	.db $02,$B0,$21,$98,$C3,$03,$B0,$19,$86,$00,$84,$01,$DA,$22,$AF,$59   ;C37083
-	.db $C3,$FA,$A5,$00,$30,$08,$DA,$5A,$22,$AA,$7F,$C2,$7A,$FA,$C8,$80   ;C37093  
-	.db $E2,$E8,$80,$D7,$68,$68,$68,$28   ;C370A3
-	.db $6B                               ;C370AB
+	php                                     ;C37063
+	sep #$30                                ;C37064
+	ldx $00                                 ;C37066
+	lda $7EBE84,x                           ;C37068
+	pha                                     ;C3706C
+	lda $7EBE7A,x                           ;C3706D
+	pha                                     ;C37071
+	lda $7EBE70,x                           ;C37072
+	inc a                                   ;C37076
+	pha                                     ;C37077
+	lda $7EBE66,x                           ;C37078
+	inc a                                   ;C3707C
+	tax                                     ;C3707D
+@lbl_C3707E:
+	lda $01,s                               ;C3707E
+	tay                                     ;C37080
+	txa                                     ;C37081
+	cmp $02,s                               ;C37082
+	bcs @lbl_C370A7                         ;C37084
+@lbl_C37086:
+	tya                                     ;C37086
+	cmp $03,s                               ;C37087
+	bcs @lbl_C370A4                         ;C37089
+	stx $00                                 ;C3708B
+	sty $01                                 ;C3708D
+	phx                                     ;C3708F
+	jsl $C359AF                             ;C37090
+	plx                                     ;C37094
+	lda $00                                 ;C37095
+	bmi @lbl_C370A1                         ;C37097
+	phx                                     ;C37099
+	phy                                     ;C3709A
+	jsl $C27FAA                             ;C3709B
+	ply                                     ;C3709F
+	plx                                     ;C370A0
+@lbl_C370A1:
+	iny                                     ;C370A1
+	bra @lbl_C37086                         ;C370A2
+@lbl_C370A4:
+	inx                                     ;C370A4
+	bra @lbl_C3707E                         ;C370A5
+@lbl_C370A7:
+	pla                                     ;C370A7
+	pla                                     ;C370A8
+	pla                                     ;C370A9
+	plp                                     ;C370AA
+	rtl                                     ;C370AB
 
 func_C370AC:
 	php
