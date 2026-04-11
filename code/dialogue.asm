@@ -2494,7 +2494,7 @@ func_C1173F:
 	lda.b wTemp00
 	cmp.b wTemp01
 	bne @lbl_C1178A
-	jsl $C21167                             ;C11780
+	jsl.l func_C21167                             ;C11780
 	lda $00                                 ;C11784
 	cmp $01                                 ;C11786
 	.db $F0,$0A   ;C11788

@@ -14360,7 +14360,7 @@ func_C3DD85:
 	lda $00                                 ;C3DD8A
 	pha                                     ;C3DD8C
 	phx                                     ;C3DD8D
-	jsl $C21128                             ;C3DD8E
+	jsl.l func_C21128                             ;C3DD8E
 	plx                                     ;C3DD92
 	lda $05                                 ;C3DD93
 	pha                                     ;C3DD95

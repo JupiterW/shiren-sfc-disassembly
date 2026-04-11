@@ -225,7 +225,7 @@ WanderingScrollUseEffect:
 	rts
 
 ;c309f1
-func_C309F1:
+ShowNothingHappensMessage:
 	sep #$30 ;AXY->8
 	lda.b #$5C
 	sta.b wTemp00
@@ -315,7 +315,7 @@ AmnesiaHerbUseEffect:
 	rts
 
 ;c30a95
-func_C30A95:
+NullItemEffect:
 	rts
 
 ;c30a96
