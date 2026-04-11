@@ -233,7 +233,7 @@ IdentifyItem:
 	pla
 	bne @lbl_C301CC
 	sty.b wTemp00
-	jsl.l func_C33BEE
+	jsl.l ValidateCustomNameSlot
 @lbl_C301CC:
 	plp
 	rtl
@@ -270,7 +270,7 @@ SetupItemRenameBuffer:
 	cmp.b #$68
 	beq @lbl_C30245
 	phx
-	jsl.l func_C33BEE
+	jsl.l ValidateCustomNameSlot
 	plx
 	lda.l wItemType,x
 	pha
@@ -317,8 +317,9 @@ SetupItemRenameBuffer:
 	sta wTemp00
 	plp 
 	rtl
-; TODO: purpose unclear - applies rename scratch buffer to item; reads $7E:935F slot reference and writes $9360-$9365 scratch data (mod1, mod2, fuse1, fuse2, cursed, timesIdentified) back into actual item stats
-@lbl_C30259:
+; Applies item buffer changes from scratch RAM to actual item slot.
+; Reads slot from $7E935F and writes $9360-$9365 back to item fields.
+ApplyItemBufferChanges:
 	php
 	sep #$30 ;AXY->8
 	lda.l $7E935F
@@ -506,7 +507,7 @@ SpawnFloorItemFromTable:
 @lbl_C303EF:
 	lda.b wTemp01,s
 	sta.b wTemp00
-	jsr.w func_C30433
+	jsr.w GetDungeonItemRange
 	ldx.b wTemp00
 	cpx.b #$E0
 	beq @lbl_C3040E
@@ -544,7 +545,7 @@ SpawnRandomDungeonFloorItem:
 	plp
 	rtl
 
-func_C30433:
+GetDungeonItemRange:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -772,8 +773,8 @@ SpawnFloorGitan:
 	plp
 	rtl
 
-; TODO: purpose unclear - calls SpawnFloorGitan then negates mod1/mod2 (bit-inverted with $FFFF overflow cap); possibly spawns a large or special Gitan variant
-func_C30630:
+; Spawns a large Gitan pile with doubled value (mod1/mod2 hold value, shifted left with overflow cap at $FFFF).
+SpawnLargeGitan:
 	php
 	sep #$30 ;AXY->8
 	jsl.l SpawnFloorGitan
@@ -1333,9 +1334,8 @@ MergeItemModifications:
 	ora ($BA)                               ;C33BEB
 	.db $FF   ;C33BED
 
-; TODO: purpose unclear - involves wItemHasCustomName lookup; on overflow writes $FF into
-; wItemCustomNamesBuffer at computed offset. Callers at C300EC, C30118.
-func_C33BEE:
+; Validates custom name slot for item. On overflow, writes $FF to wItemCustomNamesBuffer.
+ValidateCustomNameSlot:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -1351,9 +1351,9 @@ func_C33BEE:
 	plp
 	rtl
 
-; TODO: purpose unclear - for item type $68 returns mod/fuse/curse stats; otherwise reads
-; wItemHasCustomName and returns custom name buffer data. No external callers found.
-func_C33C0D:
+; Returns item data to temp registers. For blank scrolls ($68): returns mod/fuse/curse stats.
+; For other items: reads wItemHasCustomName and returns custom name buffer data.
+GetItemOrBlankScrollData:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00

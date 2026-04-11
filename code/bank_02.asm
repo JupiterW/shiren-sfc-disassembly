@@ -506,7 +506,7 @@ DATA8_C20277:
 	rts
 	sep #$30 ;AXY->8
 	phy
-	call_savebank func_C30630
+	call_savebank SpawnLargeGitan
 	ply
 	lda.b wTemp00
 	sta.w wCharHeldItem,y
@@ -4600,7 +4600,7 @@ TryAddSelectedItemToInventory:
 	rtl
 	php                                     ;C23AAA
 	sep #$30                                ;C23AAB
-	jsl $C30630                             ;C23AAD
+	jsl.l SpawnLargeGitan                             ;C23AAD
 	ldx $00                                 ;C23AB1
 	bmi @lbl_C23B16                         ;C23AB3
 	phx                                     ;C23AB5
