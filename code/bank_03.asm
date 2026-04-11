@@ -13398,7 +13398,7 @@ Jumptable_C3D555:
 	jsl.l func_C228EF
 	lda.b #$FF
 	sta.b wTemp00
-	jsl.l func_C23271
+	jsl.l ModifyShirenStrength
 	lda.b wTemp00
 	beq @lbl_C3D622
 	sta.b wTemp02

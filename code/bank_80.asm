@@ -11508,7 +11508,7 @@ func_80E81B:
 	.db $0A,$AA,$BF,$BD,$E8,$80,$85,$02,$A9,$02,$04,$85,$00,$22,$33,$88   ;80E837
 	.db $80                               ;80E847  
 @lbl_80E848:
-	jsl.l func_C21167
+	jsl.l GetShirenCoreStatus
 	lda.b wTemp06
 	bne @lbl_80E863
 	lda.w #$0401
@@ -11611,7 +11611,7 @@ func_80E8ED:
 	sta.w $8E43
 	stz.w $8E44
 @lbl_80E93A:
-	jsl.l func_C21167
+	jsl.l GetShirenCoreStatus
 	ldx.b w7f0002
 	ldy.b w7f0004
 	cpx.w $8E4C

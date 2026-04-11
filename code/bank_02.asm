@@ -1974,7 +1974,9 @@ GetCharacterStats:
 	plp
 	rtl
 
-func_C21167:
+; Loads Shiren's core status values to temp registers.
+; Output: wTemp00=strength, wTemp02=gitan, wTemp04=$7E8941, wTemp06=hunger
+GetShirenCoreStatus:
 	php
 	rep #$20 ;A->16
 	lda.l wShirenStatus.strength
@@ -3475,7 +3477,11 @@ func_C2323C:
 	plp
 	rtl
 
-func_C23271:
+; Modifies Shiren's strength by a signed delta. Caps at maxStrength, floors at 1.
+; Checks $7E894C flag (blocks strength gain if set).
+; Input: wTemp00 = signed delta
+; Output: wTemp00 = actual change amount
+ModifyShirenStrength:
 	php
 	sep #$30 ;AXY->8
 	lda.l wShirenStatus.strength
@@ -3547,7 +3553,7 @@ func_C232BF:
 @lbl_C232E6:
 	sta.l wShirenStatus.maxStrength
 	stz.b wTemp00
-	jsl.l func_C23271
+	jsl.l ModifyShirenStrength
 	pla
 	sec
 	sbc.l wShirenStatus.maxStrength

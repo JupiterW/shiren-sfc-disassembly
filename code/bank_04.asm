@@ -14127,7 +14127,7 @@ func_C4A565:
 	jsl.l func_C62AAF
 	lda.b wTemp00
 	pha
-	jsl.l func_C21167
+	jsl.l GetShirenCoreStatus
 	lda.b wTemp06
 	clc
 	adc.w #$0005
@@ -14163,7 +14163,7 @@ func_C4A565:
 	jsl.l GetCharacterStats
 	lda.b wTemp07
 	pha
-	jsl.l func_C21167
+	jsl.l GetShirenCoreStatus
 	pla
 	sta.b wTemp02
 	lda.b wTemp00

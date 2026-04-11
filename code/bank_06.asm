@@ -173,7 +173,7 @@ func_C600E4:
 	rtl
 @lbl_C6015F:
 	.db $A0,$10,$5A,$22,$89,$7C,$C0,$7A   ;C6015F
-	.db $22,$4A,$85,$80,$88,$D0,$F3       ;C60167  
+	.db $22,$4A,$85,$80,$88,$D0,$F3      ;C6016A
 @lbl_C6016E:
 	rep #$20 ;A->16
 	stz.b wTemp00
@@ -2781,7 +2781,7 @@ func_C62D0F:
 	jsl.l GetCurrentFloor
 	lda.b wTemp00
 	sta.l $7ED623
-	jsl.l func_C21167
+	jsl.l GetShirenCoreStatus
 	lda.b wTemp02
 	pha
 	lda.b wTemp03
@@ -2954,7 +2954,7 @@ func_C62D0F:
 @lbl_C62F28:
 	sta.l $7ED624
 	sep #$20 ;A->8
-	jsl.l func_C21167
+	jsl.l GetShirenCoreStatus
 	lda.b wTemp00
 	sta.l $7ED62F
 	lda.b wTemp01

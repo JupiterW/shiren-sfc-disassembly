@@ -1053,14 +1053,14 @@ RestorativeHerbUseEffect:
 
 AntidoteHerbUseEffect:
 	sep #$20 ;A->8
-	jsl.l func_C21167
+	jsl.l GetShirenCoreStatus
 	lda.b wTemp01
 	sec
 	sbc.b wTemp00
 	beq @lbl_C31021
 ;C31011  
 	sta $00                                 ;C31011
-	jsl $C23271                             ;C31013
+	jsl ModifyShirenStrength                             ;C31013
 	lda #$9D                                ;C31017
 	sta $00                                 ;C31019
 	stz $01                                 ;C3101B
@@ -1069,7 +1069,7 @@ AntidoteHerbUseEffect:
 	rts
 StrengthHerbUseEffect:
 	sep #$20                                ;C31022
-	jsl $C21167                             ;C31024
+	jsl GetShirenCoreStatus                             ;C31024
 	lda $00                                 ;C31028
 	cmp $01                                 ;C3102A
 	.db $D0,$1F   ;C3102C
@@ -1084,7 +1084,7 @@ StrengthHerbUseEffect:
 	jsl $C232BF                             ;C31040
 	lda #$01                                ;C31044
 	sta $00                                 ;C31046
-	jsl $C23271                             ;C31048
+	jsl ModifyShirenStrength                             ;C31048
 	rts                                     ;C3104C
 	lda #$9E                                ;C3104D
 	sta $00                                 ;C3104F
@@ -1094,10 +1094,10 @@ StrengthHerbUseEffect:
 	jsl.l DisplayMessage
 	lda #$01                                ;C3105B
 	sta $00                                 ;C3105D
-	jsl $C23271                             ;C3105F
+	jsl ModifyShirenStrength                             ;C3105F
 	rts                                     ;C31063
 	sep #$20                                ;C31064
-	jsl $C21167                             ;C31066
+	jsl GetShirenCoreStatus                             ;C31066
 	lda $00                                 ;C3106A
 	cmp $01                                 ;C3106C
 	.db $D0,$1F   ;C3106E
@@ -1112,9 +1112,9 @@ StrengthHerbUseEffect:
 	jsl $C232BF                             ;C31082
 	lda #$03                                ;C31086
 	sta $00                                 ;C31088
-	jsl $C23271                             ;C3108A
+	jsl ModifyShirenStrength                             ;C3108A
 	rts                                     ;C3108E
-	jsl $C21167                             ;C3108F
+	jsl GetShirenCoreStatus                             ;C3108F
 	lda $01                                 ;C31093
 	sec                                     ;C31095
 	sbc $00                                 ;C31096
@@ -1133,7 +1133,7 @@ StrengthHerbUseEffect:
 	sta $02                                 ;C310AD
 	lda $02                                 ;C310AF
 	sta $00                                 ;C310B2
-	jsl $C23271                             ;C310B4
+	jsl ModifyShirenStrength                             ;C310B4
 	rts                                     ;C310B8
 HappinessHerbUseEffect:
 	sep #$20                                ;C310B9
@@ -1351,7 +1351,7 @@ PoisonHerbUseEffect:
 	jsl ModifyCharacterHP                             ;C31261
 	lda #$FFFA                              ;C31265
 	sta $00                                 ;C31268
-	jsl $C23271                             ;C3126A
+	jsl ModifyShirenStrength                             ;C3126A
 	ldy $00                                 ;C3126E
 	.db $F0,$0B   ;C31270
 	sty $02                                 ;C31272
@@ -1360,7 +1360,7 @@ PoisonHerbUseEffect:
 	jsl.l DisplayMessage
 	rts                                     ;C3127D
 	sep #$20                                ;C3127E
-	jsl $C21167                             ;C31280
+	jsl GetShirenCoreStatus                             ;C31280
 	lda #$01                                ;C31284
 	sec                                     ;C31286
 	sbc $00                                 ;C31287
@@ -1397,7 +1397,7 @@ PoisonHerbUseEffect:
 @lbl_C312C7:
 	ply                                     ;C312C7
 	sty $00                                 ;C312C8
-	jsl $C23271                             ;C312CA
+	jsl ModifyShirenStrength                             ;C312CA
 	ldy $00                                 ;C312CE
 	.db $F0,$0B   ;C312D0
 	sty $02                                 ;C312D2
@@ -1770,7 +1770,7 @@ func_C315AE:
 func_C315BC:
 	sta.b wTemp00
 	jsl.l func_C233BE
-	jsl.l func_C21167
+	jsl.l GetShirenCoreStatus
 	lda.b wTemp06
 	pha
 	jsl.l func_C2338A
@@ -1787,7 +1787,7 @@ func_C315BC:
 func_C315DF:
 	rep #$30 ;AXY->16
 	phx
-	jsl.l func_C21167
+	jsl.l GetShirenCoreStatus
 	lda.b wTemp06
 	clc
 	adc.w #$0005
@@ -1953,7 +1953,7 @@ SpoiledOnigiriUseEffect:
 	sep #$10                                ;C3174A
 	lda #$FFFD                              ;C3174C
 	sta $00                                 ;C3174F
-	jsl $C23271                             ;C31751
+	jsl ModifyShirenStrength                             ;C31751
 	ldy $00                                 ;C31755
 	.db $F0,$0B   ;C31757
 	lda #$00A0                              ;C31759
@@ -2726,12 +2726,12 @@ BlessingScrollUseEffect:
 	jsl $C232BF                             ;C31D63
 	pla                                     ;C31D67
 	sta $00                                 ;C31D68
-	jsl $C23271                             ;C31D6A
+	jsl ModifyShirenStrength                             ;C31D6A
 	rts                                     ;C31D6E
 @lbl_C31D6F:
 	sta $00                                 ;C31D6F
 	pha                                     ;C31D71
-	jsl $C23271                             ;C31D72
+	jsl ModifyShirenStrength                             ;C31D72
 	pla                                     ;C31D76
 	sta $00                                 ;C31D77
 	jsl $C232BF                             ;C31D79
@@ -3282,7 +3282,7 @@ NeedScrollUseEffect:
 	jsl.l DisplayMessage
 	rts
 @lbl_C321B0:
-	jsl.l func_C21167
+	jsl.l GetShirenCoreStatus
 	lda.b wTemp06
 	ora.b wTemp07
 	bne @lbl_C321BD
@@ -3309,7 +3309,7 @@ NeedScrollUseEffect:
 	jsl $C21195                             ;C321DC
 	rts                                     ;C321E0
 @lbl_C321E1:
-	jsl.l func_C21167
+	jsl.l GetShirenCoreStatus
 	lda.b wTemp00
 	cmp.b #$01
 	bne @lbl_C321EE
@@ -3335,7 +3335,7 @@ NeedScrollUseEffect:
 @lbl_C32210:
 	jmp $1C70                               ;C32210
 @lbl_C32213:
-	jsl.l func_C21167
+	jsl.l GetShirenCoreStatus
 	lda.b wTemp02
 	ora.b wTemp03
 	ora.b wTemp04
@@ -3492,7 +3492,7 @@ HandsFullScrollUseEffect:
 	jsl $C232BF                             ;C32363
 	lda #$03                                ;C32367
 	sta $00                                 ;C32369
-	jsl $C23271                             ;C3236B
+	jsl ModifyShirenStrength                             ;C3236B
 	rep #$20                                ;C3236F
 	lda #$0023                              ;C32371
 	sta $00                                 ;C32374
@@ -3540,7 +3540,7 @@ HandsFullScrollUseEffect:
 	jsl $C2323C                             ;C323D6
 	lda #$FF                                ;C323DA
 	sta $00                                 ;C323DC
-	jsl $C23271                             ;C323DE
+	jsl ModifyShirenStrength                             ;C323DE
 	lda #$FF                                ;C323E2
 	sta $00                                 ;C323E4
 	jsl $C232BF                             ;C323E6
@@ -3644,12 +3644,12 @@ HandsFullScrollUseEffect:
 	sta $02                                 ;C324D1
 	jsl ModifyCharacterHP                             ;C324D3
 	sep #$20                                ;C324D7
-	jsl $C21167                             ;C324D9
+	jsl GetShirenCoreStatus                             ;C324D9
 	lda $01                                 ;C324DD
 	sec                                     ;C324DF
 	sbc $00                                 ;C324E0
 	sta $00                                 ;C324E2
-	jsl $C23271                             ;C324E4
+	jsl ModifyShirenStrength                             ;C324E4
 	rts                                     ;C324E8
 	rep #$20                                ;C324E9
 	lda #$00C3                              ;C324EB
@@ -3788,7 +3788,7 @@ func_C324F9:
 	lda #$01                                ;C325EE
 	sta $00                                 ;C325F0
 	phy                                     ;C325F2
-	jsl $C23271                             ;C325F3
+	jsl ModifyShirenStrength                             ;C325F3
 	ply                                     ;C325F7
 @lbl_C325F8:
 	brl @lbl_C3256E                         ;C325F8
@@ -3880,7 +3880,7 @@ func_C324F9:
 	lda #$FF                                ;C3269E
 	sta $00                                 ;C326A0
 	phy                                     ;C326A2
-	jsl $C23271                             ;C326A3
+	jsl ModifyShirenStrength                             ;C326A3
 	ply                                     ;C326A7
 @lbl_C326A8:
 	brl @lbl_C32624                         ;C326A8

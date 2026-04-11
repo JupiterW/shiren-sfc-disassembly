@@ -203,7 +203,7 @@ func_C10189:
 .ACCU 8
 	jsl.l DisplayMessage
 	sep #$20                                ;C10248
-	jsl $C21167                             ;C1024A
+	jsl GetShirenCoreStatus                             ;C1024A
 	lda $00                                 ;C1024E
 	cmp $01                                 ;C10250
 	.db $D0,$1F   ;C10252
@@ -218,7 +218,7 @@ func_C10189:
 	jsl $C232BF                             ;C10266
 	lda #$01                                ;C1026A
 	sta $00                                 ;C1026C
-	jsl $C23271                             ;C1026E
+	jsl ModifyShirenStrength                             ;C1026E
 	rts                                     ;C10272
 	lda #$9E                                ;C10273
 	sta $00                                 ;C10275
@@ -228,7 +228,7 @@ func_C10189:
 	jsl.l DisplayMessage
 	lda #$01                                ;C10281
 	sta $00                                 ;C10283
-	jsl $C23271                             ;C10285
+	jsl ModifyShirenStrength                             ;C10285
 	rts                                     ;C10289
 	sep #$30                                ;C1028A
 	ldx $00                                 ;C1028C
@@ -430,7 +430,7 @@ func_C10189:
 	sep #$10                                ;C10439
 	lda #$FFFF                              ;C1043B
 	sta $00                                 ;C1043E
-	jsl $C23271                             ;C10440
+	jsl ModifyShirenStrength                             ;C10440
 	ldy $00                                 ;C10444
 	.db $F0,$0B   ;C10446
 	sty $02                                 ;C10448
@@ -2494,7 +2494,7 @@ func_C1173F:
 	lda.b wTemp00
 	cmp.b wTemp01
 	bne @lbl_C1178A
-	jsl.l func_C21167                             ;C11780
+	jsl.l GetShirenCoreStatus                             ;C11780
 	lda $00                                 ;C11784
 	cmp $01                                 ;C11786
 	.db $F0,$0A   ;C11788
@@ -2519,7 +2519,7 @@ func_C1173F:
 	jsl ModifyCharacterHP                             ;C117B7
 	lda #$FC                                ;C117BB
 	sta $00                                 ;C117BD
-	jsl $C23271                             ;C117BF
+	jsl ModifyShirenStrength                             ;C117BF
 	ldy #$FED4                              ;C117C3
 	sty $00                                 ;C117C6
 	jsl $C233BE                             ;C117C8
@@ -2998,7 +2998,7 @@ func_C11B11:
 	lda #$C1                                ;C11C40
 	sta $04                                 ;C11C42
 	jsl $C2938C                             ;C11C44
-	jsl $C21167                             ;C11C48
+	jsl GetShirenCoreStatus                             ;C11C48
 	ldy $04                                 ;C11C4C
 	bne @lbl_C11C57                         ;C11C4E
 	ldy $02                                 ;C11C50
@@ -4372,12 +4372,12 @@ func_C124BB:
 	sty $00                                 ;C128DB
 	jsl.l DisplayMessage
 	rts                                     ;C128E1
-	jsl $C21167                             ;C128E2
+	jsl GetShirenCoreStatus                             ;C128E2
 	lsr $04                                 ;C128E6
 	ror $03                                 ;C128E8
 	ror $02                                 ;C128EA
 	bra @lbl_C128F2                         ;C128EC
-	jsl $C21167                             ;C128EE
+	jsl GetShirenCoreStatus                             ;C128EE
 @lbl_C128F2:
 	lda $04                                 ;C128F2
 	bne @lbl_C128FF                         ;C128F4
@@ -4835,7 +4835,7 @@ func_C12ABD:
 	jsl.l DisplayMessage
 	lda #$FD                                ;C12D38
 	sta $00                                 ;C12D3A
-	jsl $C23271                             ;C12D3C
+	jsl ModifyShirenStrength                             ;C12D3C
 	lda #$13                                ;C12D40
 	sta $00                                 ;C12D42
 	ldy #$FFF6                              ;C12D44
@@ -5422,7 +5422,7 @@ func_C13228:
 	jsl.l func_C233BE
 	lda.b #$63
 	sta.b wTemp00
-	jsl.l func_C23271
+	jsl.l ModifyShirenStrength
 	lda.b #$13
 	pha
 	bra @lbl_C132A6
