@@ -2513,7 +2513,7 @@ func_C22A25:
 	sty.b wTemp00
 	phx
 	phy
-	call_savebank func_C23209
+	call_savebank ModifyCharacterHP
 	ply
 	plx
 	cpy.b #$13
@@ -2993,7 +2993,7 @@ func_C22E2D:
 	lda.b #$01
 	sta.b wTemp02
 	stz.b wTemp03
-	call_savebank func_C23209
+	call_savebank ModifyCharacterHP
 	pla
 	sec
 	sbc.b #$96
@@ -3012,7 +3012,7 @@ func_C22E2D:
 	lda #$FF                                ;C22EAE
 	sta $03                                 ;C22EB0
 	phb                                     ;C22EB2
-	jsl $C23209                             ;C22EB3
+	jsl ModifyCharacterHP                             ;C22EB3
 	plb                                     ;C22EB7
 	stz $8977                               ;C22EB8
 	.db $80,$2B   ;C22EBB
@@ -3025,7 +3025,7 @@ func_C22E2D:
 	sta $02                                 ;C22EC9
 	sta $03                                 ;C22ECB
 	phb                                     ;C22ECD
-	jsl $C23209                             ;C22ECE
+	jsl ModifyCharacterHP                             ;C22ECE
 	plb                                     ;C22ED2
 	stz $8977                               ;C22ED3
 	.db $80,$10   ;C22ED6
@@ -3036,7 +3036,7 @@ func_C22E2D:
 	sta $02                                 ;C22EDE
 	stz $03                                 ;C22EE0
 	phb                                     ;C22EE2
-	jsl $C23209                             ;C22EE3
+	jsl ModifyCharacterHP                             ;C22EE3
 	plb                                     ;C22EE7
 @lbl_C22EE8:
 	lda.w $89B4
@@ -3055,7 +3055,7 @@ func_C22E2D:
 	lda #$DD                                ;C22F03
 	sta $7E897D                             ;C22F05
 	phb                                     ;C22F09
-	jsl $C23209                             ;C22F0A
+	jsl ModifyCharacterHP                             ;C22F0A
 	plb                                     ;C22F0E
 	stz $8977                               ;C22F0F
 @lbl_C22F12:
@@ -3408,7 +3408,10 @@ func_C23173:
 	plp
 	rtl
 
-func_C23209:
+; Modifies character HP by adding a signed 16-bit value. Caps at MaxHP, handles death if HP <= 0.
+; Input: wTemp00 = character index, wTemp02 = signed 16-bit delta (wTemp03 = sign extension)
+; Output: HP modified in-place, calls death handler if HP drops to 0 or below
+ModifyCharacterHP:
 	php
 	sep #$30 ;AXY->8
 	bankswitch 0x7E
@@ -3468,7 +3471,7 @@ func_C2323C:
 	sta.w wCharMaxHP,y
 	rep #$20 ;A->16
 	stz.b wTemp02
-	jsl.l func_C23209
+	jsl.l ModifyCharacterHP
 	plp
 	rtl
 
@@ -4155,7 +4158,7 @@ func_C236CD:
 	stz.b wTemp03
 	sty.b wTemp00
 	phy
-	call_savebank func_C23209
+	call_savebank ModifyCharacterHP
 	ply
 	lda.w wCharAttack,y
 	lsr a
@@ -7821,7 +7824,7 @@ func_C25152:
 	lda $C2525D,x                           ;C2524F
 	sta $02                                 ;C25253
 	stz $03                                 ;C25255
-	jsl $C23209                             ;C25257
+	jsl ModifyCharacterHP                             ;C25257
 	stz $00                                 ;C2525B
 	rts                                     ;C2525D
 	and ($32)                               ;C2525E

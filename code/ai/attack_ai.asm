@@ -618,7 +618,7 @@ func_C215AB:
 	lda.b #$32
 	sta.b wTemp02
 	stz.b wTemp03
-	jsl.l func_C23209
+	jsl.l ModifyCharacterHP
 @lbl_C21883:
 	stz.b wTemp00
 	plp
@@ -1638,7 +1638,7 @@ DATA8_C21B97:
 	;sta.l $7E89B5
 	;lda.l wCharLevel,x
 	;tax
-	;lda.l $C2203F,x
+	;jsl ModifyCharacterHP3F,x
 	;sta.l $7E89B4
 	;lda.l $7E89B5
 	;inc a

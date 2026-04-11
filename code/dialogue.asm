@@ -2516,7 +2516,7 @@ func_C1173F:
 	sta $00                                 ;C117B0
 	ldy #$FFF6                              ;C117B2
 	sty $02                                 ;C117B5
-	jsl $C23209                             ;C117B7
+	jsl ModifyCharacterHP                             ;C117B7
 	lda #$FC                                ;C117BB
 	sta $00                                 ;C117BD
 	jsl $C23271                             ;C117BF
@@ -5443,7 +5443,7 @@ func_C13228:
 	sta.b wTemp00
 	ldy.w #$00FA
 	sty.b wTemp02
-	jsl.l func_C23209
+	jsl.l ModifyCharacterHP
 	lda.b wTemp01,s
 	sta.b wTemp00
 	stz.b wTemp01

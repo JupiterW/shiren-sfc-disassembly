@@ -909,7 +909,7 @@ MedicinalHerbUseEffect:
 	stz.b wTemp03
 	lda.b #$13
 	sta.b wTemp00
-	jsl.l func_C23209
+	jsl.l ModifyCharacterHP
 	bra @lbl_C30EFC
 @lbl_C30ED5:
 	ldy.w #$0087
@@ -926,7 +926,7 @@ MedicinalHerbUseEffect:
 	sta.b wTemp00
 	ldy.w #$0001
 	sty.b wTemp02
-	jsl.l func_C23209
+	jsl.l ModifyCharacterHP
 @lbl_C30EFC:
 	rts
 RestorativeHerbUseEffect:
@@ -955,7 +955,7 @@ RestorativeHerbUseEffect:
 	stz.b wTemp03
 	lda.b #$13
 	sta.b wTemp00
-	jsl.l func_C23209
+	jsl.l ModifyCharacterHP
 	bra @lbl_C30F58
 @lbl_C30F31:
 	ldy.w #$0087
@@ -972,7 +972,7 @@ RestorativeHerbUseEffect:
 	sta.b wTemp00
 	ldy.w #$0002
 	sty.b wTemp02
-	jsl.l func_C23209
+	jsl.l ModifyCharacterHP
 @lbl_C30F58:
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -1218,7 +1218,7 @@ MisfortuneHerbThrowEffect:
 	sta $02                                 ;C31147
 	stz $03                                 ;C31149
 	stx $00                                 ;C3114B
-	jsl $C23209                             ;C3114D
+	jsl ModifyCharacterHP                             ;C3114D
 	rts                                     ;C31151
 IllLuckHerbUseEffect:
 	sep #$20                                ;C31152
@@ -1261,7 +1261,7 @@ IllLuckHerbThrowEffect:
 	inc a                                   ;C31199
 	sta $02                                 ;C3119A
 	stx $00                                 ;C3119C
-	jsl $C23209                             ;C3119E
+	jsl ModifyCharacterHP                             ;C3119E
 	rts                                     ;C311A2
 LifeHerbUseEffect:
 	; Increase Shiren's max HP by 5, which also heals by the same amount.
@@ -1313,7 +1313,7 @@ PoisonHerbUseEffect:
 	sbc $A00285,x                           ;C31202
 	.db $13   ;C31206
 	sty $00                                 ;C31207
-	jsl $C23209                             ;C31209
+	jsl ModifyCharacterHP                             ;C31209
 	lda #$FF                                ;C3120D
 	sbc $220085,x                           ;C3120F
 	adc ($32),y                             ;C31213
@@ -1348,7 +1348,7 @@ PoisonHerbUseEffect:
 	sta $02                                 ;C3125B
 	ldy #$13                                ;C3125D
 	sty $00                                 ;C3125F
-	jsl $C23209                             ;C31261
+	jsl ModifyCharacterHP                             ;C31261
 	lda #$FFFA                              ;C31265
 	sta $00                                 ;C31268
 	jsl $C23271                             ;C3126A
@@ -1393,7 +1393,7 @@ PoisonHerbUseEffect:
 	sty $03                                 ;C312BD
 	ldy #$13                                ;C312BF
 	sty $00                                 ;C312C1
-	jsl $C23209                             ;C312C3
+	jsl ModifyCharacterHP                             ;C312C3
 @lbl_C312C7:
 	ply                                     ;C312C7
 	sty $00                                 ;C312C8
@@ -1906,7 +1906,7 @@ SpecialOnigiriUseEffect:
 	stz $03                                 ;C316E0
 	lda #$13                                ;C316E2
 	sta $00                                 ;C316E4
-	jsl $C23209                             ;C316E6
+	jsl ModifyCharacterHP                             ;C316E6
 	rts                                     ;C316EA
 SpoiledOnigiriUseEffect:
 	rep #$20                                ;C316EC
@@ -1929,7 +1929,7 @@ SpoiledOnigiriUseEffect:
 	sta $02                                 ;C3171A
 	ldy #$13                                ;C3171C
 	sty $00                                 ;C3171E
-	jsl $C23209                             ;C31720
+	jsl ModifyCharacterHP                             ;C31720
 	sep #$20                                ;C31724
 @lbl_C31726:
 	jsl $C3F65F                             ;C31726
@@ -3169,7 +3169,7 @@ PainSplitStaffUseEffect:
 	sta $03                                 ;C320D1
 	sty $00                                 ;C320D3
 	phx                                     ;C320D5
-	jsl $C23209                             ;C320D6
+	jsl ModifyCharacterHP                             ;C320D6
 	plx                                     ;C320DA
 @lbl_C320DB:
 	stx $00                                 ;C320DB
@@ -3185,7 +3185,7 @@ PainSplitStaffUseEffect:
 	lda #$FF                                ;C320ED
 	sta $03                                 ;C320EF
 	stx $00                                 ;C320F1
-	jsl $C23209                             ;C320F3
+	jsl ModifyCharacterHP                             ;C320F3
 @lbl_C320F7:
 	rts                                     ;C320F7
 	sep #$30                                ;C320F8
@@ -3206,14 +3206,14 @@ PainSplitStaffUseEffect:
 	sta $03                                 ;C32113
 	stx $00                                 ;C32115
 	phy                                     ;C32117
-	jsl $C23209                             ;C32118
+	jsl ModifyCharacterHP                             ;C32118
 	ply                                     ;C3211C
 @lbl_C3211D:
 	pla                                     ;C3211D
 	sta $02                                 ;C3211E
 	stz $03                                 ;C32120
 	sty $00                                 ;C32122
-	jsl $C23209                             ;C32124
+	jsl ModifyCharacterHP                             ;C32124
 	rts                                     ;C32128
 GreatHallScrollUseEffect:
 	sep #$20                                ;C32129
@@ -3268,7 +3268,7 @@ NeedScrollUseEffect:
 	sta.b wTemp02
 	stz.b wTemp03
 	phy
-	jsl.l func_C23209
+	jsl.l ModifyCharacterHP
 	ply
 @lbl_C3219B:
 	phy
@@ -3486,7 +3486,7 @@ HandsFullScrollUseEffect:
 	lda #$03                                ;C32355
 	sta $02                                 ;C32357
 	stz $03                                 ;C32359
-	jsl $C23209                             ;C3235B
+	jsl ModifyCharacterHP                             ;C3235B
 	lda #$03                                ;C3235F
 	sta $00                                 ;C32361
 	jsl $C232BF                             ;C32363
@@ -3531,7 +3531,7 @@ HandsFullScrollUseEffect:
 	lda #$FF                                ;C323C2
 	sta $02                                 ;C323C4
 	sta $03                                 ;C323C6
-	jsl $C23209                             ;C323C8
+	jsl ModifyCharacterHP                             ;C323C8
 	lda #$13                                ;C323CC
 	sta $00                                 ;C323CE
 	lda #$FF                                ;C323D0
@@ -3642,7 +3642,7 @@ HandsFullScrollUseEffect:
 	sta $00                                 ;C324CC
 	lda #$00FF                              ;C324CE
 	sta $02                                 ;C324D1
-	jsl $C23209                             ;C324D3
+	jsl ModifyCharacterHP                             ;C324D3
 	sep #$20                                ;C324D7
 	jsl $C21167                             ;C324D9
 	lda $01                                 ;C324DD
@@ -4216,7 +4216,7 @@ func_C328E9:
 	stz.b wTemp03
 	lda.b #$13
 	sta.b wTemp00
-	jsl.l func_C23209
+	jsl.l ModifyCharacterHP
 @lbl_C32915:
 	lda.b #$13
 	sta.b wTemp00
@@ -6513,7 +6513,7 @@ lbl_C339BB:
 	sta $02                                 ;C339E1
 	stz $03                                 ;C339E3
 	stx $00                                 ;C339E5
-	jsl $C23209                             ;C339E7
+	jsl ModifyCharacterHP                             ;C339E7
 	rts                                     ;C339EB
 	rts                                     ;C339EC
 lbl_C339ED:
