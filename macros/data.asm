@@ -47,3 +47,86 @@
 		.redef i\@ i\@ + 1
 	.endr
 .endm
+
+; Shared expected item ID for contiguous item-indexed tables.
+.define itemTableExpected 0
+
+.macro start_item_table
+	.redef itemTableExpected \1
+.endm
+
+.macro start_item_price_table
+	.redef itemTableExpected \1
+.endm
+
+; 1: item constant
+; 2: first word
+; 3: second word
+.macro item_price
+	.if \1 != itemTableExpected
+		.printt "item_price order mismatch"
+		.fail
+	.endif
+	.dw \2, \3
+	.redef itemTableExpected itemTableExpected + 1
+.endm
+
+; 1: item constant
+; 2: buy bonus
+; 3: sell bonus
+.macro item_price_bonus
+	.if \1 != itemTableExpected
+		.printt "item_price_bonus order mismatch"
+		.fail
+	.endif
+	.dw \2, \3
+	.redef itemTableExpected itemTableExpected + 1
+.endm
+
+.define fuseAbilityExpectedBit $0001
+
+.macro start_fuse_ability_price_table
+	.redef fuseAbilityExpectedBit $0001
+.endm
+
+; 1: fuse ability bit constant
+; 2: buy bonus
+; 3: sell bonus
+.macro fuse_ability_price
+	.if \1 != fuseAbilityExpectedBit
+		.printt "fuse_ability_price order mismatch"
+		.fail
+	.endif
+	.dw \2, \3
+	.redef fuseAbilityExpectedBit fuseAbilityExpectedBit * 2
+.endm
+
+.define monsterMeatExpectedFamily 0
+.define monsterMeatExpectedRank 1
+
+.macro start_monster_meat_table
+	.redef monsterMeatExpectedFamily \1
+	.redef monsterMeatExpectedRank 1
+.endm
+
+; 1: monster family constant
+; 2: family rank/form (1..3)
+; 3: buy price
+; 4: sell price
+.macro monster_meat_price
+	.if \1 != monsterMeatExpectedFamily
+		.printt "monster_meat_price family mismatch"
+		.fail
+	.endif
+	.if \2 != monsterMeatExpectedRank
+		.printt "monster_meat_price rank mismatch"
+		.fail
+	.endif
+	.dw \3, \4
+	.if monsterMeatExpectedRank == 3
+		.redef monsterMeatExpectedFamily monsterMeatExpectedFamily + 1
+		.redef monsterMeatExpectedRank 1
+	.else
+		.redef monsterMeatExpectedRank monsterMeatExpectedRank + 1
+	.endif
+.endm

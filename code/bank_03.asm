@@ -1530,9 +1530,8 @@ ItemBuySellPriceHandler_Weapon:
 @lbl_C33D67:
 	lsr.b wTemp00
 	bcc @lbl_C33D70
-	;references address for weapon ability info?
-;C33D6B
-	.db $18,$7F,$2C,$A4,$D9
+	clc
+	adc.l WeaponFuseAbilityPriceBonus,x
 @lbl_C33D70:
 	inx
 	inx
@@ -1650,7 +1649,7 @@ ItemBuySellPriceHandler_Shield:
 	lsr.b wTemp00
 	bcc @lbl_C33E47
 	clc
-	adc.l DATA8_D9A504,x
+	adc.l ShieldFuseAbilityPriceBonus,x
 @lbl_C33E47:
 	inx
 	inx
