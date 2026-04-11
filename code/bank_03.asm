@@ -11734,7 +11734,7 @@ func_C3D772:
 	sta $00                                 ;C3D9B8
 	stz $01                                 ;C3D9BA
 	jsl.l DisplayMessage
-	.db $60                           ;C3D9C0
+	rts                                     ;C3D9C0
 	sep #$20 ;A->8
 	lda.b #$E5
 	sta.b wTemp00
@@ -12519,7 +12519,7 @@ func_C3DD85:
 	sta $00                                 ;C3DFB8
 	stz $01                                 ;C3DFBA
 	jsl.l DisplayMessage
-	.db $60                           ;C3DFC0
+	rts                                     ;C3DFC0
 	sep #$20 ;A->8
 	lda.b wTemp00
 	pha
