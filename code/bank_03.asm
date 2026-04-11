@@ -13060,9 +13060,24 @@ func_C3D3AB:
 	plp
 	rtl
 @lbl_C3D3FD:
-	.db $22,$5F,$F6,$C3,$A5,$00,$29,$0F,$C9,$0B,$B0,$F4,$AA,$BF,$96,$C1   ;C3D3FD  
-	.db $7E,$85,$00,$A3,$01,$C9,$0A,$D0,$06,$A5,$00,$C9,$00,$F0,$E1,$68   ;C3D40D  
-	.db $28,$6B                           ;C3D41D
+	jsl.l $C3F65F                           ;C3D3FD
+	lda $00                                 ;C3D401
+	and #$0F                                ;C3D403
+	cmp #$0B                                ;C3D405
+	bcs @lbl_C3D3FD                         ;C3D407
+	tax                                     ;C3D409
+	lda.l $7EC196,x                         ;C3D40A
+	sta $00                                 ;C3D40E
+	lda $01,s                               ;C3D410
+	cmp #$0A                                ;C3D412
+	bne @lbl_C3D41C                         ;C3D414
+	lda $00                                 ;C3D416
+	cmp #$00                                ;C3D418
+	beq @lbl_C3D3FD                         ;C3D41A
+@lbl_C3D41C:
+	pla                                     ;C3D41C
+	plp                                     ;C3D41D
+	rtl                                     ;C3D41E
 
 func_C3D41F:
 	php
@@ -14758,7 +14773,12 @@ DATA8_C3E150:
 
 ;c3e151
 DemoTable:
-	.db $B0,$00,$60,$B1,$00,$60,$B2
+	bcs @lbl_C3E153                         ;C3E151
+@lbl_C3E153:
+	rts                                     ;C3E153
+	lda ($00),y                             ;C3E154
+	rts                                     ;C3E156
+	.db $B2   ;C3E157
 	.dl Demo1
 	.dl Demo2
 	.dl Demo3
