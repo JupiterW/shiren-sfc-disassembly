@@ -8350,13 +8350,65 @@ func_C38F34:
 	plp
 	rtl
 @lbl_C38F54:
-	.db $85,$00,$C8,$B7,$A9,$85,$01,$A6,$00,$22,$5F,$F6,$C3,$A5,$00,$29   ;C38F54  
-	.db $07,$85,$02,$C8,$B7,$A9,$85,$03,$C8,$B7,$A9,$85,$04,$86,$00,$DA   ;C38F64  
-	.db $5A,$22,$86,$00,$C2,$7A,$FA,$A5,$00,$10,$03,$C8,$80,$31,$C8,$B7   ;C38F74
-	.db $A9,$C9,$02,$D0,$0A,$DA,$5A,$22,$85,$7E,$C2,$7A,$FA,$80,$16,$C9   ;C38F84
-	.db $01,$D0,$0A,$DA,$5A,$22,$78,$7E,$C2,$7A,$FA,$80,$08,$DA,$5A,$22   ;C38F94  
-	.db $AA,$7F,$C2,$7A,$FA,$A5,$00,$85,$02,$86,$00,$22,$7A,$5B,$C3,$C8   ;C38FA4
-	.db $82,$97,$FF                       ;C38FB4  
+	sta $00                                 ;C38F54
+	iny                                     ;C38F56
+	lda [$A9],y                             ;C38F57
+	sta $01                                 ;C38F59
+	ldx $00                                 ;C38F5B
+	jsl $C3F65F                             ;C38F5D
+	lda $00                                 ;C38F61
+	and #$07                                ;C38F63
+	sta $02                                 ;C38F65
+	iny                                     ;C38F67
+	lda [$A9],y                             ;C38F68
+	sta $03                                 ;C38F6A
+	iny                                     ;C38F6C
+	lda [$A9],y                             ;C38F6D
+	sta $04                                 ;C38F6F
+	stx $00                                 ;C38F71
+	phx                                     ;C38F73
+	phy                                     ;C38F74
+	jsl $C20086                             ;C38F75
+	ply                                     ;C38F79
+	plx                                     ;C38F7A
+	lda $00                                 ;C38F7B
+	bpl @lbl_C38F82                         ;C38F7D
+	iny                                     ;C38F7F
+	bra @lbl_C38FB3                         ;C38F80
+@lbl_C38F82:
+	iny                                     ;C38F82
+	lda [$A9],y                             ;C38F83
+	cmp #$02                                ;C38F85
+	bne @lbl_C38F93                         ;C38F87
+	phx                                     ;C38F89
+	phy                                     ;C38F8A
+	jsl $C27E85                             ;C38F8B
+	ply                                     ;C38F8F
+	plx                                     ;C38F90
+	bra @lbl_C38FA9                         ;C38F91
+@lbl_C38F93:
+	cmp #$01                                ;C38F93
+	bne @lbl_C38FA1                         ;C38F95
+	phx                                     ;C38F97
+	phy                                     ;C38F98
+	jsl $C27E78                             ;C38F99
+	ply                                     ;C38F9D
+	plx                                     ;C38F9E
+	bra @lbl_C38FA9                         ;C38F9F
+@lbl_C38FA1:
+	phx                                     ;C38FA1
+	phy                                     ;C38FA2
+	jsl $C27FAA                             ;C38FA3
+	ply                                     ;C38FA7
+	plx                                     ;C38FA8
+@lbl_C38FA9:
+	lda $00                                 ;C38FA9
+	sta $02                                 ;C38FAB
+	stx $00                                 ;C38FAD
+	jsl $C35B7A                             ;C38FAF
+@lbl_C38FB3:
+	iny                                     ;C38FB3
+	.db $82,$97,$FF   ;C38FB4
 
 func_C38FB7:
 	php
