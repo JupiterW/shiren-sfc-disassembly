@@ -2840,7 +2840,7 @@ func_C62D0F:
 	sta.b wTemp01
 	phx
 	phy
-	call_savebank func_C33CA0
+	call_savebank GetItemBuySellPrice
 	ply
 	plx
 	rep #$20 ;A->16

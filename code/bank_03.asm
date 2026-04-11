@@ -1404,7 +1404,7 @@ func_C33C87:
 	plp
 	rtl
 
-func_C33CA0:
+GetItemBuySellPrice:
 	php
 	rep #$20 ;A->16
 	lda.b wTemp00
@@ -1434,10 +1434,10 @@ func_C33CA0:
 	and.w #$00FF
 	asl a
 	tax
-	jmp.w (Jumptable_C33CD1,x)
+	jmp.w (ItemBuySellPriceHandlers,x)
 
-Jumptable_C33CD1:
-	.dw func_C33CE9
+ItemBuySellPriceHandlers:
+	.dw GetHerbBuySellPrice
 	.dw $3D03
 	.dw $3D1D
 	.dw $3D37
@@ -1450,7 +1450,7 @@ Jumptable_C33CD1:
 	.dw $3F67
 	.dw $3F71
 
-func_C33CE9:
+GetHerbBuySellPrice:
 	lda.b wTemp00
 	xba
 	and.w #$00FF

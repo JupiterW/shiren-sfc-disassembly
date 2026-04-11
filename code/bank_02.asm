@@ -8943,7 +8943,7 @@ func_C25AFD:
 	stz.b wTemp01
 	phx
 	phy
-	jsl.l func_C33CA0
+	jsl.l GetItemBuySellPrice
 	ply
 	plx
 	lda.b wTemp01,s
@@ -12869,7 +12869,7 @@ func_C290BC:
 	lda.b #$01
 	sta.b wTemp01
 	phx
-	jsl.l func_C33CA0
+	jsl.l GetItemBuySellPrice
 	plx
 	rep #$20 ;A->16
 	lda.b wTemp00
