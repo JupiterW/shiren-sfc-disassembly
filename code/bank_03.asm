@@ -1455,7 +1455,7 @@ ItemBuySellPriceHandler_Herb:
 	xba
 	and.w #$00FF
 	sec
-	sbc.w #$0028
+	sbc.w #Item_MedicinalHerb
 	asl a
 	asl a
 	clc
@@ -1472,7 +1472,7 @@ ItemBuySellPriceHandler_Scroll:
 	xba
 	and.w #$00FF
 	sec
-	sbc.w #$0056
+	sbc.w #Item_BlessingScroll
 	asl a
 	asl a
 	clc
@@ -1489,7 +1489,7 @@ ItemBuySellPriceHandler_RiceBall:
 	xba
 	and.w #$00FF
 	sec
-	sbc.w #$00AE
+	sbc.w #Item_Onigiri
 	asl a
 	asl a
 	clc
@@ -1509,7 +1509,7 @@ ItemBuySellPriceHandler_Weapon:
 	xba
 	and.w #$00FF
 	sec
-	sbc.w #$0000
+	sbc.w #Item_Cudgel
 	asl a
 	asl a
 	clc
@@ -1606,7 +1606,7 @@ ItemBuySellPriceHandler_Arrow:
 	xba
 	and.w #$00FF
 	sec
-	sbc.w #$0010
+	sbc.w #Item_WoodArrow
 	asl a
 	asl a
 	clc
@@ -1628,7 +1628,7 @@ ItemBuySellPriceHandler_Shield:
 	xba
 	and.w #$00FF
 	sec
-	sbc.w #$0016
+	sbc.w #Item_HideShield
 	asl a
 	asl a
 	clc
@@ -1711,7 +1711,7 @@ ItemBuySellPriceHandler_Armband:
 	xba
 	and.w #$00FF
 	sec
-	sbc.w #$0093
+	sbc.w #Item_PassageArmband
 	asl a
 	asl a
 	clc
@@ -1728,7 +1728,7 @@ ItemBuySellPriceHandler_Staff:
 	xba
 	and.w #$00FF
 	sec
-	sbc.w #$007C
+	sbc.w #Item_SlothStaff
 	asl a
 	asl a
 	clc
@@ -1822,7 +1822,7 @@ ItemBuySellPriceHandler_Jar:
 	xba
 	and.w #$00FF
 	sec
-	sbc.w #$00B4
+	sbc.w #Item_HoldingJar
 	asl a
 	asl a
 	clc

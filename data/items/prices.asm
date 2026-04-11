@@ -4,31 +4,31 @@
 ;herb buy/sell prices
 ;d9a298
 HerbBuySellPrices:
-	.dw 50, 25 ;medicinal herb
-	.dw 100, 50 ;restorative herb
-	.dw 1000, 500 ;happiness herb
-	.dw 50, 25 ;herb of sight
-	.dw 500, 200 ;dragon herb
-	.dw 3000, 100 ;herb of victory
-	.dw 10000, 1500 ;angel seed
-	.dw 5000, 2500 ;herb of revival
-	.dw 0, 0 ;herb of invisibility (unused)
-	.dw 200, 50 ;bitter herb
-	.dw 200, 40 ;seed of misfortune
-	.dw 200, 30 ;seed of ill luck
-	.dw 200, 100 ;kigny seed
-	.dw 100, 25 ;herb of amnesia (unused)
-	.dw 0, 0 ;--- (dummy entry)
-	.dw 500, 200 ;life herb
-	.dw 1000, 500 ;big belly seed
-	.dw 200, 60 ;little belly seed
-	.dw 3000, 1500 ;conversation seed (unused)
-	.dw 500, 250 ;herb of strength
-	.dw 650, 250 ;antidote herb
-	.dw 50, 25 ;poison herb
-	.dw 3000, 1500 ;herb of confusion
-	.dw 5000, 2500 ;sleeping herb
-	.dw 50, 25 ;weeds
+	.dw 50, 25 ;Item_MedicinalHerb
+	.dw 100, 50 ;Item_RestorativeHerb
+	.dw 1000, 500 ;Item_HappinessHerb
+	.dw 50, 25 ;Item_SightHerb
+	.dw 500, 200 ;Item_DragonHerb
+	.dw 3000, 100 ;Item_VictoryHerb
+	.dw 10000, 1500 ;Item_AngelSeed
+	.dw 5000, 2500 ;Item_RevivalHerb
+	.dw 0, 0 ;Item_InvisibilityHerb (unused)
+	.dw 200, 50 ;Item_BitterHerb
+	.dw 200, 40 ;Item_MisfortuneHerb
+	.dw 200, 30 ;Item_IllLuckHerb
+	.dw 200, 100 ;Item_KignyHerb
+	.dw 100, 25 ;Item_AmnesiaHerb (unused)
+	.dw 0, 0 ;Item_36 (dummy entry)
+	.dw 500, 200 ;Item_LifeHerb
+	.dw 1000, 500 ;Item_BigBellySeed
+	.dw 200, 60 ;Item_LittleBellySeed
+	.dw 3000, 1500 ;Item_TalkSeed (unused)
+	.dw 500, 250 ;Item_StrengthHerb
+	.dw 650, 250 ;Item_AntidoteHerb
+	.dw 50, 25 ;Item_PoisonHerb
+	.dw 3000, 1500 ;Item_ConfusionHerb
+	.dw 5000, 2500 ;Item_SleepHerb
+	.dw 50, 25 ;Item_Weeds
 
 ;scroll buy/sell prices
 ;d9a2fc
