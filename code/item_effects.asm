@@ -752,7 +752,7 @@ func_C30D11:
 	sta.b wTemp00
 	phx
 	phy
-	jsl.l func_C285A2
+	jsl.l GetCharacterStatusEffects
 	ply
 	plx
 	lda.b wTemp00
@@ -978,7 +978,7 @@ RestorativeHerbUseEffect:
 	rep #$10 ;XY->16
 	lda.b #$13
 	sta.b wTemp00
-	jsl.l func_C285A2
+	jsl.l GetCharacterStatusEffects
 	lda.b wTemp01
 	pha
 	lda.b wTemp03
@@ -1006,7 +1006,7 @@ RestorativeHerbUseEffect:
 	rep #$10                                ;C30F97
 	lda #$13                                ;C30F99
 	sta $00                                 ;C30F9B
-	jsl $C285A2                             ;C30F9D
+	jsl GetCharacterStatusEffects                             ;C30F9D
 	lda $01                                 ;C30FA1
 	pha                                     ;C30FA3
 	lda $03                                 ;C30FA4
@@ -2065,7 +2065,7 @@ LightScrollUseEffect:
 	sep #$20 ;A->8
 	lda.b #$13
 	sta.b wTemp00
-	jsl.l func_C285A2
+	jsl.l GetCharacterStatusEffects
 	lda.b wTemp00
 	beq @lbl_C31862
 	rep #$20                                ;C31857
@@ -3292,7 +3292,7 @@ NeedScrollUseEffect:
 	lda.b #$13
 	sta.b wTemp00
 	phy
-	jsl.l func_C285A2
+	jsl.l GetCharacterStatusEffects
 	ply
 	lda.b wTemp01
 	ora.b wTemp03
@@ -4220,7 +4220,7 @@ func_C328E9:
 @lbl_C32915:
 	lda.b #$13
 	sta.b wTemp00
-	jsl.l func_C285A2
+	jsl.l GetCharacterStatusEffects
 	lda.b wTemp01
 	pha
 	lda.b wTemp03

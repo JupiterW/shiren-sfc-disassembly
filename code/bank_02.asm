@@ -11390,7 +11390,10 @@ func_C28597:
 	plp
 	rtl
 
-func_C285A2:
+; Loads character status effects to temp registers for action validation and message display.
+; Input: wTemp00 = character index ($13 = Shiren)
+; Output: wTemp00=blindless(Shiren), wTemp01=puzzled, wTemp02=sleep, wTemp03=confused, wTemp04=speed, wTemp05=extra
+GetCharacterStatusEffects:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00

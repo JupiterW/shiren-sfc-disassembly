@@ -6840,7 +6840,7 @@ func_80BE72:
 	lda.b #$13
 	sta.b wTemp00
 	phy
-	jsl.l func_C285A2
+	jsl.l GetCharacterStatusEffects
 	ply
 	lda.w $045E
 	beq @lbl_80BF1D

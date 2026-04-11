@@ -2406,7 +2406,7 @@ func_C076E9:
 @lbl_C07712:
 	lda.b #$13
 	sta.b wTemp00
-	jsl.l func_C285A2
+	jsl.l GetCharacterStatusEffects
 	stz.b wTemp01
 	stz.b wTemp00
 	lda.b wTemp02
@@ -2960,7 +2960,7 @@ func_C07BB3:
 	jsl.l func_80B5D6
 	lda.b #$13
 	sta.b wTemp00
-	jsl.l func_C285A2
+	jsl.l GetCharacterStatusEffects
 	lda.b wTemp02
 	bne @lbl_C07BCE
 	lda.b wTemp03
@@ -3072,7 +3072,7 @@ func_C07CC7:
 	sep #$20 ;A->8
 	lda.b #$13
 	sta.b wTemp00
-	jsl.l func_C285A2
+	jsl.l GetCharacterStatusEffects
 	lda.b wTemp02
 	bne func_C07C8A
 	lda.b wTemp03
