@@ -9158,15 +9158,67 @@ func_C39A27:
 	.db $20,$97,$97,$20,$8B,$98,$20,$C4,$98,$60
 	
 func_C39A31:
-	.db $20,$2D,$98,$20,$8B,$98   ;C39A31
-	.db $20,$C4,$98,$60,$08,$E2,$20,$22,$03,$62,$C3,$A5,$00,$C9,$20,$B0   ;C39A37  
-	.db $F6,$A9,$86,$85,$02,$22,$A2,$5B,$C3,$22,$03,$62,$C3,$A5,$00,$C9   ;C39A47  
-	.db $20,$90,$F6,$A9,$86,$85,$02,$22,$A2,$5B,$C3,$28,$60,$08,$E2,$30   ;C39A57  
-	.db $AF,$8E,$BE,$7E,$3A,$AA,$BF,$70,$BE,$7E,$1A,$85,$00,$BF,$84,$BE   ;C39A67  
-	.db $7E,$3A,$85,$01,$DA,$22,$9F,$F6,$C3,$FA,$A4,$00,$BF,$66,$BE,$7E   ;C39A77  
-	.db $1A,$85,$00,$BF,$7A,$BE,$7E,$3A,$85,$01,$DA,$5A,$22,$9F,$F6,$C3   ;C39A87
-	.db $7A,$FA,$84,$01,$A9,$86,$85,$02,$DA,$22,$A2,$5B,$C3,$FA,$CA,$10   ;C39A97
-	.db $C5,$28,$60                       ;C39AA7  
+	jsr $982D                               ;C39A31
+	jsr $988B                               ;C39A34
+	jsr $98C4                               ;C39A37
+	rts                                     ;C39A3A
+	php                                     ;C39A3B
+	sep #$20                                ;C39A3C
+@lbl_C39A3E:
+	jsl $C36203                             ;C39A3E
+	lda $00                                 ;C39A42
+	cmp #$20                                ;C39A44
+	bcs @lbl_C39A3E                         ;C39A46
+	lda #$86                                ;C39A48
+	sta $02                                 ;C39A4A
+	jsl $C35BA2                             ;C39A4C
+@lbl_C39A50:
+	jsl $C36203                             ;C39A50
+	lda $00                                 ;C39A54
+	cmp #$20                                ;C39A56
+	bcc @lbl_C39A50                         ;C39A58
+	lda #$86                                ;C39A5A
+	sta $02                                 ;C39A5C
+	jsl $C35BA2                             ;C39A5E
+	plp                                     ;C39A62
+	rts                                     ;C39A63
+	php                                     ;C39A64
+	sep #$30                                ;C39A65
+	lda $7EBE8E                             ;C39A67
+	dec a                                   ;C39A6B
+	tax                                     ;C39A6C
+@lbl_C39A6D:
+	lda $7EBE70,x                           ;C39A6D
+	inc a                                   ;C39A71
+	sta $00                                 ;C39A72
+	lda $7EBE84,x                           ;C39A74
+	dec a                                   ;C39A78
+	sta $01                                 ;C39A79
+	phx                                     ;C39A7B
+	jsl $C3F69F                             ;C39A7C
+	plx                                     ;C39A80
+	ldy $00                                 ;C39A81
+	lda $7EBE66,x                           ;C39A83
+	inc a                                   ;C39A87
+	sta $00                                 ;C39A88
+	lda $7EBE7A,x                           ;C39A8A
+	dec a                                   ;C39A8E
+	sta $01                                 ;C39A8F
+	phx                                     ;C39A91
+	phy                                     ;C39A92
+	jsl $C3F69F                             ;C39A93
+	ply                                     ;C39A97
+	plx                                     ;C39A98
+	sty $01                                 ;C39A99
+	lda #$86                                ;C39A9B
+	sta $02                                 ;C39A9D
+	phx                                     ;C39A9F
+	jsl $C35BA2                             ;C39AA0
+	plx                                     ;C39AA4
+	dex                                     ;C39AA5
+	bpl @lbl_C39A6D                         ;C39AA6
+	plp                                     ;C39AA8
+	rts                                     ;C39AA9
 
 func_C39AAA:
 	php
