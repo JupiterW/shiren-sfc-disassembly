@@ -3949,9 +3949,20 @@ func_C35E5A:
 	and.b #$F0
 	cmp.b #$C0
 	bne @lbl_C35EC1
-	.db $22,$CE,$6B,$C3,$A9,$00,$85,$02,$64,$03,$A9,$01,$85,$04,$5A,$8B   ;C35E8B  
-	.db $22,$29,$68,$C3,$AB,$7A,$80,$05   ;C35E9B  
-	.db $A9,$10,$99,$5F,$A9               ;C35EA3
+	jsl $C36BCE                             ;C35E8B
+	lda #$00                                ;C35E8F
+	sta $02                                 ;C35E91
+	stz $03                                 ;C35E93
+	lda #$01                                ;C35E95
+	sta $04                                 ;C35E97
+	phy                                     ;C35E99
+	phb                                     ;C35E9A
+	jsl $C36829                             ;C35E9B
+	plb                                     ;C35E9F
+	ply                                     ;C35EA0
+	.db $80,$05   ;C35EA1
+	lda #$10                                ;C35EA3
+	sta $A95F,y                             ;C35EA5
 @lbl_C35EA8:
 	lda.w $B3DF,y
 	bit.b #$01
@@ -4837,9 +4848,23 @@ func_C365F0:
 	plx
 	lda.b wTemp01
 	bmi @lbl_C3662F
-	.db $85,$00,$DA,$5A,$8B,$22,$10,$07,$C3,$AB,$7A,$FA,$A5,$00,$C9,$08   ;C36611  
-	.db $D0,$0C,$BD,$3E,$C1,$85,$00,$BD   ;C36621  
-	.db $48,$C1,$85,$01,$28,$6B           ;C36629
+	sta $00                                 ;C36611
+	phx                                     ;C36613
+	phy                                     ;C36614
+	phb                                     ;C36615
+	jsl $C30710                             ;C36616
+	plb                                     ;C3661A
+	ply                                     ;C3661B
+	plx                                     ;C3661C
+	lda $00                                 ;C3661D
+	cmp #$08                                ;C3661F
+	.db $D0,$0C   ;C36621
+	lda $C13E,x                             ;C36623
+	sta $00                                 ;C36626
+	lda $C148,x                             ;C36628
+	sta $01                                 ;C3662B
+	plp                                     ;C3662D
+	rtl                                     ;C3662E
 @lbl_C3662F:
 	lda.w $BE70,x
 	inc a
@@ -6767,8 +6792,25 @@ func_C3737C:
 	cmp.b #$15
 	bcs @lbl_C373B9
 @lbl_C37399:
-	.db $C2,$20,$A0,$05,$00,$88,$30,$18,$5A,$20,$A7,$72,$20,$0C,$73,$7A   ;C37399
-	.db $A5,$00,$F0,$F1,$3A,$0A,$AA,$BF,$BB,$73,$C3,$F4,$B8,$73,$48,$60   ;C373A9  
+	rep #$20                                ;C37399
+	ldy #$0005                              ;C3739B
+@lbl_C3739E:
+	dey                                     ;C3739E
+	.db $30,$18   ;C3739F
+	phy                                     ;C373A1
+	jsr $72A7                               ;C373A2
+	jsr $730C                               ;C373A5
+	ply                                     ;C373A8
+	lda $00                                 ;C373A9
+	beq @lbl_C3739E                         ;C373AB
+	dec a                                   ;C373AD
+	asl a                                   ;C373AE
+	tax                                     ;C373AF
+	lda $C373BB,x                           ;C373B0
+	pea $73B8                               ;C373B4
+	pha                                     ;C373B7
+	rts                                     ;C373B8
+.ACCU 8
 @lbl_C373B9:
 	plp
 	rts
@@ -14675,9 +14717,26 @@ func_C3F336:
 	jsl.l func_C495CD
 	ply
 	bcs @lbl_C3F385
-	.db $C2,$20,$A5,$06,$48,$A5,$04,$48,$A5,$02,$48,$A5,$00,$48,$3B,$1A   ;C3F367
-	.db $85,$04,$64,$06,$84,$00,$22,$0E   ;C3F377  
-	.db $28,$C6,$68,$68,$68,$68           ;C3F37F
+	rep #$20                                ;C3F367
+	lda $06                                 ;C3F369
+	pha                                     ;C3F36B
+	lda $04                                 ;C3F36C
+	pha                                     ;C3F36E
+	lda $02                                 ;C3F36F
+	pha                                     ;C3F371
+	lda $00                                 ;C3F372
+	pha                                     ;C3F374
+	tsc                                     ;C3F375
+	inc a                                   ;C3F376
+	sta $04                                 ;C3F377
+	stz $06                                 ;C3F379
+	sty $00                                 ;C3F37B
+	jsl $C6280E                             ;C3F37D
+	pla                                     ;C3F381
+	pla                                     ;C3F382
+	pla                                     ;C3F383
+	pla                                     ;C3F384
+.ACCU 8
 @lbl_C3F385:
 	plp
 	rtl
@@ -14734,9 +14793,17 @@ func_C3F3E7:
 	rep #$30 ;AXY->16
 	lda.l debugMode
 	bne @lbl_C3F40C
-	.db $A9,$02,$00,$85,$00,$22,$69,$DC,$80,$A5,$00,$F0,$0F,$89,$10,$00   ;C3F3F0
-	.db $D0,$5A,$89,$00,$80,$D0,$0A,$89   ;C3F400  
-	.db $00,$40,$D0,$02                   ;C3F408
+	lda #$0002                              ;C3F3F0
+	sta $00                                 ;C3F3F3
+	jsl $80DC69                             ;C3F3F5
+	lda $00                                 ;C3F3F9
+	.db $F0,$0F   ;C3F3FB
+	bit #$0010                              ;C3F3FD
+	.db $D0,$5A   ;C3F400
+	bit #$8000                              ;C3F402
+	.db $D0,$0A   ;C3F405
+	bit #$4000                              ;C3F407
+	.db $D0,$02   ;C3F40A
 @lbl_C3F40C:
 	plp
 	rtl
