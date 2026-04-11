@@ -4503,7 +4503,7 @@ TryPrepareSelectedItemForJarInsertion:
 @lbl_C32B3A:
 	stx.b wTemp00
 	phx
-	jsl.l func_C30823
+	jsl.l NullItemHandler
 	plx
 	stz.b wTemp00
 	stx.b wTemp00

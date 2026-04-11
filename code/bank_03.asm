@@ -581,7 +581,7 @@ func_C30433:
 	.db $A2,$3E,$00,$C9,$02,$F0,$0A,$A2,$5C,$00,$C9,$03,$F0,$03,$A2,$82   ;C3047A
 	.db $00                               ;C3048A
 @lbl_C3048B:
-	bra func_C304DE
+	bra RollRandomItemFromTable
 @lbl_C3048D:
 	jsl.l GetCurrentDungeon
 	lda.b wTemp00
@@ -594,7 +594,7 @@ func_C30433:
 	.db $A2,$45,$00,$C9,$02,$F0,$0A,$A2,$65,$00,$C9,$03,$F0,$03,$A2,$8C   ;C304A1
 	.db $00                               ;C304B1
 @lbl_C304B2:
-	bra func_C304DE
+	bra RollRandomItemFromTable
 
 RollDungeonItemType:
 	php
@@ -604,13 +604,13 @@ RollDungeonItemType:
 	lda.b wTemp00
 	ldx.w #$0012
 	cmp.b #$08
-	beq func_C304DE
+	beq RollRandomItemFromTable
 	ldx.w #$0012
 	cmp.b #$01
-	beq func_C304DE
+	beq RollRandomItemFromTable
 	.db $A2,$30,$00,$C9,$02,$F0,$0A,$A2,$4C,$00,$C9,$03,$F0,$03,$A2,$6E   ;C304CD
 	.db $00                               ;C304DD
-func_C304DE:
+RollRandomItemFromTable:
 	jsl.l Random
 	lda.b wTemp00
 @lbl_C304E4:
@@ -809,7 +809,7 @@ UpgradeItemModification:
 	plp
 	rtl
 
-func_C30671:
+CreateFloorItem:
 	php
 	sep #$30 ;AXY->8
 	ldx.b #$7E
@@ -849,7 +849,7 @@ func_C30671:
 	plp
 	rtl
 
-func_C306C9:
+GetItemStatsToTemp:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -1037,9 +1037,9 @@ func_C307C9:
 	plp                                     ;C30821
 	rtl                                     ;C30822
 
-; TODO: purpose unclear - RTL stub, no body. Possibly a placeholder or dead code.
-func_C30823:
-	rtl
+; No-op handler for items that don't need special processing.
+NullItemHandler:
+rtl
 
 ; TODO: purpose unclear - same logic as func_C307C9 but uses wTemp00 as item slot and returns
 ; result in wTemp00 instead of wTemp06. Pair/variant of func_C307C9 with different register convention.

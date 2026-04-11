@@ -4544,7 +4544,7 @@ TryAddSelectedItemToInventory:
 @lbl_C23A45:
 	sty.b wTemp00
 	phy
-	jsl.l func_C30823
+	jsl.l NullItemHandler
 	ply
 	sty.b wTemp00
 	phy
@@ -5013,7 +5013,7 @@ HandleCategoryShortcutSelectionAction:
 	sty.b wTemp00
 	phx
 	phy
-	jsl.l func_C30823
+	jsl.l NullItemHandler
 	ply
 	plx
 	lda.l wCharXPos+CharDataShirenIndex
@@ -6182,7 +6182,7 @@ HandleThrowItemAction:
 	jsl $C62720                             ;C2461F
 	lda $7E896E                             ;C24623
 	sta $00                                 ;C24627
-	jsl $C30823                             ;C24629
+	jsl.l NullItemHandler                             ;C24629
 	lda #$85                                ;C2462D
 	sta $02                                 ;C2462F
 	lda $02,s                               ;C24631

@@ -5522,7 +5522,7 @@ func_C13304:
 	lda.b wTemp00
 	cmp.b #$FF
 	beq @lbl_C1339B
-	jsl $C30671                             ;C13353
+	jsl.l CreateFloorItem                             ;C13353
 	lda $00                                 ;C13357
 	.db $30,$40   ;C13359
 	pha                                     ;C1335B
@@ -5973,7 +5973,7 @@ func_C13304:
 	php                                     ;C13793
 	lda $02,s                               ;C13794
 	sta $00                                 ;C13796
-	jsl $C306C9                             ;C13798
+	jsl.l GetItemStatsToTemp                             ;C13798
 	lda $05                                 ;C1379C
 	and #$FD                                ;C1379E
 	sta $05                                 ;C137A0
@@ -8308,7 +8308,7 @@ NPCScriptFunction_C14479:
 	plx                                     ;C14D0F
 	stx $00                                 ;C14D10
 	phx                                     ;C14D12
-	jsl $C306C9                             ;C14D13
+	jsl.l GetItemStatsToTemp                             ;C14D13
 	plx                                     ;C14D17
 	lda $01,s                               ;C14D18
 	sta $06                                 ;C14D1A

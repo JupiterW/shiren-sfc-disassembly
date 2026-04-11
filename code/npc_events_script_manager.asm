@@ -2127,7 +2127,7 @@ func_C16B75:
 	cmp.b #$FF
 	beq @lbl_C16BDF
 	phx
-	jsl.l func_C30671
+	jsl.l CreateFloorItem
 	plx
 	ldy.b wTemp00
 	bmi @lbl_C16BE8
@@ -2209,7 +2209,7 @@ func_C16C7D:
 	sty.b wTemp00
 	phy
 	phx
-	jsl.l func_C306C9
+	jsl.l GetItemStatsToTemp
 	plx
 	lda.l DATA8_C16BEA,x
 	sta.b wTemp06
