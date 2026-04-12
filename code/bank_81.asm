@@ -4353,7 +4353,7 @@ func_81BF32:
 	cpx.b #$0A
 	bne @lbl_81BF9C
 	pha
-	jsl.l func_C36BB0
+	jsl.l GetMapNum
 	pla
 	ldx.b wTemp00
 	cpx.b #$30

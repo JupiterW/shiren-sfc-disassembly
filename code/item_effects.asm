@@ -212,7 +212,7 @@ UnusedItemUseEffect:
 
 ;c309d3
 WanderingScrollUseEffect:
-	jsl.l func_C36734
+	jsl.l ResetFloorVisibility
 	rep #$20 ;A->16
 	lda.w #$0013
 	sta.b wTemp00
@@ -2064,7 +2064,7 @@ LightScrollUseEffect:
 	lda.w #$0072
 	sta.b wTemp00
 	jsl.l DisplayMessage
-	jsl.l func_C35E5A
+	jsl.l RefreshEntityTileLayer
 	jsl.l MarkAllItemsDirty
 	jsl.l ScanItemVisibility
 	bra @lbl_C31849
@@ -3163,7 +3163,7 @@ PostponeStaffThrowEffect:
 	lda.b #$80
 	sta.b wTemp02
 	jsl.l PlaceSecondaryItemOnTile
-	jsl.l func_C36778
+	jsl.l GetTargetTile
 	lda.b wTemp00
 	bmi @lbl_C320A8
 	jsl.l func_C3631A

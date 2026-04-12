@@ -4015,7 +4015,7 @@ PlaceShirenOnFloor:
 	bne @lbl_C35D94
 	lda.b wTemp01,s
 	sta.b wTemp00
-	jsl.l func_C36BDF
+	jsl.l MarkRoomDirty
 @lbl_C35D94:
 	lda.l $7EC175
 	cmp.b wTemp01,s
@@ -4114,7 +4114,7 @@ MarkAllEntitiesDirty:
 	lda.b #$80
 	bra @lbl_C35E3C
 
-func_C35E5A:
+RefreshEntityTileLayer:
 	php
 	sep #$30 ;AXY->8
 	bankswitch 0x7E
@@ -4485,7 +4485,7 @@ func_C3608D:
 	cmp.b #$80
 	bne @lbl_C36090
 	txy
-	jsl.l func_C36BCE
+	jsl.l TileIndexToCoords
 	plp
 	rtl
 
@@ -4534,7 +4534,7 @@ func_C360D7:
 	cmp.b #$80
 	bne @lbl_C360DD
 	txy
-	jsl.l func_C36BCE
+	jsl.l TileIndexToCoords
 	plp
 	rtl
 @lbl_C3612E:
@@ -4690,7 +4690,7 @@ func_C36203:
 	cmp.b #$80
 	bne @lbl_C36206
 	txy
-	jsl.l func_C36BCE
+	jsl.l TileIndexToCoords
 	plp
 	rtl
 	php                                     ;C3624D
@@ -4764,7 +4764,7 @@ func_C36287:
 	bne @lbl_C3628D
 @lbl_C362CD:
 	txy
-	jsl.l func_C36BCE
+	jsl.l TileIndexToCoords
 	plp
 	rtl
 @lbl_C362D4:
@@ -4947,7 +4947,7 @@ func_C36410:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
-	jsl.l func_C36BBD
+	jsl.l CoordsToTileIndex
 	phy
 	tyx
 	lda.l $7EA95F,x
@@ -4997,7 +4997,7 @@ func_C36410:
 	bra @lbl_C3647D
 @lbl_C36478:
 	txy
-	jsl.l func_C36BCE
+	jsl.l TileIndexToCoords
 @lbl_C3647D:
 	rep #$20 ;A->16
 	pla
@@ -5269,7 +5269,7 @@ SetTileOccupied:
 	rtl
 
 ; Clears bit $01 in the tile-type flags for tile type index wTemp00.
-; If the tile type matches the currently tracked tile ($7EBE64), also calls func_C36BDF.
+; If the tile type matches the currently tracked tile ($7EBE64), also calls MarkRoomDirty.
 ClearTileOccupied:
 	php
 	sep #$30 ;AXY->8
@@ -5282,17 +5282,17 @@ ClearTileOccupied:
 	lda.l $7EBE64
 	cmp.b wTemp00
 	bne @lbl_C366F4
-	jsl.l func_C36BDF
+	jsl.l MarkRoomDirty
 @lbl_C366F4:
 	plp
 	rtl
 
-func_C366F6:
+SetupSingleRoomFloor:
 	php 
 	sep #$30 ;AXY->8
 	lda.b #$01
 	sta.b wTemp00
-	jsr.w func_C38895
+	jsr.w SetupFixedSingleRoom
 	lda.b #$7E
 	pha
 	plb
@@ -5319,7 +5319,7 @@ func_C366F6:
 	plp 
 	rtl
 
-func_C36734:
+ResetFloorVisibility:
 	php 
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -5349,7 +5349,7 @@ func_C36734:
 	plp 
 	rtl
 
-func_C3676D:
+SetTargetTile:
 	php 
 	rep #$20 ;A->16
 	lda.b wTemp00
@@ -5358,7 +5358,7 @@ func_C3676D:
 	rtl
 
 
-func_C36778:
+GetTargetTile:
 	php
 	rep #$20 ;A->16
 	lda.l $7EC172
@@ -5971,7 +5971,7 @@ func_C36928:
 	rts                                     ;C36BAF
 .INDEX 16
 
-func_C36BB0:
+GetMapNum:
 	php
 	sep #$20 ;A->8
 	lda.l wMapNum
@@ -5980,7 +5980,7 @@ func_C36BB0:
 	plp
 	rtl
 
-func_C36BBD:
+CoordsToTileIndex:
 	php
 	sep #$20 ;A->8
 	lda.b wTemp01
@@ -5995,7 +5995,7 @@ func_C36BBD:
 	plp
 	rtl
 
-func_C36BCE:
+TileIndexToCoords:
 	php
 	rep #$30 ;AXY->16
 	tya
@@ -6010,7 +6010,7 @@ func_C36BCE:
 	plp
 	rtl
 
-func_C36BDF:
+MarkRoomDirty:
 	php
 	sep #$30 ;AXY->8
 	bankswitch 0x7E
@@ -8842,7 +8842,7 @@ func_C38011:
 	pla
 	sta.b wTemp00
 	rep #$10 ;XY->16
-	jsl.l func_C36BBD
+	jsl.l CoordsToTileIndex
 	phy
 	ldx.w #$0901
 	stx.b wTemp00
@@ -9529,7 +9529,7 @@ func_C38865:
 	plp 
 	rts
 
-func_C38895:
+SetupFixedSingleRoom:
 	php 
 	sep #$20 ;A->8
 	lda.b wTemp00
@@ -9876,7 +9876,7 @@ LoadDungeonRoomLayout:
 	clc
 	adc.b wTemp00
 	tax
-	jsl.l func_C36BB0
+	jsl.l GetMapNum
 	lda.b wTemp00
 	dec a
 	sta.b wTemp00
@@ -10052,7 +10052,7 @@ func_C38C9F:
 	clc
 	adc.b wTemp00
 	tax
-	jsl.l func_C36BB0
+	jsl.l GetMapNum
 	lda.b wTemp00
 	dec a
 	sta.b wTemp00
@@ -10105,7 +10105,7 @@ func_C38C9F:
 func_C38D18:
 	php
 	rep #$30 ;AXY->16
-	jsl.l func_C36BB0
+	jsl.l GetMapNum
 	lda.b wTemp00
 	dec a
 	sta.b wTemp00
@@ -10152,7 +10152,7 @@ func_C38D18:
 func_C38D72:
 	php
 	rep #$30 ;AXY->16
-	jsl.l func_C36BB0
+	jsl.l GetMapNum
 	lda.b wTemp00
 	dec a
 	sta.b wTemp00

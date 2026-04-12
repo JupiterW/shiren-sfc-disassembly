@@ -1616,7 +1616,7 @@ wShirenTileIndex:
     dw
 
 ;be64
-wCurrentTileType:
+wShirenRoomIndex:
     db
 
 ;be65
@@ -1705,7 +1705,23 @@ wItemCoordY:
 wTileTypeFlags:
     dsb 16
 
-. ds 0xc195 - 0xc176
+;c176
+wStaircasePlacedFlag:
+    db
+
+;c177
+wStaircaseDupGuard:
+    db
+
+;c178
+wSingleRoomFlag:
+    db
+
+;c179
+wDungeonLayoutVariant:
+    db
+
+. ds 0xc195 - 0xc17a
 
 ;c195
 wMapNum:

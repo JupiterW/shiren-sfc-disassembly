@@ -3594,7 +3594,7 @@ func_C09E8B:
 	phb
 	stz.b w7f0000
 	jsl.l func_80E3EF
-	jsl.l func_C36BB0
+	jsl.l GetMapNum
 	stz.b w7f0000+1
 	dec.b w7f0000
 	bpl @lbl_80A028
@@ -3608,7 +3608,7 @@ func_C09E8B:
 	jsl.l func_80D5AF
 	plb
 	jsl.l func_80AD9D
-	jsl.l func_C36BB0
+	jsl.l GetMapNum
 	stz.b w7f0000+1
 	lda.b w7f0000
 	jsr.w func_80A74D
