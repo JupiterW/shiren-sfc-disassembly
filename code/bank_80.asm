@@ -11467,7 +11467,7 @@ func_80E7DF:
 	php
 	rep #$30 ;AXY->16
 	jsl.l func_80B5D6
-	jsl.l func_C35A44
+	jsl.l FindFreeItemSlot
 	lda.b wTemp00
 	lsr a
 	tax

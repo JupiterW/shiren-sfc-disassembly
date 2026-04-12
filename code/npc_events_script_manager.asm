@@ -116,7 +116,7 @@ DATA8_C150F5:
 	bmi @lbl_C1518E
 	sta.b wTemp02
 	stx.b wTemp00
-	jsl.l func_C35B7A
+	jsl.l PlaceSecondaryItemOnTile
 @lbl_C1518E:
 	ply
 	rts
@@ -131,7 +131,7 @@ DATA8_C150F5:
 	iny
 	sta.b wTemp01
 	phy
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 	ply
 	rts
 	lda.w NPCScript,y
@@ -144,7 +144,7 @@ DATA8_C150F5:
 	iny
 	sta.b wTemp01
 	phy
-	jsl.l func_C35C72
+	jsl.l PlaceItemOnTile
 	ply
 	rts
 
@@ -166,7 +166,7 @@ func_C151C3:
 	bmi @lbl_C151E7
 	sta.b wTemp02
 	stx.b wTemp00
-	jsl.l func_C35B7A
+	jsl.l PlaceSecondaryItemOnTile
 @lbl_C151E7:
 	plp
 	rts
@@ -2020,7 +2020,7 @@ NPCScriptFunction_C16A7D:
 	sta.b wTemp01
 	sty.b wTemp02
 	phx
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 	plx
 	inx
 	inx
@@ -2071,7 +2071,7 @@ NPCScriptFunction_C16B2B:
 	sta.b wTemp01
 	sty.b wTemp02
 	phx
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 	plx
 	inx
 	inx
@@ -2137,7 +2137,7 @@ func_C16B75:
 	sta.b wTemp01
 	sty.b wTemp02
 	phx
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 	plx
 @lbl_C16BDF:
 	inx
@@ -2228,7 +2228,7 @@ func_C16C7D:
 	lda.b #$80
 	sta.b wTemp02
 	phx
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 	plx
 	bra @lbl_C16D1D
 @lbl_C16D03:

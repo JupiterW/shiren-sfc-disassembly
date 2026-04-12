@@ -486,7 +486,7 @@ func_C215AB:
 	sta.b wTemp00
 	lda.l wCharYPos,x
 	sta.b wTemp01
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 @lbl_C21790:
 	stz.b wTemp00
 	plp
@@ -1015,7 +1015,7 @@ func_C21A99:
 	sta.b wTemp00
 	stx.b wTemp02
 	phx
-	jsl.l func_C35B7A
+	jsl.l PlaceSecondaryItemOnTile
 	plx
 	sep #$20 ;A->8
 	lda.b #$00
@@ -2034,7 +2034,7 @@ DATA8_C21B97:
 	;sta.l wCharUnderfootTerrainType,x
 	;sta.b wTemp02
 	;phx
-	;jsl.l func_C35C72
+	;jsl.l PlaceItemOnTile
 	;plx
 	;stx.b wTemp00
 	;phx
@@ -2685,7 +2685,7 @@ DATA8_C21B97:
 	;sta.b wTemp01
 	;lda.b #$30
 	;sta.b wTemp02
-	;jsl.l func_C35C72
+	;jsl.l PlaceItemOnTile
 	;lda.b #$13
 	;sta.b wTemp00
 	;lda.b #$88

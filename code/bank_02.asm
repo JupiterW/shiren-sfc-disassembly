@@ -1742,7 +1742,7 @@ HandleCharacterDeath:
 	sta.b wTemp00
 	ldx.b #$80
 	stx.b wTemp02
-	jsl.l func_C35B7A
+	jsl.l PlaceSecondaryItemOnTile
 	cpy.b #$13
 	beq @lbl_C20FA9
 	sep #$20 ;A->8
@@ -1845,7 +1845,7 @@ HandleCharacterDeath:
 	sta.b wTemp01
 	lda.b #$13
 	sta.b wTemp02
-	jsl.l func_C35B7A
+	jsl.l PlaceSecondaryItemOnTile
 	plp
 	rtl
 	sep #$30                                ;C21058
@@ -3274,7 +3274,7 @@ func_C22E2D:
 	bmi @lbl_C230D6
 	sta.b wTemp00
 	stx.b wTemp02
-	jsl.l func_C35B7A
+	jsl.l PlaceSecondaryItemOnTile
 	bra @lbl_C230D6
 @lbl_C230CE:
 	sep #$20                                ;C230CE
@@ -3405,7 +3405,7 @@ func_C23173:
 	sta.b wTemp00
 	pha
 	phx
-	jsl.l func_C35B7A
+	jsl.l PlaceSecondaryItemOnTile
 	plx
 	pla
 	stx.b wTemp00
@@ -4985,7 +4985,7 @@ HandleCategoryShortcutSelectionAction:
 	lda.b wTemp01,s
 	sta.b wTemp01
 	phx
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 	plx
 	stx.b wTemp00
 	sty.b wTemp01
@@ -4999,7 +4999,7 @@ HandleCategoryShortcutSelectionAction:
 	sta.b wTemp00
 	lda.b wTemp01,s
 	sta.b wTemp01
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 @lbl_C23D1A:
 	pla
 	pla
@@ -5075,7 +5075,7 @@ HandleCategoryShortcutSelectionAction:
 	lda.b $01,s
 	sta.b wTemp02
 	phx
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 	plx
 	pla
 	sta.b wTemp02
@@ -5402,7 +5402,7 @@ DropSelectedInventoryItem:
 @lbl_C23FE5:
 	sta.b wTemp00
 	sty.b wTemp02
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 	sep #$20 ;A->8
 	sty.b wTemp02
 	lda.b #$1F
@@ -6003,7 +6003,7 @@ func_C24458:
 	lda.b #$80
 	sta.b wTemp02
 	phx
-	jsl.l func_C35B7A
+	jsl.l PlaceSecondaryItemOnTile
 	plx
 	sty.b wTemp00
 	stx.b wTemp01
@@ -6078,7 +6078,7 @@ func_C24458:
 	sta.b wTemp00
 	stx.b wTemp02
 	phx
-	jsl.l func_C35B7A
+	jsl.l PlaceSecondaryItemOnTile
 	plx
 	stx.b wTemp00
 	pla
@@ -7827,7 +7827,7 @@ func_C25152:
 	sta.b wTemp00
 	lda.l $7E85DC
 	sta.b wTemp01
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 	lda.b #$13
 	sta.b wTemp00
 	jsl.l PlayConfusionEffect
@@ -8820,7 +8820,7 @@ func_C2598A:
 	ldx.b #$80
 	stx.b wTemp02
 	pha
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 	pla
 	sty.b wTemp00
 	phy
@@ -9251,7 +9251,7 @@ func_C25CE6:
 	lda.w wCharYPos,y
 	sta.b wTemp01
 	sty.b wTemp02
-	jsl.l func_C35B7A
+	jsl.l PlaceSecondaryItemOnTile
 	lda.w wCharRemainingSleepTurns,y
 	beq @lbl_C25D41
 	dec a
@@ -9719,12 +9719,12 @@ func_C27951:
 	ldx.b #$80
 	stx.b wTemp02
 	pha
-	jsl.l func_C35B7A
+	jsl.l PlaceSecondaryItemOnTile
 	pla
 	sta.b wTemp00
 	sty.b wTemp02
 	pha
-	jsl.l func_C35B7A
+	jsl.l PlaceSecondaryItemOnTile
 	pla
 	sta.b wTemp00
 	pha
@@ -10606,7 +10606,7 @@ func_C27FD5:
 	sta.b wTemp00
 	sty.b wTemp02
 	phx
-	jsl.l func_C35B7A
+	jsl.l PlaceSecondaryItemOnTile
 	plx
 @lbl_C28016:
 	dex 
@@ -10700,7 +10700,7 @@ func_C2801B:
 	stx.b wTemp00
 	sta.b wTemp02
 	pha
-	jsl.l func_C35B7A
+	jsl.l PlaceSecondaryItemOnTile
 	pla
 	sta.b wTemp00
 	jsl.l func_C27FAA
@@ -10761,7 +10761,7 @@ func_C280D4:
 	stx.b wTemp00
 	sta.b wTemp02
 	pha
-	jsl.l func_C35B7A
+	jsl.l PlaceSecondaryItemOnTile
 	pla
 	sep #$10 ;XY->8
 	tax 
@@ -10824,7 +10824,7 @@ func_C2816C:
 	sta.b wTemp00
 	stx.b wTemp02
 	phx
-	jsl.l func_C35B7A
+	jsl.l PlaceSecondaryItemOnTile
 	plx
 	stx.b wTemp00
 	phx
@@ -12031,7 +12031,7 @@ func_C289F5:
 	plx
 	stx.b wTemp02
 	phx
-	jsl.l func_C35B7A
+	jsl.l PlaceSecondaryItemOnTile
 	plx
 	sep #$20 ;A->8
 	cpy.b #$13
@@ -12302,7 +12302,7 @@ func_C28C19:
 	sta.b wTemp00
 	lda.l $7E85DC
 	sta.b wTemp01
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 	pla
 	and.b #$1F
 	sta.b wTemp00
@@ -13315,7 +13315,7 @@ func_C2939C:
 	lda.l wCharYPos,x
 	sta.b wTemp01
 	phx
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 	plx
 	phx
 	jsl.l UpdateGameSystems
@@ -15246,7 +15246,7 @@ func_C2D8B7:
 	sta.b wTemp01
 	pla
 	sta.b wTemp02
-	jsl.l func_C35C72
+	jsl.l PlaceItemOnTile
 @lbl_C2D8D5:
 	lda.w $89C2
 	bmi @lbl_C2D8EE
@@ -15258,7 +15258,7 @@ func_C2D8B7:
 	sta.b wTemp01
 	pla
 	sta.b wTemp02
-	jsl.l func_C35C72
+	jsl.l PlaceItemOnTile
 @lbl_C2D8EE:
 	plp
 	rtl

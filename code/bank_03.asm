@@ -3062,11 +3062,11 @@ ResetFloorData:
 	plp
 	rtl
 
-func_C3544E:
+InitFloorOnEntry:
 	php
 	sep #$30 ;AXY->8
 	jsl.l DetermineNextFloor
-	jsr.w func_C35561
+	jsr.w PickRandomItemTypeForDungeon
 	asl a
 	tax
 	jumptablecall Jumptable_C3546C
@@ -3184,8 +3184,8 @@ DATA8_C35557:
 	.db $0A,$14,$1E,$28,$32               ;C35557
 	.db $3C,$46,$4B,$50,$55               ;C3555C  
 
-func_C35561:
-	jsr.w func_C3575D
+PickRandomItemTypeForDungeon:
+	jsr.w GetDungeonItemTableVariant
 	tya
 	asl a
 	tax
@@ -3278,7 +3278,7 @@ Data_c356db:
 	.db $03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03
 	.db $00,$01
 
-func_C3575D:
+GetDungeonItemTableVariant:
 	ldx.b #$01
 	jsl.l GetCurrentDungeon
 	ldy.b wTemp00
@@ -3561,7 +3561,7 @@ DATA8_C35A26:
 	.db $01,$00,$C1,$FF,$C0,$FF,$BF,$FF
 	.db $FF,$FF,$3F,$00,$40,$00
 
-func_C35A44:
+FindFreeItemSlot:
 	php
 	sep #$20 ;A->8
 	bankswitch 0x7E
@@ -3570,14 +3570,14 @@ func_C35A44:
 	sta.w $BE65
 	rep #$30 ;AXY->16
 	ldy.w #$0980
-func_C35A59:
+FindFreeItemSlotInner:
 	tya
 func_C35A5A:
 	sec
 	sbc.w #$0040
 	tay
 	lda.w $B41A,y
-	bpl func_C35A59
+	bpl FindFreeItemSlotInner
 	cpy.w #$0100
 	bcs @lbl_C35A70
 	ldy.w $BE62
@@ -3589,7 +3589,7 @@ func_C35A5A:
 	iny
 	iny
 
-func_C35A73:
+FindOccupiedItemSlot:
 	dey
 	tyx
 	rep #$20 ;A->16
@@ -3716,7 +3716,7 @@ func_C35B4D:
 	phy
 	call_savebank func_80B830
 	ply
-	jmp.w func_C35A73
+	jmp.w FindOccupiedItemSlot
 
 func_C35B68:
 	sep #$20 ;A->8
@@ -3730,7 +3730,7 @@ func_C35B68:
 	sta.b wTemp01
 	bra func_C35B4D
 
-func_C35B7A:
+PlaceSecondaryItemOnTile:
 	php
 	rep #$30 ;AXY->16
 	lda.b wTemp00
@@ -3752,7 +3752,7 @@ func_C35B7A:
 	plp
 	rtl
 
-func_C35BA2:
+PlaceItemWithCoords:
 	php
 	rep #$30 ;AXY->16
 	lda.b wTemp00
@@ -3786,7 +3786,7 @@ func_C35BA2:
 	plp
 	rtl
 
-func_C35BE4:
+GetItemCoords:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -3870,7 +3870,7 @@ func_C35BE4:
 	plp                                     ;C35C70
 	rtl                                     ;C35C71
 
-func_C35C72:
+PlaceItemOnTile:
 	php
 	rep #$30 ;AXY->16
 	lda.b wTemp00
@@ -5549,7 +5549,7 @@ func_C3689A:
 	stx.b wTemp00
 	lda.b #$30
 	sta.b wTemp02
-	jsl.l func_C35C72
+	jsl.l PlaceItemOnTile
 	lda.b #$02
 	rts
 @lbl_C368BB:
@@ -9638,7 +9638,7 @@ func_C3893E:
 	stx.b wTemp00
 	lda.b #$13
 	sta.b wTemp02
-	jsl.l func_C35B7A
+	jsl.l PlaceSecondaryItemOnTile
 	plp
 	rtl
 
@@ -9661,7 +9661,7 @@ func_C38981:
 	bmi @lbl_C389A5
 	stx.b wTemp00
 	sta.b wTemp02
-	jsl.l func_C35B7A
+	jsl.l PlaceSecondaryItemOnTile
 @lbl_C389A5:
 	dey
 	bne @lbl_C38989
@@ -9690,7 +9690,7 @@ func_C389AA:
 	bmi @lbl_C389D6
 	stx.b wTemp00
 	sta.b wTemp02
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 @lbl_C389D6:
 	dey
 	bpl @lbl_C389BA
@@ -9729,7 +9729,7 @@ func_C389DB:
 	sta.l $7EC173
 	lda.b #$83
 	sta.b wTemp02
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 	plp
 	rtl
 	lda $00                                 ;C38A22
@@ -9799,7 +9799,7 @@ func_C38A3C:
 	ora.b #$C0
 	stx.b wTemp00
 	sta.b wTemp02
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 	dey
 	bne @lbl_C38A81
 	pla
@@ -10001,7 +10001,7 @@ PlaceNaokiGaibaraNPCs:
 	sta.b wTemp01
 	lda.b #$80
 	sta.b wTemp02
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 	rts
 
 ; NPC layout for the Naoki/Gaibara story event dungeon room.
@@ -10095,7 +10095,7 @@ func_C38C9F:
 	lda.b wTemp01
 	sta.l $7EC173
 @lbl_C38D0F:
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 	iny
 	bra @lbl_C38CE9
 @lbl_C38D16:
@@ -10226,7 +10226,7 @@ func_C38DD4:
 	iny
 	lda.b [$A9],y
 	sta.b wTemp02
-	jsl.l func_C35C72
+	jsl.l PlaceItemOnTile
 	iny
 	bra @lbl_C38DEE
 @lbl_C38E05:
@@ -10373,7 +10373,7 @@ func_C38ECC:
 	sta.l $7EC173
 	lda.b #$83
 	sta.b wTemp02
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 	plp
 	rtl
 
@@ -11499,7 +11499,7 @@ func_C396F1:
 	stx.b wTemp00
 	sta.b wTemp02
 	pha
-	jsl.l func_C35B7A
+	jsl.l PlaceSecondaryItemOnTile
 	pla
 	sta.b wTemp00
 	phy
@@ -11721,7 +11721,7 @@ func_C3988B:
 	bmi @lbl_C398BF
 	stx.b wTemp00
 	sta.b wTemp02
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 @lbl_C398BF:
 	dey
 	bpl @lbl_C3989B
@@ -11770,7 +11770,7 @@ func_C398C4:
 	ora.b wTemp01,s
 	stx.b wTemp00
 	sta.b wTemp02
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 @lbl_C39916:
 	dey
 	bne @lbl_C398EC
@@ -12198,7 +12198,7 @@ func_C39AAA:
 	sty.b wTemp01
 	lda.b #$86
 	sta.b wTemp02
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 	lda.b wTemp02,s
 	inc a
 	tay
@@ -12246,7 +12246,7 @@ func_C39AAA:
 	stx.b wTemp00
 	sty.b wTemp01
 	phx
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 	plx
 @lbl_C39C8B:
 	inx
@@ -12591,7 +12591,7 @@ func_C39E1D:
 	sty.b wTemp01
 	lda.b #$86
 	sta.b wTemp02
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 	lda.b wTemp02,s
 	inc a
 	tay
@@ -12625,7 +12625,7 @@ func_C39E1D:
 	stx.b wTemp00
 	sty.b wTemp01
 	phx
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 	plx
 @lbl_C39F3D:
 	inx
@@ -12664,7 +12664,7 @@ func_C39E1D:
 	stx.b wTemp00
 	sty.b wTemp01
 	sta.b wTemp02
-	jsl.l func_C35B7A
+	jsl.l PlaceSecondaryItemOnTile
 @lbl_C39F7F:
 	pla
 	pla
@@ -13849,7 +13849,7 @@ func_C3D772:
 	stx.b wTemp00
 	ora.b #$C0
 	sta.b wTemp02
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 @lbl_C3D905:
 	pla
 	dec a
@@ -14307,7 +14307,7 @@ ScrollEffectCheckShortcutItems:
 	lda.b #$80
 	sta.b wTemp02
 	phx
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 	plx
 @lbl_C3DC92:
 	dex
@@ -14361,7 +14361,7 @@ ScrollEffectCheckShortcutItems:
 	stx.b wTemp00
 	lda.b #$80
 	sta.b wTemp02
-	jsl.l func_C35B7A
+	jsl.l PlaceSecondaryItemOnTile
 @lbl_C3DCF8:
 	pla
 @lbl_C3DCF9:

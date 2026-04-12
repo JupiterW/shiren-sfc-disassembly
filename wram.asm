@@ -1670,11 +1670,11 @@ wRoomData148:
     dsb 10
 
 ;c152
-wRoomData152:
+wItemCoordX:
     dsb 10
 
 ;c15c
-wRoomData15C:
+wItemCoordY:
     dsb 10
 
 ;c166

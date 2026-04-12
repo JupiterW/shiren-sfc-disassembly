@@ -605,7 +605,7 @@ func_C262D5:
 	lda.b #$80
 	sta.b wTemp02
 	phx
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 	plx
 	lda.b #$53
 	sta.l wCharAttackTarget,x
@@ -642,7 +642,7 @@ func_C26757:
 	and.b #$0F
 	sta.b wTemp00
 	phx
-	jsl.l func_C35BE4
+	jsl.l GetItemCoords
 	plx
 	rts
 @lbl_C26797:
@@ -751,7 +751,7 @@ func_C2679E:
 	lda.l wCharYPos,x
 	sta.b wTemp01
 	phx
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 	plx
 	stz.b wTemp00
 	plp

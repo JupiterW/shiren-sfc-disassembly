@@ -2022,7 +2022,7 @@ TrapScrollUseEffect:
 	stx.b wTemp00                       ;C317D5
 	ora.b #$C0                          ;C317D7
 	sta.b wTemp02                       ;C317D9
-	jsl.l func_C35BA2                   ;C317DB
+	jsl.l PlaceItemWithCoords                   ;C317DB
 @lbl_C317DF:
 	pla                                 ;C317DF
 	dec a                               ;C317E0
@@ -3162,7 +3162,7 @@ PostponeStaffThrowEffect:
 	jsl.l GetCharacterMapInfo
 	lda.b #$80
 	sta.b wTemp02
-	jsl.l func_C35B7A
+	jsl.l PlaceSecondaryItemOnTile
 	jsl.l func_C36778
 	lda.b wTemp00
 	bmi @lbl_C320A8
@@ -4366,7 +4366,7 @@ WalrusJarUseEffect:
 	sep #$20 ;A->8
 	lda.b #$80
 	sta.b wTemp02
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 	ply
 	pla
 @lbl_C329FD:
@@ -4553,7 +4553,7 @@ TryPrepareSelectedItemForJarInsertion:
 	sty.b wTemp02
 	pla
 	sta.b wTemp00
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 	ldx.b #$01
 	stx.b wTemp00
 	plp
@@ -5397,7 +5397,7 @@ PlaceThrownItemOnFloor:
 	stx.b wTemp02
 	pha
 	phx
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 	plx
 	pla
 	ply

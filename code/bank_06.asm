@@ -733,7 +733,7 @@ func_C605FB:
 @lbl_C60678:
 	lda.l wd5ec
 	sta.b wTemp00
-	jsl.l func_C3544E
+	jsl.l InitFloorOnEntry
 	jsr.w func_C622A5
 	jsl.l func_C22D3B
 	jsl.l func_C35C9A
