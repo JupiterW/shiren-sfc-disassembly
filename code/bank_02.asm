@@ -2568,7 +2568,7 @@ func_C22A25:
 	sta.b wTemp02
 	phx
 	phy
-	call_savebank func_C62565
+	call_savebank PlayCharacterEffect
 	ply
 	plx
 	lda.b #$3D
@@ -5245,7 +5245,7 @@ func_C23E5F:
 	sta $02                                 ;C23EE4
 	phx                                     ;C23EE6
 	phy                                     ;C23EE7
-	jsl $C62565                             ;C23EE8
+	jsl PlayCharacterEffect                             ;C23EE8
 	ply                                     ;C23EEC
 	plx                                     ;C23EED
 	stx $00                                 ;C23EEE
@@ -6768,7 +6768,7 @@ HandlePlayerActionCommand:
 	sta $00                                 ;C24A16
 	lda #$C3                                ;C24A18
 	sta $02                                 ;C24A1A
-	jsl $C62565                             ;C24A1C
+	jsl PlayCharacterEffect                             ;C24A1C
 	stz $00                                 ;C24A20
 	plp                                     ;C24A22
 	rtl                                     ;C24A23
@@ -8183,7 +8183,7 @@ func_C25152:
 	sta $00                                 ;C25506
 	lda #$000A                              ;C25508
 	sta $02                                 ;C2550B
-	jsl $C3E526                             ;C2550D
+	jsl Divide16Bit                             ;C2550D
 	lda $00                                 ;C25511
 	sta $02                                 ;C25513
 	stx $00                                 ;C25515
@@ -10972,7 +10972,7 @@ ShowDamageEffect:
 	sep #$20 ;A->8
 	lda.b #$05
 	sta.b wTemp02
-	jsl.l func_C62565
+	jsl.l PlayCharacterEffect
 	plp
 	rtl
 	php                                     ;C382F6
@@ -11776,7 +11776,7 @@ func_C28790:
 	sta $00                                 ;C38860
 	lda #$D2                                ;C38862
 	sta $02                                 ;C38864
-	jsl $C62565                             ;C38866
+	jsl PlayCharacterEffect                             ;C38866
 	ldx #$12                                ;C3886A
 @lbl_C3886C:
 	lda $7E85F1,x                           ;C3886C
@@ -11801,7 +11801,7 @@ func_C28790:
 	sta $00                                 ;C38895
 	lda #$D3                                ;C38897
 	sta $02                                 ;C38899
-	jsl $C62565                             ;C3889B
+	jsl PlayCharacterEffect                             ;C3889B
 	plp                                     ;C3889F
 	rtl                                     ;C388A0
 	php                                     ;C388A1

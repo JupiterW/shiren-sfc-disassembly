@@ -327,7 +327,7 @@ BigBellySeedUseEffect:
 	sep #$20 ;A->8
 	lda.b #$0A
 	sta.b wTemp02
-	jsl.l func_C3E526
+	jsl.l Divide16Bit
 	lda.b wTemp00
 	sta.b wTemp02
 	rep #$20 ;A->16
@@ -345,7 +345,7 @@ LittleBellySeedUseEffect:
 	sep #$20 ;A->8
 	lda.b #$0A
 	sta.b wTemp02
-	jsl.l func_C3E526
+	jsl.l Divide16Bit
 	lda.b wTemp00
 	sta.b wTemp02
 	rep #$20 ;A->16
@@ -524,7 +524,7 @@ func_C30BD3:
 	lda.b #$85
 	sta.b wTemp02
 	phy
-	call_savebank func_C62565
+	call_savebank PlayCharacterEffect
 	ply
 @lbl_C30C1D:
 	lda.w wItemModification1,y
@@ -733,7 +733,7 @@ func_C30D11:
 	sta.b wTemp02
 	phx
 	phy
-	call_savebank func_C62565
+	call_savebank PlayCharacterEffect
 	ply
 	plx
 	lda.b #$32
@@ -772,7 +772,7 @@ func_C30D11:
 	sta.b wTemp02
 	phx
 	phy
-	call_savebank func_C62565
+	call_savebank PlayCharacterEffect
 	ply
 	plx
 @lbl_C30DE9:
@@ -821,7 +821,7 @@ func_C30D11:
 	sta.b wTemp00
 	stx.b wTemp02
 	phy
-	call_savebank func_C62565
+	call_savebank PlayCharacterEffect
 	ply
 	plx
 @lbl_C30E3C:
@@ -866,7 +866,7 @@ func_C30E71:
 	sta.b wTemp02
 	phx
 	phy
-	call_savebank func_C62565
+	call_savebank PlayCharacterEffect
 	ply
 	plx
 	pla
@@ -1648,7 +1648,7 @@ DragonHerbUseEffect:
 	sta.b wTemp00
 	lda.b #$87
 	sta.b wTemp02
-	jsl.l func_C62565
+	jsl.l PlayCharacterEffect
 	lda.b #$13
 	sta.b wTemp00
 	jsl.l GetCharacterMapInfo
@@ -1805,7 +1805,7 @@ func_C315DF:
 	jsl ModifyShirenMaxHunger                             ;C315FC
 	lda #$000A                              ;C31600
 	sta $02                                 ;C31603
-	jsl $C3E526                             ;C31605
+	jsl Divide16Bit                             ;C31605
 	lda $00                                 ;C31609
 	and #$00FF                              ;C3160B
 	sta $02                                 ;C3160E
@@ -2141,7 +2141,7 @@ PowerupScrollUseEffect:
 	sta.b wTemp00
 	lda.b #$CC
 	sta.b wTemp02
-	jsl.l func_C62565
+	jsl.l PlayCharacterEffect
 	lda.b #$0B
 	sta.b wTemp00
 	jsl.l func_C28418
@@ -2399,7 +2399,7 @@ AirBlessScrollUseEffect:
 	sta $02                                 ;C31ADF
 	phx                                     ;C31AE1
 	phb                                     ;C31AE2
-	jsl $C62565                             ;C31AE3
+	jsl PlayCharacterEffect                             ;C31AE3
 	plb                                     ;C31AE7
 	plx                                     ;C31AE8
 	lda $8C8C,x                             ;C31AE9
@@ -2489,7 +2489,7 @@ EarthBlessScrollUseEffect:
 	sta $02                                 ;C31B8B
 	phx                                     ;C31B8D
 	phb                                     ;C31B8E
-	jsl $C62565                             ;C31B8F
+	jsl PlayCharacterEffect                             ;C31B8F
 	plb                                     ;C31B93
 	plx                                     ;C31B94
 	lda $8C8C,x                             ;C31B95
@@ -2545,7 +2545,7 @@ PlatingScrollUseEffect:
 	sta $00                                 ;C31BFA
 	lda #$CA                                ;C31BFC
 	sta $02                                 ;C31BFE
-	jsl $C62565                             ;C31C00
+	jsl PlayCharacterEffect                             ;C31C00
 @lbl_C31C04:
 	lda $02,s                               ;C31C04
 	bmi @lbl_C31C14                         ;C31C06
@@ -2553,7 +2553,7 @@ PlatingScrollUseEffect:
 	sta $00                                 ;C31C0A
 	lda #$CB                                ;C31C0C
 	sta $02                                 ;C31C0E
-	jsl $C62565                             ;C31C10
+	jsl PlayCharacterEffect                             ;C31C10
 @lbl_C31C14:
 	lda #$8E                                ;C31C14
 	sta $00                                 ;C31C16
@@ -2597,7 +2597,7 @@ BlessingScrollUseEffect:
 	sta.b wTemp00
 	lda.b #$CD
 	sta.b wTemp02
-	call_savebank func_C62565
+	call_savebank PlayCharacterEffect
 	jsl.l GetCategoryShortcutItemIds
 	ldx.b wTemp02
 	phx
@@ -3389,7 +3389,7 @@ ExtractionScrollUseEffect:
 	lda #$CE                                ;C3227A
 	sta $02                                 ;C3227C
 	phy                                     ;C3227E
-	jsl $C62565                             ;C3227F
+	jsl PlayCharacterEffect                             ;C3227F
 	ply                                     ;C32283
 	lda #$13                                ;C32284
 	sta $00                                 ;C32286
@@ -4274,7 +4274,7 @@ WalrusJarUseEffect:
 	sta.b wTemp00
 	lda.b #$C7
 	sta.b wTemp02
-	jsl.l func_C62565
+	jsl.l PlayCharacterEffect
 	lda.b #$13
 	sta.b wTemp00
 	jsl.l GetCharacterMapInfo
@@ -4312,7 +4312,7 @@ WalrusJarUseEffect:
 	sta.b wTemp00
 	lda.w #$0001
 	sta.b wTemp02
-	jsl.l func_C62565
+	jsl.l PlayCharacterEffect
 	plx
 	pla
 	sta.b wTemp02
@@ -5713,7 +5713,7 @@ ExecutePreparedThrowEffect:
 	ldy.b #$83
 @lbl_C333C2:
 	sty.b wTemp02
-	jsl.l func_C62565
+	jsl.l PlayCharacterEffect
 @lbl_C333C8:
 	lda.b wTemp07,s
 	bne @lbl_C333D2
@@ -6398,7 +6398,7 @@ func_C335FE:
 @lbl_C338FE:
 	lda #$0A                                ;C338FE
 	sta $02                                 ;C33900
-	jsl $C3E526                             ;C33902
+	jsl Divide16Bit                             ;C33902
 	lda $00                                 ;C33906
 @lbl_C33908:
 	sta $02                                 ;C33908

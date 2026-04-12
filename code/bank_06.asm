@@ -2139,7 +2139,9 @@ func_C62550:
 	plp
 	rtl
 
-func_C62565:
+; Plays visual effects on characters (damage numbers, heal sparkles, etc.).
+; Input: wTemp00 = character index, wTemp02 = effect type
+PlayCharacterEffect:
 	php
 	sep #$20 ;A->8
 	lda.l wLoading

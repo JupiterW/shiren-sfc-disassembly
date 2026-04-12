@@ -15454,7 +15454,10 @@ func_C3E4C1:
 	plp
 	rtl
 
-func_C3E526:
+; 16-bit unsigned division using shift-and-subtract algorithm.
+; Input: wTemp00 = dividend, wTemp02 = divisor
+; Output: wTemp00 = quotient, wTemp01 = remainder
+Divide16Bit:
 	php
 	sep #$20 ;A->8
 	lda.b wTemp02

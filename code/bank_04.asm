@@ -4176,7 +4176,7 @@ func_C444CC:
 	sta.b wTemp00
 	ldx.w #$0004
 	stx.b wTemp02
-	jsl.l func_C3E526
+	jsl.l Divide16Bit
 	lda.b wTemp00
 	and.w #$00FF
 	clc
@@ -4304,7 +4304,7 @@ func_C445D1:
 	sta.b wTemp00
 	ldx.w #$0002
 	stx.b wTemp02
-	jsl.l func_C3E526
+	jsl.l Divide16Bit
 	lda.b wTemp00
 	and.w #$00FF
 	clc
@@ -4443,7 +4443,7 @@ func_C4473F:
 	sta.b wTemp00
 	ldx.w #$0004
 	stx.b wTemp02
-	jsl.l func_C3E526
+	jsl.l Divide16Bit
 	lda.b wTemp00
 	and.w #$00FF
 	clc
@@ -4571,7 +4571,7 @@ func_C44844:
 	sta.b wTemp00
 	ldx.w #$0002
 	stx.b wTemp02
-	jsl.l func_C3E526
+	jsl.l Divide16Bit
 	lda.b wTemp00
 	and.w #$00FF
 	clc
@@ -11763,7 +11763,7 @@ func_C48E3D:
 	stz.b wTemp01
 	lda.b wTemp04,s
 	sta.b wTemp02
-	jsl.l func_C3E526
+	jsl.l Divide16Bit
 	lda.b wTemp01
 	sta.b wTemp02,s
 	lda.b wTemp00
@@ -14134,7 +14134,7 @@ func_C4A565:
 	sta.b wTemp00
 	lda.w #$000A
 	sta.b wTemp02
-	jsl.l func_C3E526
+	jsl.l Divide16Bit
 	lda.b wTemp00
 	pha
 	jsl.l func_C2338A
@@ -14144,7 +14144,7 @@ func_C4A565:
 	sta.b wTemp00
 	lda.w #$000A
 	sta.b wTemp02
-	jsl.l func_C3E526
+	jsl.l Divide16Bit
 	pla
 	plx
 	stx.b wTemp02
@@ -14746,7 +14746,7 @@ func_C4AABF:
 	sta.b wTemp00
 	ldx.b #$0A
 	stx.b wTemp02
-	jsl.l func_C3E526
+	jsl.l Divide16Bit
 	ldx.b wTemp01
 	phx
 	lda.b wTemp00
@@ -14754,7 +14754,7 @@ func_C4AABF:
 	sta.b wTemp00
 	ldx.b #$0A
 	stx.b wTemp02
-	jsl.l func_C3E526
+	jsl.l Divide16Bit
 	ldx.b wTemp01
 	phx
 	ldx.b wTemp00
