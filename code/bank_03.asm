@@ -2563,14 +2563,14 @@ ItemUseEffectFunctionTable:
 	.dw DragonHerbUseEffect-1 ;DragonHerb
 	.dw VictoryHerbUseEffect-1 ;VictoryHerb
 	.dw AngelSeedUseEffect-1 ;AngelSeed
-	.dw $09F0 ;RevivalHerb
+	.dw ShowNothingHappensMessage-1 ;RevivalHerb
 	.dw InvisibilityHerbUseEffect-1 ;InvisibilityHerb
 	.dw BitterHerbUseEffect-1 ;BitterHerb
 	.dw MisfortuneHerbUseEffect-1 ;MisfortuneHerb
 	.dw IllLuckHerbUseEffect-1 ;IllLuckHerb
 	.dw KignyHerbUseEffect ;KignyHerb
 	.dw AmnesiaHerbUseEffect-1 ;AmnesiaHerb
-	.dw $0A94 ;36
+	.dw NullItemEffect-1 ;36
 	.dw LifeHerbUseEffect-1 ;LifeHerb
 	.dw BigBellySeedUseEffect-1 ;BigBellySeed
 	.dw LittleBellySeedUseEffect-1 ;LittleBellySeed
@@ -2580,7 +2580,7 @@ ItemUseEffectFunctionTable:
 	.dw PoisonHerbUseEffect-1 ;PoisonHerb
 	.dw ConfusionHerbUseEffect-1 ;ConfusionHerb
 	.dw SleepHerbUseEffect-1 ;SleepHerb
-	.dw $09F0 ;Weeds
+	.dw ShowNothingHappensMessage-1 ;Weeds
 	.dw UnusedItemUseEffect-1
 	.dw UnusedItemUseEffect-1
 	.dw UnusedItemUseEffect-1
@@ -2608,13 +2608,13 @@ ItemUseEffectFunctionTable:
 	.dw BigpotScrollUseEffect-1 ;BigpotScroll
 	.dw BlastwaveScrollUseEffect-1 ;BlastwaveScroll
 	.dw SilenceScrollUseEffect-1 ;SilenceScroll
-	.dw $1A7A ;5C
+	.dw func_C31A7B-1 ;5C
 	.dw TrapScrollUseEffect-1 ;TrapScroll
 	.dw NeedScrollUseEffect-1 ;NeedScroll
 	.dw HasteScrollUseEffect-1 ;HasteScroll
 	.dw SleepScrollUseEffect-1 ;SleepScroll
 	.dw PowerupScrollUseEffect-1 ;PowerupScroll
-	.dw $18B8 ;62
+	.dw func_C318B9-1 ;62
 	.dw ExplosionScrollUseEffect-1 ;ExplosionScroll
 	.dw GreatHallScrollUseEffect-1 ;GreatHallScroll
 	.dw MonsterHouseScrollUseEffect-1 ;MonsterHouseScroll
@@ -2628,7 +2628,7 @@ ItemUseEffectFunctionTable:
 	.dw ExtractionScrollUseEffect-1 ;ExtractionScroll
 	.dw HandsFullScrollUseEffect-1 ;HandsFullScroll
 	.dw UnusedItemUseEffect-1 ;6F
-	.dw $1862 ;70
+	.dw func_C31863-1 ;70
 	.dw UnusedItemUseEffect-1
 	.dw UnusedItemUseEffect-1
 	.dw UnusedItemUseEffect-1
@@ -2663,21 +2663,21 @@ ItemUseEffectFunctionTable:
 	.dw UnusedItemUseEffect-1
 	.dw UnusedItemUseEffect-1
 	.dw UnusedItemUseEffect-1
-	.dw $1D3E ;PassageArmband
-	.dw $1DC8 ;DiscountArmband
-	.dw $1D1C ;TrapArmband
-	.dw $1D2D ;Levelholder
-	.dw $1D90 ;RecoveryArmband
-	.dw $1DC8 ;RustlessArmband
-	.dw $1D97 ;CriticalArmband
-	.dw $1D9E ;RegretArmband
-	.dw $1DC8 ;BlessingArmband
-	.dw $1DAC ;PitchersArmband
-	.dw $1D89 ;HappyArmband
-	.dw $1DB3 ;LossArmband
-	.dw $1D82 ;SightArmband
-	.dw $1DBA ;CalmArmband
-	.dw $1DC1 ;IdentityArmband
+	.dw PassageArmbandUseEffect-1 ;PassageArmband
+	.dw DiscountArmbandUseEffect-1 ;DiscountArmband
+	.dw TrapArmbandUseEffect-1 ;TrapArmband
+	.dw LevelholderUseEffect-1 ;Levelholder
+	.dw RecoveryArmbandUseEffect-1 ;RecoveryArmband
+	.dw DiscountArmbandUseEffect-1 ;RustlessArmband
+	.dw CriticalArmbandUseEffect-1 ;CriticalArmband
+	.dw RegretArmbandUseEffect-1 ;RegretArmband
+	.dw DiscountArmbandUseEffect-1 ;BlessingArmband
+	.dw PitchersArmbandUseEffect-1 ;PitchersArmband
+	.dw HappyArmbandUseEffect-1 ;HappyArmband
+	.dw LossArmbandUseEffect-1 ;LossArmband
+	.dw SightArmbandUseEffect-1 ;SightArmband
+	.dw CalmArmbandUseEffect-1 ;CalmArmband
+	.dw IdentityArmbandUseEffect-1 ;IdentityArmband
 	.dw UnusedItemUseEffect-1
 	.dw UnusedItemUseEffect-1
 	.dw UnusedItemUseEffect-1
@@ -2691,9 +2691,9 @@ ItemUseEffectFunctionTable:
 	.dw UnusedItemUseEffect-1
 	.dw UnusedItemUseEffect-1
 	.dw OnigiriUseEffect-1 ;Onigiri
-	.dw $15AD ;BigOnigiri
+	.dw BigOnigiriUseEffect-1 ;BigOnigiri
 	.dw SpoiledOnigiriUseEffect-1 ;SpoiledOnigiri
-	.dw $1579 ;HugeOnigiri
+	.dw HugeOnigiriUseEffect-1 ;HugeOnigiri
 	.dw SpecialOnigiriUseEffect-1 ;SpecialOnigiri
 	.dw UnusedItemUseEffect-1 ;B3
 	.dw JarUseEffect-1 ;HoldingJar
@@ -2701,7 +2701,7 @@ ItemUseEffectFunctionTable:
 	.dw JarUseEffect-1 ;DivisionJar
 	.dw JarUseEffect-1 ;StrengtheningJar
 	.dw JarUseEffect-1 ;IdentityJar
-	.dw $28C3 ;ChiropracticJar
+	.dw ChiropracticJarUseEffect-1 ;ChiropracticJar
 	.dw JarUseEffect-1 ;StorehouseJar
 	.dw JarUseEffect-1 ;WeakeningJar
 	.dw JarUseEffect-1 ;BC

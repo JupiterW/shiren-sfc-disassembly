@@ -16,7 +16,7 @@ MonsterMeatUseEffect:
 	jsl.l ModifyShirenHunger
 	rts
 @lbl_C3089F:
-	jmp.w func_C315AE
+	jmp.w BigOnigiriUseEffect
 
 ;c308a2
 BlankScrollUseEffect:
@@ -1734,6 +1734,7 @@ SightHerbUseEffect:
 	jsl.l func_C240A7
 	jsl.l func_C35FA2
 	rts
+HugeOnigiriUseEffect:
 	rep #$30                                ;C31579
 	lda #$004B                              ;C3157B
 	sta $00                                 ;C3157E
@@ -1759,7 +1760,7 @@ OnigiriUseEffect:
 	lda.w #$01F4
 	bra func_C315BC
 
-func_C315AE:
+BigOnigiriUseEffect:
 	rep #$30 ;AXY->16
 	ldx.w #$0014
 	jsr.w func_C315DF
@@ -2075,6 +2076,7 @@ LightScrollUseEffect:
 	jsl.l DisplayMessage
 @lbl_C31862:
 	rts
+func_C31863:
 	rep #$20                                ;C31863
 	lda #$0055                              ;C31865
 	sta $00                                 ;C31868
@@ -2116,6 +2118,7 @@ HasteScrollUseEffect:
 SleepScrollUseEffect:
 	jsl.l func_C28790
 	rts
+func_C318B9:
 	sep #$20                                ;C318B9
 	lda #$1E                                ;C318BB
 	sta $00                                 ;C318BD
@@ -2342,6 +2345,7 @@ BigpotScrollUseEffect:
 	stz $01                                 ;C31A74
 	jsl.l DisplayMessage
 	rts                                     ;C31A7A
+func_C31A7B:
 	rep #$20                                ;C31A7B
 	sep #$10                                ;C31A7D
 	lda #$0089                              ;C31A7F
@@ -2685,6 +2689,7 @@ BlessingScrollUseEffect:
 	sta $00                                 ;C31D16
 	jsl $C23309                             ;C31D18
 	rts                                     ;C31D1C
+TrapArmbandUseEffect:
 	sep #$30                                ;C31D1D
 	lda #$01                                ;C31D1F
 	ldx $00                                 ;C31D21
@@ -2694,6 +2699,7 @@ BlessingScrollUseEffect:
 	sta $00                                 ;C31D27
 	jsl $C23314                             ;C31D29
 	rts                                     ;C31D2D
+LevelholderUseEffect:
 	sep #$30                                ;C31D2E
 	lda #$01                                ;C31D30
 	ldx $00                                 ;C31D32
@@ -2703,6 +2709,7 @@ BlessingScrollUseEffect:
 	sta $00                                 ;C31D38
 	jsl $C23323                             ;C31D3A
 	rts                                     ;C31D3E
+PassageArmbandUseEffect:
 	sep #$30                                ;C31D3F
 	lda #$01                                ;C31D41
 	ldx $00                                 ;C31D43
@@ -2712,6 +2719,7 @@ BlessingScrollUseEffect:
 	sta $00                                 ;C31D49
 	jsl $C23344                             ;C31D4B
 	rts                                     ;C31D4F
+func_C31D50:
 	sep #$30                                ;C31D50
 	lda $8C8C,y                             ;C31D52
 	ldx $00                                 ;C31D55
@@ -2738,36 +2746,48 @@ BlessingScrollUseEffect:
 	rts                                     ;C31D7D
 	jsl $C283B3                             ;C31D7E
 	rts                                     ;C31D82
+SightArmbandUseEffect:
 	sep #$30 ;AXY->8
 	jsl.l func_C283D2
 	rts
+HappyArmbandUseEffect:
 	sep #$30                                ;C31D8A
 	jsl $C283E1                             ;C31D8C
 	rts                                     ;C31D90
+RecoveryArmbandUseEffect:
 	sep #$30                                ;C31D91
 	jsl $C283EC                             ;C31D93
 	rts                                     ;C31D97
+CriticalArmbandUseEffect:
 	sep #$30                                ;C31D98
 	jsl $C283F7                             ;C31D9A
 	rts                                     ;C31D9E
+RegretArmbandUseEffect:
 	sep #$30                                ;C31D9F
 	jsl $C28402                             ;C31DA1
 	rts                                     ;C31DA5
 	sep #$30                                ;C31DA6
 	jsl $C2840D                             ;C31DA8
 	rts                                     ;C31DAC
+PitchersArmbandUseEffect:
 	sep #$30                                ;C31DAD
 	jsl $C2845C                             ;C31DAF
 	rts                                     ;C31DB3
+LossArmbandUseEffect:
 	sep #$30                                ;C31DB4
 	jsl $C28467                             ;C31DB6
 	rts                                     ;C31DBA
+CalmArmbandUseEffect:
 	sep #$30                                ;C31DBB
 	jsl $C2847D                             ;C31DBD
 	rts                                     ;C31DC1
+IdentityArmbandUseEffect:
 	sep #$30                                ;C31DC2
 	jsl $C28497                             ;C31DC4
 	rts                                     ;C31DC8
+BlessingArmbandUseEffect:
+RustlessArmbandUseEffect:
+DiscountArmbandUseEffect:
 	rts
 	sep #$30                                ;C31DCA
 	ldy $00                                 ;C31DCC
@@ -4177,6 +4197,7 @@ JarUseEffect:
 	jsl $C306F4                             ;C328BB
 	jsl $C16B75                             ;C328BF
 	rts                                     ;C328C3
+ChiropracticJarUseEffect:
 	sep #$30 ;AXY->8
 	tyx
 	phx
