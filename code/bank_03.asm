@@ -6311,16 +6311,16 @@ func_C36D1D:
 	clc 
 	adc.b $01,s
 	tax 
-	lda.l Data_c36e38+8,x
+	lda.l CorridorDirectionPermutations,x
 	tax 
 	lda.w $C090
 	clc 
-	adc.l Data_c36e38,x
+	adc.l CorridorDirectionDeltaX,x
 	sta.w $C092
 	sta.b wTemp00
 	lda.w $C091
 	clc 
-	adc.l Data_c36e38+4,x
+	adc.l CorridorDirectionDeltaY,x
 	sta.w $C093
 	sta.b wTemp01
 	jsl.l func_C36CA5
@@ -6365,9 +6365,17 @@ func_C36D1D:
 	brl @lbl_C36DAE
 
 	
-Data_c36e38:
+; Signed X-deltas for 4 cardinal directions used in corridor carving: E, S, W, N.  ;C36E38
+CorridorDirectionDeltaX:
 	.db $02,$00,$FE,$00
+
+; Signed Y-deltas for 4 cardinal directions used in corridor carving: E, S, W, N.  ;C36E3C
+CorridorDirectionDeltaY:
 	.db $00,$02,$00,$FE
+
+; 24 permutations of {0,1,2,3}, each group of 4 bytes = one shuffled direction order.
+; Indexed by GetRandomInRange(0,$17)*4 to pick a random corridor-search order.      ;C36E40
+CorridorDirectionPermutations:
 	.db $00,$01,$02,$03,$00,$01,$03
 	.db $02,$00,$02,$01,$03,$00,$02,$03,$01,$00,$03,$01,$02,$00,$03,$02
 	.db $01,$01,$00,$02,$03,$01,$00,$03,$02,$01,$02,$00,$03,$01,$02,$03
@@ -7005,7 +7013,7 @@ func_C37234:
 	sta $7EC170                             ;C372B5
 @lbl_C372B9:
 	tyx                                     ;C372B9
-	lda $C372FB,x                           ;C372BA
+	lda $C372FB,x                           ;C372BA (ActiveCompanionSlotList)
 	bmi @lbl_C372F2                         ;C372BE
 	tax                                     ;C372C0
 	lda $7E89C3,x                           ;C372C1
@@ -7036,6 +7044,11 @@ func_C37234:
 @lbl_C372F8:
 	iny                                     ;C372F8
 	bra @lbl_C372B9                         ;C372F9
+
+; Character data slot indices for up to 8 companion candidates, $FF-terminated.
+; Each byte is loaded as x to index wChar arrays ($7E89C3 etc.) to find an active
+; companion. The 4 slots are listed twice to allow wrap-around searching.     ;C372FB
+ActiveCompanionSlotList:
 	ora ($12),y                             ;C372FB
 	ora ($14,s),y                           ;C372FD
 	and ($22,x)                             ;C372FF
@@ -9966,7 +9979,7 @@ func_C38BFE:
 	pha
 	phx
 	tax
-	lda.l DATA8_C38C39,x
+	lda.l NaokiGaibaraEventNPCLayout,x
 	sta.b wTemp02
 	sty.b wTemp01
 	plx
@@ -9991,7 +10004,11 @@ func_C38BFE:
 	jsl.l func_C35BA2
 	rts
 
-DATA8_C38C39:
+; NPC layout for the Naoki/Gaibara story event dungeon room.
+; 55 bytes mapped across an 11-wide x 5-tall grid (x=$31-$3B, y=$08-$04), iterated
+; with a decrementing counter A ($36->$00) as the table index.
+; $B0 (Char_B0, "musuko/son") = place NPC on tile; $00 = leave tile empty.
+NaokiGaibaraEventNPCLayout:
 	.db $B0,$B0,$B0,$00,$00,$00,$B0,$B0,$B0,$B0,$B0,$B0,$B0,$B0,$00,$00   ;C38C39
 	.db $B0,$B0,$B0,$B0,$B0,$B0,$B0,$B0,$B0,$00,$00,$00,$00,$B0,$B0,$B0   ;C38C49
 	.db $B0,$B0,$B0,$00,$00,$00,$00,$00,$00,$B0,$B0,$B0,$B0,$B0,$00,$00   ;C38C59
