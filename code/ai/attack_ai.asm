@@ -72,7 +72,7 @@ PrintAttackEffect:
 @lbl_C21493:
 	phx
 	phy
-	jsl.l func_C22879
+	jsl.l CheckAttackHit
 	ply
 	plx
 	lda.b wTemp00
@@ -151,7 +151,7 @@ PrintAttackEffect:
 	sty.b wTemp00
 	stx.b wTemp01
 	phx
-	jsl.l func_C228EF
+	jsl.l CalculateAndApplyDamage
 	plx
 	cpx.b #$13
 	bne @lbl_C21580
@@ -182,7 +182,7 @@ PrintAttackEffect:
 	sta.b wTemp01
 	lda.l $7E8690
 	sta.b wTemp02
-	jsl.l func_C228EF
+	jsl.l CalculateAndApplyDamage
 @lbl_C2157E:
 	bra @lbl_C2153B
 @lbl_C21580:
@@ -265,7 +265,7 @@ func_C215AB:
 	sta.b wTemp00
 	stx.b wTemp01
 	phx
-	jsl.l func_C228EF
+	jsl.l CalculateAndApplyDamage
 	plx
 	stz.b wTemp00
 	plp
@@ -1381,7 +1381,7 @@ DATA8_C21B97:
 	;lda.l wCharAppearance,x
 	;cmp.b #$08
 	;beq @lbl_C21E37
-	;jsl.l func_C228EF
+	;jsl.l CalculateAndApplyDamage
 	;stz.b wTemp00
 	;plp
 	;rtl

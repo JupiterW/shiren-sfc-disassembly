@@ -2183,18 +2183,23 @@ DATA8_C21295:
 
 .include "code/ai/attack_ai.asm"
 
-func_C2286F:
+; Checks whether an attack hits, using a fixed 87.5% hit threshold ($70/128).
+; Convenience wrapper for CheckAttackHit when no custom threshold is needed.
+CheckAttackHitDefaultThreshold:
 	php
 	sep #$30 ;AXY->8
 	lda.b #$70
 	sta.b wTemp02
-	jmp.w func_C2287C
+	jmp.w CheckAttackHitInner
 
-func_C22879:
+; Checks whether an attack hits. wTemp00=attacker, wTemp01=target, wTemp02=hit threshold.
+; Wakes target, marks as attacked. Returns wTemp00=0 if miss, 1 if hit.
+CheckAttackHit:
 	php
 	sep #$30 ;AXY->8
 
-func_C2287C:
+; Shared body for CheckAttackHit / CheckAttackHitDefaultThreshold.
+CheckAttackHitInner:
 	ldx.b wTemp00
 	ldy.b wTemp01
 	lda.b #$00
@@ -2240,16 +2245,22 @@ func_C2287C:
 	plp                                     ;C228DD
 	rtl                                     ;C228DE
 
-func_C228DF:
+; Applies a fixed damage amount directly to the target, bypassing the damage formula.
+; wTemp00=target, wTemp01=attacker, wTemp02=damage amount.
+ApplyDamageFixed:
 	php
 	sep #$30 ;AXY->8
 	bankswitch 0x7E
 	ldy.b wTemp00
 	ldx.b wTemp01
 	lda.b wTemp02
-	jmp.w func_C22A25
+	jmp.w ApplyCombatDamageInner
 
-func_C228EF:
+; Calculates and applies melee combat damage from attacker to target.
+; wTemp00=target, wTemp01=attacker, wTemp02=attacker wCharAttack value.
+; Formula: damage = (wCharAttack × (Random&$1F + $70)) >> 7, then reduced by defense loop.
+; Handles double-damage armbands, stab bonus, Teal Dragon level-diff, then applies HP change.
+CalculateAndApplyDamage:
 	php
 	sep #$30 ;AXY->8
 	bankswitch 0x7E
@@ -2355,7 +2366,7 @@ func_C228EF:
 	pha
 	phx
 	phy
-	jsl.l func_C22A24
+	jsl.l ApplyCombatDamage
 	plx
 	ply
 	cpx.b #$13
@@ -2413,7 +2424,7 @@ func_C228EF:
 	inc a                                   ;C22A17
 @lbl_C22A18:
 	ldx #$13                                ;C22A18
-	jsl $C22A24                             ;C22A1A
+	jsl ApplyCombatDamage                   ;C22A1A
 	plp                                     ;C22A1E
 	rtl                                     ;C22A1F
 @lbl_C22A21:
@@ -2421,10 +2432,13 @@ func_C228EF:
 	plp
 	rtl
 
-func_C22A24:
+; Plays hit visual effect, displays damage message, and calls ModifyCharacterHP.
+; x=attacker slot, y=target slot, stack $01,s=damage byte.
+ApplyCombatDamage:
 	php
 
-func_C22A25:
+; Shared body for ApplyCombatDamage (without php).
+ApplyCombatDamageInner:
 	sep #$30 ;AXY->8
 	pha
 	cpy.b #$13
@@ -2550,7 +2564,7 @@ func_C22A25:
 	sta.b wTemp02
 	phx
 	phy
-	call_savebank func_C228DF
+	call_savebank ApplyDamageFixed
 	ply
 	plx
 @lbl_C22B1D:
@@ -2826,7 +2840,7 @@ func_C22D1A:
 	sta.b wTemp01
 	pla
 	sta.b wTemp00
-	jsl.l func_C228EF
+	jsl.l CalculateAndApplyDamage
 	plp
 	rtl
 
@@ -6080,7 +6094,7 @@ func_C24458:
 	stx.b wTemp00
 	sty.b wTemp01
 	phx
-	jsl.l func_C228DF
+	jsl.l ApplyDamageFixed
 	plx
 	phx
 	jsr.w func_C2455F
@@ -11556,7 +11570,7 @@ func_C28672:
 	lda.b #$13
 	sta.b wTemp01
 	phx
-	jsl.l func_C228DF
+	jsl.l ApplyDamageFixed
 	plx
 @lbl_C286C3:
 	dex 
@@ -11611,7 +11625,7 @@ func_C286C8:
 	lda.b #$13
 	sta.b wTemp01
 	phx
-	jsl.l func_C228DF
+	jsl.l ApplyDamageFixed
 	plx
 	bra @lbl_C28766
 @lbl_C2872E:

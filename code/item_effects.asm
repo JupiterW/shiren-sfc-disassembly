@@ -1720,7 +1720,7 @@ DragonHerbUseEffect:
 	stx.b wTemp00
 	lda.b #$13
 	sta.b wTemp01
-	jsl.l func_C228DF
+	jsl.l ApplyDamageFixed
 @lbl_C31551:
 	rts
 @lbl_C31552:
@@ -5804,7 +5804,7 @@ ExecutePreparedThrowEffect:
 	lda.b wTemp04,s
 	sta.b wTemp01
 	phy
-	jsl.l func_C2286F
+	jsl.l CheckAttackHitDefaultThreshold
 	ply
 	ldx.b wTemp00
 	beq @lbl_C33495
@@ -6183,7 +6183,7 @@ lbl_C336A9:
 	sta.b wTemp02
 	stx.b wTemp00
 	sty.b wTemp01
-	jsl.l func_C228EF
+	jsl.l CalculateAndApplyDamage
 	rts
 IronArrowThrowEffect:
 	sep #$30 ;AXY->8

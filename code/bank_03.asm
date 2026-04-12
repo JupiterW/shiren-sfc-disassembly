@@ -13456,7 +13456,7 @@ Jumptable_C3D555:
 	sta.b wTemp01
 	lda.b #$08
 	sta.b wTemp02
-	jsl.l func_C228EF
+	jsl.l CalculateAndApplyDamage
 	lda.b #$FF
 	sta.b wTemp00
 	jsl.l ModifyShirenStrength
@@ -13876,7 +13876,7 @@ func_C3D772:
 	lda.b #$13
 	sta.b wTemp00
 	sta.b wTemp01
-	jsl.l func_C228DF
+	jsl.l ApplyDamageFixed
 	rts
 	.db $E2,$30,$A9,$DC,$85,$00,$64,$01
 	jsl.l DisplayMessage
@@ -14415,7 +14415,7 @@ func_C3DD57:
 	lda.b #$13
 	sta.b wTemp00
 	sta.b wTemp01
-	jsl.l func_C228DF
+	jsl.l ApplyDamageFixed
 	rts
 
 func_C3DD85:
@@ -14727,7 +14727,7 @@ func_C3DD85:
 	sta.b wTemp00
 	lda.b #$13
 	sta.b wTemp01
-	jsl.l func_C228DF
+	jsl.l ApplyDamageFixed
 	rts
 	sep #$20                                ;C3DFF6
 	lda $00                                 ;C3DFF8
