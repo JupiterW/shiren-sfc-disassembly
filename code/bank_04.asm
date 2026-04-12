@@ -268,7 +268,7 @@ func_C403C1:
 	ldx.w #$6800
 	stx.b wTemp04
 	phy
-	call_savebank func_C484CB
+	call_savebank TransferTileData
 	ply
 	ldx.w #$0001
 	stx.b wTemp00
@@ -1502,7 +1502,7 @@ func_C40E4C:
 	ldx.w #$3800
 	stx.b w7f0004
 	phy
-	call_savebank func_C484CB
+	call_savebank TransferTileData
 	ply
 	iny
 	cpy.w #$000C
@@ -3000,12 +3000,12 @@ func_C43537:
 	sta.b wTemp03
 	ldx.w #$4800
 	stx.b wTemp04
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	lda.b #$01
 	sta.b wTemp03
 	ldx.w #$4C00
 	stx.b wTemp04
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	jsl.l func_80854A
 	ldx.w #$0007
 	stx.b wTemp00
@@ -3018,12 +3018,12 @@ func_C43537:
 	sta.b wTemp03
 	ldx.w #$6C00
 	stx.b wTemp04
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	lda.b #$01
 	sta.b wTemp03
 	ldx.w #$6800
 	stx.b wTemp04
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	jsl.l func_80854A
 	plp
 	rtl
@@ -3050,12 +3050,12 @@ func_C435D9:
 	sta.b wTemp03
 	ldx.w #$4800
 	stx.b wTemp04
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	lda.b #$01
 	sta.b wTemp03
 	ldx.w #$4C00
 	stx.b wTemp04
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	jsl.l func_80854A
 	plp
 	rtl
@@ -3089,12 +3089,12 @@ func_C43627:
 	sta.b wTemp03
 	ldx.w #$3800
 	stx.b wTemp04
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	lda.b #$00
 	sta.b wTemp03
 	ldx.w #$3C00
 	stx.b wTemp04
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	jsl.l func_80854A
 	ldx.w #$000B
 	stx.b wTemp00
@@ -3110,12 +3110,12 @@ func_C43627:
 	sta.b wTemp03
 	ldx.w #$7800
 	stx.b wTemp04
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	lda.b #$00
 	sta.b wTemp03
 	ldx.w #$7C00
 	stx.b wTemp04
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	jsl.l func_80854A
 	plp
 	rtl
@@ -3144,7 +3144,7 @@ func_C436C2:
 	sta.b wTemp03
 	ldx.w #$3800
 	stx.b wTemp04
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	lda.b #$00
 	sta.b wTemp03
 	call_savebank func_C482ED
@@ -3152,7 +3152,7 @@ func_C436C2:
 	sta.b wTemp03
 	ldx.w #$3C00
 	stx.b wTemp04
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	jsl.l func_80854A
 	plp
 	rtl
@@ -3179,12 +3179,12 @@ func_C43720:
 	sta.b wTemp03
 	ldx.w #$4800
 	stx.b wTemp04
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	lda.b #$00
 	sta.b wTemp03
 	ldx.w #$4C00
 	stx.b wTemp04
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	jsl.l func_80854A
 	plp
 	rtl
@@ -3231,7 +3231,7 @@ func_C4376E:
 	sta.b wTemp03
 	ldx.w #$3800
 	stx.b wTemp04
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	jsl.l func_80854A
 	ldx.w #$000E
 	stx.b wTemp00
@@ -3244,7 +3244,7 @@ func_C4376E:
 	sta.b wTemp03
 	ldx.w #$2800
 	stx.b wTemp04
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	jsl.l func_80854A
 	plp
 	rtl
@@ -3286,7 +3286,7 @@ func_C437FD:
 	sta.b wTemp03
 	ldx.w #$3800
 	stx.b wTemp04
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	jsl.l func_80854A
 	ldx.w #$0010
 	stx.b wTemp00
@@ -3299,7 +3299,7 @@ func_C437FD:
 	sta.b wTemp03
 	ldx.w #$2800
 	stx.b wTemp04
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	jsl.l func_80854A
 	ldx.w #$0001
 	stx.b wTemp00
@@ -3348,12 +3348,12 @@ func_C438AC:
 	sta.b wTemp03
 	ldx.w #$3800
 	stx.b wTemp04
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	lda.b #$01
 	sta.b wTemp03
 	ldx.w #$3C00
 	stx.b wTemp04
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	jsl.l func_80854A
 	ldx.w #$0012
 	stx.b wTemp00
@@ -3366,12 +3366,12 @@ func_C438AC:
 	sta.b wTemp03
 	ldx.w #$2800
 	stx.b wTemp04
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	lda.b #$01
 	sta.b wTemp03
 	ldx.w #$2C00
 	stx.b wTemp04
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	jsl.l func_80854A
 	plp
 	rtl
@@ -7579,7 +7579,7 @@ func_C46D6D:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C46DCA
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C46DCA:
 	sta.w $AA1B,x
 	inx
@@ -7608,7 +7608,7 @@ func_C46DF4:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C46DFD
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C46DFD:
 	cmp.b #$00
 	bmi func_C46E6C
@@ -7671,7 +7671,7 @@ func_C46E33:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C46E60
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C46E60:
 	sta.w $08C1,y
 	iny
@@ -7708,7 +7708,7 @@ func_C46E8B:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C46E9B
-	jsr.w func_C47A4A 
+	jsr.w IncrementIndirectPointer 
 @lbl_C46E9B:
 	xba
 	rep #$20 ;A->16
@@ -7723,7 +7723,7 @@ func_C46E8B:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C46EB2
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C46EB2:
 	sta.b w00be
 	lda.b #$07
@@ -7743,25 +7743,25 @@ func_C46E8B:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C46ED9
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C46ED9:
 	sta.w $08C1,y
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C46EE5
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C46EE5:
 	sta.w $08C2,y
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C46EF1
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C46EF1:
 	sta.w $08D1,y
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C46EFD
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C46EFD:
 	sta.w $08D2,y
 @lbl_C46F00:
@@ -7781,7 +7781,7 @@ func_C46F0B:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C46F1A
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C46F1A:
 	xba
 	lda.b w00be
@@ -7837,7 +7837,7 @@ func_C46F0B:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C46FA0
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C46FA0:
 	sta.b w00c9
 @lbl_C46FA2:
@@ -7846,7 +7846,7 @@ func_C46F0B:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C46FAF
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C46FAF:
 	sta.b w00ca
 @lbl_C46FB1:
@@ -7855,7 +7855,7 @@ func_C46F0B:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C46FBE
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C46FBE:
 	sta.b w00cb
 @lbl_C46FC0:
@@ -7864,7 +7864,7 @@ func_C46F0B:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C46FCD
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C46FCD:
 	sta.b w00cc
 @lbl_C46FCF:
@@ -7879,7 +7879,7 @@ func_C46F0B:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C46FE1
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C46FE1:
 	sta.w $08C1,y
 	bra @lbl_C46FD2
@@ -7894,7 +7894,7 @@ func_C46F0B:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C46FF8
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C46FF8:
 	sta.w $08C2,y
 	bra @lbl_C46FE9
@@ -7909,7 +7909,7 @@ func_C46F0B:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C4700F
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C4700F:
 	sta.w $08D1,y
 	bra @lbl_C47000
@@ -7924,7 +7924,7 @@ func_C46F0B:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C47026
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C47026:
 	sta.w $08D2,y
 	bra @lbl_C47017
@@ -7935,7 +7935,7 @@ func_C46F0B:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C4703B
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C4703B:
 	pha
 	lda.b w00be
@@ -7949,7 +7949,7 @@ func_C46F0B:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C47054
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C47054:
 	pha
 	lda.b w00be
@@ -7963,7 +7963,7 @@ func_C46F0B:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C4706D
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C4706D:
 	pha
 	lda.b w00be
@@ -8046,7 +8046,7 @@ func_C46F0B:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C470FC
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C470FC:
 	sta.b w00bf
 	lsr a
@@ -8079,13 +8079,13 @@ func_C46F0B:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C47135
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C47135:
 	sta.b w00be
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C47140
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C47140:
 	sta.b w00bf
 @lbl_C47142:
@@ -8261,7 +8261,7 @@ func_C47258:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C47264
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C47264:
 	sta.w $A9D0,x
 	eor.b #$FF
@@ -8277,7 +8277,7 @@ func_C47271:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C4727D
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C4727D:
 	asl a
 	sta.b w00be
@@ -8287,7 +8287,7 @@ func_C47271:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C4728C
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C4728C:
 	sta.w $A9D0,x
 	eor.b #$FF
@@ -8306,13 +8306,13 @@ func_C472A1:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C472AA
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C472AA:
 	sta.b w00bf
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C472B5
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C472B5:
 	sta.b w00be
 	ldy.w #$0004
@@ -8329,7 +8329,7 @@ func_C472A1:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C472CF
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C472CF:
 	sta.w $AA11,y
 	iny
@@ -8361,7 +8361,7 @@ func_C472FA:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C47306
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C47306:
 	sta.w $AA11,y
 	dey
@@ -8369,7 +8369,7 @@ func_C472FA:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C47315
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C47315:
 	pha
 	and.b #$0F
@@ -8383,7 +8383,7 @@ func_C472FA:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C4732C
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C4732C:
 	pha
 	and.b #$0F
@@ -8449,7 +8449,7 @@ func_C47387:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C47396
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C47396:
 	sta.b w00ca
 	bit.b #$04
@@ -8471,13 +8471,13 @@ func_C47387:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C473B8
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C473B8:
 	sta.b w00ca
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C473C3
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C473C3:
 	sta.b w00cb
 
@@ -8598,7 +8598,7 @@ Jumptable_C4740D:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C474A7
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C474A7:
 	sta.w $08C1,y
 	iny
@@ -8619,7 +8619,7 @@ func_C474B7:
 	lda.b [$C2]
 	inc.b w00c2
 	bne func_C474C0
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 func_C474C0:
 	sta.w $08C1,y
 	sta.w $08C3,y
@@ -8633,7 +8633,7 @@ func_C474C0:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C474E2
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C474E2:
 	sta.w $08C1,y
 	sta.w $08C5,y
@@ -8642,7 +8642,7 @@ func_C474C0:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C474F7
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C474F7:
 	sta.w $08C3,y
 	sta.w $08C7,y
@@ -8653,7 +8653,7 @@ func_C474C0:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C47510
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C47510:
 	asl a
 	sta.b w00be
@@ -8663,7 +8663,7 @@ func_C474C0:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C4751F
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C4751F:
 	sta.w $08C1,y
 	iny
@@ -8678,13 +8678,13 @@ func_C474C0:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C47537
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C47537:
 	sta.b w00bf
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C47542
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C47542:
 	sta.b w00be
 	ldx.w #$0004
@@ -8701,7 +8701,7 @@ func_C474C0:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C4755C
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C4755C:
 	sta.w $A9D0,x
 	inx
@@ -8730,7 +8730,7 @@ func_C474C0:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C4758F
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C4758F:
 	sta.w $AA00,x
 	dex
@@ -8738,7 +8738,7 @@ func_C474C0:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C4759E
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C4759E:
 	pha
 	and.b #$0F
@@ -8752,7 +8752,7 @@ func_C474C0:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C475B5
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C475B5:
 	pha
 	and.b #$0F
@@ -8816,14 +8816,14 @@ func_C47624:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C4762D
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C4762D:
 	sta.b w00be
 	sta.b w00c0
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C4763A
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C4763A:
 	xba
 	lda.b #$00
@@ -9427,7 +9427,7 @@ func_C47A18:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C47A21
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C47A21:
 	sta.b w00be
 @lbl_C47A23:
@@ -9437,7 +9437,7 @@ func_C47A18:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C47A32
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C47A32:
 	sta.w $08C1,y
 @lbl_C47A35:
@@ -9448,13 +9448,15 @@ func_C47A18:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C47A42
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C47A42:
 	sta.w $08C1,y
 	rts
 	.db $E2,$20,$C2,$10                   ;C47A46
 
-func_C47A4A:
+; Increments the 16-bit indirect pointer at w00c3 (low byte) and w00c4 (high byte).
+; Called when pointer overflows during data reading operations.
+IncrementIndirectPointer:
 	inc.b w00c3
 	beq @lbl_C47A4F
 	rts
@@ -9515,7 +9517,7 @@ func_C47A84:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C47AB6
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C47AB6:
 	bit.b #$10
 	beq @lbl_C47ABB
@@ -9530,7 +9532,7 @@ func_C47A84:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C47ACF
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C47ACF:
 	sta.w $85C1,y
 	iny
@@ -9549,7 +9551,7 @@ func_C47AE6:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C47AEF
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C47AEF:
 	bit.b #$80
 	beq @lbl_C47B04
@@ -9584,7 +9586,7 @@ func_C47AE6:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C47B2D
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C47B2D:
 	inc a
 	sta.b w00be
@@ -9642,7 +9644,7 @@ func_C47AE6:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C47B8D
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C47B8D:
 	dec a
 @lbl_C47B8E:
@@ -9652,7 +9654,7 @@ func_C47AE6:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C47B9B
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C47B9B:
 	sta.w $85C1,y
 	iny
@@ -9667,7 +9669,7 @@ func_C47BA6:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C47BB3
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C47BB3:
 	sta.w $85C1,y
 	iny
@@ -9690,7 +9692,7 @@ func_C47BBE:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C47BEB
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C47BEB:
 	sta.b w00be
 	bit.b #$C0
@@ -9712,7 +9714,7 @@ func_C47BBE:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C47C12
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C47C12:
 	inc a
 	sta.b w00be
@@ -9812,7 +9814,7 @@ func_C47CAE:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C47CB7
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C47CB7:
 	sta.b w00be
 	bit.b #$C0
@@ -9842,7 +9844,7 @@ func_C47CAE:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C47CED
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C47CED:
 	sta.b w00bf
 @lbl_C47CEF:
@@ -9982,7 +9984,7 @@ func_C47DDF:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C47DE8
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C47DE8:
 	sta.b w00be
 	bit.b #$C0
@@ -10012,7 +10014,7 @@ func_C47DDF:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C47E1E
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C47E1E:
 	sta.b w00bf
 @lbl_C47E20:
@@ -10133,7 +10135,7 @@ func_C47ED0:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C47EE1
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C47EE1:
 	sta.b w00cd
 	rts
@@ -10152,19 +10154,19 @@ func_C47EEB:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C47EFC
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C47EFC:
 	sta.b w00cd
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C47F07
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C47F07:
 	sta.b w00ce
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C47F12
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C47F12:
 	sta.b w00cf
 @lbl_C47F14:
@@ -10201,14 +10203,14 @@ func_C47F21:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C47F4B
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C47F4B:
 	sta.b w00c9
 	tdc
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C47F57
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C47F57:
 	rep #$20 ;A->16
 	asl a
@@ -10237,7 +10239,7 @@ func_C47F21:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C47F99
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C47F99:
 	bit.b #$80
 	beq @lbl_C47FAE
@@ -10317,7 +10319,7 @@ func_C47F21:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C48022
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C48022:
 	dec a
 @lbl_C48023:
@@ -10327,7 +10329,7 @@ func_C47F21:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C48030
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C48030:
 	sta.w $CE5E,y
 	iny
@@ -10353,7 +10355,7 @@ func_C48053:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C4807D
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C4807D:
 	sta.b w00be
 	bit.b #$C0
@@ -10367,7 +10369,7 @@ func_C48053:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C480B3
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C480B3:
 	sta.b w00bf
 	inc.b w00bf
@@ -10429,7 +10431,7 @@ func_C48150:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C481A5
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C481A5:
 	sta.b w00be
 	bit.b #$C0
@@ -10443,7 +10445,7 @@ func_C48150:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C481DB
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C481DB:
 	sta.b w00bf
 	iny
@@ -10566,7 +10568,7 @@ func_C48339:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C4835F
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C4835F:
 	sta.b w00be
 	sta.b w00bf
@@ -10618,14 +10620,14 @@ func_C48339:
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C483B2
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C483B2:
 	sta.w $06C1,x
 	inx
 	lda.b [$C2]
 	inc.b w00c2
 	bne @lbl_C483BF
-	jsr.w func_C47A4A
+	jsr.w IncrementIndirectPointer
 @lbl_C483BF:
 	sta.w $06C1,x
 	inx
@@ -10695,7 +10697,10 @@ func_C483DC:
 	.db $E9,$00,$10,$8F,$54,$AA,$7F,$F0,$02,$B0,$03,$28,$38,$6B,$28,$18   ;C484BA
 	.db $6B                               ;C484CA
 
-func_C484CB:
+; Transfers tile/graphics data to VRAM using DMA.
+; Input: wTemp03 = tile index to transfer
+; Performs two DMA transfers to upload tile data to $7DC1 and $85C1.
+TransferTileData:
 	php
 	restorebank
 	sep #$30 ;AXY->8
@@ -10800,7 +10805,7 @@ func_C48589:
 	lda.b #$13
 	sta.b w7f0000
 	call_savebank GetCharacterMapInfo
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	lda.b w7f0000+1
 	bmi @lbl_C485FA
 	ldx.w $AC3A
@@ -10894,7 +10899,7 @@ func_C48674:
 	lda.b #$13
 	sta.b w7f0000
 	call_savebank GetCharacterMapInfo
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	lda.b w7f0000+1
 	sta.w $AC3B
 	stz.w $AC5A
@@ -12674,7 +12679,7 @@ func_C49602:
 	lda.b #$13
 	sta.b w7f0000
 	call_savebank GetCharacterMapInfo
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	lda.b w7f0000+1
 	sta.w $ABEB
 	stz.w $AC1E

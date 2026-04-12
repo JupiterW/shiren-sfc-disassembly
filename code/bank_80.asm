@@ -5588,7 +5588,7 @@ func_C0B235:
 @lbl_80B240:
 	ldx.b w0031
 	stx.b wTemp00
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	lda.b wTemp01
 	sta.w $75C1,y
 	lda.b wTemp02
@@ -5797,7 +5797,7 @@ func_80B28D:
 	bcs @lbl_80B4B1
 	ldx.b w0031
 	stx.b wTemp00
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	lda.b wTemp01
 	sta.w $75C1,y
 	lda.b wTemp02
@@ -6179,7 +6179,7 @@ func_80B77A:
 	lsr a
 	lsr a
 	tsb.b wTemp04
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	sep #$20 ;A->8
 	lda.b w002e
 	bmi @lbl_80B7A0

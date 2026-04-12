@@ -3431,7 +3431,11 @@ func_C3575D:
 	jsr $99F2                               ;C359AB
 	rts                                     ;C359AE
 
-func_C359AF:
+; Retrieves item data from the item data tables.
+; Input: wTemp00 = packed item ID (high byte in upper 2 bits, low byte in lower 6 bits)
+; Output: wTemp00 = byte from $7E945F, wTemp01 = byte from $7E9EDF, wTemp02 = byte from $7EA95F
+; These tables contain item stats/attributes indexed by packed item ID.
+GetItemData:
 	php
 	rep #$30 ;AXY->16
 	lda.b wTemp00
@@ -4797,7 +4801,7 @@ func_C3635A:
 	lda.b wTemp01
 	sta.b wTemp06
 	phx
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	plx
 	lda.b wTemp02
 	bit.b #$80
@@ -4861,7 +4865,7 @@ func_C363C2:
 	lda.b wTemp01
 	sta.b wTemp06
 	phx
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	plx
 	lda.b wTemp02
 	bit.b #$80
@@ -5090,7 +5094,7 @@ func_C365F0:
 	lda.w $C148,x
 	sta.b wTemp01
 	phx
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	plx
 	lda.b wTemp01
 	bmi @lbl_C3662F
@@ -6561,7 +6565,7 @@ func_C3701A:
 	stx.b wTemp00
 	sty.b wTemp01
 	phx
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	plx
 	lda.b wTemp00
 	bmi @lbl_C37058
@@ -6845,7 +6849,7 @@ func_C371C1:
 	stx.b wTemp00
 	sty.b wTemp01
 	phx
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	plx
 	lda.b wTemp02
 	bit.b #$80
@@ -6912,7 +6916,7 @@ func_C37234:
 	stx.b wTemp00
 	sty.b wTemp01
 	phx
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	plx
 	lda.b wTemp02
 	bit.b #$80
@@ -9636,7 +9640,7 @@ func_C389DB:
 @lbl_C389EC:
 	jsl.l func_C36203
 	ldy.b wTemp00
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	lda.b #$00
 	xba
 	lda.b wTemp02
@@ -12138,7 +12142,7 @@ func_C39AAA:
 	stx.b wTemp00
 	sty.b wTemp01
 	phx
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	plx
 	lda.b wTemp01
 	cmp.b #$80
@@ -12531,7 +12535,7 @@ func_C39E1D:
 	stx.b wTemp00
 	sty.b wTemp01
 	phx
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	plx
 	lda.b wTemp01
 	cmp.b #$80
@@ -14200,7 +14204,7 @@ DATA8_C3DA1C:
 	sta.b wTemp00
 	sta.b wTemp06
 	phx
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	plx
 	sep #$20 ;A->8
 	lda.b wTemp00
@@ -16098,7 +16102,7 @@ GetLivePlayerActionCommand:
 	lda.w #$0013
 	sta.b wTemp00
 	jsl.l GetCharacterMapInfo
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	lda.b wTemp01
 	and.w #$00FF
 	cmp.w #$0083

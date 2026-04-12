@@ -166,7 +166,7 @@ PrintAttackEffect:
 	lda.l wCharHP,x
 	beq @lbl_C2157E
 	phx
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	plx
 	lda.b #$2C
 	sta.b wTemp00
@@ -199,7 +199,10 @@ func_C21584:
 	plp
 	rtl
 
-func_C21591:
+; Plays the confusion status effect visual (effect type $81).
+; This is a wrapper that calls PlayVisualEffect with the confusion effect ID.
+; Used when characters become confused from items or enemy abilities.
+PlayConfusionEffect:
 	php
 	sep #$20 ;A->8
 	lda.b #$81
@@ -245,7 +248,7 @@ func_C215AB:
 @lbl_C215D5:
 	stx.b wTemp00
 	phx
-	jsl.l func_C21591
+	jsl.l PlayConfusionEffect
 	plx
 	lda.b #$E2
 	sta.b wTemp00
@@ -287,7 +290,7 @@ func_C215AB:
 	stx.b wTemp00
 	phx
 	phy
-	jsl.l func_C21591
+	jsl.l PlayConfusionEffect
 	ply
 	plx
 	stx.b wTemp00
@@ -352,7 +355,7 @@ func_C215AB:
 @lbl_C21693:
 	;stx.b wTemp00
 	;phx
-	;jsl.l func_C21591
+	;jsl.l PlayConfusionEffect
 	;plx
 	;lda.b #$40
 	;sta.b wTemp00
@@ -402,7 +405,7 @@ func_C215AB:
 	;cmp $7E8973
 	;beq @lbl_C21737
 	;phx
-	;jsl.l func_C21591
+	;jsl.l PlayConfusionEffect
 	;plx
 	;lda.l $7E894F,x
 	;sta.b wTemp02
@@ -459,7 +462,7 @@ func_C215AB:
 @lbl_C2174E:
 	stx.b wTemp00
 	phx
-	jsl.l func_C21591
+	jsl.l PlayConfusionEffect
 	plx
 	lda.b #$02
 	sta.l wCharRemainingSleepTurns,x
@@ -468,7 +471,7 @@ func_C215AB:
 	lda.l wCharYPos,x
 	sta.b wTemp01
 	phx
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	plx
 	lda.b wTemp01
 	cmp.b #$80
@@ -508,7 +511,7 @@ func_C215AB:
 	;rtl
 	;stx.b wTemp00
 	;phx
-	;jsl.l func_C21591
+	;jsl.l PlayConfusionEffect
 	;plx
 	;lda.l wCharDir,x
 	;sta.l $7E85F0
@@ -603,7 +606,7 @@ func_C215AB:
 	stx.b wTemp00
 	phx
 	phy
-	jsl.l func_C21591
+	jsl.l PlayConfusionEffect
 	ply
 	plx
 	lda.b #$D6
@@ -732,7 +735,7 @@ func_C215AB:
 	;rtl
 	;stx.b wTemp00
 	;phx
-	;jsl.l func_C21591
+	;jsl.l PlayConfusionEffect
 	;plx
 	;lda.b #$D3
 	;sta.b wTemp00
@@ -839,7 +842,7 @@ func_C215AB:
 	;bne @lbl_C21A18
 	;stx.b wTemp00
 	;phx
-	;jsl.l func_C21591
+	;jsl.l PlayConfusionEffect
 	;plx
 	;lda.b #$D4
 	;sta.b wTemp00
@@ -880,7 +883,7 @@ func_C215AB:
 	;beq @lbl_C219E4
 	;stx.b wTemp00
 	;phx
-	;jsl.l func_C21591
+	;jsl.l PlayConfusionEffect
 	;plx
 	;lda.b #$06
 	;clc
@@ -1049,7 +1052,7 @@ func_C21A99:
 @lbl_C21B76:
 	stx.b wTemp00
 	phx
-	jsl.l func_C21591
+	jsl.l PlayConfusionEffect
 	plx
 	lda.b #$D5
 	sta.b wTemp00
@@ -1098,7 +1101,7 @@ DATA8_C21B97:
 	ldx.b wTemp00
 	stx.b wTemp00
 	phx
-	jsl.l func_C21591
+	jsl.l PlayConfusionEffect
 	plx
 	ldy.b #$0F
 	lda.l wCharAppearance,x
@@ -1169,7 +1172,7 @@ DATA8_C21B97:
 	;stx.b wTemp00
 	;phx
 	;pha
-	;jsl.l func_C21591
+	;jsl.l PlayConfusionEffect
 	;pla
 	;ldx.b #$FF
 	;inx
@@ -1281,7 +1284,7 @@ DATA8_C21B97:
 	cmp.l $7E8973
 	beq @lbl_C21D16
 	phx
-	jsl.l func_C21591
+	jsl.l PlayConfusionEffect
 	plx
 	lda.l wShirenStatus.itemAmounts,x
 	sta.b wTemp02
@@ -1311,7 +1314,7 @@ DATA8_C21B97:
 	;sep #$30 ;AXY->8
 	;stx.b wTemp00
 	;phx
-	;jsl.l func_C21591
+	;jsl.l PlayConfusionEffect
 	;plx
 	;jsl.l func_C2433A
 	;stz.b wTemp00
@@ -1345,7 +1348,7 @@ DATA8_C21B97:
 	;phx
 	;stx.b wTemp00
 	;phy
-	;jsl.l func_C21591
+	;jsl.l PlayConfusionEffect
 	;ply
 	;tyx
 	;lda.l wCharXPos,x
@@ -1429,7 +1432,7 @@ DATA8_C21B97:
 @lbl_C21E71:
 	stx.b wTemp00
 	phx
-	jsl.l func_C21591
+	jsl.l PlayConfusionEffect
 	plx
 	lda.b #$83
 	sta.b wTemp00
@@ -1477,7 +1480,7 @@ DATA8_C21B97:
 	;phy
 	;stx.b wTemp00
 	;phx
-	;jsl.l func_C21591
+	;jsl.l PlayConfusionEffect
 	;plx
 	;lda.l wCharDir,x
 	;sta.b wTemp00
@@ -1514,7 +1517,7 @@ DATA8_C21B97:
 	;pla
 	;sta.b wTemp00
 	;pha
-	;jsl.l func_C359AF
+	;jsl.l GetItemData
 	;pla
 	;ldx.b #$15
 	;ldy.b wTemp00
@@ -1533,7 +1536,7 @@ DATA8_C21B97:
 	;clc
 	;adc $02,s
 	;sta.b wTemp00
-	;jsl.l func_C359AF
+	;jsl.l GetItemData
 	;ldx.b wTemp00
 	;bmi @lbl_C21FA7
 	;sep #$20 ;A->8
@@ -1615,7 +1618,7 @@ DATA8_C21B97:
 	;stx.b wTemp00
 	;phx
 	;phy
-	;jsl.l func_C21591
+	;jsl.l PlayConfusionEffect
 	;ply
 	;plx
 	;lda.b #$30
@@ -1724,7 +1727,7 @@ DATA8_C21B97:
 	;stx.b wTemp00
 	;phx
 	;phy
-	;jsl.l func_C21591
+	;jsl.l PlayConfusionEffect
 	;ply
 	;plx
 	;lda.b #$34
@@ -1849,7 +1852,7 @@ DATA8_C21B97:
 	;sta.l wCharHeldItem,x
 	;stx.b wTemp00
 	;phx
-	;jsl.l func_C21591
+	;jsl.l PlayConfusionEffect
 	;plx
 	;lda.l wCharHeldItem,x
 	;sta.b wTemp04
@@ -1941,7 +1944,7 @@ DATA8_C21B97:
 	;stx.b wTemp00
 	;phx
 	;phy
-	;jsl.l func_C21591
+	;jsl.l PlayConfusionEffect
 	;ply
 	;plx
 	;lda.l $7E86E0
@@ -2035,7 +2038,7 @@ DATA8_C21B97:
 	;plx
 	;stx.b wTemp00
 	;phx
-	;jsl.l func_C21591
+	;jsl.l PlayConfusionEffect
 	;plx
 	;lda.b #$2E
 	;sta.b wTemp00
@@ -2073,7 +2076,7 @@ DATA8_C21B97:
 	;phy
 	;stx.b wTemp00
 	;phx
-	;jsl.l func_C21591
+	;jsl.l PlayConfusionEffect
 	;plx
 	;lda.b #$28
 	;sta.b wTemp00
@@ -2117,7 +2120,7 @@ DATA8_C21B97:
 @lbl_C22322:
 	stx.b wTemp00
 	phx
-	jsl.l func_C21591
+	jsl.l PlayConfusionEffect
 	plx
 	lda.l wCharLevel,x
 	dec a
@@ -2246,7 +2249,7 @@ DATA8_C21B97:
 	stx.b wTemp00
 	phx
 	phy
-	jsl.l func_C21591
+	jsl.l PlayConfusionEffect
 	ply
 	plx
 	lda.b #$2F
@@ -2315,7 +2318,7 @@ DATA8_C21B97:
 	;bne @lbl_C22485
 	;stx.b wTemp00
 	;phx
-	;jsl.l func_C21591
+	;jsl.l PlayConfusionEffect
 	;plx
 	;lda.b #$27
 	;sta.b wTemp00
@@ -2371,7 +2374,7 @@ DATA8_C21B97:
 	;stx.b wTemp00
 	;pha
 	;phx
-	;jsl.l func_C21591
+	;jsl.l PlayConfusionEffect
 	;plx
 	;pla
 	;cmp.b #$00
@@ -2765,7 +2768,7 @@ DATA8_C21B97:
 	;ldy #$06C0
 	;sty.b wTemp02
 	;jsl.l func_C626A0
-	;jsl.l func_C62405
+	;jsl.l UpdateGameSystems
 	;ldy #$010A
 	;sty.b wTemp00
 	;ldy #$111D
@@ -2865,7 +2868,7 @@ func_C227DD:
 	cmp.b #$02
 	bcc @lbl_C227FA
 	stx.b wTemp00
-	jsl.l func_C21591
+	jsl.l PlayConfusionEffect
 	lda.b #$D8
 	sta.b wTemp00
 	lda.b #$06

@@ -133,7 +133,7 @@ func_C600E4:
 	lda.b #$13
 	sta.b wTemp00
 	jsl.l GetCharacterMapInfo
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	lda.b wTemp01
 	cmp.l $7ED604
 	beq @lbl_C60119
@@ -297,7 +297,7 @@ func_C6025C:
 	stz.b wTemp01
 	jsl.l func_818049
 	jsl.l func_C064D8
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	jsl.l func_C0656C
 	lda.b #$FF
 	sta.l $7ED60A
@@ -753,7 +753,7 @@ func_C605FB:
 	jsl.l func_C07BB3
 	jsl.l func_C0656C
 @lbl_C606B9:
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	lda.b #$00
 	sta.l $7ED5EF
 func_C606C3:
@@ -789,12 +789,12 @@ func_C606C3:
 @lbl_C60708:
 	cmp.b #$00
 	bne @lbl_C60710
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 @lbl_C60710:
 	jsl.l func_C211E4
 	lda.b wTemp00
 	beq @lbl_C6071C
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 @lbl_C6071C:
 	jsl.l func_C25CA8
 	jsl.l func_C22E2D
@@ -813,7 +813,7 @@ func_C6073A:
 	jsl.l func_C28B52
 	lda.b wTemp00
 	beq @lbl_C60754
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 @lbl_C60754:
 	jsl.l func_C28E6F
 	lda.b wTemp00
@@ -832,7 +832,7 @@ func_C6073A:
 	jsl.l func_C2121A
 	pla
 	pha
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	pla
 	bra @lbl_C60768
 @lbl_C60782:
@@ -863,7 +863,7 @@ func_C60788:
 	beq @lbl_C607B6
 	jsl.l func_80E68E
 @lbl_C607B6:
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	pla
 	cmp.b #$02
 	bne @lbl_C607C2
@@ -886,7 +886,7 @@ func_C60788:
 	pla
 	cmp.b #$03
 	beq @lbl_C607F4
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	jmp.w func_C6073A
 @lbl_C607F4:
 	jsl.l func_C076E9
@@ -932,7 +932,7 @@ func_C6080E:
 	lda.b #$13
 	sta.b wTemp00
 	jsl.l GetCharacterMapInfo
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	lda.b wTemp02
 	bne @lbl_C60878
 	lda.b #$02
@@ -1993,7 +1993,10 @@ Data_c62326:
 	.db $14,$14,$14,$14,$14,$14,$14,$14,$14,$14,$14,$14,$14,$14,$14,$14   ;C623F2  
 	.db $14,$14,$14                       ;C62402  
 
-func_C62405:
+; Main per-frame update dispatcher. Calls core system update functions.
+; Only runs when wLoading is false (not in loading state).
+; Chains: Input, Audio, Graphics, System updates via sub-functions.
+UpdateGameSystems:
 	php
 	sep #$20 ;A->8
 	lda.l wLoading
@@ -2048,7 +2051,7 @@ func_C62456:
 ;C62471  
 	.db $22,$E9,$76,$C0
 @lbl_C62475:
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	lda.l wd5ee
 	cmp.b #$08
 	bne @lbl_C62484
@@ -3259,7 +3262,7 @@ func_C6324C:
 	rep #$20 ;A->16
 	lda.w #$5800
 	sta.b wTemp04
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	rep #$20 ;A->16
 	lda.w #$0006
 	sta.b wTemp00
@@ -3283,7 +3286,7 @@ func_C6324C:
 	rep #$20 ;A->16
 	lda.w #$3000
 	sta.b wTemp04
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	rep #$20 ;A->16
 	lda.w #$0004
 	sta.b wTemp00
@@ -3733,7 +3736,7 @@ func_C636D4:
 	rep #$20 ;A->16
 	lda.w #$5800
 	sta.b wTemp04
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	rep #$20 ;A->16
 	lda.w #$0006
 	sta.b wTemp00
@@ -3757,7 +3760,7 @@ func_C636D4:
 	rep #$20 ;A->16
 	lda.w #$3000
 	sta.b wTemp04
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	rep #$20 ;A->16
 	lda.w #$0004
 	sta.b wTemp00
@@ -3909,14 +3912,14 @@ func_C63874:
 	lda.w #$5800
 	sta.b wTemp04
 	phx
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	plx
 	lda.w #$5800
 	sta.b wTemp04
 	sep #$20 ;A->8
 	lda.b #$01
 	sta.b wTemp03
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	jsl.l func_80854A
 	ldx.w #$0019
 
@@ -3936,7 +3939,7 @@ func_C63943:
 	lda.w #$5800
 	sta.b wTemp04
 	phx
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	plx
 	jsl.l func_80854A
 	dex
@@ -5006,13 +5009,13 @@ func_C64E06:
 	rep #$20 ;A->16
 	lda.w #$5800
 	sta.b wTemp04
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	lda.w #$0001
 	sta.b wTemp03
 	rep #$20 ;A->16
 	lda.w #$5C00
 	sta.b wTemp04
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	lda.w #$0004
 	sta.b wTemp00
 	sep #$20 ;A->8
@@ -5041,7 +5044,7 @@ func_C64E06:
 	rep #$20 ;A->16
 	lda.w #$3400
 	sta.b wTemp04
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	lda.w #$0002
 	sta.b wTemp00
 	sep #$20 ;A->8
@@ -5070,13 +5073,13 @@ func_C64E06:
 	rep #$20 ;A->16
 	lda.w #$3800
 	sta.b wTemp04
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	lda.w #$0001
 	sta.b wTemp03
 	rep #$20 ;A->16
 	lda.w #$3C00
 	sta.b wTemp04
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	lda.w #$0003
 	sta.b wTemp00
 	sep #$20 ;A->8
@@ -5295,7 +5298,7 @@ func_C64E06:
 	rep #$20 ;A->16
 	lda.w #$3000
 	sta.b wTemp04
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	rep #$20 ;A->16
 	lda.w #$0005
 	sta.b wTemp00
@@ -5324,7 +5327,7 @@ func_C64E06:
 	lda.w #$3000
 	sta.b wTemp04
 	phx
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	plx
 	jsl.l func_80854A
 	sep #$20 ;A->8
@@ -5336,7 +5339,7 @@ func_C64E06:
 	rep #$20 ;A->16
 	lda.w #$3000
 	sta.b wTemp04
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	lda.w #$0008
 	clc
 	adc.l $7ED712
@@ -8185,7 +8188,7 @@ func_C6732E:
 	sep #$20 ;A->8
 	lda.b #$00
 	sta.b wTemp03
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	rep #$20 ;A->16
 	lda.w #$0001
 	sta.b wTemp00

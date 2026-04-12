@@ -2209,7 +2209,7 @@ func_C31959:
 	lda.b #$13
 	sta.b wTemp00
 	jsl.l GetCharacterMapInfo
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	lda.b wTemp01
 	sta.b wTemp00
 	plp
@@ -4483,7 +4483,7 @@ TryPrepareSelectedItemForJarInsertion:
 	rep #$20 ;A->16
 	lda.b wTemp00
 	pha
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	ldx.b wTemp01
 	stx.b wTemp00
 	phx
@@ -5164,7 +5164,7 @@ func_C32FEE:
 	adc.b wTemp01,s
 	sta.b wTemp00
 	pha
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	sep #$20 ;A->8
 	lda.b wTemp02
 	asl a
@@ -5211,7 +5211,7 @@ func_C3303C:
 	ldy.b wTemp02
 	phy
 	sty.b wTemp00
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	lda.b wTemp02
 	bit.b #$F0
 	bne @lbl_C33066
@@ -5244,7 +5244,7 @@ func_C3303C:
 	adc.b wTemp01,s
 	sta.b wTemp00
 	pha
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	pla
 	sta.b wTemp04
 	sep #$20 ;A->8

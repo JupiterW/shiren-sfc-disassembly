@@ -755,7 +755,7 @@ func_C0697C:
 	sta.b wTemp00
 	sep #$20 ;A->8
 	phx
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	plx
 	lda.b wTemp01
 	cmp.b #$80
@@ -2756,7 +2756,7 @@ func_C079F6:
 	lda.b wTemp00
 	pha
 	dec.b wTemp01
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	ldy.b wTemp01
 	lda.b wTemp01,s
 	sta.b wTemp00
@@ -2775,7 +2775,7 @@ func_C079F6:
 	ldx #$06                                ;C07A3C
 	.db $80,$5A   ;C07A3E
 @lbl_C07A40:
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	lda.b wTemp02
 	bit.b #$80
 	bne @lbl_C07A54
@@ -2790,7 +2790,7 @@ func_C079F6:
 	sta.b wTemp00
 	lda.b wTemp02,s
 	sta.b wTemp01
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	ldy.b wTemp01
 	lda.b wTemp01,s
 	inc a
@@ -2802,14 +2802,14 @@ func_C079F6:
 	bne @lbl_C07A84
 	cpy.b #$83
 	beq @lbl_C07A98
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	lda.b wTemp02
 	bit.b #$80
 	beq @lbl_C07A98
 	ldx.b #$00
 	bra @lbl_C07A9A
 @lbl_C07A84:
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	lda.b wTemp02
 	bit.b #$80
 	bne @lbl_C07A98

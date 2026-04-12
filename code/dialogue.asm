@@ -978,7 +978,7 @@ func_C108B1:
 	ldy.w #$06E1
 	sty.b wTemp00
 	jsl.l DisplayMessage
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	lda.b wTemp03,s
 	sta.b wTemp00
 	ldy.w #$0FE8
@@ -988,7 +988,7 @@ func_C108B1:
 	jsl.l func_C2938C
 	lda.b wTemp03,s
 	sta.b wTemp00
-	jsl.l func_C21591
+	jsl.l PlayConfusionEffect
 	lda.b wTemp03,s
 	sta.b wTemp00
 	lda.b #$C2
@@ -996,11 +996,11 @@ func_C108B1:
 	lda.b #$05
 	sta.b wTemp02
 	jsl.l func_C2942A
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	ldy.w #$06E2
 	sty.b wTemp00
 	jsl.l DisplayMessage
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	lda.b wTemp03,s
 	inc a
 	sta.b wTemp00
@@ -1023,7 +1023,7 @@ func_C108B1:
 	ldy.w #$06E3
 	sty.b wTemp00
 	jsl.l DisplayMessage
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	lda.b wTemp03,s
 	inc a
 	sta.b wTemp00
@@ -1549,7 +1549,7 @@ func_C10E5D:
 	lda.b #$47
 	sta.b wTemp00
 	jsl.l func_C23BA6
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	lda.b wTemp05,s
 	inc a
 	sta.b wTemp00
@@ -1561,14 +1561,14 @@ func_C10E5D:
 	lda.b wTemp05,s
 	inc a
 	sta.b wTemp00
-	jsl.l func_C21591
+	jsl.l PlayConfusionEffect
 	lda.b #$13
 	sta.b wTemp00
 	lda.b wTemp05,s
 	inc a
 	sta.b wTemp01
 	jsl.l func_C2444B
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	lda.b wTemp05,s
 	inc a
 	sta.b wTemp00
@@ -1950,7 +1950,7 @@ func_C111EA:
 	ldy.w #$012F
 	sty.b wTemp00
 	jsl.l DisplayMessage
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	lda.b #$13
 	sta.b wTemp00
 	jsl.l GetCharacterMapInfo
@@ -1965,13 +1965,13 @@ func_C111EA:
 	jsl.l func_C2721B
 	lda.b wTemp03,s
 	sta.b wTemp00
-	jsl.l func_C21591
+	jsl.l PlayConfusionEffect
 	ldy.w #$0708
 	sty.b wTemp00
 	jsl.l DisplayMessage
 	lda.b wTemp03,s
 	sta.b wTemp00
-	jsl.l func_C21591
+	jsl.l PlayConfusionEffect
 	jsr.w func_C1173F
 	bcs @lbl_C112DD
 	ldy #$070B                              ;C112AC
@@ -2475,7 +2475,7 @@ func_C1173F:
 	jsl.l DisplayMessage
 	lda.b wTemp05,s
 	sta.b wTemp00
-	jsl.l func_C21591
+	jsl.l PlayConfusionEffect
 	ldy.w #$090C
 	sty.b wTemp00
 	jsl.l DisplayMessage
@@ -2487,7 +2487,7 @@ func_C1173F:
 	ldy.w #$012F
 	sty.b wTemp00
 	jsl.l DisplayMessage
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	lda.b #$13
 	sta.b wTemp00
 	jsl.l GetCharacterStats
@@ -2715,7 +2715,7 @@ func_C11946:
 	sta.b wTemp04
 	jsl.l func_C2938C
 	jsr.w func_C12244
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	lda.b wTemp03,s
 	inc a
 	sta.b wTemp00
@@ -2742,7 +2742,7 @@ func_C11946:
 	ldy.w #$012F
 	sty.b wTemp00
 	jsl.l DisplayMessage
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	lda.b wTemp03,s
 	inc a
 	sta.b wTemp00
@@ -2752,7 +2752,7 @@ func_C11946:
 	ldy.w #$0726
 	sty.b wTemp00
 	jsl.l DisplayMessage
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	lda.b wTemp03,s
 	inc a
 	sta.b wTemp00
@@ -4009,7 +4009,7 @@ func_C124BB:
 	ldy.w #$076E
 	sty.b wTemp00
 	jsl.l DisplayMessage
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	ldy.w #$076F
 	sty.b wTemp00
 	jsl.l DisplayMessage
@@ -5413,7 +5413,7 @@ func_C13228:
 	jsl.l DisplayMessage
 	rts                                     ;C13269
 @lbl_C1326A:
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	ldy.w #$0050
 	sty.b wTemp00
 	jsl.l func_C62B19
@@ -5469,7 +5469,7 @@ func_C13228:
 	lda.b #$19
 	sta.b wTemp02
 	jsl.l func_C626F6
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	ldy.w #$07CF
 	sty.b wTemp00
 	jsl.l DisplayMessage
@@ -5577,7 +5577,7 @@ func_C13304:
 	jsl.l DisplayMessage
 	rts                                     ;C133CD
 @lbl_C133CE:
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	ldy.w #$0050
 	sty.b wTemp00
 	jsl.l func_C62B19
@@ -5592,7 +5592,7 @@ func_C13304:
 	ldy.w #$0000
 	sty.b wTemp02
 	jsl.l func_C25BE0
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	ldy.w #$07D7
 	sty.b wTemp00
 	jsl.l DisplayMessage
@@ -5695,7 +5695,7 @@ func_C13304:
 	ldy.w #$07D8
 	sty.b wTemp00
 	jsl.l DisplayMessage
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	lda.b wTemp04,s
 	sta.b wTemp00
 	ldy.w #$37C2
@@ -6907,7 +6907,7 @@ UNREACH_C13D7C:
 	ldy.w #$084F
 	sty.b wTemp00
 	jsl.l DisplayMessage
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	jsr.w func_C14214
 	SetEvent Event8A $01
 	GetEvent Event16

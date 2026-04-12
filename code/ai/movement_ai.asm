@@ -434,7 +434,7 @@ func_C262D5:
 	sta.b wTemp00
 	pha
 	phx
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	plx
 	pla
 	ldy.b wTemp00
@@ -588,7 +588,7 @@ func_C262D5:
 	lda.l wCharYPos,x
 	sta.b wTemp01
 	phx
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	plx
 	lda.b wTemp01
 	sta.l wCharHeldItem,x
@@ -622,7 +622,7 @@ func_C26757:
 	lda.l wCharYPos,x
 	sta.b wTemp01
 	phx
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	plx
 	lda.b wTemp01
 	bmi @lbl_C2677C
@@ -732,7 +732,7 @@ func_C2679E:
 	lda.l wCharYPos,x
 	sta.b wTemp01
 	phx
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	plx
 	lda.b wTemp01
 	sta.b wTemp00

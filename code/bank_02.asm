@@ -152,7 +152,7 @@ func_C200E1:
 	lda.b wTemp04
 	sta.w wCharLevel,y
 	sta.w wCharTrueLevel,y
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	lda.b wTemp02
 	sta.w wCharUnderfootTerrainType,y
 	jsr.w GetEnemyStats
@@ -1558,7 +1558,7 @@ func_C20DD1:
 	sta.l wCharYPos,x
 	sta.b wTemp01
 	phx
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	plx
 	lda.b wTemp02
 	sta.l wCharUnderfootTerrainType,x
@@ -1570,7 +1570,7 @@ func_C20DF4:
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
 	ldy.b wTemp00
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	lda.b wTemp00
 	bmi @lbl_C20E19
 	pha                                     ;C20E03
@@ -1824,7 +1824,7 @@ HandleCharacterDeath:
 ;C21015  
 	jsl $C62428                             ;C21015
 @lbl_C21019:
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	lda.b wTemp01,s
 	sta.b wTemp03
 	lda.b #$3A
@@ -1833,7 +1833,7 @@ HandleCharacterDeath:
 	lda.b #$13
 	sta.b wTemp02
 	jsl.l DisplayMessage
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	pla
 	sta.b wTemp00
 	jsl.l func_C312DE
@@ -2529,7 +2529,7 @@ func_C22A25:
 	beq @lbl_C22B1D
 	phx
 	phy
-	call_savebank func_C62405
+	call_savebank UpdateGameSystems
 	ply
 	plx
 	lda.w $89A8
@@ -4945,7 +4945,7 @@ HandleCategoryShortcutSelectionAction:
 	sta.b wTemp01
 	pha
 	phx
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	plx
 	lda.b wTemp01
 	cmp.b #$7F
@@ -5013,7 +5013,7 @@ HandleCategoryShortcutSelectionAction:
 	lda.l wCharYPos+CharDataShirenIndex
 	sta.b wTemp01
 	phx
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	plx
 	ldy.b wTemp01
 	sty.b wTemp00
@@ -5354,7 +5354,7 @@ DropSelectedInventoryItem:
 	lda.b wTemp00
 	pha
 	phx
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	plx
 	pla
 	ldy.b wTemp02
@@ -5590,7 +5590,7 @@ func_C2414A:
 	lda.b #$0C
 	sta.b wTemp02
 	jsl.l PlayVisualEffect
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	jsl.l func_C250F7
 	plp
 	rtl
@@ -6318,7 +6318,7 @@ func_C246D2:
 	sta.b wTemp01
 	lda.l $7E85C8
 	sta.b wTemp00
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	ldy.b wTemp01
 	cpy.b #$83
 	bne @lbl_C2470C
@@ -6607,7 +6607,7 @@ HandleUnderfootItemPickupAction:
 	rep #$20 ;A->16
 	sta.b wTemp00
 	pha
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	pla
 	ldy.b wTemp01
 	bmi @lbl_C24908
@@ -7303,7 +7303,7 @@ func_C24DE8:
 	sta.b wTemp00
 	lda.l $7E85DC
 	sta.b wTemp01
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	lda.b wTemp01
 	cmp.b #$84
 	bne @lbl_C24E07
@@ -7798,7 +7798,7 @@ func_C25152:
 	sta.b wTemp00
 	lda.l $7E85DC
 	sta.b wTemp01
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	lda.b wTemp01
 	cmp.b #$C0
 	bcs @lbl_C251E3
@@ -7816,7 +7816,7 @@ func_C25152:
 	jsl.l func_C35BA2
 	lda.b #$13
 	sta.b wTemp00
-	jsl.l func_C21591
+	jsl.l PlayConfusionEffect
 	lda.b #$FD
 	sta.b wTemp00
 	lda.b #$00
@@ -8446,7 +8446,7 @@ func_C25649:
 	lda.b wTemp04
 	sta.b wTemp00
 	sep #$20 ;A->8
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	lda.b wTemp00
 	sta.b wTemp03,s
 	lda.b #$01
@@ -9578,7 +9578,7 @@ func_C2785E:
 	lda.w wCharXPos,y
 	sta.b wTemp00
 	phx
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	plx
 	lda.b wTemp02
 	sta.b wTemp03,s
@@ -9594,7 +9594,7 @@ func_C2785E:
 	adc.w wCharXPos,y
 	sta.b wTemp00
 	phx
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	plx
 	lda.b wTemp02
 	sta.b wTemp02,s
@@ -9613,7 +9613,7 @@ func_C2785E:
 	rep #$20 ;A->16
 	sta.b wTemp00
 	pha
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	pla
 	sta.b wTemp04
 	ldx.b wTemp00
@@ -9714,7 +9714,7 @@ func_C27951:
 	pla
 	sta.b wTemp00
 	pha
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	sep #$20 ;A->8
 	lda.b wTemp02
 	sta.w wCharUnderfootTerrainType,y
@@ -10502,7 +10502,7 @@ func_C27F5A:
 	adc.w $85DC
 	sta.b wTemp01
 	phx
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	plx
 	ldy.b wTemp00
 	bmi @lbl_C27F8D
@@ -12337,7 +12337,7 @@ func_C28CC3:
 	phx
 	stx.b wTemp01
 	jsl.l func_C3D528
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	plx
 @lbl_C28CEA:
 	dex
@@ -12872,7 +12872,7 @@ func_C290BC:
 	rep #$20 ;A->16
 	pha
 	sta.b wTemp00
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	ldx.b wTemp01
 	bpl @lbl_C290CC
 	jmp.w @lbl_C2914F
@@ -12976,7 +12976,7 @@ func_C290BC:
 	lda.b wTemp03,s
 	sta.b wTemp02
 	jsl.l func_C25BE0
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	lda.l $7E8991
 	ora.l $7E8993
 	beq @lbl_C291A5
@@ -13304,7 +13304,7 @@ func_C2939C:
 	jsl.l func_C35BA2
 	plx
 	phx
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	plx
 @lbl_C2941E:
 	plb

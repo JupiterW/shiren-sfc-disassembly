@@ -181,7 +181,7 @@ func_C151E9:
 	jsl.l func_C360D7
 	ldx.b wTemp00
 	phx
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	plx
 	lda.b wTemp02
 	bne @lbl_C151F6
@@ -2202,7 +2202,7 @@ func_C16C7D:
 	lda.l DATA8_C16BEC,x
 	sta.b wTemp01
 	phx
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	plx
 	ldy.b wTemp01
 	bmi @lbl_C16D03

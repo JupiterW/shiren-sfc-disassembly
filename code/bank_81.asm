@@ -6261,7 +6261,7 @@ func_81D084:
 	stz.b wTemp03
 	lda.w #$0800
 	sta.b wTemp04
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	lda.w #$0027
 	sta.b wTemp00
 	stz.b wTemp02
