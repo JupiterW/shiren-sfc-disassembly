@@ -681,13 +681,13 @@ PickRandomCategoryItem:
 	inx
 	inx
 @lbl_C30526:
-	lda.l DATA8_C30559,x
+	lda.l CategoryItemDungeonTable,x
 	bpl @lbl_C3051D
 @lbl_C3052C:
-	lda.l UNREACH_C3055B,x
+	lda.l CategoryItemTableAddr,x
 	pha
 	sep #$20 ;A->8
-	lda.l UNREACH_C3055D,x
+	lda.l CategoryItemTableCount,x
 	pha
 @lbl_C30538:
 	jsl.l Random
@@ -709,13 +709,13 @@ PickRandomCategoryItem:
 	plp
 	rts
 
-DATA8_C30559:
+CategoryItemDungeonTable:
 	.db $01,$00                           ;C30559
 
-UNREACH_C3055B:
+CategoryItemTableAddr:
 	.db $61,$51                           ;C3055B  
 
-UNREACH_C3055D:
+CategoryItemTableCount:
 	.db $14                               ;C3055D  
 	.db $01,$01,$89,$51,$14,$01,$02,$B1   ;C3055E
 	.db $51,$05                           ;C30566
@@ -4039,9 +4039,9 @@ PlaceShirenOnFloor:
 	lda.l $7EC176
 	asl a
 	tax
-	lda.l DATA8_C35E0D,x
+	lda.l SpawnRoomMessageId1,x
 	sta.b wTemp00
-	lda.l DATA8_C35E0E,x
+	lda.l SpawnRoomMessageId2,x
 	sta.b wTemp01
 	jsl.l DisplayMessage
 @lbl_C35DD9:
@@ -4071,10 +4071,10 @@ SurroundingTileOffsets:
 	.db $BF,$FF,$C0,$FF,$C1,$FF,$FF,$FF,$00,$00,$01,$00,$3F,$00,$40,$00
 	.db $41,$00
 
-DATA8_C35E0D:
+SpawnRoomMessageId1:
 	.db $3A
 
-DATA8_C35E0E:
+SpawnRoomMessageId2:
 	.db $01
 	.db $3B,$01,$3C,$01,$3D,$01,$3E,$01
 	.db $3F,$01,$40,$01
@@ -13262,18 +13262,18 @@ func_C3D43B:
 	lda.b wTemp00
 	and.w #$0001
 	beq func_C3D479
-	lda.l UNREACH_C3D4C4,x
+	lda.l ScrollUseMessageId1,x
 	sta.b wTemp00
 	phx
 	jsl.l DisplayMessage
 	plx
-	lda.l UNREACH_C3D4F6,x
+	lda.l ScrollUseMessageId2,x
 	sta.b wTemp00
 	jsl.l DisplayMessage
 	plp
 	rtl
 func_C3D479:
-	lda.l UNREACH_C3D4C4,x
+	lda.l ScrollUseMessageId1,x
 	sta.b wTemp00
 	phx
 	jsl.l DisplayMessage
@@ -13311,7 +13311,7 @@ Jumptable_C3D492:
 	.dw $DA76
 	.dw $E0AE
 
-UNREACH_C3D4C4:
+ScrollUseMessageId1:
 	.dw $0141
 	.dw $0142
 	.dw $0143
@@ -13338,7 +13338,7 @@ UNREACH_C3D4C4:
 	.dw $014D
 	.dw $014D
 
-UNREACH_C3D4F6:
+ScrollUseMessageId2:
 	.dw $014F
 	.dw $0150
 	.dw $0151
@@ -16499,11 +16499,11 @@ func_C3EBBE:
 	lda.b wTemp00
 	asl a
 	tax
-	lda.l DATA8_C3EBD4,x
+	lda.l GroundItemActionHandlers,x
 	pha
 	rts
 
-DATA8_C3EBD4:
+GroundItemActionHandlers:
 	.db $FF,$EB,$07,$EC,$AD,$EC,$B4,$EC   ;C3EBD4
 	.db $BC,$EC                           ;C3EBDC  
 	.db $28,$EC                           ;C3EBDE
@@ -16761,7 +16761,7 @@ func_C3ED74:
 	adc.w #$000D
 	tax
 @lbl_C3EDE2:
-	lda.l DATA8_C3EE2E,x
+	lda.l ContainerSlotDescriptors,x
 	bmi @lbl_C3EDEC
 	cmp.b wTemp00
 	bne @lbl_C3EDDC
@@ -16804,7 +16804,7 @@ func_C3EE0C:
 	plp
 	rtl
 
-DATA8_C3EE2E:
+ContainerSlotDescriptors:
 	.db $8D,$06,$A9,$01,$16,$00,$08,$04   ;C3EE2E
 	.db $01,$02,$25,$10,$00,$3E,$09       ;C3EE36
 	.db $AC,$01,$03,$00,$08,$0A,$02,$05   ;C3EE3D  
@@ -16980,11 +16980,11 @@ func_C3F126:
 	lda.b wTemp02
 	asl a
 	tax
-	lda.l DATA8_C3F142,x
+	lda.l ContainerActionHandlers,x
 	pha
 	rts
 
-DATA8_C3F142:
+ContainerActionHandlers:
 	.db $4D,$F1,$5C,$F1,$65,$F1           ;C3F142
 	.db $6C,$F1,$65,$F1,$55,$F1           ;C3F148  
 	jsl.l BuildGroundContainerInsertCommand
