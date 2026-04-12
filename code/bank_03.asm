@@ -3189,9 +3189,9 @@ PickRandomItemTypeForDungeon:
 	tya
 	asl a
 	tax
-	lda.l UNREACH_C355BD,x
+	lda.l ItemTypeWeightTablePtrs,x
 	sta.b w00a9
-	lda.l UNREACH_C355BD+1,x
+	lda.l ItemTypeWeightTablePtrs+1,x
 	sta.b w00aa
 	restorebank
 	jsl.l Get7ED5EE
@@ -3230,22 +3230,22 @@ PickRandomItemTypeForDungeon:
 	sta.l $7EC179
 	rts
 
-UNREACH_C355BD:
-	.dw Data_c355d7
-	.dw Data_c355d7
-	.dw Data_c35659
-	.dw Data_c356db
-	.dw Data_c35659
-	.dw Data_c355d7
-	.dw Data_c355d7
-	.dw Data_c355d7
-	.dw Data_c355d7
-	.dw Data_c355d7
-	.dw Data_c355d7
-	.dw Data_c355d7
-	.dw Data_c355d7
+ItemTypeWeightTablePtrs:
+	.dw ItemTypeWeightsDefault
+	.dw ItemTypeWeightsDefault
+	.dw ItemTypeWeightsMidGame
+	.dw ItemTypeWeightsLateGame
+	.dw ItemTypeWeightsMidGame
+	.dw ItemTypeWeightsDefault
+	.dw ItemTypeWeightsDefault
+	.dw ItemTypeWeightsDefault
+	.dw ItemTypeWeightsDefault
+	.dw ItemTypeWeightsDefault
+	.dw ItemTypeWeightsDefault
+	.dw ItemTypeWeightsDefault
+	.dw ItemTypeWeightsDefault
 	
-Data_c355d7:
+ItemTypeWeightsDefault:
 	.db $03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03
 	.db $03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03
 	.db $03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03
@@ -3256,7 +3256,7 @@ Data_c355d7:
 	.db $03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03
 	.db $00,$01
 
-Data_c35659:
+ItemTypeWeightsMidGame:
 	.db $03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03
 	.db $03,$03,$03,$03,$03,$03,$03,$03,$04,$04,$03,$03,$03,$03,$03,$03
 	.db $05,$05,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03
@@ -3267,7 +3267,7 @@ Data_c35659:
 	.db $03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03
 	.db $00,$01
 
-Data_c356db:
+ItemTypeWeightsLateGame:
 	.db $03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03
 	.db $03,$03,$03,$03,$03,$03,$03,$03,$04,$04,$03,$03,$03,$03,$03,$03
 	.db $05,$05,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03
@@ -3503,7 +3503,7 @@ GetItemData:
 	plp
 	rtl
 
-func_C359D1:
+ScanAdjacentTiles:
 	php
 	sep #$30 ;AXY->8
 	bankswitch 0x7E
@@ -3653,13 +3653,13 @@ FindOccupiedItemSlot:
 @lbl_C35AE5:
 	lda.w $BE65
 	beq @lbl_C35AED
-	jmp.w func_C35B68
+	jmp.w PickUpItemAtTileOrClear
 @lbl_C35AED:
 	lda.w $BE60
 	ora.l $7E8983
-	bne func_C35B4D
+	bne PickUpItemAtTile
 	lda.b wTemp00
-	bmi func_C35B4D
+	bmi PickUpItemAtTile
 	lda.w $BE64
 	bit.b #$90
 	bne @lbl_C35B1D
@@ -3698,15 +3698,15 @@ FindOccupiedItemSlot:
 	ply
 	sep #$20 ;A->8
 	lda.b wTemp06
-	beq func_C35B4D
+	beq PickUpItemAtTile
 @lbl_C35B41:
 	sep #$20 ;A->8
 	lda.b wTemp00
 	cmp.b #$13
-	beq func_C35B4D
+	beq PickUpItemAtTile
 	lda.b #$80
 	sta.b wTemp00
-func_C35B4D:
+PickUpItemAtTile:
 	sty.b wTemp04
 	jsl.l func_80E704
 	lda.w $9EDF,y
@@ -3718,7 +3718,7 @@ func_C35B4D:
 	ply
 	jmp.w FindOccupiedItemSlot
 
-func_C35B68:
+PickUpItemAtTileOrClear:
 	sep #$20 ;A->8
 	lda.b wTemp00
 	cmp.b #$13
@@ -3728,7 +3728,7 @@ func_C35B68:
 @lbl_C35B74:
 	lda.b #$80
 	sta.b wTemp01
-	bra func_C35B4D
+	bra PickUpItemAtTile
 
 PlaceSecondaryItemOnTile:
 	php
@@ -3892,7 +3892,7 @@ PlaceItemOnTile:
 	plp
 	rtl
 
-func_C35C9A:
+PlaceShirenOnFloor:
 	php
 	sep #$20 ;A->8
 	bankswitch 0x7E
@@ -5314,7 +5314,7 @@ func_C366F6:
 	plb
 	lda.b #$FF
 	sta.w $BE64
-	jsl.l func_C35C9A
+	jsl.l PlaceShirenOnFloor
 	jsl.l func_C35E1B
 	plp 
 	rtl
@@ -5345,7 +5345,7 @@ func_C36734:
 	bpl @lbl_C36749
 	lda.b #$FF
 	sta.w $BE64
-	jsl.l func_C35C9A
+	jsl.l PlaceShirenOnFloor
 	plp 
 	rtl
 

@@ -736,7 +736,7 @@ func_C605FB:
 	jsl.l InitFloorOnEntry
 	jsr.w func_C622A5
 	jsl.l func_C22D3B
-	jsl.l func_C35C9A
+	jsl.l PlaceShirenOnFloor
 	jsl.l func_C0641C
 	rep #$10 ;XY->16
 	ldx.w #$0002
@@ -799,7 +799,7 @@ func_C606C3:
 	jsl.l func_C25CA8
 	jsl.l func_C22E2D
 	jsl.l func_C22D3B
-	jsl.l func_C35C9A
+	jsl.l PlaceShirenOnFloor
 	jsl.l func_C6028B
 	lda.l wLoading
 	bne func_C6073A
@@ -875,7 +875,7 @@ func_C60788:
 	jsl.l func_C25CA8
 	jsl.l func_C22E2D
 	jsl.l func_C22D3B
-	jsl.l func_C35C9A
+	jsl.l PlaceShirenOnFloor
 	jsl.l func_C28B23
 	lda.b wTemp00
 	bne @lbl_C607FB
@@ -922,7 +922,7 @@ func_C6080E:
 	sta.b wTemp03
 	jsl.l func_C27951
 	jsl.l func_C22D3B
-	jsl.l func_C35C9A
+	jsl.l PlaceShirenOnFloor
 	jsl.l func_C16C7D
 	jsl.l func_C16B75
 	jsl.l DetermineNextFloor

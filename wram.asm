@@ -1662,11 +1662,11 @@ wRoomDoorCount:
     dsb 10
 
 ;c13e
-wRoomData13E:
+wStaircaseX:
     dsb 10
 
 ;c148
-wRoomData148:
+wStaircaseY:
     dsb 10
 
 ;c152

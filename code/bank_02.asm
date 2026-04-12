@@ -6116,7 +6116,7 @@ func_C2452B:
 	jsl.l func_C22D3B
 	pla
 	sta.l $7E898F
-	jsl.l func_C35C9A
+	jsl.l PlaceShirenOnFloor
 	ldx.b #$12
 	lda.b #$FF
 @lbl_C2454E:
@@ -9135,7 +9135,7 @@ func_C25C3C:
 	sta.b wTemp01
 	lda.l wCharDir+CharDataShirenIndex
 	sta.b wTemp02
-	jsl.l func_C359D1
+	jsl.l ScanAdjacentTiles
 	lda.b wTemp02
 	eor.b #$FF
 	and.b wTemp00
