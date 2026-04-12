@@ -3146,20 +3146,20 @@ DetermineNextFloor:
 	plp
 	rtl
 @lbl_C354E3:
-	lda.l DATA8_C35556,x
+	lda.l ItemTypeWeightStartIndex,x
 	sta.b wTemp00
 	lda.l ItemTypeWeightBreakpoints,x
 	dec a
 	sta.b wTemp01
 	jsl.l GetRandomInRange
 	ldx.b wTemp00
-	lda.l DATA8_C35501,x
+	lda.l ItemTypeList,x
 	sta.l wMapNum
 	pla
 	plp
 	rtl
 
-DATA8_C35501:
+ItemTypeList:
 	.db $02                               ;C35501
 	.db $16,$17,$18,$19,$52,$53           ;C35502  
 	.db $54                               ;C35508
@@ -3177,7 +3177,7 @@ DATA8_C35501:
 	.db $60,$61,$62,$63,$64,$65,$66,$67,$68,$0E,$24,$25,$26,$27,$23,$41   ;C3553E
 	.db $42,$43,$44,$10,$28,$29,$2A,$2B   ;C3554E
 
-DATA8_C35556:
+ItemTypeWeightStartIndex:
 	.db $00                               ;C35556
 
 ItemTypeWeightBreakpoints:
@@ -14911,19 +14911,19 @@ func_C3E131:
 	clc
 	adc.b wTemp00
 	tax
-	lda.l DATA8_C3E14F,x
+	lda.l DemoTableAddrLo,x
 	sta.b w00ae
-	lda.l DATA8_C3E150,x
+	lda.l DemoTableAddrHi,x
 	sta.b w00af
 	lda.l DemoTable,x
 	sta.b w00b0
 	plp
 	rtl
 
-DATA8_C3E14F:
+DemoTableAddrLo:
 	.db $00
 
-DATA8_C3E150:
+DemoTableAddrHi:
 	.db $60
 
 ;c3e151
@@ -15190,9 +15190,9 @@ func_C3E2F7:
 	clc
 	adc.b wTemp01
 	tax
-	lda.l DATA8_C3E14F,x
+	lda.l DemoTableAddrLo,x
 	sta.b wTemp04
-	lda.l DATA8_C3E150,x
+	lda.l DemoTableAddrHi,x
 	sta.b wTemp05
 	lda.l DemoTable,x
 	sta.b wTemp06
@@ -15201,9 +15201,9 @@ func_C3E2F7:
 	clc
 	adc.b wTemp00
 	tax
-	lda.l DATA8_C3E14F,x
+	lda.l DemoTableAddrLo,x
 	sta.b wTemp00
-	lda.l DATA8_C3E150,x
+	lda.l DemoTableAddrHi,x
 	sta.b wTemp01
 	lda.l DemoTable,x
 	sta.b wTemp02
@@ -15758,18 +15758,18 @@ func_C3E66B:
 	adc.b w00b5
 	tax
 	rep #$20 ;A->16
-	lda.l DATA8_C3E68F,x
+	lda.l SaveBlockAddrTable,x
 	sta.b w00b2
 	sep #$20 ;A->8
-	lda.l DATA8_C3E691,x
+	lda.l SaveBlockBankTable,x
 	sta.b w00b4
 	plp
 	rtl
 
-DATA8_C3E68F:
+SaveBlockAddrTable:
 	.db $58,$7B                           ;C3E68F
 
-DATA8_C3E691:
+SaveBlockBankTable:
 	.db $B0,$58,$7B,$B1,$58,$7B,$B2       ;C3E691
 
 func_C3E698:
