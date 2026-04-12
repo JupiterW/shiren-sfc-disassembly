@@ -13,6 +13,15 @@ CATEGORY_FOOD    = $08
 CATEGORY_STAFF   = $0A
 CATEGORY_POT     = $0B
 
+; Spawn modifier range constants for ItemSpawnModMin/ItemSpawnModMax tables.
+; High bit ($80+) means "use ItemSpawnModDistribution[value & $7F]" instead of raw random range.
+SPAWN_MOD_EQUIP_MIN  = $90  ; weapons and shields: distribution table index $10
+SPAWN_MOD_EQUIP_MAX  = $9F  ; weapons and shields: distribution table index $1F
+SPAWN_MOD_CUDGEL_MIN = $80  ; Item_Cudgel / Item_Pickaxe: distribution table index $00
+SPAWN_MOD_CUDGEL_MAX = $8F  ; Item_Cudgel / Item_Pickaxe: distribution table index $0F
+SPAWN_MOD_ARMBAND_MIN = $A0 ; armbands: distribution table index $20
+SPAWN_MOD_ARMBAND_MAX = $AF ; armbands: distribution table index $2F
+
 ClearItemTable:
 	php
 	sep #$20 ;A->8
@@ -445,9 +454,9 @@ SpawnFloorItemWithRandomMod:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
-	lda.l DATA8_C3438B,x
+	lda.l ItemSpawnModMin,x
 	sta.b wTemp00
-	lda.l DATA8_C34473,x
+	lda.l ItemSpawnModMax,x
 	phx
 	sta.b wTemp01
 	jsl.l GetRandomInRange
@@ -455,7 +464,7 @@ SpawnFloorItemWithRandomMod:
 	bpl @lbl_C3037E
 	and.b #$7F
 	tax
-	lda.l UNREACH_C303A0,x
+	lda.l ItemSpawnModDistribution,x
 @lbl_C3037E:
 	tay
 	bpl @lbl_C3038B
@@ -477,7 +486,10 @@ SpawnFloorItemWithRandomMod:
 	plp
 	rtl
 
-UNREACH_C303A0:
+; Weighted distribution table for floor item +N modifiers.
+; Indexed by (ItemSpawnModMin[type] & $7F) when high bit is set.
+; Values are signed modifier amounts: 0=unmodified, positive=plus, $FD=-3, $FF=-1.
+ItemSpawnModDistribution:
 	.db $00,$00,$00,$00                   ;C303A0
 	.db $00,$00                           ;C303A4
 	.db $00,$00,$00,$00                   ;C303A6
@@ -2343,95 +2355,164 @@ ItemBaseStatByType:
 		.db 0
 	.endr
 
-DATA8_C3438B:
-	.db $80,$90
-	.db $90
-	.db $90
-	.db $90
-	.db $90
-	.db $90,$90,$80,$90,$90
-	.db $90
-	.db $00,$00,$00,$00
-	.db $0A
-	.db $05,$05,$00,$00,$00
-	.db $90,$90
-	.db $90,$90
-	.db $90
-	.db $90,$90,$90
-	.db $90
-	.db $90,$90,$90,$90,$90
-	.db $90
-	.db $90,$90,$90
-	.db $00,$00
-	.db $00
-	.db $00,$00
-	.db $00,$00,$00,$00,$00,$00,$00,$00
-	.db $00,$00
-	.db $00,$00
-	.db $00,$00,$00
-	.db $00
-	.db $00,$00,$00
-	.db $00
-	.db $00,$00,$00,$00,$00,$00,$00,$00
-	.db $00,$00,$00,$00,$00,$00,$00,$00
-	.db $00,$00,$00,$00,$00,$00
-	.db $00,$00
-	.db $00,$00,$00,$00,$00
-	.db $00
-	.db $00,$00,$00,$00,$00,$00,$00
-	.db $00
-	.db $00
-	.db $00
-	.db $00
-	.db $00,$00
-	.db $00,$00,$00,$00,$00,$00,$00,$00
-	.db $00,$00,$00,$00,$00,$00,$00,$00
-	.db $05
-	.db $05
-	.db $05
-	.db $05
-	.db $05
-	.db $05
-	.db $05,$05
-	.db $05
-	.db $05
-	.db $05
-	.db $05,$05,$05,$05,$05,$05,$05,$05
-	.db $05,$05,$05,$05,$A0,$A0,$A0,$A0
-	.db $A0,$A0,$A0,$A0,$A0,$A0,$A0,$A0
-	.db $A0,$A0,$A0,$A0,$A0,$A0,$A0,$A0
-	.db $A0,$A0,$A0,$A0,$A0,$A0,$A0
-	.db $00,$00
-	.db $00,$00,$00,$00
-	.db $03
-	.db $03,$03,$03
-	.db $03
-	.db $03
-	.db $03
-	.db $03,$03,$03,$03,$03,$03
-	.db $03
-	.db $03,$03,$03,$03,$00,$00,$00,$00
-	.db $00,$00,$00,$00,$00,$00,$00,$00
-	.db $00,$00,$00,$00,$00,$00,$00,$00
-	.db $00,$00,$00,$00,$00,$00,$00,$00
-	.db $00,$00,$00,$01,$00,$00
+; Minimum bound for floor item +N modifier RNG, indexed by item type.
+; High bit set = use ItemSpawnModDistribution[value & $7F] instead of raw random range.
+ItemSpawnModMin:
+	; Weapons ($00-$0F): distribution table lookup
+	start_spawn_mod_table Item_Cudgel
+	item_spawn_mod_min Item_Cudgel,        SPAWN_MOD_CUDGEL_MIN  ; uses dist table offset $00
+	item_spawn_mod_min Item_Nagamaki,      SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_BufusCleaver,  SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_Katana,        SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_Dragonkiller,  SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_Mastersword,   SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_KabrasBlade,   SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_SickleSlayer,  SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_Pickaxe,       SPAWN_MOD_CUDGEL_MIN  ; uses dist table offset $00
+	item_spawn_mod_min Item_HomingBlade,   SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_MinotaursAxe,  SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_RazorWind,     SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_CyclopsKiller, $00
+	item_spawn_mod_min Item_DrainBuster,   $00
+	item_spawn_mod_min Item_Firebrand,     $00
+	item_spawn_mod_min Item_KabraReborn,   $00
+	; Arrows ($10-$15): raw random range
+	item_spawn_mod_min Item_WoodArrow,     $0A                   ; range 10-20
+	item_spawn_mod_min Item_IronArrow,     $05                   ; range  5-15
+	item_spawn_mod_min Item_SilverArrow,   $05                   ; range  5-10
+	item_spawn_mod_min Item_13,            $00
+	item_spawn_mod_min Item_14,            $00
+	item_spawn_mod_min Item_15,            $00
+	; Shields ($16-$27): distribution table lookup
+	start_spawn_mod_table Item_HideShield
+	item_spawn_mod_min Item_HideShield,        SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_Bronzeward,        SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_AntiPoisonShield,  SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_WoodShield,        SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_IronShield,        SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_Dragonward,        SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_Windshield,        SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_SpikedWard,        SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_ArmorWard,         SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_EchoShield,        SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_EvasiveShield,     SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_FancyShield,       SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_FragileShield,     SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_BlastShield,       SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_WalrusShield,      SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_Stormward,         SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_26,                SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_27,                SPAWN_MOD_EQUIP_MIN
+	; Herbs/unused/scrolls ($28-$7B): no modifier
+	.rept 84
+		.db $00
+	.endr
+	; Staffs ($7C-$92): raw range min 5
+	.rept 23
+		.db $05
+	.endr
+	; Armbands ($93-$AD): distribution table lookup
+	.rept 27
+		.db SPAWN_MOD_ARMBAND_MIN
+	.endr
+	; Onigiri ($AE-$B3): no modifier
+	.rept 6
+		.db $00
+	.endr
+	; Pots ($B4-$C5): raw range 3-6
+	.rept 18
+		.db $03
+	.endr
+	; Unused/misc ($C6-$E4): no modifier
+	.rept 31
+		.db $00
+	.endr
+	; Gitan ($E5): raw range 1-$FF
+	.db $01
+	; Null/Nduba ($E6-$E7): no modifier
+	.rept 2
+		.db $00
+	.endr
 
-DATA8_C34473:
-	.db $8F,$9F,$9F,$9F,$9F,$9F,$9F,$9F,$8F,$9F,$9F,$9F,$00,$00,$00,$00
-	.db $14,$0F,$0A,$00,$00,$00,$9F,$9F,$9F,$9F,$9F,$9F,$9F,$9F,$9F,$9F
-	.db $9F,$9F,$9F,$9F,$9F,$9F,$9F,$9F,$01,$01,$01,$01,$01,$01,$01,$01
-	.db $01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01
-	.db $01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01
-	.db $01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01
-	.db $01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01
-	.db $01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$08,$07,$07,$07
-	.db $07,$07,$07,$07,$07,$07,$07,$07,$07,$07,$07,$07,$07,$07,$07,$07
-	.db $07,$07,$07,$AF,$AF,$AF,$AF,$AF,$AF,$AF,$AF,$AF,$AF,$AF,$AF,$AF
-	.db $AF,$AF,$AF,$AF,$AF,$AF,$AF,$AF,$AF,$AF,$AF,$AF,$AF,$AF,$00,$00
-	.db $00,$00,$00,$00,$06,$06,$06,$06,$06,$06,$06,$06,$06,$06,$06,$06
-	.db $06,$06,$06,$06,$06,$06,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
-	.db $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
-	.db $00,$00,$00,$00,$00,$FF,$00,$00
+; Maximum bound for floor item +N modifier RNG, indexed by item type.
+; High bit set = paired with ItemSpawnModMin for distribution table lookup.
+ItemSpawnModMax:
+	; Weapons ($00-$0F): distribution table lookup
+	start_spawn_mod_table Item_Cudgel
+	item_spawn_mod_max Item_Cudgel,        SPAWN_MOD_CUDGEL_MAX  ; dist table offset $0F
+	item_spawn_mod_max Item_Nagamaki,      SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_BufusCleaver,  SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_Katana,        SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_Dragonkiller,  SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_Mastersword,   SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_KabrasBlade,   SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_SickleSlayer,  SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_Pickaxe,       SPAWN_MOD_CUDGEL_MAX  ; dist table offset $0F
+	item_spawn_mod_max Item_HomingBlade,   SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_MinotaursAxe,  SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_RazorWind,     SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_CyclopsKiller, $00
+	item_spawn_mod_max Item_DrainBuster,   $00
+	item_spawn_mod_max Item_Firebrand,     $00
+	item_spawn_mod_max Item_KabraReborn,   $00
+	; Arrows ($10-$15): raw random range
+	item_spawn_mod_max Item_WoodArrow,     $14                   ; range 10-20
+	item_spawn_mod_max Item_IronArrow,     $0F                   ; range  5-15
+	item_spawn_mod_max Item_SilverArrow,   $0A                   ; range  5-10
+	item_spawn_mod_max Item_13,            $00
+	item_spawn_mod_max Item_14,            $00
+	item_spawn_mod_max Item_15,            $00
+	; Shields ($16-$27): distribution table lookup
+	start_spawn_mod_table Item_HideShield
+	item_spawn_mod_max Item_HideShield,        SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_Bronzeward,        SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_AntiPoisonShield,  SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_WoodShield,        SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_IronShield,        SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_Dragonward,        SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_Windshield,        SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_SpikedWard,        SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_ArmorWard,         SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_EchoShield,        SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_EvasiveShield,     SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_FancyShield,       SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_FragileShield,     SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_BlastShield,       SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_WalrusShield,      SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_Stormward,         SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_26,                SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_27,                SPAWN_MOD_EQUIP_MAX
+	; Herbs/unused/scrolls ($28-$7B): max 1
+	.rept 84
+		.db $01
+	.endr
+	; Staffs ($7C-$92): SlothStaff max 8, rest max 7
+	.db $08                               ; Item_SlothStaff
+	.rept 22
+		.db $07
+	.endr
+	; Armbands ($93-$AD): distribution table lookup
+	.rept 27
+		.db SPAWN_MOD_ARMBAND_MAX
+	.endr
+	; Onigiri ($AE-$B3): no modifier
+	.rept 6
+		.db $00
+	.endr
+	; Pots ($B4-$C5): raw range 3-6
+	.rept 18
+		.db $06
+	.endr
+	; Unused/misc ($C6-$E4): no modifier
+	.rept 31
+		.db $00
+	.endr
+	; Gitan ($E5): max $FF (full byte range via distribution)
+	.db $FF
+	; Null/Nduba ($E6-$E7): no modifier
+	.rept 2
+		.db $00
+	.endr
 
 ;c3455b
 ItemUseEffectFunctionTable:

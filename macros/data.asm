@@ -112,6 +112,36 @@
 	.redef itemTableExpected itemTableExpected + 1
 .endm
 
+; Tracks expected item index for paired spawn mod tables (min and max are separate tables
+; but both use item_spawn_mod_min / item_spawn_mod_max with the same ordering guard).
+.define spawnModExpected 0
+
+.macro start_spawn_mod_table
+	.redef spawnModExpected \1
+.endm
+
+; 1: item constant
+; 2: min value ($80/$90/$A0 = high bit set, use distribution table; else raw floor)
+.macro item_spawn_mod_min
+	.if \1 != spawnModExpected
+		.printt "item_spawn_mod_min order mismatch"
+		.fail
+	.endif
+	.db \2
+	.redef spawnModExpected spawnModExpected + 1
+.endm
+
+; 1: item constant
+; 2: max value ($8F/$9F/$AF = high bit set; else raw ceiling)
+.macro item_spawn_mod_max
+	.if \1 != spawnModExpected
+		.printt "item_spawn_mod_max order mismatch"
+		.fail
+	.endif
+	.db \2
+	.redef spawnModExpected spawnModExpected + 1
+.endm
+
 .define monsterMeatExpectedFamily 0
 .define monsterMeatExpectedRank 1
 
