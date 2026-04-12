@@ -3380,7 +3380,7 @@ func_C3575D:
 	jsl.l func_C2CAF4
 	jsl.l func_C39021
 	jsl.l ClearDungeonTileMap
-	jsr.w func_C36FF0
+	jsr.w GenerateRoomCorridor
 	jsl.l BuildDoorCandidatesAllRooms
 	jsr.w func_C3737C
 	jsr.w func_C39382
@@ -4049,7 +4049,7 @@ func_C35C9A:
 	bra @lbl_C35DE2
 @lbl_C35DDC:
 	sta.b wTemp00
-	jsl.l func_C3701A
+	jsl.l ClearRoomItems
 @lbl_C35DE2:
 	pla
 	plp
@@ -6384,7 +6384,7 @@ CorridorDirectionPermutations:
 	.db $00,$03,$00,$01,$02,$03,$00,$02,$01,$03,$01,$00,$02,$03,$01,$02
 	.db $00,$03,$02,$00,$01,$03,$02,$01,$00
 
-func_C36EA0:
+FindLargeRoomForCorridor:
 	php
 	sep #$30 ;AXY->8
 	lda.l $7EBE8E
@@ -6412,7 +6412,7 @@ func_C36EA0:
 	plp
 	rts
 
-func_C36ED9:
+PlaceRoomDoors:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -6579,7 +6579,7 @@ func_C36ED9:
 	plp
 	rts
 
-func_C36FF0:
+GenerateRoomCorridor:
 	php
 	sep #$20 ;A->8
 	jsl.l GetCurrentDungeon
@@ -6591,7 +6591,7 @@ func_C36FF0:
 	cmp.b #$11
 	bcc @lbl_C37018
 @lbl_C37007:
-	jsr.w func_C36EA0
+	jsr.w FindLargeRoomForCorridor
 	lda.b wTemp00
 	bmi @lbl_C37018
 	pha                                     ;C3700E
@@ -6603,7 +6603,7 @@ func_C36FF0:
 	plp
 	rts
 
-func_C3701A:
+ClearRoomItems:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -6870,7 +6870,7 @@ BuildDoorCandidatesAllRooms:
 	plp
 	rtl
 
-func_C371C1:
+FindEmptyTileInRoom:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -6937,7 +6937,7 @@ func_C371C1:
 	plp
 	rtl
 
-func_C37234:
+FindEmptyTileInRoom2:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -9518,14 +9518,14 @@ func_C38865:
 	bpl @lbl_C38876
 	jsr.w func_C38757
 	sep #$20 ;A->8
-	jsr.w func_C36EA0
+	jsr.w FindLargeRoomForCorridor
 	lda.b wTemp00
 	bmi @lbl_C3886E
 	pha
 	jsr.w func_C36D1D
 	pla
 	sta.b wTemp00
-	jsr.w func_C36ED9
+	jsr.w PlaceRoomDoors
 	plp 
 	rts
 
@@ -11485,7 +11485,7 @@ func_C396F1:
 	lda.l $7EC175
 	sta.b wTemp00
 	phy
-	jsl.l func_C37234
+	jsl.l FindEmptyTileInRoom2
 	ply
 	ldx.b wTemp00
 	bmi @lbl_C39734
@@ -11708,7 +11708,7 @@ func_C3988B:
 	lda.l $7EC175
 	sta.b wTemp00
 	phy
-	jsl.l func_C371C1
+	jsl.l FindEmptyTileInRoom
 	ply
 	ldx.b wTemp00
 	bmi @lbl_C398BF
@@ -11754,7 +11754,7 @@ func_C398C4:
 	lda.l $7EC175
 	sta.b wTemp00
 	phy
-	jsl.l func_C371C1
+	jsl.l FindEmptyTileInRoom
 	ply
 	ldx.b wTemp00
 	bmi @lbl_C39916

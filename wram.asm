@@ -1597,7 +1597,91 @@ wItemUnidentifiedName:
 wItemCustomNamesBuffer
 	dsb 20*8
 
-. ds 0xc195 - 0x935e
+. ds 0xbe66 - 0x935e
+
+;be66
+wRoomLeft:
+    dsb 10
+
+;be70
+wRoomTop:
+    dsb 10
+
+;be7a
+wRoomRight:
+    dsb 10
+
+;be84
+wRoomBottom:
+    dsb 10
+
+;be8e
+wRoomCount:
+    db
+
+;be8f
+wCorridorCandidateCount:
+    db
+
+;be90
+wCorridorCandidateX:
+    dsb 256
+
+;bf90
+wCorridorCandidateY:
+    dsb 256
+
+;c090
+wCorridorCandX:
+    db
+
+;c091
+wCorridorCandY:
+    db
+
+;c092
+wCorridorTargetX:
+    db
+
+;c093
+wCorridorTargetY:
+    db
+
+;c094
+wDoorCandidates:
+    dsb 80
+
+;c0e4
+wDoorCandidates2:
+    dsb 80
+
+. ds 0xc134 - 0xc134
+
+;c134
+wRoomDoorCount:
+    dsb 10
+
+;c13e
+wRoomData13E:
+    dsb 10
+
+;c148
+wRoomData148:
+    dsb 10
+
+;c152
+wRoomData152:
+    dsb 10
+
+;c15c
+wRoomData15C:
+    dsb 10
+
+;c166
+wTileTypeFlags:
+    dsb 16
+
+. ds 0xc195 - 0xc176
 
 ;c195
 wMapNum:
