@@ -45,7 +45,7 @@ PrintAttackEffect:
 	sta.b wTemp02
 	phx
 	phy
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	ply
 	plx
 	sty.b wTemp00
@@ -195,7 +195,7 @@ func_C21584:
 	sep #$20 ;A->8
 	lda.b #$00
 	sta.b wTemp02
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	plp
 	rtl
 
@@ -204,7 +204,7 @@ func_C21591:
 	sep #$20 ;A->8
 	lda.b #$81
 	sta.b wTemp02
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	plp
 	rtl
 
@@ -213,7 +213,7 @@ func_C2159E:
 	sep #$20 ;A->8
 	lda.b #$40
 	sta.b wTemp02
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	plp
 	rtl
 
@@ -323,7 +323,7 @@ func_C215AB:
 	stx.b wTemp00
 	lda.b #$01
 	sta.b wTemp02
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	stz.b wTemp00
 	plp
 	rtl
@@ -1193,7 +1193,7 @@ DATA8_C21B97:
 	;sta.b wTemp00
 	;lda.b #$01
 	;sta.b wTemp02
-	;jsl.l func_C62550
+	;jsl.l PlayVisualEffect
 	;pla
 	;plx
 	;sta.b wTemp00
@@ -2498,7 +2498,7 @@ DATA8_C21B97:
 	;rep #$10 ;XY->16
 	;lda.b #$01
 	;sta.b wTemp02
-	;jsl.l func_C62550
+	;jsl.l PlayVisualEffect
 	;ldy #$069E
 	;sty.b wTemp00
 	;jsl.l DisplayMessage

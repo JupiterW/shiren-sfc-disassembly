@@ -218,7 +218,7 @@ WanderingScrollUseEffect:
 	sta.b wTemp00
 	lda.w #$00D0
 	sta.b wTemp02
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	lda.w #$0160
 	sta.b wTemp00
 	jsl.l DisplayMessage
@@ -592,7 +592,7 @@ func_C30BD3:
 	sta $02                                 ;C30C90
 	phy                                     ;C30C92
 	phb                                     ;C30C93
-	jsl $C62550                             ;C30C94
+	jsl PlayVisualEffect                             ;C30C94
 	plb                                     ;C30C98
 	ply                                     ;C30C99
 	rep #$20                                ;C30C9A
@@ -632,7 +632,7 @@ func_C30BD3:
 	sta.b wTemp00
 	lda.b #$0A
 	sta.b wTemp02
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	pla
 	sta.b wTemp00
 	lda.l $7E935E
@@ -2093,7 +2093,7 @@ SilenceScrollUseEffect:
 	sta.b wTemp00
 	lda.w #$00D1
 	sta.b wTemp02
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	lda.w #$0084
 	sta.b wTemp00
 	jsl.l DisplayMessage
@@ -3051,7 +3051,7 @@ MisfortuneStaffUseEffect:
 	.db $02   ;C31FE5
 	sta $02                                 ;C31FE6
 	phy                                     ;C31FE8
-	jsl $C62550                             ;C31FE9
+	jsl PlayVisualEffect                             ;C31FE9
 	ply                                     ;C31FED
 	sty $00                                 ;C31FEE
 	jsl $C625B9                             ;C31FF0
@@ -3059,7 +3059,7 @@ MisfortuneStaffUseEffect:
 @lbl_C31FF5:
 	lda #$01                                ;C31FF5
 	sta $02                                 ;C31FF7
-	jsl $C62550                             ;C31FF9
+	jsl PlayVisualEffect                             ;C31FF9
 @lbl_C31FFD:
 	rts                                     ;C31FFD
 	sep #$20                                ;C31FFE
@@ -3091,7 +3091,7 @@ InvisibilityHerbThrowEffect:
 	jsl $C282F8                             ;C32031
 	lda #$01                                ;C32035
 	sta $02                                 ;C32037
-	jsl $C62550                             ;C32039
+	jsl PlayVisualEffect                             ;C32039
 	rts                                     ;C3203D
 SlothStaffUseEffect:
 	jsl $C28305                             ;C3203E
@@ -3104,7 +3104,7 @@ ParalysisStaffUseEffect:
 	sta.b wTemp02
 	lda.b wTemp00
 	pha
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	pla
 	sta.b wTemp00
 	lda.b wTemp00
@@ -3114,7 +3114,7 @@ ParalysisStaffUseEffect:
 	sta.b wTemp00
 	lda.b #$01
 	sta.b wTemp02
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	jsl.l func_C625CE
 	rts
 PostponeStaffUseEffect:
@@ -3420,7 +3420,7 @@ HandsFullScrollUseEffect:
 	sta.b wTemp00
 	lda.w #$00CF
 	sta.b wTemp02
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	lda.w #$0105
 	sta.b wTemp00
 	jsl.l DisplayMessage
@@ -5780,7 +5780,7 @@ ExecutePreparedThrowEffect:
 	sta.b wTemp02
 	sty.b wTemp00
 	phy
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	ply
 @lbl_C3344C:
 	sty.b wTemp03
@@ -5962,7 +5962,7 @@ DATA8_C334CD:
 	sta $02                                 ;C3359A
 	sty $00                                 ;C3359C
 	phy                                     ;C3359E
-	jsl $C62550                             ;C3359F
+	jsl PlayVisualEffect                             ;C3359F
 	ply                                     ;C335A3
 @lbl_C335A4:
 	sty $03                                 ;C335A4
@@ -6134,7 +6134,7 @@ func_C335FE:
 	sta $00                                 ;C336E8
 	lda #$01                                ;C336EA
 	sta $02                                 ;C336EC
-	jsl $C62550                             ;C336EE
+	jsl PlayVisualEffect                             ;C336EE
 	rts                                     ;C336F2
 	rep #$20                                ;C336F3
 	sep #$10                                ;C336F5
@@ -6419,7 +6419,7 @@ func_C335FE:
 	lda #$0C                                ;C3392B
 	sta $02                                 ;C3392D
 	phy                                     ;C3392F
-	jsl $C62550                             ;C33930
+	jsl PlayVisualEffect                             ;C33930
 	ply                                     ;C33934
 	pla                                     ;C33935
 	sta $00                                 ;C33936
@@ -6458,7 +6458,7 @@ DragonHerbThrowEffect:
 	lda #$09                                ;C33979
 	sta $02                                 ;C3397B
 	phy                                     ;C3397D
-	jsl $C62550                             ;C3397E
+	jsl PlayVisualEffect                             ;C3397E
 	ply                                     ;C33982
 	lda #$23                                ;C33983
 	sta $00                                 ;C33985

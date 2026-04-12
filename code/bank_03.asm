@@ -13349,7 +13349,7 @@ Jumptable_C3D555:
 	sta.b wTemp00
 	lda.b #$18
 	sta.b wTemp02
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	rts
 	sep #$20                                ;C3D59E
 	lda #$C3                                ;C3D5A0
@@ -13363,7 +13363,7 @@ Jumptable_C3D555:
 	sta $00                                 ;C3D5B4
 	lda #$13                                ;C3D5B6
 	sta $02                                 ;C3D5B8
-	jsl $C62550                             ;C3D5BA
+	jsl PlayVisualEffect                             ;C3D5BA
 	lda #$13                                ;C3D5BE
 	sta $00                                 ;C3D5C0
 	sta $01                                 ;C3D5C2
@@ -13389,7 +13389,7 @@ Jumptable_C3D555:
 	sta.b wTemp00
 	lda.b #$14
 	sta.b wTemp02
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	lda.b #$13
 	sta.b wTemp00
 	sta.b wTemp01
@@ -13411,7 +13411,7 @@ Jumptable_C3D555:
 	sep #$20 ;A->8
 	lda.b #$19
 	sta.b wTemp02
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	jsl.l GetCategoryShortcutItemIds
 	lda.b wTemp01
 	bmi @lbl_C3D63A
@@ -13433,7 +13433,7 @@ Jumptable_C3D555:
 	sta $00                                 ;C3D655
 	lda #$1A                                ;C3D657
 	sta $02                                 ;C3D659
-	jsl $C62550                             ;C3D65B
+	jsl PlayVisualEffect                             ;C3D65B
 	lda #$13                                ;C3D65F
 	sta $00                                 ;C3D661
 	lda #$05                                ;C3D663
@@ -13464,7 +13464,7 @@ Jumptable_C3D555:
 	sty.b wTemp00
 	ldy.b #$15
 	sty.b wTemp02
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	ldx.b #$13
 	stx.b wTemp00
 	jsl.l GetCharacterMapInfo
@@ -13639,7 +13639,7 @@ func_C3D772:
 	sta $00                                 ;C3D7D9
 	lda #$20                                ;C3D7DB
 	sta $02                                 ;C3D7DD
-	jsl $C62550                             ;C3D7DF
+	jsl PlayVisualEffect                             ;C3D7DF
 	lda #$F1                                ;C3D7E3
 	sta $00                                 ;C3D7E5
 	stz $01                                 ;C3D7E7
@@ -13668,7 +13668,7 @@ func_C3D772:
 	sep #$20                                ;C3D81E
 	lda #$1E                                ;C3D820
 	sta $02                                 ;C3D822
-	jsl $C62550                             ;C3D824
+	jsl PlayVisualEffect                             ;C3D824
 	jsl $C2433A                             ;C3D828
 	lda #$EA                                ;C3D82C
 	sta $00                                 ;C3D82E
@@ -13680,7 +13680,7 @@ func_C3D772:
 	sta $00                                 ;C3D83C
 	lda #$01                                ;C3D83E
 	sta $02                                 ;C3D840
-	jsl $C62550                             ;C3D842
+	jsl PlayVisualEffect                             ;C3D842
 	rts                                     ;C3D846
 	sep #$30 ;AXY->8
 	lda.b #$EB
@@ -13693,7 +13693,7 @@ func_C3D772:
 	sta.b wTemp00
 	lda.b #$1B
 	sta.b wTemp02
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	lda.b #$13
 	sta.b wTemp00
 	lda.b #$0A
@@ -13720,7 +13720,7 @@ func_C3D772:
 	sta $00                                 ;C3D892
 	lda #$1D                                ;C3D894
 	sta $02                                 ;C3D896
-	jsl $C62550                             ;C3D898
+	jsl PlayVisualEffect                             ;C3D898
 	rts                                     ;C3D89C
 	sep #$20 ;A->8
 	lda.b #$0A
@@ -13730,7 +13730,7 @@ func_C3D772:
 	sta.b wTemp00
 	lda.b #$1C
 	sta.b wTemp02
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	lda.b #$EC
 	sta.b wTemp00
 	stz.b wTemp01
@@ -13801,7 +13801,7 @@ func_C3D772:
 	sta.b wTemp00
 	lda.b #$23
 	sta.b wTemp02
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	lda.b #$C9
 	sta.b wTemp00
 	jsl.l func_C23BA6
@@ -13823,7 +13823,7 @@ func_C3D772:
 	sta $00                                 ;C3D975
 	lda #$1F                                ;C3D977
 	sta $02                                 ;C3D979
-	jsl $C62550                             ;C3D97B
+	jsl PlayVisualEffect                             ;C3D97B
 	ldy #$8400                              ;C3D97F
 	.db $00   ;C3D982
 	phy                                     ;C3D983
@@ -13870,7 +13870,7 @@ func_C3D772:
 	sta.b wTemp00
 	lda.b #$21
 	sta.b wTemp02
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	lda.b #$13
 	sta.b wTemp00
 	jsl.l func_C240D6
@@ -13918,7 +13918,7 @@ DATA8_C3DA1C:
 	sta.b wTemp00
 	lda.b #$33
 	sta.b wTemp02
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	lda.b #$EF
 	sta.b wTemp00
 	stz.b wTemp01
@@ -13929,7 +13929,7 @@ DATA8_C3DA1C:
 	sta $00                                 ;C3DA5D
 	lda #$22                                ;C3DA5F
 	sta $02                                 ;C3DA61
-	jsl $C62550                             ;C3DA63
+	jsl PlayVisualEffect                             ;C3DA63
 	jsl $C34153                             ;C3DA67
 	lda #$DE                                ;C3DA6B
 	sta $00                                 ;C3DA6D
@@ -14399,7 +14399,7 @@ func_C3DD85:
 	pha
 	lda.b #$16
 	sta.b wTemp02
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	pla
 	sta.b wTemp00
 	jsl.l HandleCharacterDeath
@@ -14411,7 +14411,7 @@ func_C3DD85:
 	sta $02                                 ;C3DDE6
 	phx                                     ;C3DDE8
 	phy                                     ;C3DDE9
-	jsl $C62550                             ;C3DDEA
+	jsl PlayVisualEffect                             ;C3DDEA
 	ply                                     ;C3DDEE
 	plx                                     ;C3DDEF
 	stx $00                                 ;C3DDF0
@@ -14473,7 +14473,7 @@ func_C3DD85:
 	lda #$1D                                ;C3DE56
 	sta $02                                 ;C3DE58
 	phx                                     ;C3DE5A
-	jsl $C62550                             ;C3DE5B
+	jsl PlayVisualEffect                             ;C3DE5B
 	plx                                     ;C3DE5F
 	stx $00                                 ;C3DE60
 	phx                                     ;C3DE62
@@ -14519,7 +14519,7 @@ func_C3DD85:
 	sta $02                                 ;C3DEB2
 	lda $00                                 ;C3DEB4
 	pha                                     ;C3DEB6
-	jsl $C62550                             ;C3DEB7
+	jsl PlayVisualEffect                             ;C3DEB7
 	pla                                     ;C3DEBB
 	sta $00                                 ;C3DEBC
 	jsl $C28305                             ;C3DEBE
@@ -14535,7 +14535,7 @@ func_C3DD85:
 	pha                                     ;C3DED5
 	lda #$1F                                ;C3DED6
 	sta $02                                 ;C3DED8
-	jsl $C62550                             ;C3DEDA
+	jsl PlayVisualEffect                             ;C3DEDA
 	lda $01,s                               ;C3DEDE
 	sta $00                                 ;C3DEE0
 	jsl $C210AC                             ;C3DEE2
@@ -14571,7 +14571,7 @@ func_C3DD85:
 	pha                                     ;C3DF21
 	lda #$15                                ;C3DF22
 	sta $02                                 ;C3DF24
-	jsl $C62550                             ;C3DF26
+	jsl PlayVisualEffect                             ;C3DF26
 	pla                                     ;C3DF2A
 	sta $00                                 ;C3DF2B
 	lda #$13                                ;C3DF2D
@@ -14585,7 +14585,7 @@ func_C3DD85:
 	pha
 	lda.b #$18
 	sta.b wTemp02
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	pla
 	sta.b wTemp00
 	jsl.l func_C27EB7
@@ -14595,7 +14595,7 @@ func_C3DD85:
 	pha                                     ;C3DF53
 	lda #$13                                ;C3DF54
 	sta $02                                 ;C3DF56
-	jsl $C62550                             ;C3DF58
+	jsl PlayVisualEffect                             ;C3DF58
 	lda $01,s                               ;C3DF5C
 	sta $00                                 ;C3DF5E
 	jsl $C210AC                             ;C3DF60
@@ -14636,7 +14636,7 @@ func_C3DD85:
 	sta $00                                 ;C3DFA9
 	lda #$1A                                ;C3DFAB
 	sta $02                                 ;C3DFAD
-	jsl $C62550                             ;C3DFAF
+	jsl PlayVisualEffect                             ;C3DFAF
 	pla                                     ;C3DFB3
 	sta $02                                 ;C3DFB4
 	lda #$ED                                ;C3DFB6
@@ -14654,7 +14654,7 @@ func_C3DD85:
 	sta.b wTemp00
 	lda.b #$23
 	sta.b wTemp02
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	lda.b #$05
 	sta.b wTemp00
 	lda.b #$09
@@ -14694,7 +14694,7 @@ func_C3DD85:
 	sta $00                                 ;C3E027
 	lda #$1B                                ;C3E029
 	sta $02                                 ;C3E02B
-	jsl $C62550                             ;C3E02D
+	jsl PlayVisualEffect                             ;C3E02D
 	rts                                     ;C3E031
 	sep #$20 ;A->8
 	lda.b wTemp00
@@ -14706,7 +14706,7 @@ func_C3DD85:
 	sta.b wTemp00
 	lda.b #$1C
 	sta.b wTemp02
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	lda.b #$35
 	sta.b wTemp00
 	stz.b wTemp01
@@ -14726,7 +14726,7 @@ func_C3DD85:
 	sta.b wTemp00
 	lda.b #$21
 	sta.b wTemp02
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	pla
 	sta.b wTemp00
 	jsl.l func_C240D6
@@ -14761,7 +14761,7 @@ func_C3E097:
 	sta $00                                 ;C3E0B3
 	lda #$00CF                              ;C3E0B5
 	sta $02                                 ;C3E0B8
-	jsl $C62550                             ;C3E0BA
+	jsl PlayVisualEffect                             ;C3E0BA
 	lda #$0105                              ;C3E0BE
 	sta $00                                 ;C3E0C1
 	jsl.l DisplayMessage

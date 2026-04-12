@@ -2127,7 +2127,10 @@ func_C62545:
 	plp
 	rtl
 
-func_C62550:
+; Plays visual effects for characters with effects enabled check.
+; Input: wTemp00 = character index, wTemp02 = effect type
+; Checks wLoading and wShowMessageEffects flags before displaying.
+PlayVisualEffect:
 	php
 	sep #$20 ;A->8
 	lda.l wLoading

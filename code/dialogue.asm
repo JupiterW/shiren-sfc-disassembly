@@ -1439,18 +1439,18 @@ func_C108B1:
 	sta $00                                 ;C10D69
 	ldy #$0003                              ;C10D6B
 	sty $02                                 ;C10D6E
-	jsl $C62550                             ;C10D70
+	jsl PlayVisualEffect                             ;C10D70
 	lda $03,s                               ;C10D74
 	sta $00                                 ;C10D76
 	ldy #$0082                              ;C10D78
 	sty $02                                 ;C10D7B
-	jsl $C62550                             ;C10D7D
+	jsl PlayVisualEffect                             ;C10D7D
 	lda $03,s                               ;C10D81
 	inc a                                   ;C10D83
 	sta $00                                 ;C10D84
 	ldy #$0082                              ;C10D86
 	sty $02                                 ;C10D89
-	jsl $C62550                             ;C10D8B
+	jsl PlayVisualEffect                             ;C10D8B
 	jsl $C625CE                             ;C10D8F
 	lda $03,s                               ;C10D93
 	inc a                                   ;C10D95
@@ -3635,7 +3635,7 @@ func_C12244:
 	sta.b wTemp00
 	ldy.b #$15
 	sty.b wTemp02
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	lda.w #$0004
 @lbl_C12258:
 	pha
@@ -3982,7 +3982,7 @@ func_C124BB:
 	stx.b wTemp00
 	lda.b #$81
 	sta.b wTemp02
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	SetEvent Event_Naoki_88 $03
 	SetEvent Event_Naoki $01
 	ldy.w #$076B
@@ -8026,7 +8026,7 @@ NPCScriptFunction_C14479:
 	sta $00                                 ;C14AA5
 	lda #$DF                                ;C14AA7
 	sta $02                                 ;C14AA9
-	jsl $C62550                             ;C14AAB
+	jsl PlayVisualEffect                             ;C14AAB
 	jsl $C62405                             ;C14AAF
 	lda #$17                                ;C14AB3
 	sta $00                                 ;C14AB5

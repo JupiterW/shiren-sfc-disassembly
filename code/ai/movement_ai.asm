@@ -1438,7 +1438,7 @@ func_C27226:
 	stx.b wTemp00
 	lda.b #$01
 	sta.b wTemp02
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	plp
 	rtl
 

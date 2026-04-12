@@ -1778,7 +1778,7 @@ HandleCharacterDeath:
 	sty.b wTemp00
 	lda.b #$05
 	sta.b wTemp02
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	lda.l $7E87BC
 	cmp.b #$17
 	bne @lbl_C20FC0
@@ -2229,7 +2229,7 @@ func_C2287C:
 	stx.b wTemp00
 	lda.b #$08
 	sta.b wTemp02
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	stz.b wTemp00
 	plp
 	rtl
@@ -2490,7 +2490,7 @@ func_C22A25:
 	sta.b wTemp02
 	phx
 	phy
-	call_savebank func_C62550
+	call_savebank PlayVisualEffect
 	ply
 	plx
 	rep #$20 ;A->16
@@ -3322,7 +3322,7 @@ func_C230F6:
 	sta.b wTemp00
 	lda.b #$0C
 	sta.b wTemp02
-	call_savebank func_C62550
+	call_savebank PlayVisualEffect
 	lda.b #$5E
 	sta.b wTemp00
 	stz.b wTemp01
@@ -5455,7 +5455,7 @@ func_C2402A:
 	sta.l $7E899A
 	lda.b #$01
 	sta.b wTemp02
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	plp
 	rtl
 
@@ -5589,7 +5589,7 @@ func_C2414A:
 	sta.b wTemp00
 	lda.b #$0C
 	sta.b wTemp02
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	jsl.l func_C62405
 	jsl.l func_C250F7
 	plp
@@ -5836,7 +5836,7 @@ func_C24167:
 	sta $00                                 ;C24351
 	lda #$0C                                ;C24353
 	sta $02                                 ;C24355
-	jsl $C62550                             ;C24357
+	jsl PlayVisualEffect                             ;C24357
 	plp                                     ;C2435B
 	rtl                                     ;C2435C
 	php                                     ;C2435D
@@ -7524,7 +7524,7 @@ func_C24F17:
 @lbl_C24FCD:
 	phx
 	phy
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	ply
 	plx
 	phx
@@ -7666,7 +7666,7 @@ func_C25092:
 	sta.b wTemp00
 	lda.b #$00
 	sta.b wTemp02
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	lda.b #$13
 	sta.b wTemp00
 	jsl.l func_C2785E
@@ -7717,7 +7717,7 @@ func_C250F8:
 	sta.b wTemp00
 	lda.b #$00
 	sta.b wTemp02
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	plp
 	rtl
 func_C25140:
@@ -8921,7 +8921,7 @@ func_C2598A:
 	ldy #$41                                ;C25AC8
 	sty $02                                 ;C25ACA
 	phx                                     ;C25ACC
-	jsl $C62550                             ;C25ACD
+	jsl PlayVisualEffect                             ;C25ACD
 	plx                                     ;C25AD1
 	sep #$20                                ;C25AD2
 	lda #$00                                ;C25AD4
@@ -10434,7 +10434,7 @@ func_C27ECA:
 	sta $00                                 ;C27EEE
 	lda #$16                                ;C27EF0
 	sta $02                                 ;C27EF2
-	jsl $C62550                             ;C27EF4
+	jsl PlayVisualEffect                             ;C27EF4
 	lda #$13                                ;C27EF8
 	sta $00                                 ;C27EFA
 	sta $01                                 ;C27EFC
@@ -10452,7 +10452,7 @@ func_C27ECA:
 	sta $00                                 ;C27F13
 	lda #$16                                ;C27F15
 	sta $02                                 ;C27F17
-	jsl $C62550                             ;C27F19
+	jsl PlayVisualEffect                             ;C27F19
 	lda #$13                                ;C27F1D
 	sta $00                                 ;C27F1F
 	sta $01                                 ;C27F21
@@ -10468,7 +10468,7 @@ func_C27ECA:
 	sta $00                                 ;C27F35
 	lda #$17                                ;C27F37
 	sta $02                                 ;C27F39
-	jsl $C62550                             ;C27F3B
+	jsl PlayVisualEffect                             ;C27F3B
 	lda #$13                                ;C27F3F
 	sta $00                                 ;C27F41
 	sta $01                                 ;C27F43
@@ -12803,7 +12803,7 @@ func_C29005:
 	lda.b #$01
 	sta.b wTemp02
 	phx
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	plx
 @lbl_C29048:
 	lda.l wCharType,x
@@ -12830,7 +12830,7 @@ func_C29005:
 	lda.b #$01
 	sta.b wTemp02
 	phx
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	plx
 @lbl_C29080:
 	plp
@@ -13269,7 +13269,7 @@ func_C2939C:
 	lda.b #$01
 	sta.b wTemp02
 	phx
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	plx
 	bra @lbl_C2941E
 @lbl_C293E1:
