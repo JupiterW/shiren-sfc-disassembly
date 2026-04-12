@@ -3317,8 +3317,8 @@ GetDungeonItemTableVariant:
 	lda.b wTemp00
 	cmp.b #$0A
 	bne @lbl_C357AF
-	jsl.l func_C38D18
-	jsl.l func_C38D72
+	jsl.l LoadRoomBoundsFromMapData
+	jsl.l LoadRoomDoorDataFromMapData
 	bra @lbl_C357D3
 @lbl_C357AF:
 	.db $A9,$01,$8F,$8E,$BE,$7E,$A9,$03,$8F,$66,$BE,$7E,$A9,$03,$8F,$70   ;C357AF
@@ -3359,10 +3359,10 @@ GetDungeonItemTableVariant:
 	jsl.l LoadFixedRoomLayout
 	plx
 	phx
-	jsl.l func_C38DD4
+	jsl.l PlaceFixedTerrainTiles
 	plx
 	phx
-	jsl.l func_C38E07
+	jsl.l PlaceFixedMapItems
 	plx
 	phx
 	jsl.l PlaceFixedStaircase
@@ -3396,7 +3396,7 @@ GetDungeonItemTableVariant:
 	jsl.l SpawnDungeonMonsters
 	jsl.l SpawnGuardNPCs
 	jsl.l PlaceShirenStartingItem
-	jsr.w func_C399F2
+	jsr.w PopulateFloor
 	jsr.w SpawnRoomItems
 	rts
 
@@ -9500,7 +9500,7 @@ Data_c38855:
 	asl $221E,x                             ;C38861
 	.db $22   ;C38864
 
-func_C38865:
+SetupShopFloor:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -10102,7 +10102,7 @@ PlaceFixedFloorItems:
 	plp
 	rtl
 
-func_C38D18:
+LoadRoomBoundsFromMapData:
 	php
 	rep #$30 ;AXY->16
 	jsl.l GetMapNum
@@ -10149,7 +10149,7 @@ func_C38D18:
 	plp
 	rtl
 
-func_C38D72:
+LoadRoomDoorDataFromMapData:
 	php
 	rep #$30 ;AXY->16
 	jsl.l GetMapNum
@@ -10205,7 +10205,7 @@ func_C38D72:
 	plp
 	rtl
 
-func_C38DD4:
+PlaceFixedTerrainTiles:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -10233,7 +10233,7 @@ func_C38DD4:
 	plp
 	rtl
 
-func_C38E07:
+PlaceFixedMapItems:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -11779,7 +11779,7 @@ SpawnFloorTraps:
 	plp
 	rts
 
-func_C3991D:
+PickFloorPopulationVariant:
 	php
 	sep #$30 ;AXY->8
 	jsl.l func_C62B58
@@ -11843,7 +11843,7 @@ func_C3991D:
 	plp
 	rts
 
-func_C3999D:
+SetSpawnRoomIndex:
 	php
 	sep #$30 ;AXY->8
 	lda.l $7EC175
@@ -11890,13 +11890,13 @@ func_C3999D:
 	sta.l $7EC175
 	bra @lbl_C399A6
 
-func_C399F2:
+PopulateFloor:
 	php
 	sep #$30 ;AXY->8
-	jsr.w func_C3991D
+	jsr.w PickFloorPopulationVariant
 	ldy.b wTemp00
 	beq @lbl_C39A0F
-	jsr.w func_C3999D
+	jsr.w SetSpawnRoomIndex
 	lda.l $7EC175
 	bmi @lbl_C39A0F
 	tya
@@ -11914,23 +11914,23 @@ func_C399F2:
 	rts
 
 Jumptable_C39A17:
-	.dw func_C39A1D
-	.dw func_C39A27
-	.dw func_C39A31
+	.dw PopulateFloorVariantA
+	.dw PopulateFloorVariantB
+	.dw PopulateFloorVariantC
 
-func_C39A1D:
+PopulateFloorVariantA:
 	jsr.w SpawnFloorNPCs
 	jsr.w SpawnFloorItemsInRoom
 	jsr.w SpawnFloorTraps
 	rts
 
-func_C39A27:
+PopulateFloorVariantB:
 	jsr $9797                               ;C39A27
 	jsr $988B                               ;C39A2A
 	jsr $98C4                               ;C39A2D
 	rts                                     ;C39A30
 	
-func_C39A31:
+PopulateFloorVariantC:
 	jsr $982D                               ;C39A31
 	jsr $988B                               ;C39A34
 	jsr $98C4                               ;C39A37
