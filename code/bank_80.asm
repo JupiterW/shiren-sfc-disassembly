@@ -5503,7 +5503,7 @@ func_80B192:
 	bmi func_80B18A
 	sta.b w7f0000
 @lbl_80B1AD:
-	jsl.l func_C36698
+	jsl.l GetRoomBounds
 	lda.b w7f0000
 	tax
 	and.w #$00FF

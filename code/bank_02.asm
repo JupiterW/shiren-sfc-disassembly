@@ -3319,7 +3319,7 @@ func_C230F6:
 	lda.w $894A
 	and.b #$FD
 	sta.w $894A
-	call_savebank func_C35E1B
+	call_savebank MarkAllEntitiesDirty
 	rep #$20 ;A->16
 	lda.w $89AD
 	sta.w $89A2
@@ -5513,7 +5513,7 @@ func_C240A7:
 	sta.l wCharRemainingBlindlessTurns,x
 	cpx.b #$13
 	bne @lbl_C240BA
-	jsl.l func_C35E1B
+	jsl.l MarkAllEntitiesDirty
 @lbl_C240BA:
 	plp
 	rtl
@@ -5715,7 +5715,7 @@ func_C24167:
 	lda.l $7E894A
 	ora.b #$02
 	sta.l $7E894A
-	jsl.l func_C35E1B
+	jsl.l MarkAllEntitiesDirty
 	plp
 	rtl
 @lbl_C24252:
@@ -9819,7 +9819,7 @@ func_C27A19:
 	sta.b wTemp00
 	stz.b wTemp01
 	phy
-	jsl.l func_C36549
+	jsl.l GetDoorCandidate
 	ply
 	lda.w wCharTargetXPos,y
 	cmp.b wTemp00
@@ -10005,7 +10005,7 @@ func_C27B6A:
 	and.b #$0F
 	sta.b wTemp00
 	phx
-	jsl.l func_C3653C
+	jsl.l GetRoomDoorCount
 	plx
 	lda.b wTemp00
 	beq @lbl_C27B8C
@@ -10024,7 +10024,7 @@ func_C27B6A:
 	stz.b wTemp01
 	sta.b wTemp00
 	phx
-	jsl.l func_C36549
+	jsl.l GetDoorCandidate
 	plx
 	lda.b wTemp00
 	sta.l wCharTargetXPos,x
@@ -10047,7 +10047,7 @@ func_C27B6A:
 	and.b #$0F
 	sta.b wTemp00
 	phx
-	jsl.l func_C36549
+	jsl.l GetDoorCandidate
 	plx
 	lda.b wTemp00
 	cmp.l wCharXPos,x
@@ -11071,7 +11071,7 @@ func_C283A0:
 	lda.l $7E8975
 	ora.b #$01
 	sta.l $7E8975
-	jsl.l func_C35E1B
+	jsl.l MarkAllEntitiesDirty
 	plp
 	rtl
 	.db $08   ;C283B3
@@ -11095,7 +11095,7 @@ func_C283D2:
 	sep #$20 ;A->8
 	lda.b wTemp00
 	sta.l $7E8983
-	jsl.l func_C35E1B
+	jsl.l MarkAllEntitiesDirty
 	plp
 	rtl
 	.db $08   ;C283E1
@@ -12870,7 +12870,7 @@ func_C29082:
 	jmp $91D9                               ;C290A2
 @lbl_C290A5:
 	sta.b wTemp00
-	jsl.l func_C36698
+	jsl.l GetRoomBounds
 	rep #$20 ;A->16
 	lda.w #$0000
 	pha

@@ -3685,7 +3685,7 @@ FindOccupiedItemSlot:
 	sbc.w $BE62
 	ldx.w #$0010
 @lbl_C35B27:
-	cmp.l DATA8_C35DFB,x
+	cmp.l SurroundingTileOffsets,x
 	beq @lbl_C35B33
 	dex
 	dex
@@ -3928,7 +3928,7 @@ PlaceShirenOnFloor:
 	rep #$20 ;A->16
 	lda.w $BE62
 	clc
-	adc.l DATA8_C35DFB,x
+	adc.l SurroundingTileOffsets,x
 	tay
 	sep #$20 ;A->8
 	lda.w $A95F,y
@@ -4033,7 +4033,7 @@ PlaceShirenOnFloor:
 @lbl_C35DB6:
 	stz.b wTemp01
 	jsl.l func_C62AEE
-	jsl.l func_C35EF8
+	jsl.l ScanItemVisibility
 	lda.b #$00
 	xba
 	lda.l $7EC176
@@ -4067,7 +4067,7 @@ func_C35DE5:
 	plp
 	rtl
 
-DATA8_C35DFB:
+SurroundingTileOffsets:
 	.db $BF,$FF,$C0,$FF,$C1,$FF,$FF,$FF,$00,$00,$01,$00,$3F,$00,$40,$00
 	.db $41,$00
 
@@ -4079,7 +4079,7 @@ DATA8_C35E0E:
 	.db $3B,$01,$3C,$01,$3D,$01,$3E,$01
 	.db $3F,$01,$40,$01
 
-func_C35E1B:
+MarkAllEntitiesDirty:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -4201,7 +4201,7 @@ func_C35E5A:
 	plp                                     ;C35EF6
 	rtl                                     ;C35EF7
 
-func_C35EF8:
+ScanItemVisibility:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -4262,7 +4262,7 @@ func_C35EF8:
 	sta.w $B41B,x
 	bra @lbl_C35F26
 
-func_C35F6D:
+MarkAllItemsDirty:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -4293,7 +4293,7 @@ func_C35F6D:
 	sta.w $B41B,x
 	bra @lbl_C35F86
 
-func_C35FA2:
+MarkItemsForPickup:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -5026,7 +5026,7 @@ UNREACH_C36488:
 	.db $08,$E2,$30,$A0,$00,$A6,$00,$BF,$66,$C1,$7E,$89,$08,$F0,$01,$C8   ;C36528
 	.db $84,$00,$28,$6B                   ;C36538  
 
-func_C3653C:
+GetRoomDoorCount:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -5035,7 +5035,7 @@ func_C3653C:
 	plp
 	rtl
 
-func_C36549:
+GetDoorCandidate:
 	php
 	sep #$30 ;AXY->8
 	lda.b wTemp00
@@ -5131,7 +5131,7 @@ func_C36549:
 	rtl                                     ;C365EF
 .INDEX 8
 
-func_C365F0:
+GetStaircaseCoords:
 	php
 	sep #$30 ;AXY->8
 	bankswitch 0x7E
@@ -5228,7 +5228,7 @@ func_C365F0:
 	plp                                     ;C36696
 	rtl                                     ;C36697
 
-func_C36698:
+GetRoomBounds:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -5315,7 +5315,7 @@ func_C366F6:
 	lda.b #$FF
 	sta.w $BE64
 	jsl.l PlaceShirenOnFloor
-	jsl.l func_C35E1B
+	jsl.l MarkAllEntitiesDirty
 	plp 
 	rtl
 

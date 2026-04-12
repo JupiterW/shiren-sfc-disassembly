@@ -956,7 +956,7 @@ func_C6080E:
 	lda.l wLoading
 	bne @lbl_C608A7
 	jsl.l func_C06505
-	jsl.l func_C35E1B
+	jsl.l MarkAllEntitiesDirty
 	jsl.l func_80E7DF
 	jsl.l func_C0654D
 @lbl_C608A7:

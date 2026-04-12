@@ -1738,7 +1738,7 @@ SightHerbUseEffect:
 	lda.w #$0013
 	sta.b wTemp00
 	jsl.l func_C240A7
-	jsl.l func_C35FA2
+	jsl.l MarkItemsForPickup
 	rts
 HugeOnigiriUseEffect:
 	rep #$30                                ;C31579
@@ -2030,7 +2030,7 @@ TrapScrollUseEffect:
 	lda.l $7E8975                       ;C317E3
 	bit.b #$01                          ;C317E7
 	beq @lbl_C317EF                     ;C317E9
-	jsl.l func_C35FA2                   ;C317EB
+	jsl.l MarkItemsForPickup                   ;C317EB
 @lbl_C317EF:
 	rts                                 ;C317EF
 	rep #$20                                ;C317EF
@@ -2065,8 +2065,8 @@ LightScrollUseEffect:
 	sta.b wTemp00
 	jsl.l DisplayMessage
 	jsl.l func_C35E5A
-	jsl.l func_C35F6D
-	jsl.l func_C35EF8
+	jsl.l MarkAllItemsDirty
+	jsl.l ScanItemVisibility
 	bra @lbl_C31849
 @lbl_C31849:
 	sep #$20 ;A->8

@@ -1597,7 +1597,31 @@ wItemUnidentifiedName:
 wItemCustomNamesBuffer
 	dsb 20*8
 
-. ds 0xbe66 - 0x935e
+. ds 0xbe5f - 0x935e
+
+;be5f
+wEntityStateClearDone:
+    db
+
+;be60
+wItemVisibilityScanDone:
+    db
+
+;be61
+wEntityRedrawDone:
+    db
+
+;be62
+wShirenTileIndex:
+    dw
+
+;be64
+wCurrentTileType:
+    db
+
+;be65
+wPlacementErrorFlag:
+    db
 
 ;be66
 wRoomLeft:

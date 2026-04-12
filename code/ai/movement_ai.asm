@@ -499,7 +499,7 @@ func_C262D5:
 	bne @lbl_C26568
 	sta.b wTemp00
 	phx
-	jsl.l func_C365F0
+	jsl.l GetStaircaseCoords
 	plx
 	lda.b wTemp00
 	bpl @lbl_C2659C
