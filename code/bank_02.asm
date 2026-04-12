@@ -10864,7 +10864,7 @@ func_C2816C:
 	plx                                     ;C3822D
 	stx $00                                 ;C3822E
 	phx                                     ;C38230
-	jsl $C282EB                             ;C38231
+	jsl ShowDamageEffect                             ;C38231
 	plx                                     ;C38235
 	stx $00                                 ;C38236
 	phx                                     ;C38238
@@ -10914,7 +10914,7 @@ func_C2816C:
 @lbl_C38292:
 	stx $00                                 ;C38292
 	phx                                     ;C38294
-	jsl $C282EB                             ;C38295
+	jsl ShowDamageEffect                             ;C38295
 	plx                                     ;C38299
 @lbl_C3829A:
 	stx $00                                 ;C3829A
@@ -10964,7 +10964,10 @@ func_C2816C:
 	.db $02   ;C382E8
 .ACCU 8
 
-func_C282EB:
+; Displays visual damage effect (numbers popping up on screen).
+; Wrapper that calls the main damage display routine with effect type 5.
+; Input: wTemp00 = character index
+ShowDamageEffect:
 	php
 	sep #$20 ;A->8
 	lda.b #$05
@@ -11012,7 +11015,7 @@ func_C282EB:
 	sep #$30                                ;C3834F
 	ldx $00                                 ;C38351
 	phx                                     ;C38353
-	jsl $C282EB                             ;C38354
+	jsl ShowDamageEffect                             ;C38354
 	plx                                     ;C38358
 	stx $00                                 ;C38359
 	phx                                     ;C3835B
@@ -12049,7 +12052,7 @@ func_C289F5:
 	sta $7E8781,x                           ;C38A71
 	stx $00                                 ;C38A75
 	phx                                     ;C38A77
-	jsl $C282EB                             ;C38A78
+	jsl ShowDamageEffect                             ;C38A78
 	plx                                     ;C38A7C
 	stx $00                                 ;C38A7D
 	phx                                     ;C38A7F

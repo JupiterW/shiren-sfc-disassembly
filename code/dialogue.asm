@@ -265,7 +265,7 @@ func_C10189:
 	ply                                     ;C102CD
 	sty $00                                 ;C102CE
 	phy                                     ;C102D0
-	jsl $C282EB                             ;C102D1
+	jsl ShowDamageEffect                             ;C102D1
 	ply                                     ;C102D5
 	sty $00                                 ;C102D6
 	jsl HandleCharacterDeath                             ;C102D8
@@ -347,7 +347,7 @@ func_C10189:
 	ply                                     ;C1037F
 	sty $00                                 ;C10380
 	phy                                     ;C10382
-	jsl $C282EB                             ;C10383
+	jsl ShowDamageEffect                             ;C10383
 	ply                                     ;C10387
 	sty $00                                 ;C10388
 	jsl HandleCharacterDeath                             ;C1038A
@@ -2126,7 +2126,7 @@ func_C111EA:
 	pla                                     ;C11411
 	sta $00                                 ;C11412
 	pha                                     ;C11414
-	jsl $C282EB                             ;C11415
+	jsl ShowDamageEffect                             ;C11415
 	pla                                     ;C11419
 	sta $00                                 ;C1141A
 	jsl HandleCharacterDeath                             ;C1141C
@@ -2153,7 +2153,7 @@ func_C111EA:
 	pla                                     ;C11452
 	sta $00                                 ;C11453
 	pha                                     ;C11455
-	jsl $C282EB                             ;C11456
+	jsl ShowDamageEffect                             ;C11456
 	pla                                     ;C1145A
 	sta $00                                 ;C1145B
 	jsl HandleCharacterDeath                             ;C1145D
@@ -2180,7 +2180,7 @@ func_C111EA:
 	pla                                     ;C11492
 	sta $00                                 ;C11493
 	pha                                     ;C11495
-	jsl $C282EB                             ;C11496
+	jsl ShowDamageEffect                             ;C11496
 	pla                                     ;C1149A
 	sta $00                                 ;C1149B
 	jsl HandleCharacterDeath                             ;C1149D
@@ -2206,7 +2206,7 @@ func_C111EA:
 	pla                                     ;C114D1
 	sta $00                                 ;C114D2
 	pha                                     ;C114D4
-	jsl $C282EB                             ;C114D5
+	jsl ShowDamageEffect                             ;C114D5
 	pla                                     ;C114D9
 	sta $00                                 ;C114DA
 	jsl HandleCharacterDeath                             ;C114DC

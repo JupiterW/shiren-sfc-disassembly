@@ -14151,7 +14151,7 @@ DATA8_C3DA1C:
 	lda $01,s                               ;C3DC01
 	sta $00                                 ;C3DC03
 	phx                                     ;C3DC05
-	jsl $C282EB                             ;C3DC06
+	jsl ShowDamageEffect                             ;C3DC06
 	plx                                     ;C3DC0A
 	lda $01,s                               ;C3DC0B
 	sta $00                                 ;C3DC0D
@@ -14266,7 +14266,7 @@ DATA8_C3DA1C:
 	lda.b wTemp01,s
 	sta.b wTemp00
 	phx
-	jsl.l func_C282EB
+	jsl.l ShowDamageEffect
 	plx
 	lda.b wTemp01,s
 	sta.b wTemp00
@@ -14300,7 +14300,7 @@ DATA8_C3DA1C:
 	pla                                     ;C3DD17
 	sta $00                                 ;C3DD18
 	pha                                     ;C3DD1A
-	jsl $C282EB                             ;C3DD1B
+	jsl ShowDamageEffect                             ;C3DD1B
 	pla                                     ;C3DD1F
 	sta $00                                 ;C3DD20
 	jsl HandleCharacterDeath                             ;C3DD22
@@ -14370,7 +14370,7 @@ func_C3DD85:
 	lda $02,s                               ;C3DD96
 	sta $00                                 ;C3DD98
 	phx                                     ;C3DD9A
-	jsl $C282EB                             ;C3DD9B
+	jsl ShowDamageEffect                             ;C3DD9B
 	plx                                     ;C3DD9F
 	lda $02,s                               ;C3DDA0
 	sta $00                                 ;C3DDA2
@@ -14457,7 +14457,7 @@ func_C3DD85:
 @lbl_C3DE38:
 	stx $00                                 ;C3DE38
 	phx                                     ;C3DE3A
-	jsl $C282EB                             ;C3DE3B
+	jsl ShowDamageEffect                             ;C3DE3B
 	plx                                     ;C3DE3F
 	stx $00                                 ;C3DE40
 	jsl HandleCharacterDeath                             ;C3DE42
@@ -14484,7 +14484,7 @@ func_C3DD85:
 	beq @lbl_C3DE7D                         ;C3DE6C
 	stx $00                                 ;C3DE6E
 	phx                                     ;C3DE70
-	jsl $C282EB                             ;C3DE71
+	jsl ShowDamageEffect                             ;C3DE71
 	plx                                     ;C3DE75
 	stx $00                                 ;C3DE76
 	jsl HandleCharacterDeath                             ;C3DE78
@@ -14543,7 +14543,7 @@ func_C3DD85:
 	lda $01,s                               ;C3DEE8
 	sta $00                                 ;C3DEEA
 	phx                                     ;C3DEEC
-	jsl $C282EB                             ;C3DEED
+	jsl ShowDamageEffect                             ;C3DEED
 	plx                                     ;C3DEF1
 	lda #$B0                                ;C3DEF2
 	sta $00                                 ;C3DEF4
