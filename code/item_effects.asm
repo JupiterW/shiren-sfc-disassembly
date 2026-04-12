@@ -2377,7 +2377,7 @@ WeaponUseEffect:
 func_C31AB4:
 	sep #$30 ;AXY->8
 	ldx.w wItemType,y
-	lda.l DATA8_C342A3,x
+	lda.l ItemBaseStatByType,x
 	clc
 	adc.w wItemModification1,y
 	ldx.b wTemp00
@@ -2465,7 +2465,7 @@ ShieldUseEffect:
 func_C31B5C:
 	sep #$30 ;AXY->8
 	ldx.w wItemType,y
-	lda.l DATA8_C342A3,x
+	lda.l ItemBaseStatByType,x
 	clc
 	adc.w wItemModification1,y
 	ldx.b wTemp00

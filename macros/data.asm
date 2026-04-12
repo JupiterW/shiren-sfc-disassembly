@@ -101,6 +101,17 @@
 	.redef fuseAbilityExpectedBit fuseAbilityExpectedBit * 2
 .endm
 
+; 1: item constant
+; 2: base attack (weapons) or defense (shields) stat value
+.macro item_base_stat
+	.if \1 != itemTableExpected
+		.printt "item_base_stat order mismatch"
+		.fail
+	.endif
+	.db \2
+	.redef itemTableExpected itemTableExpected + 1
+.endm
+
 .define monsterMeatExpectedFamily 0
 .define monsterMeatExpectedRank 1
 

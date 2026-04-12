@@ -920,7 +920,7 @@ GetItemDisplayInfo:
 	beq @lbl_C30773
 	lda.l ItemCategoryByType,x
 	sta.b wTemp00
-	lda.l DATA8_C342A3,x
+	lda.l ItemBaseStatByType,x
 	clc
 	adc.b wTemp02
 	sta.b wTemp04
@@ -2293,85 +2293,55 @@ ItemCategoryByType:
 		.db CATEGORY_NONE
 	.endr
 
-DATA8_C342A3:
-	.db $02,$04
-	.db $05
-	.db $06
-	.db $07
-	.db $08
-	.db $0C,$04
-	.db $01
-	.db $02,$04
-	.db $03
-	.db $05,$05,$1E,$32
-	.db $00
-	.db $00,$00,$00,$00,$00
-	.db $02,$04
-	.db $00,$03
-	.db $07
-	.db $07,$0C,$05
-	.db $0A
-	.db $05,$05,$03,$1E
-	.db $03,$03
-	.db $1E,$00,$00
-	.db $00,$00
-	.db $00
-	.db $00,$00
-	.db $00,$00
-	.db $00
-	.db $00,$00,$00,$00,$00,$00,$00,$00
-	.db $00
-	.db $00,$00,$00
-	.db $00
-	.db $00,$00,$00
-	.db $00
-	.db $00,$00,$00,$00,$00,$00,$00,$00
-	.db $00,$00,$00,$00,$00,$00,$00,$00
-	.db $00,$00,$00,$00,$00
-	.db $00,$00,$00
-	.db $00,$00,$00,$00,$00
-	.db $00
-	.db $00
-	.db $00
-	.db $00,$00,$00,$00,$00
-	.db $00
-	.db $00
-	.db $00
-	.db $00
-	.db $00,$00
-	.db $00,$00,$00,$00,$00,$00,$00,$00
-	.db $00,$00,$00,$00,$00,$00,$00,$00
-	.db $00
-	.db $00
-	.db $00
-	.db $00,$00,$00,$00,$00,$00
-	.db $00
-	.db $00
-	.db $00,$00,$00,$00,$00,$00,$00,$00
-	.db $00,$00,$00,$00,$00,$00,$00,$00
-	.db $00
-	.db $00
-	.db $00,$00,$00,$00,$00,$00
-	.db $00,$00
-	.db $00,$00,$00,$00,$00,$00,$00,$00
-	.db $00,$00,$00,$00,$00
-	.db $00,$00
-	.db $00,$00,$00,$00
-	.db $00,$00
-	.db $00,$00
-	.db $00,$00
-	.db $00,$00,$00,$00,$00
-	.db $00
-	.db $00
-	.db $00,$00
-	.db $00,$00,$00,$00,$00,$00,$00,$00
-	.db $00,$00,$00,$00,$00,$00,$00,$00
-	.db $00,$00,$00,$00,$00,$00,$00,$00
-	.db $00,$00,$00,$00,$00
-	.db $00
-	.db $00,$00,$00,$00
-	.db $00
-	.db $00,$00
+; Base attack (weapons) or defense (shields) stat for each item type, before +N modifier.
+; Non-weapon/shield types are 0 (usables, scrolls, pots, etc. have no base stat).
+ItemBaseStatByType:
+	; Weapons ($00-$0F): base attack stat
+	start_item_table Item_Cudgel
+	item_base_stat Item_Cudgel,        2
+	item_base_stat Item_Nagamaki,      4
+	item_base_stat Item_BufusCleaver,  5
+	item_base_stat Item_Katana,        6
+	item_base_stat Item_Dragonkiller,  7
+	item_base_stat Item_Mastersword,   8
+	item_base_stat Item_KabrasBlade,  12
+	item_base_stat Item_SickleSlayer,  4
+	item_base_stat Item_Pickaxe,       1
+	item_base_stat Item_HomingBlade,   2
+	item_base_stat Item_MinotaursAxe,  4
+	item_base_stat Item_RazorWind,     3
+	item_base_stat Item_CyclopsKiller, 5
+	item_base_stat Item_DrainBuster,   5
+	item_base_stat Item_Firebrand,    30
+	item_base_stat Item_KabraReborn,  50
+	; Arrows ($10-$15): no base stat
+	.rept 6
+		.db 0
+	.endr
+	; Shields ($16-$27): base defense stat
+	start_item_table Item_HideShield
+	item_base_stat Item_HideShield,        2
+	item_base_stat Item_Bronzeward,        4
+	item_base_stat Item_AntiPoisonShield,  0
+	item_base_stat Item_WoodShield,        3
+	item_base_stat Item_IronShield,        7
+	item_base_stat Item_Dragonward,        7
+	item_base_stat Item_Windshield,       12
+	item_base_stat Item_SpikedWard,        5
+	item_base_stat Item_ArmorWard,        10
+	item_base_stat Item_EchoShield,        5
+	item_base_stat Item_EvasiveShield,     5
+	item_base_stat Item_FancyShield,       3
+	item_base_stat Item_FragileShield,    30
+	item_base_stat Item_BlastShield,       3
+	item_base_stat Item_WalrusShield,      3
+	item_base_stat Item_Stormward,        30
+	item_base_stat Item_26,                0
+	item_base_stat Item_27,                0
+	; All remaining types ($28-$E7): no base stat
+	.rept 192
+		.db 0
+	.endr
 
 DATA8_C3438B:
 	.db $80,$90
