@@ -12717,7 +12717,7 @@ func_C28F4F:
 	stx.b wTemp02
 	lda.w #$007E
 	sta.b wTemp04
-	jsl.l func_C3E2AB
+	jsl.l SaveStreamWriteBlock
 	plp
 	rtl
 
@@ -12731,7 +12731,7 @@ func_C28F86:
 	stx.b wTemp02
 	lda.b #$7E
 	sta.b wTemp04
-	jsl.l func_C3E2DB
+	jsl.l SaveStreamReadBlock
 	bankswitch 0x7E
 	ldx.w #$036F
 	ldy.w #$002B
@@ -12771,7 +12771,7 @@ func_C28FBC:
 	ora.b #$10
 	sta.b wTemp00
 	stz.b wTemp01
-	jsl.l func_C3E1D5
+	jsl.l SaveStreamAdvance
 	lda.b #$02
 	sta.l $7E894E
 	plp

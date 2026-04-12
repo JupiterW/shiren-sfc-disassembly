@@ -1433,7 +1433,7 @@ SerializeItemData:
 	stx.b wTemp02
 	lda.b #$7E
 	sta.b wTemp04
-	jsl.l func_C3E2AB
+	jsl.l SaveStreamWriteBlock
 	plp
 	rtl
 
@@ -1447,7 +1447,7 @@ DeserializeItemData:
 	stx.b wTemp02
 	lda.b #$7E
 	sta.b wTemp04
-	jsl.l func_C3E2DB
+	jsl.l SaveStreamReadBlock
 	plp
 	rtl
 
@@ -14856,13 +14856,13 @@ func_C3E097:
 
 func_C3E0CD:
 	sep #$30 ;AXY->8
-	jsl.l func_C3E178
+	jsl.l SaveReadByte
 	lda.b wTemp00
 	beq @lbl_C3E0DC
 	bmi @lbl_C3E0DC
 	brl func_C3E104
 @lbl_C3E0DC:
-	jsl.l func_C3E768
+	jsl.l ReadSaveSlotFlags
 	lda.b wTemp00
 	cmp.b #$FF
 	bne @lbl_C3E100
@@ -14890,13 +14890,13 @@ func_C3E104:
 func_C3E11A:
 	php
 	rep #$20 ;A->16
-	jsl.l func_C3E7DA
+	jsl.l ReadSaveField0A
 	inc.b wTemp00
 	bne @lbl_C3E12A
 ;C3E125
 	.db $A9,$FF,$FF,$85,$00
 @lbl_C3E12A:
-	jsl.l func_C3E7E6
+	jsl.l WriteSaveField0A
 	plp
 	rtl
 
@@ -14941,7 +14941,7 @@ DemoTable:
 	.dl Demo5
 	.dl Demo6
 
-func_C3E16A:
+SaveWriteByte:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -14951,7 +14951,7 @@ func_C3E16A:
 	plp
 	rtl
 
-func_C3E178:
+SaveReadByte:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -14996,7 +14996,7 @@ func_C3E178:
 	plp
 	rtl
 
-func_C3E1C7:
+SaveStreamInit:
 	php
 	rep #$20 ;A->16
 	lda.w #$0004
@@ -15006,7 +15006,7 @@ func_C3E1C7:
 	plp
 	rtl
 
-func_C3E1D5:
+SaveStreamAdvance:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -15089,7 +15089,7 @@ func_C3E1D5:
 	plp
 	rtl
 
-func_C3E26C:
+SaveStreamReadNext:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -15130,7 +15130,7 @@ func_C3E26C:
 	plp
 	rtl
 
-func_C3E2AB:
+SaveStreamWriteBlock:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -15161,7 +15161,7 @@ func_C3E2AB:
 	plp
 	rtl
 
-func_C3E2DB:
+SaveStreamReadBlock:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -15630,7 +15630,7 @@ func_C3E571:
 @lbl_C3E5AB:
 	sta.b wTemp00
 	phy
-	jsl.l func_C3E66B
+	jsl.l LoadSaveBlockPtr
 	ply
 	sty.b wTemp00
 	jsl.l GetDemoScriptPtr
@@ -15647,7 +15647,7 @@ func_C3E571:
 	plp
 	rtl
 
-func_C3E5CD:
+WriteValidationString:
 	php
 	sep #$20 ;A->8
 	lda.b w00b4
@@ -15671,9 +15671,9 @@ func_C3E5CD:
 SaveValidationString:
 	.db $56,$41,$4C,$49,$44,$00
 
-func_C3E5F2:
+ValidateSaveBlock:
 	php
-	jsl.l func_C3E66B
+	jsl.l LoadSaveBlockPtr
 	sep #$20 ;A->8
 	lda.b w00b4
 	pha
@@ -15691,7 +15691,7 @@ func_C3E5F2:
 	iny
 	bra @lbl_C3E606
 @lbl_C3E615:
-	jsl.l func_C3E768
+	jsl.l ReadSaveSlotFlags
 	lda.b wTemp00
 	cmp.b #$FF
 	beq @lbl_C3E625
@@ -15704,23 +15704,23 @@ func_C3E5F2:
 	plp
 	rtl
 
-func_C3E629:
+LoadOrEraseSaveBlock:
 	php
 	sep #$30 ;AXY->8
 	lda.b wTemp00
 	pha
-	jsl.l func_C3E5F2
+	jsl.l ValidateSaveBlock
 	pla
 	ldy.b wTemp00
 	bne @lbl_C3E642
 	sta.b wTemp00
-	jsl.l func_C3E706
+	jsl.l EraseSaveBlock
 	stz.b wTemp00
 	plp
 	rtl
 @lbl_C3E642:
 	sta.b wTemp00
-	jsl.l func_C3E66B
+	jsl.l LoadSaveBlockPtr
 	rep #$10 ;XY->16
 	ldy.w #$0367
 	lda.b #$00
@@ -15732,7 +15732,7 @@ func_C3E629:
 	plp
 	rtl
 
-func_C3E658:
+WriteSaveBlockChecksum:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -15746,7 +15746,7 @@ func_C3E658:
 	plp
 	rtl
 
-func_C3E66B:
+LoadSaveBlockPtr:
 	php
 	sep #$30 ;AXY->8
 	lda.b wTemp00
@@ -15772,36 +15772,36 @@ SaveBlockAddrTable:
 SaveBlockBankTable:
 	.db $B0,$58,$7B,$B1,$58,$7B,$B2       ;C3E691
 
-func_C3E698:
+GetCurrentSaveSlot:
 	php
 	lda.b w00b5
 	sta.b wTemp00
 	plp
 	rtl
 
-func_C3E69F:
+SetSaveBlockPtrAndRead:
 	sep #$30 ;AXY->8
 	lda.b wTemp00
-	jsl.l func_C3E66B
+	jsl.l LoadSaveBlockPtr
 	jsl.l func_C3E0CD
 
-func_C3E6AB:
+InitAndWriteSaveBlock:
 	sep #$30 ;AXY->8
 	lda.b wTemp00
 	pha
-	jsl.l func_C3E66B
+	jsl.l LoadSaveBlockPtr
 	pla
 	sta.b wTemp00
-	jsl.l func_C3E1C7
+	jsl.l SaveStreamInit
 	lda.b #$FF
 	sta.b wTemp00
-	jsl.l func_C3E16A
-	jsl.l func_C3E6D3
-	jsl.l func_C3E5CD
-	jsl.l func_C3E658
+	jsl.l SaveWriteByte
+	jsl.l ClearSaveBlockFields
+	jsl.l WriteValidationString
+	jsl.l WriteSaveBlockChecksum
 	jsl.l func_C3E0CD
 
-func_C3E6D3:
+ClearSaveBlockFields:
 	php
 	sep #$20 ;A->8
 	lda.b #$FF
@@ -15809,25 +15809,25 @@ func_C3E6D3:
 	sta.b wTemp01
 	sta.b wTemp02
 	sta.b wTemp03
-	jsl.l func_C3E77A
+	jsl.l WriteSaveSlotFlags
 	stz.b wTemp00
 	stz.b wTemp01
-	jsl.l func_C3E7E6
+	jsl.l WriteSaveField0A
 	lda.b #$17
 	sta.b wTemp00
 	stz.b wTemp02
 	jsl.l func_C3E826
 	stz.b wTemp00
-	jsl.l func_C3E7D1
+	jsl.l WriteSaveField0C
 	lda.b #$01
 	sta.b wTemp00
-	jsl.l func_C3E80B
+	jsl.l WriteSaveField0F
 	plp
 	rtl
 
-func_C3E706:
+EraseSaveBlock:
 	php
-	jsl.l func_C3E66B
+	jsl.l LoadSaveBlockPtr
 	sep #$20 ;A->8
 	lda.b w00b4
 	pha
@@ -15848,7 +15848,7 @@ func_C3E706:
 	plp
 	rtl
 
-func_C3E72B:
+CopySaveBlock:
 	php
 	rep #$20 ;A->16
 	sep #$10 ;XY->8
@@ -15861,14 +15861,14 @@ func_C3E72B:
 	ldy.b wTemp00
 	stx.b wTemp00
 	phy
-	jsl.l func_C3E66B
+	jsl.l LoadSaveBlockPtr
 	ply
 	lda.b w00b2
 	ldx.b w00b4
 	sty.b wTemp00
 	pha
 	phx
-	jsl.l func_C3E66B
+	jsl.l LoadSaveBlockPtr
 	plx
 	pla
 	sta.b wTemp04
@@ -15884,7 +15884,7 @@ func_C3E72B:
 	plp
 	rtl
 
-func_C3E768:
+ReadSaveSlotFlags:
 	php
 	rep #$30 ;AXY->16
 	ldy.w #$0006
@@ -15897,7 +15897,7 @@ func_C3E768:
 	plp
 	rtl
 
-func_C3E77A:
+WriteSaveSlotFlags:
 	php
 	rep #$30 ;AXY->16
 	ldy.w #$0006
@@ -15922,12 +15922,12 @@ func_C3E77A:
 	plp
 	rtl
 
-func_C3E7A4:
+ReadSaveField0D:
 	php
 	rep #$10 ;XY->16
 	ldy.w #$000D
 
-func_C3E7AA:
+ReadSaveFieldAtY:
 	sep #$20 ;A->8
 	lda.b [$B2],y
 	sta.b wTemp00
@@ -15935,7 +15935,7 @@ func_C3E7AA:
 	rtl
 	.db $08,$C2,$10,$A0,$0D,$00           ;C3E7B2
 
-func_C3E7B8:
+WriteSaveFieldAtY:
 	sep #$20 ;A->8
 	lda.b wTemp00
 	eor.b [$B2],y
@@ -15946,19 +15946,19 @@ func_C3E7B8:
 	plp
 	rtl
 
-func_C3E7C8:
+ReadSaveField0C:
 	php
 	rep #$10 ;XY->16
 	ldy.w #$000C
-	jmp.w func_C3E7AA
+	jmp.w ReadSaveFieldAtY
 
-func_C3E7D1:
+WriteSaveField0C:
 	php
 	rep #$10 ;XY->16
 	ldy.w #$000C
-	jmp.w func_C3E7B8
+	jmp.w WriteSaveFieldAtY
 
-func_C3E7DA:
+ReadSaveField0A:
 	php
 	rep #$30 ;AXY->16
 	ldy.w #$000A
@@ -15967,7 +15967,7 @@ func_C3E7DA:
 	plp
 	rtl
 
-func_C3E7E6:
+WriteSaveField0A:
 	php
 	rep #$30 ;AXY->16
 	ldy.w #$000A
@@ -15984,29 +15984,29 @@ func_C3E7E6:
 	plp
 	rtl
 
-func_C3E802:
+ReadSaveField0F:
 	php
 	rep #$10 ;XY->16
 	ldy.w #$000F
-	jmp.w func_C3E7AA
+	jmp.w ReadSaveFieldAtY
 
-func_C3E80B:
+WriteSaveField0F:
 	php
 	rep #$10 ;XY->16
 	ldy.w #$000F
-	jmp.w func_C3E7B8
+	jmp.w WriteSaveFieldAtY
 
-func_C3E814:
+ReadSaveField0E:
 	php
 	rep #$10 ;XY->16
 	ldy.w #$000E
-	jmp.w func_C3E7AA
+	jmp.w ReadSaveFieldAtY
 
 func_C3E81D:
 	php
 	rep #$10 ;XY->16
 	ldy.w #$000E
-	jmp.w func_C3E7B8
+	jmp.w WriteSaveFieldAtY
 
 func_C3E826:
 	php
@@ -16134,7 +16134,7 @@ func_C3E8C7:
 	ldx.w #$0004
 	bra @lbl_C3E90B
 @lbl_C3E8F5:
-	jsl.l func_C3E802
+	jsl.l ReadSaveField0F
 	stz.b wTemp01
 	lda.b wTemp00
 	sta.l $7F9CE2
@@ -17344,14 +17344,14 @@ ToggleGroundItemDetailsView:
 	tdc
 	sta.l $7F9CE2
 	sta.b wTemp00
-	jsl.l func_C3E80B
+	jsl.l WriteSaveField0F
 	lda.w #$0006
 	bra @lbl_C3F3AE
 @lbl_C3F3A0:
 	inc a
 	sta.l $7F9CE2
 	sta.b wTemp00
-	jsl.l func_C3E80B
+	jsl.l WriteSaveField0F
 	lda.w #$0004
 @lbl_C3F3AE:
 	sta.b wTemp00

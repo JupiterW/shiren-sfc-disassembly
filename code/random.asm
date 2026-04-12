@@ -98,7 +98,7 @@ func_C3F6BE:
 	sta.b wTemp02
 	stz.b wTemp03
 	stz.b wTemp04
-	jsl.l func_C3E2AB
+	jsl.l SaveStreamWriteBlock
 	plp
 	rtl
 
@@ -112,7 +112,7 @@ func_C3F6D5:
 	sta.b wTemp02
 	stz.b wTemp03
 	stz.b wTemp04
-	jsl.l func_C3E2DB
+	jsl.l SaveStreamReadBlock
 	plp
 	rtl
 

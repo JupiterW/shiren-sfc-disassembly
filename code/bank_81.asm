@@ -142,7 +142,7 @@ func_81904F:
 func_8190EC:
 	php
 	sep #$20 ;A->8
-	jsl.l func_C3E178
+	jsl.l SaveReadByte
 	lda.b wTemp00
 	cmp.b #$01
 	bne @lbl_81916B
@@ -5989,7 +5989,7 @@ func_81CDEE:
 	sty.b wTemp00
 	pha
 	phy
-	jsl.l func_C3E5F2
+	jsl.l ValidateSaveBlock
 	ply
 	pla
 	clc
@@ -6032,21 +6032,21 @@ func_81CE34:
 	beq @lbl_81CE47
 	jsl.l GetDemoScriptPtr
 	stz.b wTemp00
-	jsl.l func_C3E16A
+	jsl.l SaveWriteByte
 @lbl_81CE47:
 	jsl.l func_C48584
 	jsr.w func_81CF37
 	jsl.l func_809D10
 	pla
 	sta.b wTemp00
-	jsl.l func_C3E69F
+	jsl.l SetSaveBlockPtrAndRead
 	lda.b wTemp01
 	pha
 	jsl.l func_C48584
 	jsl.l func_809D10
 	pla
 	sta.b wTemp00
-	jsl.l func_C3E6AB
+	jsl.l InitAndWriteSaveBlock
 	lda.b wTemp01
 	phb
 	pha
@@ -6063,13 +6063,13 @@ func_81CE34:
 	.db $82,$4E,$FF                       ;81CE8C  
 	lda.b wTemp01
 	sta.b wTemp00
-	jsl.l func_C3E706
+	jsl.l EraseSaveBlock
 @lbl_81CE97:
 	jmp.w func_81CDEE
 	rep #$20 ;A->16
 	lda.b wTemp01
 	sta.b wTemp00
-	jsl.l func_C3E72B
+	jsl.l CopySaveBlock
 	sep #$20 ;A->8
 	bra @lbl_81CE97
 	lda.b wTemp01
@@ -6149,7 +6149,7 @@ func_81CF49:
 	sty.b wTemp00
 	pha
 	phy
-	jsl.l func_C3E629
+	jsl.l LoadOrEraseSaveBlock
 	ply
 	pla
 	clc
@@ -6187,7 +6187,7 @@ func_81CFE0:
 	sep #$30 ;AXY->8
 	lda.b wTemp00
 	bne @lbl_81D009
-	jsl.l func_C3E698
+	jsl.l GetCurrentSaveSlot
 	lda.b wTemp00
 	sta.b wTemp01
 	lda.b #$01

@@ -18,9 +18,9 @@ func_C60003:
 	lda.b wTemp00
 	pha
 	stz.b wTemp00
-	jsl.l func_C3E16A
+	jsl.l SaveWriteByte
 	stz.b wTemp00
-	jsl.l func_C3E7D1
+	jsl.l WriteSaveField0C
 	jsl.l func_80DF35
 	pla
 	sta.b wTemp00
@@ -30,7 +30,7 @@ func_C60003:
 func_C60037:
 	php
 	sep #$20 ;A->8
-	jsl.l func_C3E178
+	jsl.l SaveReadByte
 	lda.b wTemp00
 	bmi @lbl_C60058
 	lda.b #$00
@@ -157,7 +157,7 @@ func_C600E4:
 	cmp.w #$00F0
 	beq @lbl_C6018C
 	pha
-	jsl.l func_C3E1D5
+	jsl.l SaveStreamAdvance
 	pla
 	sta.b wTemp00
 	sep #$20 ;A->8
@@ -251,7 +251,7 @@ func_C601FA:
 	jsl.l func_C28B23
 	ldy.b wTemp00
 	bne func_C601E3
-	jsl.l func_C3E26C
+	jsl.l SaveStreamReadNext
 	lda.b wTemp02
 	sta.l $7ED60B
 	ldx.b wTemp00
@@ -367,8 +367,8 @@ func_C6030D:
 	sep #$20 ;A->8
 	lda.b #$FF
 	sta.b wTemp00
-	jsl.l func_C3E16A
-	jsl.l func_C3E1C7
+	jsl.l SaveWriteByte
+	jsl.l SaveStreamInit
 	jsl.l func_C3E369
 	jsl.l func_C3F6BE
 	jsl.l func_C28F4F
@@ -383,17 +383,17 @@ func_C6030D:
 	sta.b wTemp03
 	lda.b #$7E
 	sta.b wTemp04
-	jsl.l func_C3E2AB
+	jsl.l SaveStreamWriteBlock
 	lda.b #$01
 	sta.b wTemp00
-	jsl.l func_C3E16A
+	jsl.l SaveWriteByte
 	plp
 	rtl
 
 func_C6034E:
 	php
 	sep #$20 ;A->8
-	jsl.l func_C3E1C7
+	jsl.l SaveStreamInit
 	jsl.l func_C3F6D5
 	jsl.l func_C28F86
 	jsl.l DeserializeItemData
@@ -407,15 +407,15 @@ func_C6034E:
 	sta.b wTemp03
 	lda.b #$7E
 	sta.b wTemp04
-	jsl.l func_C3E2DB
+	jsl.l SaveStreamReadBlock
 	plp
 	rtl
 
 func_C6037B:
 	php
 	sep #$30 ;AXY->8
-	jsl.l func_C3E1C7
-	jsl.l func_C3E178
+	jsl.l SaveStreamInit
+	jsl.l SaveReadByte
 	lda.b wTemp00
 	bmi @lbl_C6039A
 	beq @lbl_C6039F
@@ -431,7 +431,7 @@ func_C6037B:
 @lbl_C6039F:
 	jsr.w func_C60494
 @lbl_C603A2:
-	jsl.l func_C3E7DA
+	jsl.l ReadSaveField0A
 	ldy.b wTemp01
 	lda.b wTemp00
 	sta.b wTemp02
@@ -726,7 +726,7 @@ func_C605FB:
 	beq @lbl_C60678
 	lda.l wFloorNum
 	sta.b wTemp00
-	jsl.l func_C3E7D1
+	jsl.l WriteSaveField0C
 	lda.l $7ED5F9
 	sta.b wTemp00
 	jsl.l func_C3E81D
@@ -2456,7 +2456,7 @@ func_C627FC:
 	rep #$20 ;A->16
 	lda.w #$001B
 	sta.b wTemp00
-	jsl.l func_C3E1D5
+	jsl.l SaveStreamAdvance
 	jsl.l SortShirenInventory
 	plp
 	rtl
@@ -2796,7 +2796,7 @@ func_C62D0F:
 	pha
 	lda.b wTemp04
 	pha
-	jsl.l func_C3E7DA
+	jsl.l ReadSaveField0A
 	ldy.b wTemp00
 	sty.b wTemp04
 	stz.b wTemp03
@@ -2893,7 +2893,7 @@ func_C62D0F:
 	lda.b wTemp04
 	sta.l $7ED620
 	rep #$20 ;A->16
-	jsl.l func_C3E768
+	jsl.l ReadSaveSlotFlags
 	lda.b wTemp00
 	sta.l $7ED614
 	lda.b wTemp02
