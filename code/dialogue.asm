@@ -2530,7 +2530,7 @@ func_C1173F:
 	clc                                     ;C117D9
 	rts                                     ;C117DA
 @lbl_C117DB:
-	jsl.l func_C312FF
+	jsl.l PoisonHerbUseCommon
 	sec
 	rts
 	.db $14,$FF,$15,$FF,$16,$FF,$17,$FF,$02,$10,$FF,$03,$11,$FF,$03,$12   ;C117E1  

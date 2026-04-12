@@ -697,7 +697,7 @@ func_C605FB:
 	bne @lbl_C60619
 	jsl.l PreIdentifyDungeonItems
 @lbl_C60619:
-	jsl.l func_C332D7
+	jsl.l ClearJarContentsOnFloorChange
 	lda.l $7ED5ED
 	sec
 	sbc.l wFloorNum

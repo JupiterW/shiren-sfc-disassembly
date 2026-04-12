@@ -1836,7 +1836,7 @@ HandleCharacterDeath:
 	jsl.l UpdateGameSystems
 	pla
 	sta.b wTemp00
-	jsl.l func_C312DE
+	jsl.l ConvertItemToWeeds
 	lda.l $7E8618
 	sta.l $7E8604
 	lda.l $7E85C8
@@ -2366,7 +2366,7 @@ func_C228EF:
 	bmi @lbl_C229C8
 	sta.b wTemp00
 	phy
-	call_savebank func_C32FC0
+	call_savebank ApplyJarFuseDefenseMod
 	ply
 @lbl_C229C8:
 	lda.w $89A4
@@ -6008,7 +6008,7 @@ func_C24458:
 	sta.b wTemp03
 	phx
 	phy
-	jsl.l func_C32FEE
+	jsl.l FindCharacterInDirection
 	ply
 	plx
 	lda.b wTemp03
@@ -7120,7 +7120,7 @@ HandlePlayerActionCommand:
 	sty $00                                 ;C24CA1
 	pha                                     ;C24CA3
 	phb                                     ;C24CA4
-	jsl $C312DE                             ;C24CA5
+	jsl ConvertItemToWeeds                  ;C24CA5
 	plb                                     ;C24CA9
 	pla                                     ;C24CAA
 @lbl_C24CAB:
@@ -7477,7 +7477,7 @@ func_C24F17:
 	sta.b wTemp02
 	lda.l wCharYPos+CharDataShirenIndex
 	sta.b wTemp03
-	jsl.l func_C32FEE
+	jsl.l FindCharacterInDirection
 	ldx.b wTemp00
 	bmi @lbl_C24F8B
 	lda.l wCharNPCFlags,x

@@ -405,7 +405,7 @@ ExecuteSelectedItemActionByCategory:
 @lbl_C30B31:
 	cmp.b #$04
 	beq @lbl_C30B38
-	jmp.w func_C30BD3
+	jmp.w UseItemByCategory
 @lbl_C30B38:
 	sty.b wTemp00
 	jsl.l ToggleArrowShortcutItem
@@ -492,11 +492,11 @@ ExecuteSelectedItemActionByCategory:
 	plp
 	rtl
 
-func_C30BD3:
+UseItemByCategory:
 	sep #$30 ;AXY->8
 	cmp.b #$07
 	beq @lbl_C30BDC
-	jmp.w func_C30D11
+	jmp.w UseNonJarItem
 @lbl_C30BDC:
 	pha
 	pha
@@ -540,7 +540,7 @@ func_C30BD3:
 	sta.b wTemp02
 	sep #$20 ;A->8
 	phy
-	call_savebank func_C32FEE
+	call_savebank FindCharacterInDirection
 	ply
 	lda.b wTemp00
 	pha
@@ -661,7 +661,7 @@ func_C30BD3:
 	plp
 	rtl
 
-func_C30D11:
+UseNonJarItem:
 	sep #$30 ;AXY->8
 	cmp.b #$0A
 	bne @lbl_C30D29
@@ -677,7 +677,7 @@ func_C30D11:
 @lbl_C30D29:
 	cmp.b #$0B
 	bne @lbl_C30D30
-	jmp.w func_C30E71
+	jmp.w PlayItemUseEffect
 @lbl_C30D30:
 	rep #$20 ;A->16
 	lda.b wTemp02
@@ -857,7 +857,7 @@ func_C30D11:
 	plp                                     ;C30E6F
 	rtl                                     ;C30E70
 
-func_C30E71:
+PlayItemUseEffect:
 	sep #$20 ;A->8
 	lda.b wTemp01
 	pha
@@ -1409,7 +1409,7 @@ PoisonHerbUseEffect:
 	jsl.l DisplayMessage
 	rts                                     ;C312DD
 
-func_C312DE:
+ConvertItemToWeeds:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -1426,8 +1426,8 @@ func_C312DE:
 	plp
 	rtl
 
-func_C312FF:
-	jsr.w func_C328E9
+PoisonHerbUseCommon:
+	jsr.w HealAndCureStatusEffects
 	jsr.w AntidoteHerbUseEffect
 	rtl
 	jsr $130A                               ;C31306
@@ -1672,7 +1672,7 @@ DragonHerbUseEffect:
 	sta.b wTemp02
 	lda.b wTemp02,s
 	sta.b wTemp03
-	jsl.l func_C32FEE
+	jsl.l FindCharacterInDirection
 	ldx.b wTemp00
 	lda.b wTemp02
 	sta.b wTemp06
@@ -1759,22 +1759,22 @@ HugeOnigiriUseEffect:
 OnigiriUseEffect:
 	rep #$30 ;AXY->16
 	ldx.w #$000A
-	jsr.w func_C315DF
+	jsr.w CheckOnigiriSatiation
 	bcc @lbl_C315A9
 	rts
 @lbl_C315A9:
 	lda.w #$01F4
-	bra func_C315BC
+	bra FeedShirenOnigiri
 
 BigOnigiriUseEffect:
 	rep #$30 ;AXY->16
 	ldx.w #$0014
-	jsr.w func_C315DF
+	jsr.w CheckOnigiriSatiation
 	bcc @lbl_C315B9
 	rts
 @lbl_C315B9:
 	lda.w #$03E8
-func_C315BC:
+FeedShirenOnigiri:
 	sta.b wTemp00
 	jsl.l ModifyShirenHunger
 	jsl.l GetShirenCoreStatus
@@ -1791,7 +1791,7 @@ func_C315BC:
 	jsl.l DisplayMessage
 	rts
 
-func_C315DF:
+CheckOnigiriSatiation:
 	rep #$30 ;AXY->16
 	phx
 	jsl.l GetShirenCoreStatus
@@ -2174,7 +2174,7 @@ IdentityScrollUseEffect:
 	beq @lbl_C31927
 @lbl_C3191D:
 	sty.b wTemp00
-	jsr.w func_C31959
+	jsr.w GetTargetItemForScroll
 	jsl.l func_C324F9
 	rts
 @lbl_C31927:
@@ -2205,7 +2205,7 @@ IdentityScrollUseEffect:
 	jsl.l DisplayMessage
 	rts                                     ;C31958
 
-func_C31959:
+GetTargetItemForScroll:
 	php
 	sep #$30 ;AXY->8
 	lda.b wTemp00
@@ -2369,7 +2369,7 @@ WeaponUseEffect:
 	lda.b wTemp00
 	pha
 	phy
-	jsr.w func_C31AB4
+	jsr.w ApplyWeaponStatMod
 	lda.b #$00
 	sta.b wTemp00
 	sta.b wTemp01
@@ -2384,7 +2384,7 @@ WeaponUseEffect:
 	jsl.l func_C284B2
 	rts
 
-func_C31AB4:
+ApplyWeaponStatMod:
 	sep #$30 ;AXY->8
 	ldx.w wItemType,y
 	lda.l ItemBaseStatByType,x
@@ -2457,7 +2457,7 @@ ShieldUseEffect:
 	lda.b wTemp00
 	pha
 	phy
-	jsr.w func_C31B5C
+	jsr.w ApplyShieldStatMod
 	lda.b #$00
 	sta.b wTemp00
 	sta.b wTemp01
@@ -2472,7 +2472,7 @@ ShieldUseEffect:
 	jsl.l func_C284BD
 	rts
 
-func_C31B5C:
+ApplyShieldStatMod:
 	sep #$30 ;AXY->8
 	ldx.w wItemType,y
 	lda.l ItemBaseStatByType,x
@@ -2725,7 +2725,7 @@ PassageArmbandUseEffect:
 	sta $00                                 ;C31D49
 	jsl $C23344                             ;C31D4B
 	rts                                     ;C31D4F
-func_C31D50:
+ApplyStrengthMod:
 	sep #$30                                ;C31D50
 	lda $8C8C,y                             ;C31D52
 	ldx $00                                 ;C31D55
@@ -2942,7 +2942,7 @@ SkullStaffThrowEffect:
 	plx
 	ldy.b wTemp04
 	cpy.b #$00
-	bne func_C31EFB
+	bne SkullStaffRandomEffect
 	jsl.l Random
 	lda.b wTemp00
 	and.w #$0003
@@ -2958,7 +2958,7 @@ Jumptable_C31EF3:
 	.dw $1FFE
 	.dw $1DED
 
-func_C31EFB:
+SkullStaffRandomEffect:
 	sep #$30 ;AXY->8
 	stx.b wTemp00
 	jsl.l GetCharacterStats
@@ -3948,7 +3948,7 @@ JarUseEffect:
 	phx
 	phy
 	phb
-	jsr.w func_C31959
+	jsr.w GetTargetItemForScroll
 	plb
 	ply
 	plx
@@ -4219,13 +4219,13 @@ ChiropracticJarUseEffect:
 	sep #$30 ;AXY->8
 	tyx
 	phx
-	jsr.w func_C32BAD
+	jsr.w DisplayJarCrushedMessage
 	plx
 	lda.l wItemModification1,x
 	beq @lbl_C328DE
 	dec a
 	sta.l wItemModification1,x
-	jsr.w func_C328E9
+	jsr.w HealAndCureStatusEffects
 	jsr.w AntidoteHerbUseEffect
 	rts
 @lbl_C328DE:
@@ -4235,7 +4235,7 @@ ChiropracticJarUseEffect:
 	jsl.l DisplayMessage
 	rts                                     ;C328E8
 
-func_C328E9:
+HealAndCureStatusEffects:
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
 	lda.b #$13
@@ -4296,7 +4296,7 @@ WalrusJarUseEffect:
 	sep #$30 ;AXY->8
 	tyx
 	phx
-	jsr.w func_C32BAD
+	jsr.w DisplayJarCrushedMessage
 	plx
 	lda.l wItemModification1,x
 	bne @lbl_C3297D
@@ -4604,7 +4604,7 @@ HidingJarUseEffect:
 	plp
 	rtl
 
-func_C32BAD:
+DisplayJarCrushedMessage:
 	php
 	sep #$30 ;AXY->8
 	lda.b #$D1
@@ -5163,7 +5163,7 @@ func_C32CFE:
 	rol a                                   ;C32FBE
 	.db $01   ;C32FBF
 
-func_C32FC0:
+ApplyJarFuseDefenseMod:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -5187,7 +5187,7 @@ func_C32FC0:
 	plp
 	rtl
 
-func_C32FEE:
+FindCharacterInDirection:
 	php
 	sep #$30 ;AXY->8
 	lda.b wTemp00
@@ -5341,7 +5341,7 @@ func_C330DA:
 	lda.l ItemCategoryByType,x
 	cmp.b #$0B
 	bne @lbl_C330F8
-	jsl.l func_C33170
+	jsl.l AbsorbItemIntoJar
 	lda.b #$FF
 	sta.b wTemp00
 	sta.b wTemp01
@@ -5417,7 +5417,7 @@ func_C330FC:
 	plp                                     ;C3316E
 	rtl                                     ;C3316F
 
-func_C33170:
+AbsorbItemIntoJar:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -5434,7 +5434,7 @@ func_C33170:
 	jsl.l DisplayMessage
 	plx
 	pla
-	jsr.w func_C331B2
+	jsr.w ExtractItemFromJar
 	stx.b wTemp00
 	jsl.l FreeFloorItemSlot
 	plp
@@ -5452,7 +5452,7 @@ func_C33170:
 	plp                                     ;C331B0
 	rtl                                     ;C331B1
 
-func_C331B2:
+ExtractItemFromJar:
 	php
 	rep #$20 ;A->16
 	sep #$10 ;XY->8
@@ -5612,7 +5612,7 @@ func_C331B2:
 	plp                                     ;C332D5
 	rts                                     ;C332D6
 
-func_C332D7:
+ClearJarContentsOnFloorChange:
 	php
 	sep #$30 ;AXY->8
 	ldx.b #$7E
@@ -5770,7 +5770,7 @@ ExecutePreparedThrowEffect:
 	rep #$20 ;A->16
 	lda.b wTemp01,s
 	sta.b wTemp02
-	jsl.l func_C32FEE
+	jsl.l FindCharacterInDirection
 	ldy.b wTemp00
 	lda.b wTemp01,s
 	sta.b wTemp04
@@ -5801,7 +5801,7 @@ ExecutePreparedThrowEffect:
 	ply
 	ldx.b wTemp00
 	beq @lbl_C33495
-	jsr.w func_C335FE
+	jsr.w HandleWeaponThrowInShop
 	cmp.b #$00
 	beq @lbl_C33489
 	lda.b wTemp05,s
@@ -6050,7 +6050,7 @@ DATA8_C334CD:
 	jsl $C22C1C                             ;C335F6
 	jmp $354D                               ;C335FA
 
-func_C335FE:
+HandleWeaponThrowInShop:
 	php
 	sep #$30 ;AXY->8
 	sty.b wTemp00
@@ -6198,7 +6198,7 @@ JarThrowEffect:
 	plx                                     ;C3370D
 	stx $00                                 ;C3370E
 	phx                                     ;C33710
-	jsl $C33170                             ;C33711
+	jsl AbsorbItemIntoJar                             ;C33711
 	plx                                     ;C33715
 	rts                                     ;C33716
 UnbreakableJarThrowEffect:
@@ -6207,7 +6207,7 @@ UnbreakableJarThrowEffect:
 	lda $00                                 ;C3371B
 	stx $00                                 ;C3371D
 	sta $02                                 ;C3371F
-	jsl $C33170                             ;C33721
+	jsl AbsorbItemIntoJar                             ;C33721
 	rts                                     ;C33725
 BlessingScrollThrowEffect:
 	sep #$20                                ;C33726
@@ -6267,7 +6267,7 @@ IdentityJarThrowEffect:
 	ldy $00                                 ;C3378F
 	sty $02                                 ;C33791
 	stx $00                                 ;C33793
-	jsl $C33170                             ;C33795
+	jsl AbsorbItemIntoJar                             ;C33795
 	jmp $37B9                               ;C33799
 @lbl_C3379C:
 	ply                                     ;C3379C
