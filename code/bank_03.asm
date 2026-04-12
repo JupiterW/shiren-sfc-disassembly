@@ -324,13 +324,13 @@ SetupItemRenameBuffer:
 	plx
 	sta.l wItemHasCustomName,X
 	lda.b #$FF
-	sta.l $7E935F
+	sta.l wItemScratchSlotIndex
 	plp 
 	rtl
 @lbl_C30245:
 	sep #$30 ;AXY->8
 	txa 
-	sta.l $7E935F
+	sta.l wItemScratchSlotIndex
 	lda.b #$7E
 	sta.b wTemp02
 	rep #$20 ;A->16
@@ -343,20 +343,20 @@ SetupItemRenameBuffer:
 ApplyItemBufferChanges:
 	php
 	sep #$30 ;AXY->8
-	lda.l $7E935F
+	lda.l wItemScratchSlotIndex
 	bmi @lbl_C30293
 	tax 
-	lda.l $7E9360
+	lda.l wItemScratchMod1
 	sta.l wItemModification1,x
-	lda.l $7E9361
+	lda.l wItemScratchMod2
 	sta.l wItemModification2,x
-	lda.l $7E9362
+	lda.l wItemScratchFuse1
 	sta.l wItemFuseAbility1,x
-	lda.l $7E9363
+	lda.l wItemScratchFuse2
 	sta.l wItemFuseAbility2,x
-	lda.l $7E9364
+	lda.l wItemScratchCursed
 	sta.l wItemIsCursed,x
-	lda.l $7E9365
+	lda.l wItemScratchTimesIdentified
 	sta.l wItemTimesIdentified,x
 @lbl_C30293:
 	plp 
@@ -1036,19 +1036,19 @@ CheckIsNamedSanctuaryScroll:
 @lbl_C307DC:
 	bankswitch 0x7E
 	lda.w wItemModification1,x
-	sta.w $9360
+	sta.w wItemScratchMod1
 	lda.w wItemModification2,x
-	sta.w $9361
+	sta.w wItemScratchMod2
 	lda.w wItemFuseAbility1,x
-	sta.w $9362
+	sta.w wItemScratchFuse1
 	lda.w wItemFuseAbility2,x
-	sta.w $9363
+	sta.w wItemScratchFuse2
 	lda.w wItemIsCursed,x
-	sta.w $9364
+	sta.w wItemScratchCursed
 	lda.w wItemTimesIdentified,x
-	sta.w $9365
+	sta.w wItemScratchTimesIdentified
 	lda.b #$FF
-	sta.w $9366
+	sta.w wItemScratchTerminator
 	rep #$10 ;XY->16
 	ldx.w #$04CC
 	stx.b wTemp00
@@ -1084,19 +1084,19 @@ CheckIsNamedSanctuaryScrollAlt:
 @lbl_C30837:
 	bankswitch 0x7E
 	lda.w wItemModification1,x
-	sta.w $9360
+	sta.w wItemScratchMod1
 	lda.w wItemModification2,x
-	sta.w $9361
+	sta.w wItemScratchMod2
 	lda.w wItemFuseAbility1,x
-	sta.w $9362
+	sta.w wItemScratchFuse1
 	lda.w wItemFuseAbility2,x
-	sta.w $9363
+	sta.w wItemScratchFuse2
 	lda.w wItemIsCursed,x
-	sta.w $9364
+	sta.w wItemScratchCursed
 	lda.w wItemTimesIdentified,x
-	sta.w $9365
+	sta.w wItemScratchTimesIdentified
 	lda.b #$FF
-	sta.w $9366
+	sta.w wItemScratchTerminator
 	rep #$10 ;XY->16
 	ldx.w #$04CC
 	stx.b wTemp00

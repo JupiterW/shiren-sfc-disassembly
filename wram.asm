@@ -1597,7 +1597,42 @@ wItemUnidentifiedName:
 wItemCustomNamesBuffer
 	dsb 20*8
 
-. ds 0xbe5f - 0x935e
+;935e
+. ds 1
+
+;935f
+wItemScratchSlotIndex:
+    db
+
+;9360
+wItemScratchMod1:
+    db
+
+;9361
+wItemScratchMod2:
+    db
+
+;9362
+wItemScratchFuse1:
+    db
+
+;9363
+wItemScratchFuse2:
+    db
+
+;9364
+wItemScratchCursed:
+    db
+
+;9365
+wItemScratchTimesIdentified:
+    db
+
+;9366
+wItemScratchTerminator:
+    db
+
+. ds 0xbe5f - 0x9367
 
 ;be5f
 wEntityStateClearDone:

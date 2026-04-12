@@ -108,19 +108,19 @@ CheckBlankScrollName:
 	bankswitch 0x7E
 	ldy.b wTemp00
 	lda.w wItemModification1,y
-	sta.l $7E9360
+	sta.l wItemScratchMod1
 	lda.w wItemModification2,y
-	sta.l $7E9361
+	sta.l wItemScratchMod2
 	lda.w wItemFuseAbility1,y
-	sta.l $7E9362
+	sta.l wItemScratchFuse1
 	lda.w wItemFuseAbility2,y
-	sta.l $7E9363
+	sta.l wItemScratchFuse2
 	lda.w wItemIsCursed,y
-	sta.l $7E9364
+	sta.l wItemScratchCursed
 	lda.w wItemTimesIdentified,y
-	sta.l $7E9365
+	sta.l wItemScratchTimesIdentified
 	lda.b #$FF
-	sta.l $7E9366
+	sta.l wItemScratchTerminator
 	rep #$10 ;XY->16
 	;Check each possible scroll name (text ids 1202-1228) for a match
 	ldx.w #1202 ;Text1202
