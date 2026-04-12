@@ -3356,7 +3356,7 @@ GetDungeonItemTableVariant:
 	adc.b wTemp00
 	tax
 	phx
-	jsl.l func_C38FB7
+	jsl.l LoadFixedRoomLayout
 	plx
 	phx
 	jsl.l func_C38DD4
@@ -3365,12 +3365,12 @@ GetDungeonItemTableVariant:
 	jsl.l func_C38E07
 	plx
 	phx
-	jsl.l func_C38ECC
+	jsl.l PlaceFixedStaircase
 	plx
 	phx
-	jsl.l func_C38F01
+	jsl.l PlaceFixedTraps
 	plx
-	jsl.l func_C38F34
+	jsl.l PlaceFixedCharacters
 	jsl.l BuildDoorCandidatesAllRooms
 	jsl.l PlaceShirenStartingItem
 	rts
@@ -3378,26 +3378,26 @@ GetDungeonItemTableVariant:
 	;C3584A
 	rts
 	jsl.l func_C2CAF4
-	jsl.l func_C39021
+	jsl.l BackupTileMapAndShrinkRooms
 	jsl.l ClearDungeonTileMap
 	jsr.w GenerateRoomCorridor
 	jsl.l BuildDoorCandidatesAllRooms
-	jsr.w func_C3737C
+	jsr.w GenerateSpecialCorridors
 	jsr.w func_C39382
-	jsr.w func_C39AAA
-	jsr.w func_C38011
-	jsr.w func_C39C97
-	jsr.w func_C39D8C
-	jsr.w func_C39FB2
+	jsr.w SetupMonsterHouseRoom
+	jsr.w SpawnBoulderClusters
+	jsr.w SetupLargeRoom
+	jsr.w SetupWaterRoom
+	jsr.w SetupShopRoom
 	jsl.l SpawnFloorMonsterEntities
 	jsl.l SpawnFloorItems
 	jsl.l PlaceStaircaseItem
 	jsl.l func_C3D219
 	jsl.l SpawnDungeonMonsters
-	jsl.l func_C391FA
+	jsl.l SpawnGuardNPCs
 	jsl.l PlaceShirenStartingItem
 	jsr.w func_C399F2
-	jsr.w func_C39E1D
+	jsr.w SpawnRoomItems
 	rts
 
 	jsr $858F                               ;C35896
@@ -5474,7 +5474,7 @@ func_C36829:
 	bcs @lbl_C3687A
 	ldx.b wTemp00
 	phx
-	jsl.l func_C39067
+	jsl.l FindRoomWithDoor
 	plx
 	txa
 	sep #$20 ;A->8
@@ -6208,7 +6208,7 @@ func_C36CE8:
 	sec 
 	rts
 
-func_C36D1D:
+SetupShopFloorTiles:
 	php 
 	sep #$30 ;AXY->8
 	bankswitch 0x7E
@@ -7113,7 +7113,7 @@ ActiveCompanionSlotList:
 	plp                                     ;C3737A
 	rts                                     ;C3737B
 
-func_C3737C:
+GenerateSpecialCorridors:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -8770,7 +8770,7 @@ func_C3737C:
 	rts                                     ;C37FC6
 	.db $FF,$00,$01,$FE,$FF,$00,$01,$02,$FD,$FE,$FF,$00,$01,$02,$03,$FD,$FE,$FF,$00,$01,$02,$03,$FD,$FE,$FF,$00,$01,$02,$03,$FE,$FF,$00,$01,$02,$FF,$00,$01,$FD,$FD,$FD,$FE,$FE,$FE,$FE,$FE,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$00,$00,$00,$00,$00,$00,$00,$01,$01,$01,$01,$01,$01,$01,$02,$02,$02,$02,$02,$03,$03,$03   ;C37FC7
 
-func_C38011:
+SpawnBoulderClusters:
 	php
 	sep #$30 ;AXY->8
 	jsl.l GetCurrentDungeon
@@ -9522,7 +9522,7 @@ func_C38865:
 	lda.b wTemp00
 	bmi @lbl_C3886E
 	pha
-	jsr.w func_C36D1D
+	jsr.w SetupShopFloorTiles
 	pla
 	sta.b wTemp00
 	jsr.w PlaceRoomDoors
@@ -9603,7 +9603,7 @@ SetupSingleLargeRoom:
 	lda.b #$24
 	sta.l $7EBE84
 	stz.b wTemp00
-	jsr.w func_C36D1D
+	jsr.w SetupShopFloorTiles
 	plp 
 	rts
 
@@ -10353,7 +10353,7 @@ func_C38E07:
 	iny                                     ;C38EC8
 	.db $82,$55,$FF   ;C38EC9
 
-func_C38ECC:
+PlaceFixedStaircase:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -10377,7 +10377,7 @@ func_C38ECC:
 	plp
 	rtl
 
-func_C38F01:
+PlaceFixedTraps:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -10404,7 +10404,7 @@ func_C38F01:
 	plp
 	rtl
 
-func_C38F34:
+PlaceFixedCharacters:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -10480,7 +10480,7 @@ func_C38F34:
 	iny                                     ;C38FB3
 	.db $82,$97,$FF   ;C38FB4
 
-func_C38FB7:
+LoadFixedRoomLayout:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -10537,7 +10537,7 @@ func_C38FB7:
 	plp
 	rtl
 
-func_C39021:
+BackupTileMapAndShrinkRooms:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -10575,7 +10575,7 @@ func_C39021:
 	plp
 	rtl
 
-func_C39067:
+FindRoomWithDoor:
 	php
 	sep #$30 ;AXY->8
 	lda.l $7EBE8E
@@ -10593,7 +10593,7 @@ func_C39067:
 	plp
 	rtl
 
-func_C3909E:
+FindRoomContainingCoord:
 	php
 	sep #$30 ;AXY->8
 	lda.l $7EBE8E
@@ -10806,7 +10806,7 @@ func_C3909E:
 	rtl                                     ;C391F9
 .INDEX 16
 
-func_C391FA:
+SpawnGuardNPCs:
 	php
 	sep #$30 ;AXY->8
 	jsl.l GetCurrentDungeon
@@ -11993,7 +11993,7 @@ func_C39A31:
 	plp                                     ;C39AA8
 	rts                                     ;C39AA9
 
-func_C39AAA:
+SetupMonsterHouseRoom:
 	php
 	sep #$30 ;AXY->8
 	jsl.l GetCurrentDungeon
@@ -12262,7 +12262,7 @@ func_C39AAA:
 	plp
 	rts
 
-func_C39C97:
+SetupLargeRoom:
 	php
 	sep #$30 ;AXY->8
 	jsl.l GetCurrentDungeon
@@ -12393,7 +12393,7 @@ func_C39C97:
 	plx                                     ;C39D8A
 	rts                                     ;C39D8B
 
-func_C39D8C:
+SetupWaterRoom:
 	php
 	sep #$30 ;AXY->8
 	jsl.l GetCurrentDungeon
@@ -12475,7 +12475,7 @@ func_C39D8C:
 	plp                                     ;C39E1B
 	rts                                     ;C39E1C
 
-func_C39E1D:
+SpawnRoomItems:
 	php
 	sep #$30 ;AXY->8
 	jsl.l GetCurrentDungeon
@@ -12689,7 +12689,7 @@ UNREACH_C39FA3:
 	.db $10                               ;C39FAC
 	.db $1B,$1B,$1B,$1B,$1B               ;C39FAD
 
-func_C39FB2:
+SetupShopRoom:
 	php
 	sep #$30 ;AXY->8
 	jsl.l GetCurrentDungeon

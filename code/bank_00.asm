@@ -928,7 +928,7 @@ func_C06AC9:
 	sta.b wTemp00
 	lda.b wTemp01,s
 	sta.b wTemp01
-	jsl.l func_C3909E
+	jsl.l FindRoomContainingCoord
 	lda.b wTemp00
 	sta.l $7E80D4
 	lda.l $7E843E
@@ -2073,7 +2073,7 @@ func_C07339:
 	lsr a
 	lsr a
 	sta.b wTemp01
-	jsl.l func_C3909E
+	jsl.l FindRoomContainingCoord
 	lda.b wTemp00
 	sta.l $7E80D4
 	lda.l $7E843E
@@ -2486,7 +2486,7 @@ func_C076E9:
 	sta.b wTemp00
 	lda.w $80C6
 	sta.b wTemp01
-	jsl.l func_C3909E
+	jsl.l FindRoomContainingCoord
 	lda.b wTemp00
 	bpl @lbl_C077D5
 	ldx.w $80C8
@@ -3021,7 +3021,7 @@ func_C07C05:
 	stz.w $80D2
 	lda.w #$0001
 	sta.w $80BC
-	jsl.l func_C3909E
+	jsl.l FindRoomContainingCoord
 	lda.b wTemp00
 	sta.w $80D4
 	lda.w $80CC
@@ -3133,7 +3133,7 @@ func_C07D52:
 	sta.b wTemp00
 	lda.l $7E814D
 	sta.b wTemp01
-	jsl.l func_C3909E
+	jsl.l FindRoomContainingCoord
 	lda.b wTemp00
 	sta.l $7E80D4
 	lda.l $7E80CC
