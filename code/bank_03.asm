@@ -3383,7 +3383,7 @@ GetDungeonItemTableVariant:
 	jsr.w GenerateRoomCorridor
 	jsl.l BuildDoorCandidatesAllRooms
 	jsr.w GenerateSpecialCorridors
-	jsr.w func_C39382
+	jsr.w SelectAndPlaceStaircaseRoom
 	jsr.w SetupMonsterHouseRoom
 	jsr.w SpawnBoulderClusters
 	jsr.w SetupLargeRoom
@@ -3914,7 +3914,7 @@ PlaceShirenOnFloor:
 	stx.w $BE62
 	lda.w $BE65
 	beq @lbl_C35CCD
-	jmp.w func_C35DE5
+	jmp.w FinalizeItemPickup
 @lbl_C35CCD:
 	lda.b #$80
 	sta.w $B3DB,y
@@ -4055,7 +4055,7 @@ PlaceShirenOnFloor:
 	plp
 	rtl
 
-func_C35DE5:
+FinalizeItemPickup:
 	sep #$20 ;A->8
 	lda.b #$80
 	sta.w $B41B,y
@@ -4315,7 +4315,7 @@ MarkItemsForPickup:
 	plp
 	rtl
 
-func_C35FC8:
+GetFloorStateFlags:
 	php
 	sep #$20 ;A->8
 	lda.l $7EBE5F
@@ -4489,7 +4489,7 @@ FindRandomEmptyTileNoChar:
 	plp
 	rtl
 
-func_C360D7:
+FindRandomEmptyTileNoItem:
 	php
 	rep #$10 ;XY->16
 	ldy.w #$0064
@@ -4943,7 +4943,7 @@ TileAdjacentDeltaY:
 	.db $01,$FF,$FF                       ;C36406
 	.db $FF,$00,$00,$00,$01,$01,$01       ;C36409  
 
-func_C36410:
+FindEmptyTileNearCoord:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -5366,7 +5366,7 @@ GetTargetTile:
 	plp
 	rtl
 
-func_C36783:
+FindAdjacentTileForNPCForced:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -6174,7 +6174,7 @@ SetTileTypeAtCoord:
 	plp
 	rtl
 
-func_C36CD7:
+PushRoomCandidateToList:
 	ldx.w $BE8F
 	lda.b wTemp00
 	sta.w $BE90,x
@@ -6183,7 +6183,7 @@ func_C36CD7:
 	inc.w $BE8F
 	rts
 
-func_C36CE8:
+PopRandomRoomCandidateFromList:
 	lda.w $BE8F
 	bne @lbl_C36CEF
 	clc
@@ -6252,14 +6252,14 @@ SetupShopFloorTiles:
 	dec a
 	sta.b wTemp01
 	phx
-	jsr.w func_C36CD7
+	jsr.w PushRoomCandidateToList
 	plx
 	stx.b wTemp00
 	lda.b $01,s
 	inc a
 	sta.b wTemp01
 	phx
-	jsr.w func_C36CD7
+	jsr.w PushRoomCandidateToList
 	plx
 	inx 
 	inx 
@@ -6276,12 +6276,12 @@ SetupShopFloorTiles:
 	dec a
 	sta.b wTemp00
 	sty.b wTemp01
-	jsr.w func_C36CD7
+	jsr.w PushRoomCandidateToList
 	lda.b $02,s
 	inc a
 	sta.b wTemp00
 	sty.b wTemp01
-	jsr.w func_C36CD7
+	jsr.w PushRoomCandidateToList
 	iny 
 	iny 
 	bra @lbl_C36D86
@@ -6291,7 +6291,7 @@ SetupShopFloorTiles:
 	pla
 	pla
 @lbl_C36DA7:
-	jsr.w func_C36CE8
+	jsr.w PopRandomRoomCandidateFromList
 	bcs @lbl_C36DAE
 	plp 
 	rts
@@ -6361,7 +6361,7 @@ SetupShopFloorTiles:
 	plx
 	stx.b wTemp00
 	sty.b wTemp01
-	jsr.w func_C36CD7
+	jsr.w PushRoomCandidateToList
 	brl @lbl_C36DAE
 
 	
@@ -11009,7 +11009,7 @@ SpawnGuardNPCs:
 	plp                                     ;C39380
 	rtl                                     ;C39381
 
-func_C39382:
+SelectAndPlaceStaircaseRoom:
 	php
 	sep #$30 ;AXY->8
 	jsl.l GetCurrentDungeon
@@ -13041,7 +13041,7 @@ func_C3D2CB:
 	rtl
 
 ;something related to spawning traps
-func_C3D2CC:
+InitializeTrapSpawnList:
 	php
 	sep #$30 ;AXY->8
 	bankswitch 0x7E
@@ -13559,7 +13559,7 @@ Jumptable_C3D555:
 	sta.b wTemp00
 	lda.b wTemp05,s
 	sta.b wTemp02
-	jsl.l func_C36410
+	jsl.l FindEmptyTileNearCoord
 	lda.b wTemp00
 	pha
 	bpl @lbl_C3D6D3
@@ -13577,7 +13577,7 @@ Jumptable_C3D555:
 	jsl.l func_C23B1C
 	ldx.b wTemp00
 	bmi @lbl_C3D6C6
-	jsr.w func_C3D772
+	jsr.w DropItemWithDisplay
 	stx.b wTemp00
 	phx
 	jsl.l GetItemDisplayInfo
@@ -13664,7 +13664,7 @@ Jumptable_C3D555:
 	jsl $C33170                             ;C3D76A
 	rts                                     ;C3D76E
 
-func_C3D772:
+DropItemWithDisplay:
 	stx.b wTemp00
 	phx
 	jsl.l GetItemDisplayInfo
@@ -14331,7 +14331,7 @@ ScrollEffectCheckShortcutItems:
 	lda.b wTemp03
 	cmp.b #$00
 	bne @lbl_C3DCC0
-	jsr.w func_C3DD57
+	jsr.w ApplyLevelScaledDamage
 	bra @lbl_C3DCF8
 @lbl_C3DCC0:
 	cmp.b #$08
@@ -14416,7 +14416,7 @@ ScrollEffectCheckShortcutItems:
 	jsl $C228DF                             ;C3DD52
 	rts                                     ;C3DD56
 
-func_C3DD57:
+ApplyLevelScaledDamage:
 	ldy.w #$0001
 	phy
 	jsl.l func_C28588
@@ -14903,7 +14903,7 @@ func_C3E11A:
 func_C3E130:
 	rtl
 
-func_C3E131:
+GetDemoScriptPtr:
 	php
 	sep #$30 ;AXY->8
 	lda.b wTemp00
@@ -15633,7 +15633,7 @@ func_C3E571:
 	jsl.l func_C3E66B
 	ply
 	sty.b wTemp00
-	jsl.l func_C3E131
+	jsl.l GetDemoScriptPtr
 	jsl.l func_C60037
 	lda.b wTemp00
 	cmp.b #$FF
@@ -15751,7 +15751,7 @@ func_C3E66B:
 	sep #$30 ;AXY->8
 	lda.b wTemp00
 	sta.b w00b5
-	jsl.l func_C3E131
+	jsl.l GetDemoScriptPtr
 	lda.b w00b5
 	asl a
 	clc

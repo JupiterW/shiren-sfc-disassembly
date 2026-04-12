@@ -6030,7 +6030,7 @@ func_81CE34:
 	pha
 	lda.b wTemp02
 	beq @lbl_81CE47
-	jsl.l func_C3E131
+	jsl.l GetDemoScriptPtr
 	stz.b wTemp00
 	jsl.l func_C3E16A
 @lbl_81CE47:

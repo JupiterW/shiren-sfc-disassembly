@@ -691,7 +691,7 @@ func_C605FB:
 	sta.l $7ED606
 	jsl.l ResetFloorData
 	jsl.l func_C602C1
-	jsl.l func_C3D2CC
+	jsl.l InitializeTrapSpawnList
 	lda.l wFloorNum
 	cmp.b #$01
 	bne @lbl_C60619

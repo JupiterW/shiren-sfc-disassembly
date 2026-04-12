@@ -3644,7 +3644,7 @@ func_C12244:
 	jsl.l GetCharacterMapInfo
 	lda.b wTemp00
 	pha
-	jsl.l func_C36410
+	jsl.l FindEmptyTileNearCoord
 	lda.b wTemp00
 	pha
 	bpl @lbl_C1227B

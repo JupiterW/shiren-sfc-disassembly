@@ -6796,7 +6796,7 @@ func_80BE72:
 	.db $E2,$85,$02,$AD,$6E,$04,$29,$03   ;80BEB5
 	.db $D0,$03,$20,$E5,$BF,$C8           ;80BEBD  
 @lbl_80BEC3:
-	jsl.l func_C35FC8
+	jsl.l GetFloorStateFlags
 	lda.b w002d
 	bpl @lbl_80BEDE
 	lda.w $0462

@@ -11319,7 +11319,7 @@ func_C489FE:
 	ldx.w $AA8F
 	lda.w $AA93,x
 	sta.b wTemp00
-	jsl.l func_C3E131
+	jsl.l GetDemoScriptPtr
 	jsl.l func_C3E178
 	lda.b wTemp00
 	stz.b wTemp00

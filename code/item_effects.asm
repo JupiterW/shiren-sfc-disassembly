@@ -5363,7 +5363,7 @@ PlaceThrownItemOnFloor:
 	lda.b wTemp02
 	sta.b wTemp00
 	phx
-	jsl.l func_C36783
+	jsl.l FindAdjacentTileForNPCForced
 	plx
 	lda.b wTemp00
 	bpl @lbl_C3312A

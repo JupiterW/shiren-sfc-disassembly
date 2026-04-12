@@ -175,10 +175,10 @@ func_C151E9:
 	jsl.l func_C62B37
 	lda.b wTemp00
 	beq @lbl_C151F6
-	jsl.l func_C360D7
+	jsl.l FindRandomEmptyTileNoItem
 	rts
 @lbl_C151F6:
-	jsl.l func_C360D7
+	jsl.l FindRandomEmptyTileNoItem
 	ldx.b wTemp00
 	phx
 	jsl.l GetItemData

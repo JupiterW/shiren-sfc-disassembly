@@ -3353,7 +3353,7 @@ func_C23173:
 	lda.b #$14
 @lbl_C23178:
 	pha
-	jsl.l func_C360D7
+	jsl.l FindRandomEmptyTileNoItem
 	lda.b wTemp00
 	sec
 	sbc.l $7E85C8
@@ -5893,7 +5893,7 @@ func_C24390:
 @lbl_C24397:
 	pha
 	phx
-	jsl.l func_C360D7
+	jsl.l FindRandomEmptyTileNoItem
 	plx
 	lda.b wTemp00
 	sec
