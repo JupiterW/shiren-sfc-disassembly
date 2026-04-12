@@ -512,7 +512,7 @@ _SetEvent:
 	;is the event 0x80 or above?
 	cpx.b #$80
 	bcs @lbl_C60492 ;yes
-	jsl.l func_C3E826
+	jsl.l WriteSaveFieldIndexed
 @lbl_C60492:
 	plp
 	rtl
@@ -526,7 +526,7 @@ func_C60494:
 	cpx.b #$80
 	bcs @lbl_C604A7
 	stx.b wTemp00
-	jsl.l func_C3E845
+	jsl.l ReadSaveFieldIndexed
 	lda.b wTemp00
 @lbl_C604A7:
 	sta.l wEventStateArray,x
@@ -536,7 +536,7 @@ func_C60494:
 	ldx.b #$63
 @lbl_C604B2:
 	stx.b wTemp06
-	jsl.l func_C3E85C
+	jsl.l ReadSaveItemRecord
 	lda.b wTemp00
 	sta.l $7ED394,x
 	lda.b wTemp01
@@ -634,7 +634,7 @@ func_C6054A:
 	sta.l $7ED588,x
 	lda.l wPlaying
 	beq @lbl_C6057D
-	jsl.l func_C3E881
+	jsl.l WriteSaveItemRecord
 @lbl_C6057D:
 	plp
 	rtl
@@ -665,7 +665,7 @@ func_C6059A:
 	jsl.l func_C20000
 	jsl.l func_80DF10
 	jsl.l func_80F2FE
-	jsl.l func_C3E8C7
+	jsl.l SelectSaveSlotForLoad
 	lda.b #$00
 	sta.l wLoading
 	lda.l wPlaying
@@ -729,7 +729,7 @@ func_C605FB:
 	jsl.l WriteSaveField0C
 	lda.l $7ED5F9
 	sta.b wTemp00
-	jsl.l func_C3E81D
+	jsl.l WriteSaveField0E
 @lbl_C60678:
 	lda.l wd5ec
 	sta.b wTemp00

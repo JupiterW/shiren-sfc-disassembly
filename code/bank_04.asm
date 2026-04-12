@@ -11449,7 +11449,7 @@ func_C48AC9:
 	jsl.l func_C4A627
 	lda.b #$17
 	sta.b wTemp00
-	jsl.l func_C3E845
+	jsl.l ReadSaveFieldIndexed
 	lda.b wTemp00
 	and.b #$0F
 	beq @lbl_C48B39

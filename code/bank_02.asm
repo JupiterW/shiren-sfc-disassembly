@@ -7588,7 +7588,7 @@ func_C2501C:
 	sep #$10 ;XY->8
 	lda.b wTemp00
 	pha
-	jsl.l func_C36829
+	jsl.l PlaceDoorOnTile
 	pla
 	ldx.b wTemp00
 	beq @lbl_C25051
@@ -12308,7 +12308,7 @@ func_C28C19:
 	sta.b wTemp00
 	lda.b #$00
 	sta.l $7E897B
-	jsl.l func_C3D41F
+	jsl.l UseScrollOnTarget
 	lda.b #$01
 	sta.b wTemp00
 	plp
@@ -12318,7 +12318,7 @@ func_C28C19:
 	sta.b wTemp00
 	lda.b #$00
 	sta.l $7E897B
-	jsl.l func_C3D43B
+	jsl.l UseScrollSelf
 	lda.b #$01
 	sta.b wTemp00
 	plp
@@ -12350,7 +12350,7 @@ func_C28CC3:
 	sta.l wCharTrapsActivated,x
 	phx
 	stx.b wTemp01
-	jsl.l func_C3D528
+	jsl.l UseWeaponScrollEffect
 	jsl.l UpdateGameSystems
 	plx
 @lbl_C28CEA:

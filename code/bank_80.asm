@@ -76,8 +76,8 @@ func_808009:
 	jsl.l func_818FC3
 	jsl.l func_C063B8
 	jsl.l func_C4854D
-	jsl.l func_C3E8C6
-	jsl.l func_C3E130
+	jsl.l SaveNoop
+	jsl.l SaveLoadNoop
 	jsl.l func_C3D2CB
 	jsl.l func_C60000
 	plp
@@ -3686,7 +3686,7 @@ func_C0A13F:
 	bpl @lbl_80A16D
 	jsl.l func_80AD59
 	jsl.l func_80ABD8
-	jsl.l func_C3E097
+	jsl.l GetFloorLayoutData2
 	sep #$30 ;AXY->8
 	bankswitch 0x7F
 	ldy.b #$05
@@ -3700,7 +3700,7 @@ func_C0A13F:
 	sta.w $068E,x
 	dey
 	bpl @lbl_80A195
-	jsl.l func_C3E07E
+	jsl.l GetFloorLayoutData
 	ldy.b #$04
 @lbl_80A1AB:
 	ldx.b w7f0000,y

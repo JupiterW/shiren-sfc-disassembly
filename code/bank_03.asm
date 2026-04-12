@@ -5466,7 +5466,7 @@ FindAdjacentTileForNPCForced:
 	plp                                     ;C36827
 	rtl                                     ;C36828
 
-func_C36829:
+PlaceDoorOnTile:
 	php
 	rep #$30 ;AXY->16
 	lda.b wTemp02
@@ -5501,10 +5501,10 @@ func_C36829:
 	bankswitch 0x7E
 	lda.b wTemp03
 	bne @lbl_C3686D
-	jsr.w func_C3687E
+	jsr.w CheckAndPlaceDoorTile
 	bra @lbl_C36870
 @lbl_C3686D:
-	jsr.w func_C3689A
+	jsr.w CheckAndPlaceStairsOrDoor
 @lbl_C36870:
 	pha
 	jsl.l BuildDoorCandidatesAllRooms
@@ -5517,26 +5517,26 @@ func_C36829:
 	plp
 	rtl
 
-func_C3687E:
+CheckAndPlaceDoorTile:
 	lda.w wTileType,y
 	and.b #$F0
 	cmp.b #$C0
-	bne func_C36897
+	bne DoorPlaceFailure
 	lda.b wTemp04
 	bne func_C36891
 func_C3688B:
-	jsr.w func_C368BE
+	jsr.w ScanForDoorCandidateTile
 	lda.b #$01
 	rts
 func_C36891:
 	jsr $68ED                               ;C36891
 	lda #$01                                ;C36894
 	rts                                     ;C36896
-func_C36897:
+DoorPlaceFailure:
 	lda.b #$00
 	rts
 
-func_C3689A:
+CheckAndPlaceStairsOrDoor:
 	lda.w wTileType,y
 	and.b #$F0
 	cmp.b #$C0
@@ -5556,14 +5556,14 @@ func_C3689A:
 	lda.b #$03
 	rts
 
-func_C368BE:
+ScanForDoorCandidateTile:
 	lda.b #$00
 	xba
 	lda.b wTemp02
 	tax
 @lbl_C368C4:
 	phx
-	jsr.w func_C368ED
+	jsr.w ConvertCandidateToDoor
 	plx
 	rep #$20 ;A->16
 	tya
@@ -5584,11 +5584,11 @@ func_C368BE:
 TileCardinalOffsets:
 	.db $01,$00,$C0,$FF,$FF,$FF,$40,$00   ;C368E5  
 
-func_C368ED:
+ConvertCandidateToDoor:
 	lda.w wTileType,y
 	bit.b #$01
 	beq @lbl_C368FF
-	jsr.w func_C36928
+	jsr.w FindAdjacentRoomIndex
 	lda.b wTemp00
 	bmi @lbl_C368FF
 	ora.b #$70
@@ -5617,7 +5617,7 @@ func_C368ED:
 	sta.w wTileFlags,y
 	rts
 
-func_C36928:
+FindAdjacentRoomIndex:
 	phy
 	ldx.w #$0006
 @lbl_C3692C:
@@ -13227,7 +13227,7 @@ PickRandomTrapType:
 	plp                                     ;C3D41D
 	rtl                                     ;C3D41E
 
-func_C3D41F:
+UseScrollOnTarget:
 	php
 	sep #$30 ;AXY->8
 	lda.b wTemp00
@@ -13241,9 +13241,9 @@ func_C3D41F:
 	jsl.l func_C62735
 	plx
 	rep #$30 ;AXY->16
-	jmp.w func_C3D479
+	jmp.w DispatchScrollEffect
 
-func_C3D43B:
+UseScrollSelf:
 	php
 	sep #$30 ;AXY->8
 	lda.b wTemp00
@@ -13261,7 +13261,7 @@ func_C3D43B:
 	rep #$30 ;AXY->16
 	lda.b wTemp00
 	and.w #$0001
-	beq func_C3D479
+	beq DispatchScrollEffect
 	lda.l ScrollUseMessageId1,x
 	sta.b wTemp00
 	phx
@@ -13272,7 +13272,7 @@ func_C3D43B:
 	jsl.l DisplayMessage
 	plp
 	rtl
-func_C3D479:
+DispatchScrollEffect:
 	lda.l ScrollUseMessageId1,x
 	sta.b wTemp00
 	phx
@@ -13365,7 +13365,7 @@ ScrollUseMessageId2:
 	.dw $0151
 	.dw $0151
 
-func_C3D528:
+UseWeaponScrollEffect:
 	php
 	sep #$30 ;AXY->8
 	lda.b wTemp00
@@ -14817,7 +14817,7 @@ func_C3DD85:
 	jsl.l func_C240D6
 	rts
 
-func_C3E07E:
+GetFloorLayoutData:
 	php
 	rep #$20 ;A->16
 	lda.l $7EC196
@@ -14830,7 +14830,7 @@ func_C3E07E:
 	plp
 	rtl
 
-func_C3E097:
+GetFloorLayoutData2:
 	php
 	rep #$20 ;A->16
 	lda.l $7EC19B
@@ -14854,13 +14854,13 @@ func_C3E097:
 	rts                                     ;C3E0CB
 	rts                                     ;C3E0CC
 
-func_C3E0CD:
+LoadSaveData:
 	sep #$30 ;AXY->8
 	jsl.l SaveReadByte
 	lda.b wTemp00
 	beq @lbl_C3E0DC
 	bmi @lbl_C3E0DC
-	brl func_C3E104
+	brl ApplySaveData
 @lbl_C3E0DC:
 	jsl.l ReadSaveSlotFlags
 	lda.b wTemp00
@@ -14875,9 +14875,9 @@ func_C3E0CD:
 	jsl.l func_C48584
 	jsl.l func_C4014D
 @lbl_C3E100:
-	jsl.l func_C3E11A
+	jsl.l IncrementSaveCounter
 
-func_C3E104:
+ApplySaveData:
 	lda.b #$01
 	sta.b wTemp00
 	jsl.l func_C60003
@@ -14887,7 +14887,7 @@ func_C3E104:
 	stz.b wTemp00
 	jsl.l func_81CFE0
 
-func_C3E11A:
+IncrementSaveCounter:
 	php
 	rep #$20 ;A->16
 	jsl.l ReadSaveField0A
@@ -14900,7 +14900,7 @@ func_C3E11A:
 	plp
 	rtl
 
-func_C3E130:
+SaveLoadNoop:
 	rtl
 
 GetDemoScriptPtr:
@@ -15182,7 +15182,7 @@ SaveStreamReadBlock:
 	plp
 	rtl
 
-func_C3E2F7:
+CopySaveBlockToDemoSlot:
 	php
 	sep #$30 ;AXY->8
 	lda.b wTemp01
@@ -15783,7 +15783,7 @@ SetSaveBlockPtrAndRead:
 	sep #$30 ;AXY->8
 	lda.b wTemp00
 	jsl.l LoadSaveBlockPtr
-	jsl.l func_C3E0CD
+	jsl.l LoadSaveData
 
 InitAndWriteSaveBlock:
 	sep #$30 ;AXY->8
@@ -15799,7 +15799,7 @@ InitAndWriteSaveBlock:
 	jsl.l ClearSaveBlockFields
 	jsl.l WriteValidationString
 	jsl.l WriteSaveBlockChecksum
-	jsl.l func_C3E0CD
+	jsl.l LoadSaveData
 
 ClearSaveBlockFields:
 	php
@@ -15816,7 +15816,7 @@ ClearSaveBlockFields:
 	lda.b #$17
 	sta.b wTemp00
 	stz.b wTemp02
-	jsl.l func_C3E826
+	jsl.l WriteSaveFieldIndexed
 	stz.b wTemp00
 	jsl.l WriteSaveField0C
 	lda.b #$01
@@ -15854,7 +15854,7 @@ CopySaveBlock:
 	sep #$10 ;XY->8
 	lda.b wTemp00
 	pha
-	jsl.l func_C3E2F7
+	jsl.l CopySaveBlockToDemoSlot
 	pla
 	sta.b wTemp00
 	ldx.b wTemp01
@@ -16002,13 +16002,13 @@ ReadSaveField0E:
 	ldy.w #$000E
 	jmp.w ReadSaveFieldAtY
 
-func_C3E81D:
+WriteSaveField0E:
 	php
 	rep #$10 ;XY->16
 	ldy.w #$000E
 	jmp.w WriteSaveFieldAtY
 
-func_C3E826:
+WriteSaveFieldIndexed:
 	php
 	sep #$20 ;A->8
 	lda.b #$00
@@ -16028,7 +16028,7 @@ func_C3E826:
 	plp
 	rtl
 
-func_C3E845:
+ReadSaveFieldIndexed:
 	php
 	sep #$20 ;A->8
 	lda.b #$00
@@ -16044,7 +16044,7 @@ func_C3E845:
 	plp
 	rtl
 
-func_C3E85C:
+ReadSaveItemRecord:
 	php
 	sep #$20 ;A->8
 	stz.b wTemp07
@@ -16070,7 +16070,7 @@ func_C3E85C:
 	plp
 	rtl
 
-func_C3E881:
+WriteSaveItemRecord:
 	php
 	sep #$20 ;A->8
 	stz.b wTemp07
@@ -16112,10 +16112,10 @@ func_C3E881:
 	plp
 	rtl
 
-func_C3E8C6:
+SaveNoop:
 	rtl
 
-func_C3E8C7:
+SelectSaveSlotForLoad:
 	php
 	rep #$30 ;AXY->16
 	lda.w #$0002

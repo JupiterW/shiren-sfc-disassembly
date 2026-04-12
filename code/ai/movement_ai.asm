@@ -170,7 +170,7 @@ func_C260DB:
 	lda.b #$01
 	sta.b wTemp03
 	sta.b wTemp04
-	jsl.l func_C36829
+	jsl.l PlaceDoorOnTile
 	stz.b wTemp00
 	plp
 	rtl
