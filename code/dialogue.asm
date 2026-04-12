@@ -3672,7 +3672,7 @@ func_C12244:
 	lda.b wTemp01,s
 	sta.b wTemp02
 	stx.b wTemp00
-	jsl.l func_C330DA
+	jsl.l ThrowItemOrAbsorbIntoJar
 	jsl.l func_C62545
 	pla
 	pla

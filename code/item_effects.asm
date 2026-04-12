@@ -249,7 +249,7 @@ KignyHerbUseEffect:
 	rts
 
 ;c30a15
-func_C30A15:
+KignyHerbApplyToShiren:
 	sep #$30 ;AXY->8
 	ldx.b #$13
 	stx.b wTemp00
@@ -2175,7 +2175,7 @@ IdentityScrollUseEffect:
 @lbl_C3191D:
 	sty.b wTemp00
 	jsr.w GetTargetItemForScroll
-	jsl.l func_C324F9
+	jsl.l IdentifyTargetItem
 	rts
 @lbl_C31927:
 	ldy #$00                                ;C31927
@@ -2912,7 +2912,7 @@ BufusStaffThrowEffect:
 	pla
 	stx.b wTemp00
 	sta.b wTemp02
-	jsl.l func_C330D1
+	jsl.l DropItemOnFloor
 	rts
 @lbl_C31EB3:
 	pla                                     ;C31EB3
@@ -3696,7 +3696,7 @@ HandsFullScrollUseEffect:
 	jsl $C27FD5                             ;C324F4
 	rts                                     ;C324F8
 
-func_C324F9:
+IdentifyTargetItem:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -4806,7 +4806,7 @@ LoadItemFuseAbilitiesAndDefaults:
 	plp                                     ;C32CFC
 	rtl                                     ;C32CFD
 
-func_C32CFE:
+TickEquippedWeaponDurability:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -5325,14 +5325,14 @@ func_C3303C:
 	plp
 	rtl
 
-func_C330D1:
+DropItemOnFloor:
 	php
 	rep #$20 ;A->16
 	sep #$10 ;XY->8
 	ldy.b #$00
-	bra func_C330FC
+	bra PlaceThrownItemOnFloor
 
-func_C330DA:
+ThrowItemOrAbsorbIntoJar:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -5350,7 +5350,7 @@ func_C330DA:
 @lbl_C330F8:
 	rep #$20 ;A->16
 	ldy.b #$01
-func_C330FC:
+PlaceThrownItemOnFloor:
 	phy
 	ldx.b wTemp00
 	lda.b wTemp02
@@ -5868,7 +5868,7 @@ ExecutePreparedThrowEffect:
 	lda.b wTemp06,s
 	sta.b wTemp00
 	phy
-	jsl.l func_C330DA
+	jsl.l ThrowItemOrAbsorbIntoJar
 	ply
 	lda.b wTemp00
 	bmi @lbl_C334BB

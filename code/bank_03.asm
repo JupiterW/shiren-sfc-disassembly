@@ -13662,7 +13662,7 @@ func_C3D772:
 	sta.b wTemp02
 	stx.b wTemp00
 	phx
-	jsl.l func_C330D1
+	jsl.l DropItemOnFloor
 	plx
 	rts
 	sep #$20 ;A->8

@@ -1735,7 +1735,7 @@ HandleCharacterDeath:
 	sta.b wTemp02
 	pha
 	phy
-	call_savebank func_C330D1
+	call_savebank DropItemOnFloor
 	ply
 	pla
 @lbl_C20F64:
@@ -10421,7 +10421,7 @@ func_C27ECA:
 	lda.l $7E8971
 	bmi @lbl_C27EDF
 	sta.b wTemp00
-	jsl.l func_C32CFE
+	jsl.l TickEquippedWeaponDurability
 @lbl_C27EDF:
 	plp
 	rtl
