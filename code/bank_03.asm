@@ -13290,7 +13290,7 @@ Jumptable_C3D492:
 	.dw $D9C1
 	.dw $DC29
 	.dw $D9E6
-	.dw $DA2E
+	.dw ScrollEffectCheckShortcutItems
 	.dw $DA76
 	.dw $E0AE
 
@@ -13962,9 +13962,16 @@ func_C3D772:
 	plp                                     ;C3DA1A
 	rtl                                     ;C3DA1B
 
-DATA8_C3DA1C:
+; 9 signed 16-bit map position offsets covering a 3x3 area (8 neighbours + center).
+; Used to scan/place items on adjacent tiles. Indexed as word pairs (x*2).
+AdjacentTileOffsets:
 	.db $01,$00,$01,$FF,$00,$FF,$FF,$FE,$FF,$FF,$FF,$00,$00,$01,$01,$01   ;C3DA1C
 	.db $00,$00                           ;C3DA2C
+
+; Scroll use effect: checks if any category-shortcut item slot is occupied.
+; If all four shortcut categories are empty: plays visual $33 and shows "no effect" message.
+; Otherwise: plays visual $22, applies effect via $C34153, shows success message.
+ScrollEffectCheckShortcutItems:
 	sep #$20 ;A->8
 	jsl.l GetCategoryShortcutItemIds
 	lda.b wTemp00
@@ -14142,7 +14149,7 @@ DATA8_C3DA1C:
 	rep #$20                                ;C3DB82
 	tya                                     ;C3DB84
 	clc                                     ;C3DB85
-	adc $C3DA1C,x                           ;C3DB86
+	adc.l AdjacentTileOffsets,x            ;C3DB86
 	sta $00                                 ;C3DB88
 	sta $06                                 ;C3DB8A
 	phx                                     ;C3DB8C
@@ -14257,7 +14264,7 @@ DATA8_C3DA1C:
 	rep #$20 ;A->16
 	tya
 	clc
-	adc.l DATA8_C3DA1C,x
+	adc.l AdjacentTileOffsets,x
 	sta.b wTemp00
 	sta.b wTemp06
 	phx

@@ -2299,7 +2299,7 @@ BigpotScrollUseEffect:
 	txy                                     ;C31A0F
 	lda $7E8B8C,x                           ;C31A10
 	tax                                     ;C31A14
-	lda $C341BB,x                           ;C31A15
+	lda.l ItemCategoryByType,x                           ;C31A15
 	tyx                                     ;C31A19
 	cmp #$0B                                ;C31A1A
 	.db $D0,$38   ;C31A1C
@@ -3419,7 +3419,7 @@ ExtractionScrollUseEffect:
 	tax                                     ;C32268
 	lda $7E8B8C,x                           ;C32269
 	tax                                     ;C3226D
-	lda $C341BB,x                           ;C3226E
+	lda.l ItemCategoryByType,x                           ;C3226E
 	cmp #$0B                                ;C32272
 	.db $D0,$2E   ;C32274
 	lda #$13                                ;C32276
@@ -4403,10 +4403,10 @@ WalrusJarUseEffect:
 	stx $00                                 ;C32A37
 	sty $01                                 ;C32A39
 	ldx $8B8C,y                             ;C32A3B
-	lda $C341BB,x                           ;C32A3E
+	lda.l ItemCategoryByType,x                           ;C32A3E
 	ldy $00                                 ;C32A42
 	ldx $8B8C,y                             ;C32A44
-	cmp $C341BB,x                           ;C32A47
+	cmp.l ItemCategoryByType,x             ;C32A47
 	beq @lbl_C32A4E                         ;C32A4B
 	rts                                     ;C32A4D
 @lbl_C32A4E:
@@ -5555,7 +5555,7 @@ ExtractItemFromJar:
 	stx $00                                 ;C3325F
 	lda $7E8B8C,x                           ;C33261
 	tax                                     ;C33265
-	lda $C341BB,x                           ;C33266
+	lda.l ItemCategoryByType,x                           ;C33266
 	sta $01                                 ;C3326A
 	lda #$0240                              ;C3326C
 	sta $02                                 ;C3326F
@@ -5924,7 +5924,7 @@ MapDirectionDeltaY:
 	.db $00, $C4, $C4, $C4, $00, $3C, $3C, $3C  ; E/NE/N/NW/W/SW/S/SE
 
 ; Executes a thrown item's flight trajectory from the thrower's position.
-; Computes the target tile using the item's throw class ($C341BB) and direction deltas
+; Computes the target tile using the item's throw class (ItemCategoryByType) and direction deltas
 ; from MapDirectionOffsets, then walks tile-by-tile calling $C359AF (check tile).
 ; On hitting a wall: places item on floor via $C306F4.
 ; On hitting a character: plays hit visual effect, shows hit message, dispatches throw effect.
@@ -5934,7 +5934,7 @@ ExecuteItemThrowTrajectory:
 	sta $00                                 ;C334F1
 	lda $05,s                               ;C334F3
 	tax                                     ;C334F5
-	lda $C341BB,x                           ;C334F6
+	lda.l ItemCategoryByType,x                           ;C334F6
 	sta $01                                 ;C334FA
 	lda #$44                                ;C334FC
 	sta $02                                 ;C334FE
@@ -6011,14 +6011,14 @@ ExecuteItemThrowTrajectory:
 	lda $06,s                               ;C33576
 	sta $01                                 ;C33578
 	phx                                     ;C3357A
-	jsl $C2286F                             ;C3357B
+	jsl CheckAttackHitDefaultThreshold      ;C3357B
 	plx                                     ;C3357F
 	ldy $00                                 ;C33580
 	.db $F0,$71   ;C33582
 	txy                                     ;C33584
 	lda $07,s                               ;C33585
 	tax                                     ;C33587
-	lda $C341BB,x                           ;C33588
+	lda.l ItemCategoryByType,x                           ;C33588
 	cmp #$00                                ;C3358C
 	beq @lbl_C33598                         ;C3358E
 	cmp #$07                                ;C33590
@@ -6037,7 +6037,7 @@ ExecuteItemThrowTrajectory:
 	sty $03                                 ;C335A4
 	lda $07,s                               ;C335A6
 	tax                                     ;C335A8
-	lda $C341BB,x                           ;C335A9
+	lda.l ItemCategoryByType,x                           ;C335A9
 	ldx #$14                                ;C335AD
 	cmp #$04                                ;C335AF
 	bne @lbl_C335B5                         ;C335B1
