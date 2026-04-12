@@ -3148,7 +3148,7 @@ DetermineNextFloor:
 @lbl_C354E3:
 	lda.l DATA8_C35556,x
 	sta.b wTemp00
-	lda.l DATA8_C35557,x
+	lda.l ItemTypeWeightBreakpoints,x
 	dec a
 	sta.b wTemp01
 	jsl.l GetRandomInRange
@@ -3180,7 +3180,7 @@ DATA8_C35501:
 DATA8_C35556:
 	.db $00                               ;C35556
 
-DATA8_C35557:
+ItemTypeWeightBreakpoints:
 	.db $0A,$14,$1E,$28,$32               ;C35557
 	.db $3C,$46,$4B,$50,$55               ;C3555C  
 
@@ -4826,11 +4826,11 @@ FindEmptyAdjacentTileForItem:
 @lbl_C36339:
 	lda.b wTemp01,s
 	clc
-	adc.l DATA8_C363EC,x
+	adc.l TileAdjacentDeltaX,x
 	sta.b wTemp00
 	lda.b wTemp02,s
 	clc
-	adc.l DATA8_C363FE,x
+	adc.l TileAdjacentDeltaY,x
 	sta.b wTemp01
 	jsr.w IsTileValidForItem
 	lda.b wTemp00
@@ -4890,11 +4890,11 @@ FindEmptyAdjacentTileForNPC:
 @lbl_C363A1:
 	lda.b wTemp01,s
 	clc
-	adc.l DATA8_C363EC,x
+	adc.l TileAdjacentDeltaX,x
 	sta.b wTemp00
 	lda.b wTemp02,s
 	clc
-	adc.l DATA8_C363FE,x
+	adc.l TileAdjacentDeltaY,x
 	sta.b wTemp01
 	jsr.w IsTileValidForNPC
 	lda.b wTemp00
@@ -4933,12 +4933,12 @@ IsTileValidForNPC:
 	sta.b wTemp01
 	rts
 
-DATA8_C363EC:
+TileAdjacentDeltaX:
 	.db $FF,$00,$01,$FF,$00,$01,$FF,$00   ;C363EC
 	.db $01,$FF,$00                       ;C363F4
 	.db $01,$FF,$00,$01,$FF,$00,$01       ;C363F7  
 
-DATA8_C363FE:
+TileAdjacentDeltaY:
 	.db $FF,$FF,$FF,$00,$00,$00,$01,$01   ;C363FE
 	.db $01,$FF,$FF                       ;C36406
 	.db $FF,$00,$00,$00,$01,$01,$01       ;C36409  
@@ -4967,7 +4967,7 @@ func_C36410:
 	clc
 	adc.b wTemp01,s
 	tax
-	lda.l UNREACH_C36488,x
+	lda.l StaircaseCandidateOffsets,x
 	clc
 	adc.b wTemp04,s
 	tax
@@ -5008,7 +5008,7 @@ func_C36410:
 	plp
 	rtl
 
-UNREACH_C36488:
+StaircaseCandidateOffsets:
 	.db $04,$00,$83,$00,$83,$FF,$43,$00   ;C36488  
 	.db $C3,$FF,$03,$00                   ;C36490  
 	.db $42,$00,$C2,$FF,$02,$00,$01,$00,$C4,$FF,$01,$FF,$83,$FF,$42,$FF   ;C36494
@@ -5568,7 +5568,7 @@ func_C368BE:
 	rep #$20 ;A->16
 	tya
 	clc
-	adc.l UNREACH_C368E5,x
+	adc.l TileCardinalOffsets,x
 	tay
 	sep #$20 ;A->8
 	lda.w $A95F,y
@@ -5581,7 +5581,7 @@ func_C368BE:
 @lbl_C368E4:
 	rts
 
-UNREACH_C368E5:
+TileCardinalOffsets:
 	.db $01,$00,$C0,$FF,$FF,$FF,$40,$00   ;C368E5  
 
 func_C368ED:
@@ -5624,7 +5624,7 @@ func_C36928:
 	rep #$20 ;A->16
 	lda.b wTemp01,s
 	clc
-	adc.l UNREACH_C368E5,x
+	adc.l TileCardinalOffsets,x
 	tay
 	sep #$20 ;A->8
 	lda.w $A95F,y
@@ -8850,7 +8850,7 @@ SpawnBoulderClusters:
 	stz.b wTemp01
 	ldx.b wTemp00
 	stz.b wTemp00
-	lda.l UNREACH_C380F1,x
+	lda.l BoulderClusterSizeTable,x
 	sta.b wTemp01
 	phx
 	jsl.l GetRandomInRange
@@ -8864,7 +8864,7 @@ SpawnBoulderClusters:
 	dec a
 	asl a
 	tax
-	lda.l UNREACH_C380FB,x
+	lda.l BoulderClusterShapePtrs,x
 	clc
 	adc.b wTemp00
 	sta.b w00a9
@@ -8886,10 +8886,10 @@ SpawnBoulderClusters:
 	plp
 	rts
 
-UNREACH_C380F1:
+BoulderClusterSizeTable:
 	.db $00,$08,$0B,$15,$23,$13,$07,$07,$03,$00
 
-UNREACH_C380FB:
+BoulderClusterShapePtrs:
 	.dw Data_c3810d
 	.dw Data_c3811f
 	.dw Data_c3814f
@@ -9759,9 +9759,9 @@ SpawnDungeonMonsters:
 	lda.b wTemp00
 	asl a
 	tax
-	lda.l UNREACH_C38AA7,x
+	lda.l MonsterSpawnTableBank,x
 	sta.b w00a9
-	lda.l UNREACH_C38AA8,x
+	lda.l MonsterSpawnTablePtrs,x
 	sta.b w00aa
 	restorebank
 	ldy.w #$0000
@@ -9806,10 +9806,10 @@ SpawnDungeonMonsters:
 	plp
 	rtl
 
-UNREACH_C38AA7:
+MonsterSpawnTableBank:
 	.db $C1                               ;C38AA7  
 
-UNREACH_C38AA8:
+MonsterSpawnTablePtrs:
 	.db $8A                               ;C38AA8
 	.db $C7,$8A                           ;C38AA9
 	.db $C7,$8A,$D3,$8A,$C7,$8A,$C7,$8A,$C7,$8A,$C7,$8A,$C7,$8A,$C7,$8A   ;C38AAB  
@@ -12495,7 +12495,7 @@ SpawnRoomItems:
 	ldy.b #$0E
 @lbl_C39E42:
 	tyx
-	lda.l DATA8_C39F85,x
+	lda.l ShopFloorTileTypes,x
 	tax
 	lda.l $7E89C3,x
 	cmp.b #$10
@@ -12513,7 +12513,7 @@ SpawnRoomItems:
 	rts
 @lbl_C39E61:
 	tyx
-	lda.l UNREACH_C39F94,x
+	lda.l ShopItemXPositions,x
 	sta.b wTemp00
 	clc
 	adc.b #$06
@@ -12527,7 +12527,7 @@ SpawnRoomItems:
 	clc
 	adc.b #$05
 	pha
-	lda.l UNREACH_C39FA3,x
+	lda.l ShopItemXWeights,x
 	sta.b wTemp00
 	clc
 	adc.b #$06
@@ -12673,17 +12673,17 @@ SpawnRoomItems:
 	plp
 	rts
 
-DATA8_C39F85:
+ShopFloorTileTypes:
 	.db $11,$12,$13,$14,$15,$21,$22,$23   ;C39F85
 	.db $24,$25,$31,$32,$33,$34,$35       ;C39F8D
 
-UNREACH_C39F94:
+ShopItemXPositions:
 	.db $05,$10,$1B,$26,$31,$05,$10,$1B   ;C39F94  
 	.db $26                               ;C39F9C  
 	.db $31                               ;C39F9D
 	.db $05,$10,$1B,$26,$31               ;C39F9E  
 
-UNREACH_C39FA3:
+ShopItemXWeights:
 	.db $05,$05,$05,$05,$05,$10,$10,$10   ;C39FA3  
 	.db $10                               ;C39FAB  
 	.db $10                               ;C39FAC
@@ -13106,7 +13106,7 @@ func_C3D2CC:
 	cmp.b #$06
 	bcs @lbl_C3D33B
 	tax
-	lda.l DATA8_C3D398,x
+	lda.l RareTrapTypeTable,x
 	ldx.b wTemp06
 	beq @lbl_C3D358
 	ldx.b wTemp04
@@ -13134,7 +13134,7 @@ func_C3D2CC:
 	cmp.b #$0D
 	bcs @lbl_C3D36C
 	tax
-	lda.l DATA8_C3D39E,x
+	lda.l CommonTrapTypeTable,x
 	ldx.b wTemp06
 	beq @lbl_C3D385
 	cmp #Trap_HungerTrap
@@ -13153,10 +13153,10 @@ func_C3D2CC:
 	plp
 	rtl
 
-DATA8_C3D398:
+RareTrapTypeTable:
 	.db $01,$02,$11,$07,$14,$10           ;C3D398
 
-DATA8_C3D39E:
+CommonTrapTypeTable:
 	.db $04,$06,$08,$05,$09,$0A,$16,$0E   ;C3D39E
 	.db $12,$0D,$0F,$13,$17               ;C3D3A6
 
@@ -15658,7 +15658,7 @@ func_C3E5CD:
 	ldx.w #$0000
 	sep #$20 ;A->8
 @lbl_C3E5DD:
-	lda.l DATA8_C3E5EC,x
+	lda.l SaveValidationString,x
 	beq @lbl_C3E5EA
 	sta.w wTemp01,y
 	inx
@@ -15668,7 +15668,7 @@ func_C3E5CD:
 	plp
 	rtl
 
-DATA8_C3E5EC:
+SaveValidationString:
 	.db $56,$41,$4C,$49,$44,$00
 
 func_C3E5F2:
@@ -15683,7 +15683,7 @@ func_C3E5F2:
 	ldx.w #$0000
 	sep #$20 ;A->8
 @lbl_C3E606:
-	lda.l DATA8_C3E5EC,x
+	lda.l SaveValidationString,x
 	beq @lbl_C3E615
 	cmp.w wTemp01,y
 	bne @lbl_C3E625
@@ -15837,7 +15837,7 @@ func_C3E706:
 	ldx.w #$0000
 	sep #$20 ;A->8
 @lbl_C3E71A:
-	lda.l DATA8_C3E5EC,x
+	lda.l SaveValidationString,x
 	beq @lbl_C3E729
 	lda.b #$00
 	sta.w wTemp01,y
@@ -16452,9 +16452,9 @@ MapDPadBitsToDirection:
 	lda.b wTemp00
 	and.w #$000F
 @lbl_C3EB63:
-	cmp.w DATA8_C3EB77,x
+	cmp.w ItemActionPriorityTableA,x
 	bne @lbl_C3EB70
-	lda.w DATA8_C3EB87,x
+	lda.w ItemActionPriorityTableB,x
 	sta.b wTemp00
 	plp
 	clc
@@ -16467,10 +16467,10 @@ MapDPadBitsToDirection:
 	sec
 	rtl
 
-DATA8_C3EB77:
+ItemActionPriorityTableA:
 	.db $09,$00,$05,$00,$0A,$00,$06,$00,$08,$00,$01,$00,$04,$00,$02,$00   ;C3EB77
 
-DATA8_C3EB87:
+ItemActionPriorityTableB:
 	.db $01,$00,$07,$00,$03,$00,$05,$00,$02,$00,$00,$00,$06,$00,$04,$00   ;C3EB87
 
 func_C3EB97:
@@ -17036,19 +17036,19 @@ BuildGroundContainerInsertCommand:
 	lda.b wTemp01
 	ldx.b #$03
 @lbl_C3F1AB:
-	cmp.l UNREACH_C3F1B6,x
+	cmp.l ContainerItemTypes,x
 	beq func_C3F1C7
 	dex
 	bpl @lbl_C3F1AB
 	.db $80,$1B                           ;C3F1B4  
 
-UNREACH_C3F1B6:
+ContainerItemTypes:
 	.db $B9,$BE,$B5,$C1                   ;C3F1B6  
 func_C3F1BA:
 	lda.b wTemp01
 	ldx.b #$02
 @lbl_C3F1BE:
-	cmp.l DATA8_C3F1CE,x
+	cmp.l MergeableItemTypes,x
 	beq func_C3F1D1
 	dex
 	bpl @lbl_C3F1BE
@@ -17058,7 +17058,7 @@ func_C3F1C7:
 	sta.b wTemp00
 	bra func_C3F1F0
 
-DATA8_C3F1CE:
+MergeableItemTypes:
 	.db $57,$59,$6D                       ;C3F1CE
 func_C3F1D1:
 	stz.b wTemp00
