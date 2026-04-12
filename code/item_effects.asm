@@ -253,6 +253,7 @@ func_C30A15:
 	sep #$30 ;AXY->8
 	ldx.b #$13
 	stx.b wTemp00
+KignyHerbThrowEffect:
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
 	lda.b #$32
@@ -1149,6 +1150,7 @@ AngelSeedUseEffect:
 	sep #$20                                ;C310CA
 	lda #$13                                ;C310CC
 	sta $00                                 ;C310CE
+AngelSeedThrowEffect:
 	sep #$20                                ;C310D0
 	lda #$05                                ;C310D2
 	sta $01                                 ;C310D4
@@ -1274,6 +1276,7 @@ LifeHerbUseEffect:
 	jsl.l DisplayMessage
 	lda.b #$13
 	sta.b wTemp00
+LifeHerbThrowEffect:
 	sep #$20 ;A->8
 	lda.b #$05
 	sta.b wTemp02
@@ -1429,6 +1432,7 @@ func_C312FF:
 	rtl
 	jsr $130A                               ;C31306
 	rtl                                     ;C31309
+PoisonHerbThrowEffect:
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
 	cpx.b #$13
@@ -1475,6 +1479,7 @@ ConfusionHerbUseEffect:
 	sep #$20                                ;C31361
 	lda #$15                                ;C31363
 	.db $80,$E1   ;C31365
+ConfusionHerbThrowEffect:
 	sep #$30                                ;C31367
 	ldx $00                                 ;C31369
 	stx $02                                 ;C3136B
@@ -1521,6 +1526,7 @@ SleepHerbUseEffect:
 	sep #$20                                ;C313BE
 	lda #$0A                                ;C313C0
 	.db $80,$E1   ;C313C2
+SleepHerbThrowEffect:
 	sep #$20                                ;C313C4
 	lda #$05                                ;C313C6
 	sta $01                                 ;C313C8
@@ -2076,7 +2082,7 @@ LightScrollUseEffect:
 	jsl.l DisplayMessage
 @lbl_C31862:
 	rts
-func_C31863:
+AlreadyNormalFormMessage:
 	rep #$20                                ;C31863
 	lda #$0055                              ;C31865
 	sta $00                                 ;C31868
@@ -2118,7 +2124,7 @@ HasteScrollUseEffect:
 SleepScrollUseEffect:
 	jsl.l func_C28790
 	rts
-func_C318B9:
+EventGatedScrollUseEffect:
 	sep #$20                                ;C318B9
 	lda #$1E                                ;C318BB
 	sta $00                                 ;C318BD
@@ -2345,7 +2351,7 @@ BigpotScrollUseEffect:
 	stz $01                                 ;C31A74
 	jsl.l DisplayMessage
 	rts                                     ;C31A7A
-func_C31A7B:
+WeaponUpgradeScrollUseEffect:
 	rep #$20                                ;C31A7B
 	sep #$10                                ;C31A7D
 	lda #$0089                              ;C31A7F
@@ -2821,15 +2827,18 @@ DiscountArmbandUseEffect:
 	rts                                     ;C31E0A
 	rts                                     ;C31E0B
 KnockbackStaffUseEffect:
+KnockbackStaffThrowEffect:
 	jsl.l func_C2444B
 	rts
 DoppelgangerStaffUseEffect:
+DoppelgangerStaffThrowEffect:
 	sep #$20 ;A->8
 	lda.b #$32
 	sta.b wTemp01
 	jsl.l func_C2402A
 	rts
 SwitchingStaffUseEffect:
+SwitchingStaffThrowEffect:
 	rep #$20 ;A->16
 	sep #$10 ;XY->8
 	lda.b wTemp00
@@ -2862,6 +2871,7 @@ SwitchingStaffUseEffect:
 	jsl.l func_C289F5
 	rts
 BufusStaffUseEffect:
+BufusStaffThrowEffect:
 	rep #$20 ;A->16
 	sep #$10 ;XY->8
 	ldx.b wTemp00
@@ -2915,6 +2925,7 @@ BufusStaffUseEffect:
 	jsl $C625E5                             ;C31EBE
 	rts                                     ;C31EC2
 SkullStaffUseEffect:
+SkullStaffThrowEffect:
 	rep #$20 ;A->16
 	sep #$10 ;XY->8
 	lda.b wTemp00
@@ -3000,7 +3011,9 @@ Jumptable_C31F29:
 	.dw $0000
 	.dw $0000
 HappinessStaffUseEffect:
-	.dw $30E2
+	.db $E2
+HappinessStaffThrowEffect:
+	.db $30
 	.dw $00A5
 	.dw $13C9
 	.dw $1DD0
@@ -3034,6 +3047,7 @@ HappinessStaffUseEffect:
 	.dw $60C6
 
 MisfortuneStaffUseEffect:
+MisfortuneStaffThrowEffect:
 	sep #$20 ;A->8
 	jsl.l func_C625CE
 	lda.b #$FF
@@ -3114,11 +3128,13 @@ InvisibilityHerbThrowEffect:
 	jsl PlayVisualEffect                             ;C32039
 	rts                                     ;C3203D
 SlothStaffUseEffect:
+SlothStaffThrowEffect:
 	jsl $C28305                             ;C3203E
 	rts                                     ;C32042
 	jsl $C28350                             ;C32043
 	rts                                     ;C32047
 ParalysisStaffUseEffect:
+ParalysisStaffThrowEffect:
 	sep #$20 ;A->8
 	lda.b #$03
 	sta.b wTemp02
@@ -3138,6 +3154,7 @@ ParalysisStaffUseEffect:
 	jsl.l func_C625CE
 	rts
 PostponeStaffUseEffect:
+PostponeStaffThrowEffect:
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
 	phx
@@ -3169,6 +3186,7 @@ PostponeStaffUseEffect:
 	jsl $C24390                             ;C320AB
 	rts                                     ;C320AF
 PainSplitStaffUseEffect:
+PainSplitStaffThrowEffect:
 	sep #$30 ;AXY->8
 	jsl.l func_C28451
 	rts
@@ -6077,6 +6095,7 @@ func_C335FE:
 	lda.b #$00
 	plp
 	rts
+WeaponThrowEffect:
 	sep #$30                                ;C3364F
 	txy                                     ;C33651
 	lda $7E8B8C,x                           ;C33652
@@ -6088,6 +6107,7 @@ func_C335FE:
 	sta $02                                 ;C33661
 	jsl $C22D1A                             ;C33663
 	rts                                     ;C33667
+ShieldThrowEffect:
 	sep #$30                                ;C33668
 	txy                                     ;C3366A
 	lda $7E8B8C,x                           ;C3366B
@@ -6112,16 +6132,17 @@ func_C335FE:
 	stx $00                                 ;C33691
 	jsl $C228DF                             ;C33693
 	rts                                     ;C33697
+WoodArrowThrowEffect:
 	sep #$30 ;AXY->8
 	lda.b #$05
-@lbl_C3369C:
+lbl_C3369C:
 	ldy.b wTemp00
 	cpy.b #$13
-	beq @lbl_C336A9
+	beq lbl_C336A9
 	sta.b wTemp02
 	jsl.l func_C22D1A
 	rts
-@lbl_C336A9:
+lbl_C336A9:
 	ldy.b wTemp01
 	ldx.b wTemp00
 	sty.b wTemp00
@@ -6134,12 +6155,15 @@ func_C335FE:
 	sty.b wTemp01
 	jsl.l func_C228EF
 	rts
+IronArrowThrowEffect:
 	sep #$30 ;AXY->8
 	lda.b #$0C
-	bra @lbl_C3369C
+	bra lbl_C3369C
+IronArrowThrowEffect_Heavy:
 	sep #$30                                ;C336C8
 	lda #$0A                                ;C336CA
 	.db $80,$CE   ;C336CC
+SilverArrowThrowEffect:
 	sep #$30                                ;C336CE
 	phy                                     ;C336D0
 	lda #$43                                ;C336D1
@@ -6157,6 +6181,7 @@ func_C335FE:
 	sta $02                                 ;C336EC
 	jsl PlayVisualEffect                             ;C336EE
 	rts                                     ;C336F2
+JarThrowEffect:
 	rep #$20                                ;C336F3
 	sep #$10                                ;C336F5
 	lda $00                                 ;C336F7
@@ -6176,6 +6201,7 @@ func_C335FE:
 	jsl $C33170                             ;C33711
 	plx                                     ;C33715
 	rts                                     ;C33716
+UnbreakableJarThrowEffect:
 	rep #$20                                ;C33717
 	sep #$10                                ;C33719
 	lda $00                                 ;C3371B
@@ -6183,6 +6209,7 @@ func_C335FE:
 	sta $02                                 ;C3371F
 	jsl $C33170                             ;C33721
 	rts                                     ;C33725
+BlessingScrollThrowEffect:
 	sep #$20                                ;C33726
 	rep #$10                                ;C33728
 	ldy $00                                 ;C3372A
@@ -6193,7 +6220,7 @@ func_C335FE:
 	beq @lbl_C3373D                         ;C33735
 	ply                                     ;C33737
 	sty $00                                 ;C33738
-	jmp $3878                               ;C3373A
+	jmp DefaultThrowEffect                  ;C3373A
 @lbl_C3373D:
 	plx                                     ;C3373D
 	sep #$10                                ;C3373E
@@ -6226,6 +6253,7 @@ func_C335FE:
 	jsl.l DisplayMessage
 	jsl $C62437                             ;C33777
 	rts                                     ;C3377B
+IdentityJarThrowEffect:
 	sep #$20                                ;C3377C
 	rep #$10                                ;C3377E
 	ldy $00                                 ;C33780
@@ -6245,6 +6273,7 @@ func_C335FE:
 	ply                                     ;C3379C
 	sty $00                                 ;C3379D
 	jmp $36F3                               ;C3379F
+IdentityScrollThrowEffect:
 	sep #$20                                ;C337A2
 	rep #$10                                ;C337A4
 	ldy $00                                 ;C337A6
@@ -6255,7 +6284,7 @@ func_C335FE:
 	beq @lbl_C337B9                         ;C337B1
 	ply                                     ;C337B3
 	sty $00                                 ;C337B4
-	jmp $3878                               ;C337B6
+	jmp DefaultThrowEffect                  ;C337B6
 @lbl_C337B9:
 	lda $01,s                               ;C337B9
 	sta $00                                 ;C337BB
@@ -6279,11 +6308,12 @@ func_C335FE:
 	jsl.l _SetEvent
 	ply                                     ;C337EF
 	rts                                     ;C337F0
+WeedsThrowEffect:
 	sep #$30                                ;C337F1
 	lda $00                                 ;C337F3
 	cmp #$13                                ;C337F5
 	beq @lbl_C337FC                         ;C337F7
-	jmp $3878                               ;C337F9
+	jmp DefaultThrowEffect                  ;C337F9
 @lbl_C337FC:
 	lda $00                                 ;C337FC
 	pha                                     ;C337FE
@@ -6321,7 +6351,7 @@ func_C335FE:
 	sta $01                                 ;C33837
 	pla                                     ;C33839
 	sta $00                                 ;C3383A
-	jmp $3878                               ;C3383C
+	jmp DefaultThrowEffect                  ;C3383C
 @lbl_C3383F:
 	pla                                     ;C3383F
 	lda $7E8C8C,x                           ;C33840
@@ -6353,7 +6383,7 @@ func_C335FE:
 	pla                                     ;C33875
 	pla                                     ;C33876
 	rts                                     ;C33877
-@lbl_C33878:
+DefaultThrowEffect:
 	rep #$20                                ;C33878
 	lda $00                                 ;C3387A
 	pha                                     ;C3387C
@@ -6366,6 +6396,7 @@ func_C335FE:
 	sta $00                                 ;C3388B
 	jsl $C228DF                             ;C3388D
 	rts                                     ;C33891
+OnigiriThrowEffect:
 	rep #$20                                ;C33892
 	sep #$10                                ;C33894
 	lda $00                                 ;C33896
@@ -6377,7 +6408,7 @@ func_C335FE:
 	cpx #$50                                ;C338A2
 	beq @lbl_C338BE                         ;C338A4
 	cpx #$23                                ;C338A6
-	bne @lbl_C33878                         ;C338A8
+	bne DefaultThrowEffect                  ;C338A8
 	pha                                     ;C338AA
 	jsl.l GetCharacterStats                             ;C338AB
 	lda $00                                 ;C338AF
@@ -6401,6 +6432,7 @@ func_C335FE:
 	sta $01                                 ;C338D5
 	jsl.l DisplayMessage
 	rts                                     ;C338DB
+GitanThrowEffect:
 	rep #$20                                ;C338DC
 	lda $00                                 ;C338DE
 	pha                                     ;C338E0
@@ -6428,6 +6460,7 @@ func_C335FE:
 	sta $00                                 ;C3390D
 	jsl $C228DF                             ;C3390F
 	rts                                     ;C33913
+MonsterMeatThrowEffect:
 	sep #$30                                ;C33914
 	lda $00                                 ;C33916
 	pha                                     ;C33918
@@ -6449,6 +6482,7 @@ func_C335FE:
 	jsl $C625B9                             ;C3393C
 @lbl_C33940:
 	rts                                     ;C33940
+ArmbandThrowEffect:
 	rep #$20                                ;C33941
 	lda $00                                 ;C33943
 	pha                                     ;C33945
@@ -6461,6 +6495,7 @@ func_C335FE:
 	sta $00                                 ;C33954
 	jsl $C228DF                             ;C33956
 	rts                                     ;C3395A
+RemovalScrollThrowEffect:
 	sep #$20                                ;C3395B
 	lda $00                                 ;C3395D
 	pha                                     ;C3395F
@@ -6493,6 +6528,7 @@ DragonHerbThrowEffect:
 	sty $00                                 ;C33995
 	jsl $C228DF                             ;C33997
 	rts                                     ;C3399B
+SightHerbThrowEffect:
 	sep #$20                                ;C3399C
 	lda $00                                 ;C3399E
 	stz $01                                 ;C339A0

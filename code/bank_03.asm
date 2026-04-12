@@ -2608,13 +2608,13 @@ ItemUseEffectFunctionTable:
 	.dw BigpotScrollUseEffect-1 ;BigpotScroll
 	.dw BlastwaveScrollUseEffect-1 ;BlastwaveScroll
 	.dw SilenceScrollUseEffect-1 ;SilenceScroll
-	.dw func_C31A7B-1 ;5C
+	.dw WeaponUpgradeScrollUseEffect-1 ;5C
 	.dw TrapScrollUseEffect-1 ;TrapScroll
 	.dw NeedScrollUseEffect-1 ;NeedScroll
 	.dw HasteScrollUseEffect-1 ;HasteScroll
 	.dw SleepScrollUseEffect-1 ;SleepScroll
 	.dw PowerupScrollUseEffect-1 ;PowerupScroll
-	.dw func_C318B9-1 ;62
+	.dw EventGatedScrollUseEffect-1 ;62
 	.dw ExplosionScrollUseEffect-1 ;ExplosionScroll
 	.dw GreatHallScrollUseEffect-1 ;GreatHallScroll
 	.dw MonsterHouseScrollUseEffect-1 ;MonsterHouseScroll
@@ -2628,7 +2628,7 @@ ItemUseEffectFunctionTable:
 	.dw ExtractionScrollUseEffect-1 ;ExtractionScroll
 	.dw HandsFullScrollUseEffect-1 ;HandsFullScroll
 	.dw UnusedItemUseEffect-1 ;6F
-	.dw func_C31863-1 ;70
+	.dw AlreadyNormalFormMessage-1 ;70
 	.dw UnusedItemUseEffect-1
 	.dw UnusedItemUseEffect-1
 	.dw UnusedItemUseEffect-1
@@ -2751,238 +2751,238 @@ ItemUseEffectFunctionTable:
 
 ;c3472b
 ItemThrowEffectFunctionTable:
-	.dw $364E ;Cudgel
-	.dw $364E ;Nagamaki
-	.dw $364E ;BufusCleaver
-	.dw $364E ;Katana
-	.dw $364E ;Dragonkiller
-	.dw $364E ;Mastersword
-	.dw $364E ;KabrasBlade
-	.dw $364E ;SickleSlayer
-	.dw $364E ;Pickaxe
-	.dw $364E ;HomingBlade
-	.dw $364E ;MinotaursAxe
-	.dw $364E ;RazorWind
-	.dw $364E ;CyclopsKiller
-	.dw $364E ;DrainBuster
-	.dw $364E ;Firebrand
-	.dw $364E ;KabraReborn
-	.dw $3697 ;WoodArrow
-	.dw $36C1 ;IronArrow
-	.dw $36C7 ;SilverArrow
-	.dw $3877 ;13
-	.dw $3877 ;14
-	.dw $3877 ;15
-	.dw $3667 ;HideShield
-	.dw $3667 ;Bronzeward
-	.dw $3667 ;AntiPoisonShield
-	.dw $3667 ;WoodShield
-	.dw $3667 ;IronShield
-	.dw $3667 ;Dragonward
-	.dw $3667 ;Windshield
-	.dw $3667 ;SpikedWard
-	.dw $3667 ;ArmorWard
-	.dw $3667 ;EchoShield
-	.dw $3667 ;EvasiveShield
-	.dw $3667 ;FancyShield
-	.dw $3667 ;FragileShield
-	.dw $3667 ;BlastShield
-	.dw $3667 ;WalrusShield
-	.dw $3667 ;Stormward
-	.dw $3667 ;26
-	.dw $3667 ;27
+	.dw WeaponThrowEffect-1 ;Cudgel
+	.dw WeaponThrowEffect-1 ;Nagamaki
+	.dw WeaponThrowEffect-1 ;BufusCleaver
+	.dw WeaponThrowEffect-1 ;Katana
+	.dw WeaponThrowEffect-1 ;Dragonkiller
+	.dw WeaponThrowEffect-1 ;Mastersword
+	.dw WeaponThrowEffect-1 ;KabrasBlade
+	.dw WeaponThrowEffect-1 ;SickleSlayer
+	.dw WeaponThrowEffect-1 ;Pickaxe
+	.dw WeaponThrowEffect-1 ;HomingBlade
+	.dw WeaponThrowEffect-1 ;MinotaursAxe
+	.dw WeaponThrowEffect-1 ;RazorWind
+	.dw WeaponThrowEffect-1 ;CyclopsKiller
+	.dw WeaponThrowEffect-1 ;DrainBuster
+	.dw WeaponThrowEffect-1 ;Firebrand
+	.dw WeaponThrowEffect-1 ;KabraReborn
+	.dw WoodArrowThrowEffect-1 ;WoodArrow
+	.dw IronArrowThrowEffect-1 ;IronArrow
+	.dw IronArrowThrowEffect_Heavy-1 ;SilverArrow
+	.dw DefaultThrowEffect-1 ;13
+	.dw DefaultThrowEffect-1 ;14
+	.dw DefaultThrowEffect-1 ;15
+	.dw ShieldThrowEffect-1 ;HideShield
+	.dw ShieldThrowEffect-1 ;Bronzeward
+	.dw ShieldThrowEffect-1 ;AntiPoisonShield
+	.dw ShieldThrowEffect-1 ;WoodShield
+	.dw ShieldThrowEffect-1 ;IronShield
+	.dw ShieldThrowEffect-1 ;Dragonward
+	.dw ShieldThrowEffect-1 ;Windshield
+	.dw ShieldThrowEffect-1 ;SpikedWard
+	.dw ShieldThrowEffect-1 ;ArmorWard
+	.dw ShieldThrowEffect-1 ;EchoShield
+	.dw ShieldThrowEffect-1 ;EvasiveShield
+	.dw ShieldThrowEffect-1 ;FancyShield
+	.dw ShieldThrowEffect-1 ;FragileShield
+	.dw ShieldThrowEffect-1 ;BlastShield
+	.dw ShieldThrowEffect-1 ;WalrusShield
+	.dw ShieldThrowEffect-1 ;Stormward
+	.dw ShieldThrowEffect-1 ;26
+	.dw ShieldThrowEffect-1 ;27
 	.dw MedicinalHerbThrowEffect-1 ;MedicinalHerb
 	.dw RestorativeHerbThrowEffect-1 ;RestorativeHerb
 	.dw HappinessHerbThrowEffect-1 ;HappinessHerb
-	.dw $399B ;SightHerb
+	.dw SightHerbThrowEffect-1 ;SightHerb
 	.dw DragonHerbThrowEffect-1 ;DragonHerb
-	.dw $3877 ;VictoryHerb
-	.dw $10CF ;AngelSeed
-	.dw $3877 ;RevivalHerb
+	.dw DefaultThrowEffect-1 ;VictoryHerb
+	.dw AngelSeedThrowEffect-1 ;AngelSeed
+	.dw DefaultThrowEffect-1 ;RevivalHerb
 	.dw InvisibilityHerbThrowEffect-1 ;InvisibilityHerb
 	.dw BitterHerbThrowEffect-1 ;BitterHerb
 	.dw MisfortuneHerbThrowEffect-1 ;MisfortuneHerb
 	.dw IllLuckHerbThrowEffect-1 ;IllLuckHerb
-	.dw $0A19 ;KignyHerb
-	.dw $3877 ;AmnesiaHerb
-	.dw $3877 ;36
-	.dw $11B6 ;LifeHerb
-	.dw $3877 ;BigBellySeed
-	.dw $3877 ;LittleBellySeed
-	.dw $3877 ;TalkSeed
-	.dw $3877 ;StrengthHerb
+	.dw KignyHerbThrowEffect-1 ;KignyHerb
+	.dw DefaultThrowEffect-1 ;AmnesiaHerb
+	.dw DefaultThrowEffect-1 ;36
+	.dw LifeHerbThrowEffect-1 ;LifeHerb
+	.dw DefaultThrowEffect-1 ;BigBellySeed
+	.dw DefaultThrowEffect-1 ;LittleBellySeed
+	.dw DefaultThrowEffect-1 ;TalkSeed
+	.dw DefaultThrowEffect-1 ;StrengthHerb
 	.dw AntidoteHerbThrowEffect-1 ;AntidoteHerb
-	.dw $1309 ;PoisonHerb
-	.dw $1366 ;ConfusionHerb
-	.dw $13C3 ;SleepHerb
-	.dw $37F0 ;Weeds
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3725 ;BlessingScroll
-	.dw $37A1 ;IdentityScroll
-	.dw $3877 ;LightScroll
-	.dw $3877 ;BigpotScroll
-	.dw $3877 ;BlastwaveScroll
-	.dw $3877 ;SilenceScroll
-	.dw $3877 ;5C
-	.dw $3877 ;TrapScroll
-	.dw $3877 ;NeedScroll
-	.dw $3877 ;HasteScroll
-	.dw $3877 ;SleepScroll
-	.dw $3877 ;PowerupScroll
-	.dw $3877 ;62
-	.dw $3877 ;ExplosionScroll
-	.dw $3877 ;GreatHallScroll
-	.dw $3877 ;MonsterHouseScroll
-	.dw $3877 ;ConfusionScroll
-	.dw $395A ;RemovalScroll
+	.dw PoisonHerbThrowEffect-1 ;PoisonHerb
+	.dw ConfusionHerbThrowEffect-1 ;ConfusionHerb
+	.dw SleepHerbThrowEffect-1 ;SleepHerb
+	.dw WeedsThrowEffect-1 ;Weeds
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw BlessingScrollThrowEffect-1 ;BlessingScroll
+	.dw IdentityScrollThrowEffect-1 ;IdentityScroll
+	.dw DefaultThrowEffect-1 ;LightScroll
+	.dw DefaultThrowEffect-1 ;BigpotScroll
+	.dw DefaultThrowEffect-1 ;BlastwaveScroll
+	.dw DefaultThrowEffect-1 ;SilenceScroll
+	.dw DefaultThrowEffect-1 ;5C
+	.dw DefaultThrowEffect-1 ;TrapScroll
+	.dw DefaultThrowEffect-1 ;NeedScroll
+	.dw DefaultThrowEffect-1 ;HasteScroll
+	.dw DefaultThrowEffect-1 ;SleepScroll
+	.dw DefaultThrowEffect-1 ;PowerupScroll
+	.dw DefaultThrowEffect-1 ;62
+	.dw DefaultThrowEffect-1 ;ExplosionScroll
+	.dw DefaultThrowEffect-1 ;GreatHallScroll
+	.dw DefaultThrowEffect-1 ;MonsterHouseScroll
+	.dw DefaultThrowEffect-1 ;ConfusionScroll
+	.dw RemovalScrollThrowEffect-1 ;RemovalScroll
 	.dw BlankScrollThrowEffect-1 ;BlankScroll
-	.dw $3877 ;WanderingScroll
-	.dw $3877 ;AirBlessScroll
-	.dw $3877 ;EarthBlessScroll
-	.dw $3877 ;PlatingScroll
-	.dw $3877 ;ExtractionScroll
-	.dw $3877 ;HandsFullScroll
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $203D ;SlothStaff
-	.dw $1E0B ;KnockbackStaff
-	.dw $1F58 ;HappinessStaff
-	.dw $1F98 ;MisfortuneStaff
-	.dw $1E10 ;DoppelgangerStaff
-	.dw $1E1B ;SwitchingStaff
-	.dw $1E5D ;BufusStaff
-	.dw $1EC2 ;SkullStaff
-	.dw $2047 ;ParalysisStaff
-	.dw $206E ;PostponeStaff
-	.dw $20AF ;PainSplitStaff
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3940 ;PassageArmband
-	.dw $3940 ;DiscountArmband
-	.dw $3940 ;TrapArmband
-	.dw $3940 ;Levelholder
-	.dw $3940 ;RecoveryArmband
-	.dw $3940 ;RustlessArmband
-	.dw $3940 ;CriticalArmband
-	.dw $3940 ;RegretArmband
-	.dw $3940 ;BlessingArmband
-	.dw $3940 ;PitchersArmband
-	.dw $3940 ;HappyArmband
-	.dw $3940 ;LossArmband
-	.dw $3940 ;SightArmband
-	.dw $3940 ;CalmArmband
-	.dw $3940 ;IdentityArmband
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3891 ;Onigiri
-	.dw $3891 ;BigOnigiri
-	.dw $3891 ;SpoiledOnigiri
-	.dw $3891 ;HugeOnigiri
-	.dw $3891 ;SpecialOnigiri
-	.dw $3877 ;B3
-	.dw $36F2 ;HoldingJar
-	.dw $36CD ;HidingJar
-	.dw $36F2 ;DivisionJar
-	.dw $36F2 ;StrengtheningJar
-	.dw $377B ;IdentityJar
-	.dw $36F2 ;ChiropracticJar
-	.dw $36F2 ;StorehouseJar
-	.dw $36F2 ;WeakeningJar
-	.dw $36F2 ;BC
-	.dw $36F2 ;BottomlessJar
-	.dw $36F2 ;MonsterJar
-	.dw $36F2 ;ChangeJar
-	.dw $36F2 ;MeldingJar
-	.dw $36F2 ;WalrusJar
-	.dw $36F2 ;GaibarasJar
-	.dw $36F2 ;PointlessJar
-	.dw $3716 ;UnbreakableJar
-	.dw $36F2 ;VentingJar
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3913 ;MonsterMeat
-	.dw $3940 ;GoldenFeather
-	.dw $3940 ;HappinessBox
-	.dw $3940 ;StrangeBox
-	.dw $3940
-	.dw $38DB ;Gitan
-	.dw $3877 ;Null
-	.dw $3877 ;Nduba
+	.dw DefaultThrowEffect-1 ;WanderingScroll
+	.dw DefaultThrowEffect-1 ;AirBlessScroll
+	.dw DefaultThrowEffect-1 ;EarthBlessScroll
+	.dw DefaultThrowEffect-1 ;PlatingScroll
+	.dw DefaultThrowEffect-1 ;ExtractionScroll
+	.dw DefaultThrowEffect-1 ;HandsFullScroll
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw SlothStaffThrowEffect-1 ;SlothStaff
+	.dw KnockbackStaffThrowEffect-1 ;KnockbackStaff
+	.dw HappinessStaffUseEffect-1 ;HappinessStaff
+	.dw MisfortuneStaffThrowEffect-1 ;MisfortuneStaff
+	.dw DoppelgangerStaffThrowEffect-1 ;DoppelgangerStaff
+	.dw SwitchingStaffThrowEffect-1 ;SwitchingStaff
+	.dw BufusStaffThrowEffect-1 ;BufusStaff
+	.dw SkullStaffThrowEffect-1 ;SkullStaff
+	.dw ParalysisStaffThrowEffect-1 ;ParalysisStaff
+	.dw PostponeStaffThrowEffect-1 ;PostponeStaff
+	.dw PainSplitStaffThrowEffect-1 ;PainSplitStaff
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw ArmbandThrowEffect-1 ;PassageArmband
+	.dw ArmbandThrowEffect-1 ;DiscountArmband
+	.dw ArmbandThrowEffect-1 ;TrapArmband
+	.dw ArmbandThrowEffect-1 ;Levelholder
+	.dw ArmbandThrowEffect-1 ;RecoveryArmband
+	.dw ArmbandThrowEffect-1 ;RustlessArmband
+	.dw ArmbandThrowEffect-1 ;CriticalArmband
+	.dw ArmbandThrowEffect-1 ;RegretArmband
+	.dw ArmbandThrowEffect-1 ;BlessingArmband
+	.dw ArmbandThrowEffect-1 ;PitchersArmband
+	.dw ArmbandThrowEffect-1 ;HappyArmband
+	.dw ArmbandThrowEffect-1 ;LossArmband
+	.dw ArmbandThrowEffect-1 ;SightArmband
+	.dw ArmbandThrowEffect-1 ;CalmArmband
+	.dw ArmbandThrowEffect-1 ;IdentityArmband
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw OnigiriThrowEffect-1 ;Onigiri
+	.dw OnigiriThrowEffect-1 ;BigOnigiri
+	.dw OnigiriThrowEffect-1 ;SpoiledOnigiri
+	.dw OnigiriThrowEffect-1 ;HugeOnigiri
+	.dw OnigiriThrowEffect-1 ;SpecialOnigiri
+	.dw DefaultThrowEffect-1 ;B3
+	.dw JarThrowEffect-1 ;HoldingJar
+	.dw SilverArrowThrowEffect-1 ;HidingJar
+	.dw JarThrowEffect-1 ;DivisionJar
+	.dw JarThrowEffect-1 ;StrengtheningJar
+	.dw IdentityJarThrowEffect-1 ;IdentityJar
+	.dw JarThrowEffect-1 ;ChiropracticJar
+	.dw JarThrowEffect-1 ;StorehouseJar
+	.dw JarThrowEffect-1 ;WeakeningJar
+	.dw JarThrowEffect-1 ;BC
+	.dw JarThrowEffect-1 ;BottomlessJar
+	.dw JarThrowEffect-1 ;MonsterJar
+	.dw JarThrowEffect-1 ;ChangeJar
+	.dw JarThrowEffect-1 ;MeldingJar
+	.dw JarThrowEffect-1 ;WalrusJar
+	.dw JarThrowEffect-1 ;GaibarasJar
+	.dw JarThrowEffect-1 ;PointlessJar
+	.dw UnbreakableJarThrowEffect-1 ;UnbreakableJar
+	.dw JarThrowEffect-1 ;VentingJar
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw MonsterMeatThrowEffect-1 ;MonsterMeat
+	.dw ArmbandThrowEffect-1 ;GoldenFeather
+	.dw ArmbandThrowEffect-1 ;HappinessBox
+	.dw ArmbandThrowEffect-1 ;StrangeBox
+	.dw ArmbandThrowEffect-1
+	.dw GitanThrowEffect-1 ;Gitan
+	.dw DefaultThrowEffect-1 ;Null
+	.dw DefaultThrowEffect-1 ;Nduba
 
 .include "data/dungeon_item_spawn_tables.asm"
 
