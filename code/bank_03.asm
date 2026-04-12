@@ -3325,10 +3325,10 @@ func_C3575D:
 	.db $BE,$7E,$A9,$3C,$8F,$7A,$BE,$7E,$A9,$26,$8F,$84,$BE,$7E,$A9,$00   ;C357BF  
 	.db $8F,$66,$C1,$7E                   ;C357CF  
 @lbl_C357D3:
-	jsl.l func_C38AD6
-	jsl.l func_C38B2F
+	jsl.l ClearDungeonTileMap
+	jsl.l LoadDungeonRoomLayout
 	jsl.l func_C38C9F
-	jsr.w func_C38BAE
+	jsr.w SetupNaokiGaibaraEventRoom
 	jsr.w func_C38C70
 	jsl.l func_C3893E
 	jsl.l func_C62B37
@@ -3343,7 +3343,7 @@ func_C3575D:
 	jsl.l func_C38A3C
 @lbl_C35807:
 	rts
-	jsl.l func_C38AD6
+	jsl.l ClearDungeonTileMap
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
 	lda.b #$00
@@ -3371,7 +3371,7 @@ func_C3575D:
 	jsl.l func_C38F01
 	plx
 	jsl.l func_C38F34
-	jsl.l func_C371AB
+	jsl.l BuildDoorCandidatesAllRooms
 	jsl.l func_C3893E
 	rts
 
@@ -3379,9 +3379,9 @@ func_C3575D:
 	rts
 	jsl.l func_C2CAF4
 	jsl.l func_C39021
-	jsl.l func_C38AD6
+	jsl.l ClearDungeonTileMap
 	jsr.w func_C36FF0
-	jsl.l func_C371AB
+	jsl.l BuildDoorCandidatesAllRooms
 	jsr.w func_C3737C
 	jsr.w func_C39382
 	jsr.w func_C39AAA
@@ -4357,7 +4357,7 @@ func_C35FE7:
 	lda.b wTemp01,s
 	sta.b wTemp02
 	phx
-	jsl.l func_C36CBE
+	jsl.l SetTileTypeAtCoord
 	plx
 	inx
 	bra @lbl_C36003
@@ -4395,7 +4395,7 @@ func_C3601D:
 	lda.b wTemp01,s
 	sta.b wTemp02
 	phx
-	jsl.l func_C36CBE
+	jsl.l SetTileTypeAtCoord
 	plx
 	iny
 	bra @lbl_C36039
@@ -4405,7 +4405,7 @@ func_C3601D:
 	plp
 	rtl
 
-func_C36053:
+FillTileRect:
 	php
 	sep #$30 ;AXY->8
 	lda.b wTemp01
@@ -4434,7 +4434,7 @@ func_C36053:
 	lda.b wTemp01,s
 	sta.b wTemp02
 	phx
-	jsl.l func_C36CBE
+	jsl.l SetTileTypeAtCoord
 	plx
 	iny
 	bra @lbl_C3606E
@@ -5507,7 +5507,7 @@ func_C36829:
 	jsr.w func_C3689A
 @lbl_C36870:
 	pha
-	jsl.l func_C371AB
+	jsl.l BuildDoorCandidatesAllRooms
 	pla
 	sta.b wTemp00
 	plp
@@ -6138,7 +6138,7 @@ func_C36BDF:
 	rts                                     ;C36CA4
 .INDEX 16
 
-func_C36CA5:
+GetTileTypeAtCoord:
 	php
 	sep #$20 ;A->8
 	lda.b wTemp01
@@ -6156,7 +6156,7 @@ func_C36CA5:
 	plp
 	rtl
 
-func_C36CBE:
+SetTileTypeAtCoord:
 	php
 	sep #$20 ;A->8
 	lda.b wTemp01
@@ -6239,7 +6239,7 @@ func_C36D1D:
 	sta.b wTemp03
 	lda.b #$10
 	sta.b wTemp04
-	jsl.l func_C36053
+	jsl.l FillTileRect
 	lda.b $04,s
 	inc a
 	tax
@@ -6323,7 +6323,7 @@ func_C36D1D:
 	adc.l CorridorDirectionDeltaY,x
 	sta.w $C093
 	sta.b wTemp01
-	jsl.l func_C36CA5
+	jsl.l GetTileTypeAtCoord
 	lda.b wTemp00
 	cmp.b #$10
 	bne @lbl_C36DF1
@@ -6347,7 +6347,7 @@ func_C36D1D:
 	sta.b wTemp01
 	lda.b #$E0
 	sta.b wTemp02
-	jsl.l func_C36CBE
+	jsl.l SetTileTypeAtCoord
 	ldx.w $C092
 	stx.w $C090
 	stx.b wTemp00
@@ -6357,7 +6357,7 @@ func_C36D1D:
 	lda.b #$E0
 	sta.b wTemp02
 	phx
-	jsl.l func_C36CBE
+	jsl.l SetTileTypeAtCoord
 	plx
 	stx.b wTemp00
 	sty.b wTemp01
@@ -6442,7 +6442,7 @@ func_C36ED9:
 	bcs @lbl_C36F33
 	stx.b wTemp00
 	sty.b wTemp01
-	jsr.w func_C3A114
+	jsr.w IsTilePassable
 	lda.b wTemp00
 	beq @lbl_C36F30
 	stx.b wTemp00
@@ -6450,7 +6450,7 @@ func_C36ED9:
 	lda.b #$30
 	sta.b wTemp02
 	phx
-	jsl.l func_C36CBE
+	jsl.l SetTileTypeAtCoord
 	plx
 	stx.b wTemp00
 	sty.b wTemp01
@@ -6458,7 +6458,7 @@ func_C36ED9:
 	lda.b #$10
 	sta.b wTemp02
 	phx
-	jsl.l func_C36CBE
+	jsl.l SetTileTypeAtCoord
 	plx
 @lbl_C36F30:
 	inx
@@ -6478,7 +6478,7 @@ func_C36ED9:
 	bcs @lbl_C36F70
 	stx.b wTemp00
 	sty.b wTemp01
-	jsr.w func_C3A114
+	jsr.w IsTilePassable
 	lda.b wTemp00
 	beq @lbl_C36F6D
 	stx.b wTemp00
@@ -6486,7 +6486,7 @@ func_C36ED9:
 	lda.b #$30
 	sta.b wTemp02
 	phx
-	jsl.l func_C36CBE
+	jsl.l SetTileTypeAtCoord
 	plx
 	stx.b wTemp00
 	sty.b wTemp01
@@ -6494,7 +6494,7 @@ func_C36ED9:
 	lda.b #$10
 	sta.b wTemp02
 	phx
-	jsl.l func_C36CBE
+	jsl.l SetTileTypeAtCoord
 	plx
 @lbl_C36F6D:
 	inx
@@ -6514,7 +6514,7 @@ func_C36ED9:
 	bcs @lbl_C36FAD
 	stx.b wTemp00
 	sty.b wTemp01
-	jsr.w func_C3A114
+	jsr.w IsTilePassable
 	lda.b wTemp00
 	beq @lbl_C36FAA
 	stx.b wTemp00
@@ -6522,7 +6522,7 @@ func_C36ED9:
 	lda.b #$30
 	sta.b wTemp02
 	phx
-	jsl.l func_C36CBE
+	jsl.l SetTileTypeAtCoord
 	plx
 	stx.b wTemp00
 	inc.b $00
@@ -6530,7 +6530,7 @@ func_C36ED9:
 	lda.b #$10
 	sta.b wTemp02
 	phx
-	jsl.l func_C36CBE
+	jsl.l SetTileTypeAtCoord
 	plx
 @lbl_C36FAA:
 	iny
@@ -6550,7 +6550,7 @@ func_C36ED9:
 	bcs @lbl_C36FEA
 	stx.b wTemp00
 	sty.b wTemp01
-	jsr.w func_C3A114
+	jsr.w IsTilePassable
 	lda.b wTemp00
 	beq @lbl_C36FE7
 	stx.b wTemp00
@@ -6558,7 +6558,7 @@ func_C36ED9:
 	lda.b #$30
 	sta.b wTemp02
 	phx
-	jsl.l func_C36CBE
+	jsl.l SetTileTypeAtCoord
 	plx
 	stx.b wTemp00
 	dec.b $00
@@ -6566,7 +6566,7 @@ func_C36ED9:
 	lda.b #$10
 	sta.b wTemp02
 	phx
-	jsl.l func_C36CBE
+	jsl.l SetTileTypeAtCoord
 	plx
 @lbl_C36FE7:
 	iny
@@ -6699,7 +6699,7 @@ func_C3701A:
 	plp                                     ;C370AA
 	rtl                                     ;C370AB
 
-func_C370AC:
+ScanRoomDoorCandidates:
 	php
 	sep #$30 ;AXY->8
 	lda.b wTemp00
@@ -6731,7 +6731,7 @@ func_C370AC:
 	bcs @lbl_C37101
 	stx.b wTemp00
 	sty.b wTemp01
-	jsr.w func_C3A114
+	jsr.w IsTilePassable
 	lda.b wTemp00
 	beq @lbl_C370FE
 	inc.b wTemp06
@@ -6761,7 +6761,7 @@ func_C370AC:
 	bcs @lbl_C37133
 	stx.b wTemp00
 	sty.b wTemp01
-	jsr.w func_C3A114
+	jsr.w IsTilePassable
 	lda.b wTemp00
 	beq @lbl_C37130
 	inc.b wTemp06
@@ -6791,7 +6791,7 @@ func_C370AC:
 	bcs @lbl_C37165
 	stx.b wTemp00
 	sty.b wTemp01
-	jsr.w func_C3A114
+	jsr.w IsTilePassable
 	lda.b wTemp00
 	beq @lbl_C37162
 	inc.b wTemp06
@@ -6821,7 +6821,7 @@ func_C370AC:
 	bcs @lbl_C37197
 	stx.b wTemp00
 	sty.b wTemp01
-	jsr.w func_C3A114
+	jsr.w IsTilePassable
 	lda.b wTemp00
 	beq @lbl_C37194
 	inc.b wTemp06
@@ -6854,7 +6854,7 @@ func_C370AC:
 	plp
 	rtl
 
-func_C371AB:
+BuildDoorCandidatesAllRooms:
 	php
 	sep #$30 ;AXY->8
 	lda.l $7EBE8E
@@ -6863,7 +6863,7 @@ func_C371AB:
 @lbl_C371B4:
 	stx.b wTemp00
 	phx
-	jsl.l func_C370AC
+	jsl.l ScanRoomDoorCandidates
 	plx
 	dex
 	bpl @lbl_C371B4
@@ -9179,7 +9179,7 @@ func_C3858F:
 	pla
 	sta.b wTemp00
 	phx
-	jsl.l func_C36053
+	jsl.l FillTileRect
 	plx
 	dex 
 	bmi @lbl_C3861F
@@ -9208,7 +9208,7 @@ func_C3858F:
 	ora.b #$70
 	sta.b wTemp02
 	phx
-	jsl.l func_C36CBE
+	jsl.l SetTileTypeAtCoord
 	plx
 	lda.l $7EBE7A,x
 	inc a
@@ -9243,7 +9243,7 @@ func_C3858F:
 	ora.b #$70
 	sta.b wTemp02
 	phx
-	jsl.l func_C36CBE
+	jsl.l SetTileTypeAtCoord
 	plx
 	pla
 	sta.b wTemp02
@@ -9283,7 +9283,7 @@ func_C3858F:
 	ora.b #$70
 	sta.b wTemp02
 	phx
-	jsl.l func_C36CBE
+	jsl.l SetTileTypeAtCoord
 	plx
 	lda.l $7EBE84,x
 	inc a
@@ -9318,7 +9318,7 @@ func_C3858F:
 	ora.b #$70
 	sta.b wTemp02
 	phx
-	jsl.l func_C36CBE
+	jsl.l SetTileTypeAtCoord
 	plx
 	pla
 	sta.b wTemp04
@@ -9425,7 +9425,7 @@ func_C38757:
 	pla
 	sta.b wTemp00
 	phx
-	jsl.l func_C36053
+	jsl.l FillTileRect
 	plx
 	dex 
 	bpl @lbl_C38762
@@ -9446,7 +9446,7 @@ func_C38757:
 	sta.b wTemp00
 	lda.b #$70
 	sta.b wTemp02
-	jsl.l func_C36CBE
+	jsl.l SetTileTypeAtCoord
 	lda.l $7EBE7A
 	inc a
 	sta.b wTemp00
@@ -9473,7 +9473,7 @@ func_C38757:
 	sta.b wTemp00
 	lda.b #$71
 	sta.b wTemp02
-	jsl.l func_C36CBE
+	jsl.l SetTileTypeAtCoord
 	pla
 	sta.b wTemp02
 	pla
@@ -9557,7 +9557,7 @@ func_C38895:
 	sta.l $7EBE84
 	lda.b #$00
 	sta.b wTemp04
-	jsl.l func_C36053
+	jsl.l FillTileRect
 	pla
 	bne @lbl_C38914
 	lda.b #$04
@@ -9819,7 +9819,7 @@ UNREACH_C38AA8:
 	.db $07                               ;C38ACF
 	.db $63,$07,$09,$63,$07,$09           ;C38AD0  
 
-func_C38AD6:
+ClearDungeonTileMap:
 	php
 	sep #$20 ;A->8
 	stz.b wTemp00
@@ -9830,7 +9830,7 @@ func_C38AD6:
 	sta.b wTemp03
 	lda.b #$F0
 	sta.b wTemp04
-	jsl.l func_C36053
+	jsl.l FillTileRect
 	stz.b wTemp00
 	lda.b #$26
 	sta.b wTemp01
@@ -9840,7 +9840,7 @@ func_C38AD6:
 	sta.b wTemp03
 	lda.b #$F0
 	sta.b wTemp04
-	jsl.l func_C36053
+	jsl.l FillTileRect
 	stz.b wTemp00
 	stz.b wTemp01
 	lda.b #$03
@@ -9849,7 +9849,7 @@ func_C38AD6:
 	sta.b wTemp03
 	lda.b #$F0
 	sta.b wTemp04
-	jsl.l func_C36053
+	jsl.l FillTileRect
 	lda.b #$3C
 	sta.b wTemp00
 	stz.b wTemp01
@@ -9859,11 +9859,11 @@ func_C38AD6:
 	sta.b wTemp03
 	lda.b #$F0
 	sta.b wTemp04
-	jsl.l func_C36053
+	jsl.l FillTileRect
 	plp
 	rtl
 
-func_C38B2F:
+LoadDungeonRoomLayout:
 	php
 	rep #$30 ;AXY->16
 	jsl.l Get7ED5EE
@@ -9935,7 +9935,7 @@ func_C38B2F:
 	plp
 	rtl
 
-func_C38BAE:
+SetupNaokiGaibaraEventRoom:
 	php
 	sep #$30 ;AXY->8
 	jsl.l Get7ED5EE
@@ -9962,11 +9962,11 @@ func_C38BAE:
 	.db $A5,$00   ;C38BEF  
 	.db $F0,$03                           ;C38BF7  
 @lbl_C38BF9:
-	jsr.w func_C38BFE
+	jsr.w PlaceNaokiGaibaraNPCs
 	plp
 	rts
 
-func_C38BFE:
+PlaceNaokiGaibaraNPCs:
 	lda.b #$36
 	ldy.b #$08
 @lbl_C38C02:
@@ -9985,7 +9985,7 @@ func_C38BFE:
 	plx
 	stx.b wTemp00
 	phx
-	jsl.l func_C36CBE
+	jsl.l SetTileTypeAtCoord
 	plx
 	pla
 	dec a
@@ -10522,7 +10522,7 @@ func_C38FB7:
 	sta.b wTemp04
 	phx
 	phy
-	jsl.l func_C36053
+	jsl.l FillTileRect
 	ply
 	plx
 	iny
@@ -12564,7 +12564,7 @@ func_C39E1D:
 	sta.b wTemp03
 	stx.b wTemp04
 	phx
-	jsl.l func_C36053
+	jsl.l FillTileRect
 	plx
 	txa
 	inc a
@@ -12885,13 +12885,13 @@ func_C39FB2:
 @lbl_C3A113:
 	rts                                     ;C3A113
 
-func_C3A114:
+IsTilePassable:
 	phx
 	phy
 	php
 	sep #$30 ;AXY->8
 	ldy.b #$01
-	jsl.l func_C36CA5
+	jsl.l GetTileTypeAtCoord
 	lda.b wTemp00
 	bit.b #$80
 	bne @lbl_C3A129

@@ -14563,7 +14563,7 @@ func_C2D36F:
 	ora.b #$00
 	sta.b wTemp04
 	phx
-	jsl.l func_C36053
+	jsl.l FillTileRect
 	plx
 	dex
 	bpl @lbl_C2D376
