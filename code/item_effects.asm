@@ -5767,7 +5767,7 @@ ExecutePreparedThrowEffect:
 	cmp.b #$12
 	bne @lbl_C333D5
 @lbl_C333D2:
-	jmp $34ED                               ;C333D2
+	jmp ExecuteItemThrowTrajectory          ;C333D2
 @lbl_C333D5:
 	sep #$20 ;A->8
 	lda.b wTemp03,s
@@ -5908,6 +5908,13 @@ MapDirectionOffsets:
 	.db $FF,$FF,$FF,$00,$00,$01           ;C334D5
 	.db $01,$01,$3C,$3C,$00,$C4,$C4,$C4,$00,$3C,$00,$C4,$C4,$C4,$00,$3C   ;C334DB  
 	.db $3C,$3C   ;C334EB
+
+; Executes a thrown item's flight trajectory from the thrower's position.
+; Computes the target tile using the item's throw class ($C341BB) and direction deltas
+; from MapDirectionOffsets, then walks tile-by-tile calling $C359AF (check tile).
+; On hitting a wall: places item on floor via $C306F4.
+; On hitting a character: plays hit visual effect, shows hit message, dispatches throw effect.
+ExecuteItemThrowTrajectory:
 	sep #$30                                ;C334ED
 	lda $06,s                               ;C334EF
 	sta $00                                 ;C334F1
@@ -5946,7 +5953,7 @@ MapDirectionOffsets:
 	phx                                     ;C3352E
 	phy                                     ;C3352F
 	rep #$20                                ;C33530
-	lda $C334CD,x                           ;C33532
+	lda.l MapDirectionOffsets,x             ;C33532
 	clc                                     ;C33536
 	adc $03,s                               ;C33537
 	sta $03,s                               ;C33539
