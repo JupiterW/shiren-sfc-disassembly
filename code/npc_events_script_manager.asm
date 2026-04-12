@@ -1846,7 +1846,7 @@ NPCScriptFunction_C168C7:
 	stz.b wTemp00
 	lda.b #$07
 	sta.b wTemp01
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	stz.b wTemp01
 	ldx.b wTemp00
 	lda.l UNREACH_C168E0,x

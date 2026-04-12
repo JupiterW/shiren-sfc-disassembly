@@ -64,7 +64,11 @@ func_C3F683:
 	plp
 	rtl
 
-func_C3F69F:
+; Returns a random integer in the range [wTemp00, wTemp01] (inclusive).
+; Input: wTemp00 = minimum value, wTemp01 = maximum value
+; Output: wTemp00 = random result
+; Uses the game's RNG to generate a value within the specified bounds.
+GetRandomInRange:
 	php
 	sep #$30 ;AXY->8
 	lda.b wTemp01

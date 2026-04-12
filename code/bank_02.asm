@@ -4427,13 +4427,13 @@ func_C23935:
 	stz.b wTemp00
 	ldy.b #$02
 	sty.b wTemp01
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	lda.b wTemp00
 	stz.b wTemp00
 	ldy.b #$02
 	sty.b wTemp01
 	pha
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	pla
 	clc
 	adc.b wTemp00
@@ -4717,7 +4717,7 @@ func_C23B1C:
 @lbl_C23B47:
 	stz.b wTemp00
 	sty.b wTemp01
-	call_savebank func_C3F69F
+	call_savebank GetRandomInRange
 	ldy.b wTemp00
 	ldx.b #$00
 @lbl_C23B55:
@@ -7257,13 +7257,13 @@ func_C24D8B:
 	stz.b wTemp00
 	stx.b wTemp01
 	phx
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	plx
 	ldy.b wTemp00
 	stz.b wTemp00
 	stx.b wTemp01
 	phy
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	ply
 	lda.b wTemp00
 	tax
@@ -10025,7 +10025,7 @@ func_C27B6A:
 	lda.b wTemp01,s
 	sta.b wTemp01
 	phx
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	plx
 	lda.b wTemp00
 	sta.b wTemp01
@@ -10662,7 +10662,7 @@ func_C2801B:
 	lda.b #$01
 	sta.b wTemp00
 	phx
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	plx
 	lda.b wTemp00
 	sta.b wTemp02
@@ -11548,7 +11548,7 @@ func_C28672:
 	lda.b #$32
 	sta.b wTemp01
 	phx
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	plx
 	lda.b wTemp00
 	sta.b wTemp02
@@ -11603,7 +11603,7 @@ func_C286C8:
 	lda.b #$23
 	sta.b wTemp01
 	phx
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	plx
 	lda.b wTemp00
 	sta.b wTemp02
@@ -13701,7 +13701,7 @@ func_C2CDB7:
 	sta.b wTemp01
 	lda.b #$01
 	sta.b wTemp00
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	lda.b wTemp00
 	asl a
 	asl a
@@ -13712,7 +13712,7 @@ func_C2CDB7:
 	sta.b wTemp01
 	lda.b #$01
 	sta.b wTemp00
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	pla
 	ora.b wTemp00
 	tay
@@ -13781,7 +13781,7 @@ func_C2CE2C:
 	sta.b wTemp01
 	lda.b wTemp06
 	pha
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	pla
 	sta.b wTemp06
 	lda.b wTemp00
@@ -13796,7 +13796,7 @@ func_C2CE2C:
 	sta.b wTemp01
 	lda.b wTemp06
 	pha
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	pla
 	sta.b wTemp06
 	pla
@@ -13963,7 +13963,7 @@ func_C2CF75:
 	rep #$30 ;AXY->16
 	lda.b wTemp04
 	pha
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	pla
 	sta.b wTemp04
 	sep #$30 ;AXY->8
@@ -13978,7 +13978,7 @@ func_C2CF75:
 	pha
 	lda.b wTemp06
 	pha
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	pla
 	sta.b wTemp06
 	pla
@@ -13998,7 +13998,7 @@ func_C2CF75:
 	pha
 	lda.b wTemp06
 	pha
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	pla
 	sta.b wTemp06
 	pla
@@ -14023,7 +14023,7 @@ func_C2CF75:
 	lda.b wTemp06
 	pha
 	phy
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	ply
 	pla
 	sta.b wTemp06
@@ -14209,7 +14209,7 @@ func_C2D0B1:
 	lda.b wTemp06
 	pha
 	phx
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	plx
 	pla
 	sta.b wTemp06
@@ -14233,7 +14233,7 @@ func_C2D0B1:
 	lda.b wTemp06
 	pha
 	phx
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	plx
 	pla
 	sta.b wTemp06
@@ -14323,7 +14323,7 @@ func_C2D0B1:
 	lda.b wTemp06
 	pha
 	phx
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	plx
 	pla
 	sta.b wTemp06
@@ -14335,7 +14335,7 @@ func_C2D0B1:
 	lda.b wTemp07
 	sta.b wTemp01
 	phx
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	plx
 	lda.b wTemp00
 	sta.w $BE7A,x
@@ -14397,7 +14397,7 @@ func_C2D211:
 	lda.b wTemp06
 	pha
 	phx
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	plx
 	pla
 	sta.b wTemp06
@@ -14421,7 +14421,7 @@ func_C2D211:
 	lda.b wTemp06
 	pha
 	phx
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	plx
 	pla
 	sta.b wTemp06
@@ -14511,7 +14511,7 @@ func_C2D211:
 	lda.b wTemp06
 	pha
 	phx
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	plx
 	pla
 	sta.b wTemp06
@@ -14523,7 +14523,7 @@ func_C2D211:
 	lda.b wTemp07
 	sta.b wTemp01
 	phx
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	plx
 	lda.b wTemp00
 	sta.w $BE84,x
@@ -14578,7 +14578,7 @@ func_C2D36F:
 	sbc.w $8B83
 	sta.b wTemp00
 	phy
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	ply
 	lda.b wTemp00
 	sta.w $8AA3,y
@@ -14605,7 +14605,7 @@ func_C2D36F:
 	sbc.w $8B83
 	sta.b wTemp00
 	phy
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	ply
 	lda.b wTemp00
 	sta.w $8B13,y
@@ -15270,7 +15270,7 @@ func_C2D8F0:
 	bcc @lbl_C2D916
 	inc.b wTemp00
 	dec.b wTemp01
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	bra @lbl_C2D92A
 @lbl_C2D916:
 	ldx.b wTemp00

@@ -388,7 +388,7 @@ func_C215AB:
 	;dex
 	;stx.b wTemp01
 	;stz.b wTemp00
-	;jsl.l func_C3F69F
+	;jsl.l GetRandomInRange
 	;ldx.b wTemp00
 	;pla
 	;sta.b wTemp00
@@ -951,7 +951,7 @@ func_C21A99:
 	sta.b wTemp00
 	lda.b #$03
 	sta.b wTemp01
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	lda.b wTemp00
 	sta.b wTemp04,s
 @lbl_C21ABC:
@@ -1267,7 +1267,7 @@ DATA8_C21B97:
 	dex
 	stx.b wTemp01
 	stz.b wTemp00
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	ldx.b wTemp00
 	pla
 	sta.b wTemp00

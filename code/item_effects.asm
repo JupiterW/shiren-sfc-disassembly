@@ -1707,7 +1707,7 @@ DragonHerbUseEffect:
 	lda.b #$4B
 	sta.b wTemp01
 	phx
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	plx
 	lda.b wTemp00
 	sta.b wTemp02
