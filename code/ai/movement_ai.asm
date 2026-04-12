@@ -353,7 +353,7 @@ func_C262D5:
 	ldx.b wTemp00
 	lda.l wCharUnderfootTerrainType,x
 	sta.b wTemp00
-	jsl.l func_C366C4
+	jsl.l SetTileOccupied
 	lda.b #$01
 	sta.b wTemp00
 	plp

@@ -725,7 +725,7 @@ DATA8_C20611:
 @lbl_C2066F:
 	lda.w wCharUnderfootTerrainType,y
 	sta.b wTemp00
-	jsl.l func_C366C4
+	jsl.l SetTileOccupied
 	rts
 	sep #$30                                ;C20679
 	lda #$00                                ;C2067B
@@ -2852,7 +2852,7 @@ func_C22D42:
 	sta.b wTemp00
 	lda.w $87D0
 	sta.w $898F
-	jsl.l func_C366B7
+	jsl.l GetTileTypeFlags
 	lda.b wTemp00
 	bit.b #$20
 	bne @lbl_C22D78
@@ -2926,7 +2926,7 @@ func_C22DEF:
 	cmp.b #$0A
 	bcs @lbl_C22E2B
 	sta.b wTemp00
-	jsl.l func_C366B7
+	jsl.l GetTileTypeFlags
 	lda.b wTemp00
 	bit.b #$01
 	beq @lbl_C22E2B
@@ -2945,7 +2945,7 @@ func_C22DEF:
 	bpl @lbl_C22E0B
 	lda.w $87D0
 	sta.b wTemp00
-	jsl.l func_C366D5
+	jsl.l ClearTileOccupied
 @lbl_C22E2B:
 	plp
 	rts

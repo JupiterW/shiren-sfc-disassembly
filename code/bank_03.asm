@@ -4009,7 +4009,7 @@ func_C35C9A:
 @lbl_C35D7F:
 	pha
 	sta.b wTemp00
-	jsl.l func_C366B7
+	jsl.l GetTileTypeFlags
 	lda.b wTemp00
 	bit.b #$01
 	bne @lbl_C35D94
@@ -4129,7 +4129,7 @@ func_C35E5A:
 	bmi @lbl_C35E79
 	stx.b wTemp00
 	phx
-	jsl.l func_C366D5
+	jsl.l ClearTileOccupied
 	plx
 	bra @lbl_C35E6C
 @lbl_C35E79:
@@ -4475,7 +4475,7 @@ func_C3608D:
 	and.b #$0F
 	sta.b wTemp00
 	phx
-	jsl.l func_C366B7
+	jsl.l GetTileTypeFlags
 	plx
 	lda.b wTemp00
 	bit.b #$20
@@ -4523,7 +4523,7 @@ func_C360D7:
 	sta.b wTemp00
 	phx
 	phy
-	jsl.l func_C366B7
+	jsl.l GetTileTypeFlags
 	ply
 	plx
 	lda.b wTemp00
@@ -4680,7 +4680,7 @@ func_C36203:
 	and.b #$0F
 	sta.b wTemp00
 	phx
-	jsl.l func_C366B7
+	jsl.l GetTileTypeFlags
 	plx
 	lda.b wTemp00
 	bit.b #$20
@@ -5243,7 +5243,11 @@ func_C36698:
 	plp
 	rtl
 
-func_C366B7:
+; Returns the tile-type flags byte for tile type index wTemp00.
+; $7EC166 is a 16-entry table indexed by tile type nibble (0-15).
+; Bit $01 = a character is currently standing on this tile type.
+; Bit $20 = tile type has item-pickup restriction (e.g. inside a jar).
+GetTileTypeFlags:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -5252,7 +5256,9 @@ func_C366B7:
 	plp
 	rtl
 
-func_C366C4:
+; Sets bit $01 in the tile-type flags for tile type index wTemp00.
+; Called when a character moves onto a tile to mark it as occupied.
+SetTileOccupied:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -5262,7 +5268,9 @@ func_C366C4:
 	plp
 	rtl
 
-func_C366D5:
+; Clears bit $01 in the tile-type flags for tile type index wTemp00.
+; If the tile type matches the currently tracked tile ($7EBE64), also calls func_C36BDF.
+ClearTileOccupied:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00

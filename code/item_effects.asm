@@ -4324,7 +4324,7 @@ WalrusJarUseEffect:
 	sta.b wTemp02
 	sty.b wTemp00
 	phy
-	jsl.l func_C3303C
+	jsl.l FindItemInDirection
 	ply
 	lda.b wTemp01,s
 	sta.b wTemp04
@@ -5187,6 +5187,9 @@ ApplyJarFuseDefenseMod:
 	plp
 	rtl
 
+; Walks in a direction from a starting map position and returns the first character
+; found in that direction. wTemp00 = direction (0-7), wTemp01 = step count,
+; wTemp02 = starting flat map position. Returns character slot index in wTemp00.
 FindCharacterInDirection:
 	php
 	sep #$30 ;AXY->8
@@ -5194,7 +5197,7 @@ FindCharacterInDirection:
 	asl a
 	tax
 	rep #$20 ;A->16
-	lda.l DATA8_C334CD,x
+	lda.l MapDirectionOffsets,x
 	pha
 	lda.b wTemp02
 	ldy.b wTemp01
@@ -5239,7 +5242,11 @@ FindCharacterInDirection:
 	bpl @lbl_C33025
 	.db $80,$E4   ;C3303A
 
-func_C3303C:
+; Walks in a direction from a starting map position and returns the first item
+; found in that direction. wTemp00 = direction (0-7), wTemp02 = starting flat map position.
+; Also checks GetTileTypeFlags bit $20 on the starting cell; if set, signals caller via $04,s=1.
+; Returns item slot index in wTemp00.
+FindItemInDirection:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -5255,7 +5262,7 @@ func_C3303C:
 	bit.b #$F0
 	bne @lbl_C33066
 	sta.b wTemp00
-	jsl.l func_C366B7
+	jsl.l GetTileTypeFlags
 	lda.b wTemp00
 	bit.b #$20
 	beq @lbl_C33066
@@ -5272,7 +5279,7 @@ func_C3303C:
 	asl a
 	tax
 	rep #$20 ;A->16
-	lda.l DATA8_C334CD,x
+	lda.l MapDirectionOffsets,x
 	pha
 	lda.b wTemp02
 	sta.b wTemp04
@@ -5894,7 +5901,9 @@ ExecutePreparedThrowEffect:
 	plp
 	rtl
 
-DATA8_C334CD:
+; 16-bit flat map index deltas for 8 directions (E/NE/N/NW/W/SW/S/SE).
+; Two sections: first 8 words use map stride 256, second 8 words use stride 60 ($3C).
+MapDirectionOffsets:
 	.db $01,$00,$01,$FF,$00,$FF,$FF,$FE   ;C334CD
 	.db $FF,$FF,$FF,$00,$00,$01           ;C334D5
 	.db $01,$01,$3C,$3C,$00,$C4,$C4,$C4,$00,$3C,$00,$C4,$C4,$C4,$00,$3C   ;C334DB  
