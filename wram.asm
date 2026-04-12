@@ -1632,7 +1632,35 @@ wItemScratchTimesIdentified:
 wItemScratchTerminator:
     db
 
-. ds 0xbe5f - 0x9367
+; $F8 bytes of unknown scratch space between item scratch buffer and tile arrays
+. ds 0x945f - 0x9367
+
+;945f
+; Tile item slot array: one entry per tile (stride 2), value = item slot index on tile ($80 = none).
+; Size: $A80 bytes (1344 word-entries covering all floor tiles).
+wTileItemSlot:
+    dsb 0xa80
+
+;9edf
+; Tile entity slot array: one entry per tile (stride 2), value = entity/char slot on tile ($80 = none).
+; Size: $A80 bytes.
+wTileEntitySlot:
+    dsb 0xa80
+
+;a95f
+; Tile type array: one entry per tile (stride 2).
+; High nibble = terrain class ($80=wall, $C0=door candidate, $E0=passable corridor).
+; Low nibble = room index.
+; Size: $A80 bytes.
+wTileType:
+    dsb 0xa80
+
+;b3df
+; Tile flags array: one entry per tile (stride 2).
+; Bit 7 = dirty/needs redraw, Bit 0 = door open.
+; Size: $A80 bytes (ends at $BE5F = wEntityStateClearDone).
+wTileFlags:
+    dsb 0xa80
 
 ;be5f
 wEntityStateClearDone:

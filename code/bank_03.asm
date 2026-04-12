@@ -2994,10 +2994,10 @@ InitFloorTileArrays:
 	lda.w #$8080
 	ldx.w #$0A7E
 @lbl_C353C2:
-	sta.w $945F,x
-	sta.w $9EDF,x
-	sta.w $A95F,x
-	sta.w $B3DF,x
+	sta.w wTileItemSlot,x
+	sta.w wTileEntitySlot,x
+	sta.w wTileType,x
+	sta.w wTileFlags,x
 	dex
 	dex
 	bpl @lbl_C353C2
@@ -3012,9 +3012,9 @@ ResetFloorData:
 	ldy.w #$0A7F
 @lbl_C353E0:
 	lda.b #$80
-	sta.w $945F,y
-	sta.w $B3DF,y
-	lda.w $9EDF,y
+	sta.w wTileItemSlot,y
+	sta.w wTileFlags,y
+	lda.w wTileEntitySlot,y
 	bmi @lbl_C353F5
 	sta.b wTemp00
 	phy
@@ -3022,9 +3022,9 @@ ResetFloorData:
 	ply
 @lbl_C353F5:
 	lda.b #$80
-	sta.w $9EDF,y
+	sta.w wTileEntitySlot,y
 	lda.b #$E0
-	sta.w $A95F,y
+	sta.w wTileType,y
 	dey
 	bpl @lbl_C353E0
 	stz.w $BE5F
@@ -3482,7 +3482,7 @@ GetDungeonItemTableVariant:
 
 ; Retrieves item data from the item data tables.
 ; Input: wTemp00 = packed item ID (high byte in upper 2 bits, low byte in lower 6 bits)
-; Output: wTemp00 = byte from $7E945F, wTemp01 = byte from $7E9EDF, wTemp02 = byte from $7EA95F
+; Output: wTemp00 = byte from wTileItemSlot, wTemp01 = byte from wTileEntitySlot, wTemp02 = byte from wTileType
 ; These tables contain item stats/attributes indexed by packed item ID.
 GetItemData:
 	php
@@ -3494,11 +3494,11 @@ GetItemData:
 	and.b #$C0
 	ora.b wTemp00
 	tax
-	lda.l $7E945F,x
+	lda.l wTileItemSlot,x
 	sta.b wTemp00
-	lda.l $7E9EDF,x
+	lda.l wTileEntitySlot,x
 	sta.b wTemp01
-	lda.l $7EA95F,x
+	lda.l wTileType,x
 	sta.b wTemp02
 	plp
 	rtl
@@ -3528,10 +3528,10 @@ ScanAdjacentTiles:
 	adc.l DATA8_C35A26,x
 	tay
 	sep #$20 ;A->8
-	lda.w $945F,y
+	lda.w wTileItemSlot,y
 	asl a
 	ror.b wTemp00
-	lda.w $9EDF,y
+	lda.w wTileEntitySlot,y
 	sec
 	bpl @lbl_C35A11
 	cmp.b #$E0
@@ -3543,7 +3543,7 @@ ScanAdjacentTiles:
 	clc
 @lbl_C35A11:
 	ror.b wTemp01
-	lda.w $A95F,y
+	lda.w wTileType,y
 	asl a
 	ror.b wTemp02
 	inx
@@ -3597,17 +3597,17 @@ FindOccupiedItemSlot:
 @lbl_C35A7A:
 	inx
 	inx
-	bit.w $B3DF,x
+	bit.w wTileFlags,x
 	beq @lbl_C35A7A
 	txy
 	sep #$20 ;A->8
-	lda.w $B3DF,y
+	lda.w wTileFlags,y
 	bmi @lbl_C35A8D
 	iny
-	lda.w $B3DF,y
+	lda.w wTileFlags,y
 @lbl_C35A8D:
 	and.b #$7F
-	sta.w $B3DF,y
+	sta.w wTileFlags,y
 	tya
 	and.b #$3F
 	cmp.b #$3C
@@ -3618,21 +3618,21 @@ FindOccupiedItemSlot:
 	bra func_C35A5A
 @lbl_C35AA1:
 	sep #$20 ;A->8
-	lda.w $9EDF,y
+	lda.w wTileEntitySlot,y
 	sta.b wTemp01
 	phy
 	jsl.l AdjustItemSlotFlags
 	ply
-	lda.w $945F,y
+	lda.w wTileItemSlot,y
 	sta.b wTemp00
 	bmi @lbl_C35ABB
 	phy
 	jsl.l func_C20E47
 	ply
 @lbl_C35ABB:
-	lda.w $A95F,y
+	lda.w wTileType,y
 	sta.b wTemp02
-	lda.w $B3DF,y
+	lda.w wTileFlags,y
 	and.b #$01
 	bne @lbl_C35AE5
 	lda.w $BE5F
@@ -3663,7 +3663,7 @@ FindOccupiedItemSlot:
 	lda.w $BE64
 	bit.b #$90
 	bne @lbl_C35B1D
-	lda.w $A95F,y
+	lda.w wTileType,y
 	bmi @lbl_C35B1D
 	bit.b #$40
 	beq @lbl_C35B0C
@@ -3709,9 +3709,9 @@ FindOccupiedItemSlot:
 PickUpItemAtTile:
 	sty.b wTemp04
 	jsl.l func_80E704
-	lda.w $9EDF,y
+	lda.w wTileEntitySlot,y
 	sta.b wTemp00
-	lda.w $A95F,y
+	lda.w wTileType,y
 	sta.b wTemp02
 	phy
 	call_savebank func_80B830
@@ -3745,10 +3745,10 @@ PlaceSecondaryItemOnTile:
 	ora.b wTemp00
 	tax
 	lda.b wTemp02
-	sta.l $7E945F,x
-	lda.l $7EB3DF,x
+	sta.l wTileItemSlot,x
+	lda.l wTileFlags,x
 	ora.b #$80
-	sta.l $7EB3DF,x
+	sta.l wTileFlags,x
 	plp
 	rtl
 
@@ -3766,15 +3766,15 @@ PlaceItemWithCoords:
 	txa
 	ora.b wTemp00
 	tax
-	lda.l $7EB3DF,x
+	lda.l wTileFlags,x
 	ora.b #$80
-	sta.l $7EB3DF,x
+	sta.l wTileFlags,x
 	lda.b wTemp02
-	sta.l $7E9EDF,x
+	sta.l wTileEntitySlot,x
 	bmi @lbl_C35BE2
 	lda.b #$00
 	xba
-	lda.l $7EA95F,x
+	lda.l wTileType,x
 	cmp.b #$0A
 	bcs @lbl_C35BE2
 	tax
@@ -3810,7 +3810,7 @@ GetItemCoords:
 	lsr a
 	tax
 	sep #$20 ;A->8
-	lda.l $7E9EDF,x
+	lda.l wTileEntitySlot,x
 	bmi @lbl_C35C12
 	plp
 	rtl
@@ -3831,10 +3831,10 @@ GetItemCoords:
 	inc a
 	tay
 @lbl_C35C2D:
-	lda.w $9EDF,y
+	lda.w wTileEntitySlot,y
 	bpl @lbl_C35C5C
 	iny
-	lda.w $A95F,y
+	lda.w wTileType,y
 	bpl @lbl_C35C2D
 	rep #$20 ;A->16
 	tya
@@ -3845,7 +3845,7 @@ GetItemCoords:
 	ora.w $BE66,x
 	inc a
 	tay
-	lda.w $A95F,y
+	lda.w wTileType,y
 	bpl @lbl_C35C2D
 	lda.b #$FF
 	sta.w $C152,x
@@ -3885,10 +3885,10 @@ PlaceItemOnTile:
 	ora.b wTemp00
 	tax
 	lda.b wTemp02
-	sta.l $7EA95F,x
-	lda.l $7EB3DF,x
+	sta.l wTileType,x
+	lda.l wTileFlags,x
 	ora.b #$80
-	sta.l $7EB3DF,x
+	sta.l wTileFlags,x
 	plp
 	rtl
 
@@ -3931,15 +3931,15 @@ PlaceShirenOnFloor:
 	adc.l SurroundingTileOffsets,x
 	tay
 	sep #$20 ;A->8
-	lda.w $A95F,y
+	lda.w wTileType,y
 	and.b #$F0
 	cmp.b #$C0
 	beq @lbl_C35D01
-	lda.w $B3DF,y
+	lda.w wTileFlags,y
 	ora.b #$81
-	sta.w $B3DF,y
+	sta.w wTileFlags,y
 @lbl_C35D01:
-	lda.w $945F,y
+	lda.w wTileItemSlot,y
 	bmi @lbl_C35D10
 	sta.b wTemp00
 	phx
@@ -3959,7 +3959,7 @@ PlaceShirenOnFloor:
 	adc $C35DFB,x                           ;C35D1F
 	tay                                     ;C35D23
 	sep #$20                                ;C35D24
-	lda $A95F,y                             ;C35D26
+	lda.w wTileType,y                             ;C35D26
 	and #$F0                                ;C35D29
 	cmp #$C0                                ;C35D2B
 	bne @lbl_C35D47                         ;C35D2D
@@ -3977,10 +3977,10 @@ PlaceShirenOnFloor:
 	ply                                     ;C35D45
 	plx                                     ;C35D46
 @lbl_C35D47:
-	lda $B3DF,y                             ;C35D47
+	lda.w wTileFlags,y                             ;C35D47
 	ora #$81                                ;C35D4A
-	sta $B3DF,y                             ;C35D4C
-	lda $945F,y                             ;C35D4F
+	sta.w wTileFlags,y                             ;C35D4C
+	lda.w wTileItemSlot,y                             ;C35D4F
 	bmi @lbl_C35D5E                         ;C35D52
 	sta $00                                 ;C35D54
 	phx                                     ;C35D56
@@ -3996,7 +3996,7 @@ PlaceShirenOnFloor:
 	lda.w $BE64
 	pha
 	ldy.w $BE62
-	lda.w $A95F,y
+	lda.w wTileType,y
 	sta.w $BE64
 	cmp.b wTemp01,s
 	beq @lbl_C35DE2
@@ -4059,9 +4059,9 @@ FinalizeItemPickup:
 	sep #$20 ;A->8
 	lda.b #$80
 	sta.w $B41B,y
-	lda.w $B3DF,x
+	lda.w wTileFlags,x
 	ora.b #$81
-	sta.w $B3DF,x
+	sta.w wTileFlags,x
 	lda.b #$FF
 	sta.w $BE64
 	plp
@@ -4086,14 +4086,14 @@ MarkAllEntitiesDirty:
 	bankswitch 0x7E
 	ldy.w #$0A7F
 @lbl_C35E27:
-	lda.w $A95F,y
+	lda.w wTileType,y
 	bpl @lbl_C35E41
 	cmp.b #$B0
 	beq @lbl_C35E41
 	lda.b #$80
-	cmp.w $9EDF,y
+	cmp.w wTileEntitySlot,y
 	bne @lbl_C35E41
-	cmp.w $945F,y
+	cmp.w wTileItemSlot,y
 	bne @lbl_C35E41
 @lbl_C35E3C:
 	dey
@@ -4101,9 +4101,9 @@ MarkAllEntitiesDirty:
 	plp
 	rtl
 @lbl_C35E41:
-	lda.w $B3DF,y
+	lda.w wTileFlags,y
 	ora.b #$80
-	sta.w $B3DF,y
+	sta.w wTileFlags,y
 	rep #$20 ;A->16
 	tya
 	sep #$20 ;A->8
@@ -4136,7 +4136,7 @@ RefreshEntityTileLayer:
 	rep #$10 ;XY->16
 	ldy.w #$0A7F
 @lbl_C35E7E:
-	lda.w $A95F,y
+	lda.w wTileType,y
 	bit.b #$80
 	beq @lbl_C35EA8
 	and.b #$F0
@@ -4155,13 +4155,13 @@ RefreshEntityTileLayer:
 	ply                                     ;C35EA0
 	.db $80,$05   ;C35EA1
 	lda #$10                                ;C35EA3
-	sta $A95F,y                             ;C35EA5
+	sta.w wTileType,y                             ;C35EA5
 @lbl_C35EA8:
-	lda.w $B3DF,y
+	lda.w wTileFlags,y
 	bit.b #$01
 	bne @lbl_C35EC1
 	ora.b #$80
-	sta.w $B3DF,y
+	sta.w wTileFlags,y
 	rep #$20 ;A->16
 	tya
 	sep #$20 ;A->8
@@ -4179,15 +4179,15 @@ RefreshEntityTileLayer:
 	rep #$10                                ;C35ECB
 	ldy #$097F                              ;C35ECD
 @lbl_C35ED0:
-	lda $A95F,y                             ;C35ED0
+	lda.w wTileType,y                             ;C35ED0
 	and #$F0                                ;C35ED3
 	cmp #$C0                                ;C35ED5
 	bne @lbl_C35EF3                         ;C35ED7
 	lda #$10                                ;C35ED9
-	sta $A95F,y                             ;C35EDB
-	lda $B3DF,y                             ;C35EDE
+	sta.w wTileType,y                             ;C35EDB
+	lda.w wTileFlags,y                             ;C35EDE
 	ora #$80                                ;C35EE1
-	sta $B3DF,y                             ;C35EE3
+	sta.w wTileFlags,y                             ;C35EE3
 	rep #$20                                ;C35EE6
 	tya                                     ;C35EE8
 	sep #$20                                ;C35EE9
@@ -4211,9 +4211,9 @@ ScanItemVisibility:
 	inc.w $BE60
 	ldy.w #$0A7F
 @lbl_C35F0C:
-	lda.w $945F,y
+	lda.w wTileItemSlot,y
 	bpl @lbl_C35F56
-	lda.w $9EDF,y
+	lda.w wTileEntitySlot,y
 	bmi @lbl_C35F26
 	sta.b wTemp00
 	phy
@@ -4229,13 +4229,13 @@ ScanItemVisibility:
 	plp
 	rtl
 @lbl_C35F2B:
-	lda $9EDF,y                             ;C35F2B
+	lda.w wTileEntitySlot,y                             ;C35F2B
 	sta $00                                 ;C35F2E
 	phy                                     ;C35F30
 	jsl $C306F4                             ;C35F31
 	ply                                     ;C35F35
 	lda #$80                                ;C35F36
-	sta $9EDF,y                             ;C35F38
+	sta.w wTileEntitySlot,y                             ;C35F38
 	jsl $C36BCE                             ;C35F3B
 	lda #$06                                ;C35F3F
 	sta $02                                 ;C35F41
@@ -4248,11 +4248,11 @@ ScanItemVisibility:
 	ply                                     ;C35F4E
 	lda $00                                 ;C35F4F
 	.db $30,$03   ;C35F51
-	sta $945F,y                             ;C35F53
+	sta.w wTileItemSlot,y                             ;C35F53
 @lbl_C35F56:
-	lda.w $B3DF,y
+	lda.w wTileFlags,y
 	ora.b #$80
-	sta.w $B3DF,y
+	sta.w wTileFlags,y
 	rep #$20 ;A->16
 	tya
 	sep #$20 ;A->8
@@ -4272,7 +4272,7 @@ MarkAllItemsDirty:
 	inc.w $BE61
 	ldy.w #$0A7F
 @lbl_C35F81:
-	lda.w $9EDF,y
+	lda.w wTileEntitySlot,y
 	bpl @lbl_C35F8B
 @lbl_C35F86:
 	dey
@@ -4281,9 +4281,9 @@ MarkAllItemsDirty:
 	plp
 	rtl
 @lbl_C35F8B:
-	lda.w $B3DF,y
+	lda.w wTileFlags,y
 	ora.b #$80
-	sta.w $B3DF,y
+	sta.w wTileFlags,y
 	rep #$20 ;A->16
 	tya
 	sep #$20 ;A->8
@@ -4300,15 +4300,15 @@ MarkItemsForPickup:
 	bankswitch 0x7E
 	ldy.w #$0A7F
 @lbl_C35FAE:
-	lda.w $9EDF,y
+	lda.w wTileEntitySlot,y
 	cmp.b #$80
 	beq @lbl_C35FC3
 	and.b #$C0
 	cmp.b #$C0
 	bne @lbl_C35FC3
-	lda.w $9EDF,y
+	lda.w wTileEntitySlot,y
 	ora.b #$20
-	sta.w $9EDF,y
+	sta.w wTileEntitySlot,y
 @lbl_C35FC3:
 	dey
 	bpl @lbl_C35FAE
@@ -4467,7 +4467,7 @@ FindRandomEmptyTileNoChar:
 	bcs @lbl_C36092
 	tax
 	sep #$20 ;A->8
-	lda.l $7EA95F,x
+	lda.l wTileType,x
 	bit.b #$A0
 	bne @lbl_C36090
 	bit.b #$10
@@ -4481,7 +4481,7 @@ FindRandomEmptyTileNoChar:
 	bit.b #$20
 	bne @lbl_C36090
 @lbl_C360C8:
-	lda.l $7E945F,x
+	lda.l wTileItemSlot,x
 	cmp.b #$80
 	bne @lbl_C36090
 	txy
@@ -4514,7 +4514,7 @@ FindRandomEmptyTileNoItem:
 	bcs @lbl_C360E7
 	tax
 	sep #$20 ;A->8
-	lda.l $7EA95F,x
+	lda.l wTileType,x
 	bit.b #$A0
 	bne @lbl_C360DD
 	bit.b #$10
@@ -4530,7 +4530,7 @@ FindRandomEmptyTileNoItem:
 	bit.b #$20
 	bne @lbl_C360DD
 @lbl_C3611F:
-	lda.l $7E945F,x
+	lda.l wTileItemSlot,x
 	cmp.b #$80
 	bne @lbl_C360DD
 	txy
@@ -4625,10 +4625,10 @@ FindRandomEmptyTileNoItem:
 	adc $C361FB,x                           ;C361CC
 	tay                                     ;C361D0
 	sep #$20                                ;C361D1
-	lda $A95F,y                             ;C361D3
+	lda.w wTileType,y                             ;C361D3
 	bit #$90                                ;C361D6
 	bne @lbl_C361DF                         ;C361D8
-	lda $945F,y                             ;C361DA
+	lda.w wTileItemSlot,y                             ;C361DA
 	bmi @lbl_C361EB                         ;C361DD
 @lbl_C361DF:
 	dex                                     ;C361DF
@@ -4672,7 +4672,7 @@ FindRandomEmptyTile:
 	bcs @lbl_C36208
 	tax
 	sep #$20 ;A->8
-	lda.l $7EA95F,x
+	lda.l wTileType,x
 	bit.b #$A0
 	bne @lbl_C36206
 	bit.b #$10
@@ -4686,7 +4686,7 @@ FindRandomEmptyTile:
 	bit.b #$20
 	bne @lbl_C36206
 @lbl_C3623E:
-	lda.l $7E9EDF,x
+	lda.l wTileEntitySlot,x
 	cmp.b #$80
 	bne @lbl_C36206
 	txy
@@ -4749,7 +4749,7 @@ FindRandomEmptyTileForNPC:
 	bcs @lbl_C36297
 	tax
 	sep #$20 ;A->8
-	lda.l $7EA95F,x
+	lda.l wTileType,x
 	bit.b #$80
 	bne @lbl_C3628D
 	bit.b #$10
@@ -4757,7 +4757,7 @@ FindRandomEmptyTileForNPC:
 	cmp.b #$10
 	bne @lbl_C3628D
 @lbl_C362C1:
-	lda.l $7E9EDF,x
+	lda.l wTileEntitySlot,x
 	cmp.b #$C0
 	bcs @lbl_C362CD
 	cmp.b #$80
@@ -4950,7 +4950,7 @@ FindEmptyTileNearCoord:
 	jsl.l CoordsToTileIndex
 	phy
 	tyx
-	lda.l $7EA95F,x
+	lda.l wTileType,x
 	pha
 	rep #$20 ;A->16
 	lda.b wTemp02
@@ -4979,11 +4979,11 @@ FindEmptyTileNearCoord:
 	cmp.w #$0980
 	bcs @lbl_C3646A
 	sep #$20 ;A->8
-	lda.l $7EA95F,x
+	lda.l wTileType,x
 	bmi @lbl_C3646A
 	cmp.b wTemp03,s
 	bne @lbl_C3646A
-	lda.l $7E9EDF,x
+	lda.l wTileEntitySlot,x
 	cmp.b #$80
 	beq @lbl_C36478
 @lbl_C3646A:
@@ -5058,7 +5058,7 @@ GetDoorCandidate:
 	plb                                     ;C3656A
 	ldy #$097F                              ;C3656B
 @lbl_C3656E:
-	lda $945F,y                             ;C3656E
+	lda.w wTileItemSlot,y                             ;C3656E
 	bmi @lbl_C3659D                         ;C36571
 	cmp #$13                                ;C36573
 	beq @lbl_C3659D                         ;C36575
@@ -5095,7 +5095,7 @@ GetDoorCandidate:
 	plb                                     ;C365AA
 	ldy #$097F                              ;C365AB
 @lbl_C365AE:
-	lda $9EDF,y                             ;C365AE
+	lda.w wTileEntitySlot,y                             ;C365AE
 	bmi @lbl_C365EB                         ;C365B1
 	sta $00                                 ;C365B3
 	phy                                     ;C365B5
@@ -5177,10 +5177,10 @@ GetStaircaseCoords:
 	inc a
 	tay
 @lbl_C36641:
-	lda.w $9EDF,y
+	lda.w wTileEntitySlot,y
 	bpl @lbl_C36670
 	iny
-	lda.w $A95F,y
+	lda.w wTileType,y
 	bpl @lbl_C36641
 	rep #$20 ;A->16
 	tya
@@ -5191,7 +5191,7 @@ GetStaircaseCoords:
 	ora.w $BE66,x
 	inc a
 	tay
-	lda.w $A95F,y
+	lda.w wTileType,y
 	bpl @lbl_C36641
 @lbl_C36662:
 	lda.b #$FF
@@ -5331,16 +5331,16 @@ ResetFloorVisibility:
 	stz.w $BE61
 	ldx.w #$0A7F
 @lbl_C36749:
-	lda.w $9EDF,x
+	lda.w wTileEntitySlot,x
 	and.b #$C0
 	cmp.b #$C0
 	bne @lbl_C3675A
-	lda.w $9EDF,x
+	lda.w wTileEntitySlot,x
 	and.b #$DF
-	sta.w $9EDF,x
+	sta.w wTileEntitySlot,x
 @lbl_C3675A:
 	lda.b #$80
-	sta.w $B3DF,x
+	sta.w wTileFlags,x
 	dex 
 	bpl @lbl_C36749
 	lda.b #$FF
@@ -5518,7 +5518,7 @@ func_C36829:
 	rtl
 
 func_C3687E:
-	lda.w $A95F,y
+	lda.w wTileType,y
 	and.b #$F0
 	cmp.b #$C0
 	bne func_C36897
@@ -5537,13 +5537,13 @@ func_C36897:
 	rts
 
 func_C3689A:
-	lda.w $A95F,y
+	lda.w wTileType,y
 	and.b #$F0
 	cmp.b #$C0
 	beq func_C3688B
 	bit.b #$40
 	beq @lbl_C368BB
-	lda.w $A95F,y
+	lda.w wTileType,y
 	bit.b #$10
 	bne @lbl_C368BB
 	stx.b wTemp00
@@ -5571,11 +5571,11 @@ func_C368BE:
 	adc.l TileCardinalOffsets,x
 	tay
 	sep #$20 ;A->8
-	lda.w $A95F,y
+	lda.w wTileType,y
 	and.b #$F0
 	cmp.b #$C0
 	bne @lbl_C368E4
-	lda.w $A95F,y
+	lda.w wTileType,y
 	bit.b #$02
 	beq @lbl_C368C4
 @lbl_C368E4:
@@ -5585,7 +5585,7 @@ TileCardinalOffsets:
 	.db $01,$00,$C0,$FF,$FF,$FF,$40,$00   ;C368E5  
 
 func_C368ED:
-	lda.w $A95F,y
+	lda.w wTileType,y
 	bit.b #$01
 	beq @lbl_C368FF
 	jsr.w func_C36928
@@ -5596,8 +5596,8 @@ func_C368ED:
 @lbl_C368FF:
 	lda.b #$30
 @lbl_C36901:
-	sta.w $A95F,y
-	lda.w $945F,y
+	sta.w wTileType,y
+	lda.w wTileItemSlot,y
 	bmi @lbl_C36911
 ;C36909  
 	sta $00                                 ;C36909
@@ -5612,9 +5612,9 @@ func_C368ED:
 	sep #$20 ;A->8
 	lda.b #$80
 	sta.w $B41B,x
-	lda.w $B3DF,y
+	lda.w wTileFlags,y
 	ora.b #$81
-	sta.w $B3DF,y
+	sta.w wTileFlags,y
 	rts
 
 func_C36928:
@@ -5627,7 +5627,7 @@ func_C36928:
 	adc.l TileCardinalOffsets,x
 	tay
 	sep #$20 ;A->8
-	lda.w $A95F,y
+	lda.w wTileType,y
 	bit.b #$90
 	bne @lbl_C36943
 	and.b #$0F
@@ -6031,13 +6031,13 @@ MarkRoomDirty:
 	ora.w $BE66,y
 	tax
 @lbl_C36C01:
-	lda.w $B3DF,x
+	lda.w wTileFlags,x
 	bit.b #$01
 	bne @lbl_C36C0D
 	ora.b #$81
-	sta.w $B3DF,x
+	sta.w wTileFlags,x
 @lbl_C36C0D:
-	lda.w $945F,x
+	lda.w wTileItemSlot,x
 	bmi @lbl_C36C1E
 	sta.b wTemp00
 	phx
@@ -6151,7 +6151,7 @@ GetTileTypeAtCoord:
 	lsr a
 	tax
 	sep #$20 ;A->8
-	lda.l $7EA95F,x
+	lda.l wTileType,x
 	sta.b wTemp00
 	plp
 	rtl
@@ -6170,7 +6170,7 @@ SetTileTypeAtCoord:
 	tax
 	sep #$20 ;A->8
 	lda.b wTemp02
-	sta.l $7EA95F,x
+	sta.l wTileType,x
 	plp
 	rtl
 
@@ -8878,7 +8878,7 @@ SpawnBoulderClusters:
 	tax
 	sep #$20 ;A->8
 	lda.b #$B0
-	sta.l $7EA95F,x
+	sta.l wTileType,x
 	dey
 	dey
 	bpl @lbl_C380DA
@@ -9512,7 +9512,7 @@ SetupShopFloor:
 	lda.w #$E0E0
 	ldx.w #$097E
 @lbl_C38876:
-	sta.w $A95F,x
+	sta.w wTileType,x
 	dex 
 	dex 
 	bpl @lbl_C38876
@@ -9912,7 +9912,7 @@ LoadDungeonRoomLayout:
 @lbl_C38B8A:
 	pha
 	lda.b wTemp02,s
-	sta.w $A95F,x
+	sta.w wTileType,x
 	inx
 	pla
 	dec a
@@ -10544,7 +10544,7 @@ BackupTileMapAndShrinkRooms:
 	bankswitch 0x7E
 	ldx.w #$0877
 @lbl_C3902D:
-	lda.w $A95F,x
+	lda.w wTileType,x
 	sta.w $AA63,x
 	dex
 	bpl @lbl_C3902D
