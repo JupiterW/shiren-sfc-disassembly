@@ -3327,20 +3327,20 @@ GetDungeonItemTableVariant:
 @lbl_C357D3:
 	jsl.l ClearDungeonTileMap
 	jsl.l LoadDungeonRoomLayout
-	jsl.l func_C38C9F
+	jsl.l PlaceFixedFloorItems
 	jsr.w SetupNaokiGaibaraEventRoom
-	jsr.w func_C38C70
-	jsl.l func_C3893E
+	jsr.w SetRoomPickupRestrictions
+	jsl.l PlaceShirenStartingItem
 	jsl.l func_C62B37
 	lda.b wTemp00
 	beq @lbl_C35807
-	jsl.l func_C38981
-	jsl.l func_C389AA
+	jsl.l SpawnFloorMonsterEntities
+	jsl.l SpawnFloorItems
 	jsl.l Get7ED5EC
 	lda.b wTemp00
 	cmp.b #$10
 	beq @lbl_C35807
-	jsl.l func_C38A3C
+	jsl.l SpawnDungeonMonsters
 @lbl_C35807:
 	rts
 	jsl.l ClearDungeonTileMap
@@ -3372,7 +3372,7 @@ GetDungeonItemTableVariant:
 	plx
 	jsl.l func_C38F34
 	jsl.l BuildDoorCandidatesAllRooms
-	jsl.l func_C3893E
+	jsl.l PlaceShirenStartingItem
 	rts
 
 	;C3584A
@@ -3389,13 +3389,13 @@ GetDungeonItemTableVariant:
 	jsr.w func_C39C97
 	jsr.w func_C39D8C
 	jsr.w func_C39FB2
-	jsl.l func_C38981
-	jsl.l func_C389AA
-	jsl.l func_C389DB
+	jsl.l SpawnFloorMonsterEntities
+	jsl.l SpawnFloorItems
+	jsl.l PlaceStaircaseItem
 	jsl.l func_C3D219
-	jsl.l func_C38A3C
+	jsl.l SpawnDungeonMonsters
 	jsl.l func_C391FA
-	jsl.l func_C3893E
+	jsl.l PlaceShirenStartingItem
 	jsr.w func_C399F2
 	jsr.w func_C39E1D
 	rts
@@ -4329,7 +4329,7 @@ func_C35FC8:
 	plp
 	rtl
 
-func_C35FE7:
+FillTileRow:
 	php
 	sep #$30 ;AXY->8
 	lda.b wTemp02
@@ -4367,7 +4367,7 @@ func_C35FE7:
 	plp
 	rtl
 
-func_C3601D:
+FillTileColumn:
 	php
 	sep #$30 ;AXY->8
 	lda.b wTemp02
@@ -4449,7 +4449,7 @@ FillTileRect:
 	plp
 	rtl
 
-func_C3608D:
+FindRandomEmptyTileNoChar:
 	php
 	rep #$10 ;XY->16
 @lbl_C36090:
@@ -4654,7 +4654,7 @@ func_C360D7:
 	rtl                                     ;C361FA
 	.db $01,$00,$FF,$FF,$40,$00,$C0,$FF   ;C361FB
 
-func_C36203:
+FindRandomEmptyTile:
 	php
 	rep #$10 ;XY->16
 @lbl_C36206:
@@ -4724,7 +4724,7 @@ func_C36203:
 	plp                                     ;C36285
 	rtl                                     ;C36286
 
-func_C36287:
+FindRandomEmptyTileForNPC:
 	php
 	rep #$10 ;XY->16
 	ldy.w #$0064
@@ -4805,14 +4805,14 @@ func_C36287:
 	jsl $C36BCE                             ;C36315
 	rts                                     ;C36319
 
-func_C3631A:
+FindEmptyAdjacentTileForItem:
 	php
 	sep #$30 ;AXY->8
 	lda.b wTemp01
 	pha
 	lda.b wTemp00
 	pha
-	jsr.w func_C3635A
+	jsr.w IsTileValidForItem
 	lda.b wTemp00
 	bpl @lbl_C36356
 @lbl_C3632A:
@@ -4832,7 +4832,7 @@ func_C3631A:
 	clc
 	adc.l DATA8_C363FE,x
 	sta.b wTemp01
-	jsr.w func_C3635A
+	jsr.w IsTileValidForItem
 	lda.b wTemp00
 	bpl @lbl_C36356
 	inx
@@ -4844,7 +4844,7 @@ func_C3631A:
 	plp
 	rtl
 
-func_C3635A:
+IsTileValidForItem:
 	lda.b wTemp00
 	sta.b wTemp04
 	lda.b wTemp01
@@ -4869,14 +4869,14 @@ func_C3635A:
 	sta.b wTemp01
 	rts
 
-func_C36382:
+FindEmptyAdjacentTileForNPC:
 	php
 	sep #$30 ;AXY->8
 	lda.b wTemp01
 	pha
 	lda.b wTemp00
 	pha
-	jsr.w func_C363C2
+	jsr.w IsTileValidForNPC
 	lda.b wTemp00
 	bpl @lbl_C363BE
 @lbl_C36392:
@@ -4896,7 +4896,7 @@ func_C36382:
 	clc
 	adc.l DATA8_C363FE,x
 	sta.b wTemp01
-	jsr.w func_C363C2
+	jsr.w IsTileValidForNPC
 	lda.b wTemp00
 	bpl @lbl_C363BE
 	inx
@@ -4908,7 +4908,7 @@ func_C36382:
 	plp
 	rtl
 
-func_C363C2:
+IsTileValidForNPC:
 	lda.b wTemp00
 	sta.b wTemp04
 	lda.b wTemp01
@@ -5373,7 +5373,7 @@ func_C36783:
 	ldy.b wTemp01
 	phx
 	phy
-	jsl.l func_C36382
+	jsl.l FindEmptyAdjacentTileForNPC
 	ply
 	plx
 	lda.b wTemp00
@@ -9012,7 +9012,7 @@ Data_c384cb:
 	.dw $FFBF,$FFC0,$FFC1,$FFFF,$0000,$0001,$003F,$0040,$0041
 
 
-func_C384DD:
+DrawRoomBorderPartA:
 	phx
 	phy
 	php 
@@ -9035,7 +9035,7 @@ func_C384DD:
 	sta.b wTemp02
 	lda.b #$30
 	sta.b wTemp03
-	jsl.l func_C35FE7
+	jsl.l FillTileRow
 	lda.b $04,s
 	sta.b wTemp00
 	lda.b $02,s
@@ -9044,7 +9044,7 @@ func_C384DD:
 	sta.b wTemp02
 	lda.b #$30
 	sta.b wTemp03
-	jsl.l func_C3601D
+	jsl.l FillTileColumn
 	lda.b $04,s
 	sta.b wTemp00
 	lda.b $01,s
@@ -9053,7 +9053,7 @@ func_C384DD:
 	sta.b wTemp02
 	lda.b #$30
 	sta.b wTemp03
-	jsl.l func_C35FE7
+	jsl.l FillTileRow
 	pla
 	pla
 	pla
@@ -9064,7 +9064,7 @@ func_C384DD:
 	plx
 	rts
 
-func_C38536:
+DrawRoomBorderPartB:
 	phx
 	phy
 	php 
@@ -9087,7 +9087,7 @@ func_C38536:
 	sta.b wTemp02
 	lda.b #$30
 	sta.b wTemp03
-	jsl.l func_C3601D
+	jsl.l FillTileColumn
 	lda.b $05,s
 	sta.b wTemp00
 	lda.b $02,s
@@ -9096,7 +9096,7 @@ func_C38536:
 	sta.b wTemp02
 	lda.b #$30
 	sta.b wTemp03
-	jsl.l func_C35FE7
+	jsl.l FillTileRow
 	lda.b $04,s
 	sta.b wTemp00
 	lda.b $02,s
@@ -9105,7 +9105,7 @@ func_C38536:
 	sta.b wTemp02
 	lda.b #$30
 	sta.b wTemp03
-	jsl.l func_C3601D
+	jsl.l FillTileColumn
 	pla
 	pla
 	pla
@@ -9116,7 +9116,7 @@ func_C38536:
 	plx
 	rts
 
-func_C3858F:
+SetupFourRoomFloor:
 	php 
 	sep #$30 ;AXY->8
 	lda.b #$04
@@ -9255,7 +9255,7 @@ func_C3858F:
 	sta.b wTemp00
 	pla
 	sta.b wTemp03
-	jsr.w func_C384DD
+	jsr.w DrawRoomBorderPartA
 	dex 
 	dex 
 	bmi @lbl_C386AC
@@ -9330,7 +9330,7 @@ func_C3858F:
 	sta.b wTemp02
 	pla
 	sta.b wTemp00
-	jsr.w func_C38536
+	jsr.w DrawRoomBorderPartB
 	dex 
 	bmi @lbl_C38735
 	brl @lbl_C386AE
@@ -9370,7 +9370,7 @@ Data_c38753:
 	.db $22   ;C38755
 	.db $22   ;C38756
 	
-func_C38757:
+SetupTwoRoomFloor:
 	php
 	sep #$30 ;AXY->8
 	lda.b #$02
@@ -9484,7 +9484,7 @@ func_C38757:
 	sta.b wTemp00
 	pla
 	sta.b wTemp03
-	jsr.w func_C384DD
+	jsr.w DrawRoomBorderPartA
 	plp 
 	rts
 
@@ -9516,7 +9516,7 @@ func_C38865:
 	dex 
 	dex 
 	bpl @lbl_C38876
-	jsr.w func_C38757
+	jsr.w SetupTwoRoomFloor
 	sep #$20 ;A->8
 	jsr.w FindLargeRoomForCorridor
 	lda.b wTemp00
@@ -9568,7 +9568,7 @@ SetupFixedSingleRoom:
 	sta.b wTemp02
 	lda.b #$E0
 	sta.b wTemp03
-	jsl.l func_C35FE7
+	jsl.l FillTileRow
 	lda.l $7EBE84
 	dec a
 	sta.l $7EBE84
@@ -9580,7 +9580,7 @@ SetupFixedSingleRoom:
 	sta.b wTemp02
 	lda.b #$E0
 	sta.b wTemp03
-	jsl.l func_C3601D
+	jsl.l FillTileColumn
 	lda.l $7EBE7A
 	dec a
 	sta.l $7EBE7A
@@ -9589,7 +9589,7 @@ SetupFixedSingleRoom:
 	rts
 
 
-func_C38916:
+SetupSingleLargeRoom:
 	php 
 	sep #$20 ;A->8
 	lda.b #$01
@@ -9608,7 +9608,7 @@ func_C38916:
 	rts
 
 
-func_C3893E:
+PlaceShirenStartingItem:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -9626,7 +9626,7 @@ func_C3893E:
 	jsl.l GetTransitionDestX
 	bra @lbl_C38967
 @lbl_C38963:
-	jsl.l func_C3608D
+	jsl.l FindRandomEmptyTileNoChar
 @lbl_C38967:
 	ldx.b wTemp00
 	lda.b #$13
@@ -9642,14 +9642,14 @@ func_C3893E:
 	plp
 	rtl
 
-func_C38981:
+SpawnFloorMonsterEntities:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
 	ldy.w #$0007
 @lbl_C38989:
 	phy
-	jsl.l func_C3608D
+	jsl.l FindRandomEmptyTileNoChar
 	ply
 	ldx.b wTemp00
 	phx
@@ -9668,7 +9668,7 @@ func_C38981:
 	plp
 	rtl
 
-func_C389AA:
+SpawnFloorItems:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -9678,7 +9678,7 @@ func_C389AA:
 	ldy.w #$0003
 @lbl_C389BA:
 	phy
-	jsl.l func_C36203
+	jsl.l FindRandomEmptyTile
 	ply
 	ldx.b wTemp00
 	phx
@@ -9698,7 +9698,7 @@ func_C389AA:
 	plp
 	rtl
 
-func_C389DB:
+PlaceStaircaseItem:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -9708,7 +9708,7 @@ func_C389DB:
 	cmp.b #$08
 	beq @lbl_C38A36
 @lbl_C389EC:
-	jsl.l func_C36203
+	jsl.l FindRandomEmptyTile
 	ldy.b wTemp00
 	jsl.l GetItemData
 	lda.b #$00
@@ -9746,7 +9746,7 @@ func_C389DB:
 	jsl $C36203                             ;C38A36
 	.db $80,$E6   ;C38A3A
 
-func_C38A3C:
+SpawnDungeonMonsters:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -9785,14 +9785,14 @@ func_C38A3C:
 	ldy.b wTemp00
 @lbl_C38A81:
 	phy
-	jsl.l func_C36287
+	jsl.l FindRandomEmptyTileForNPC
 	ply
 	ldx.b wTemp00
 	lda.b wTemp01,s
 	sta.b wTemp00
 	phx
 	phy
-	jsl.l func_C3D3AB
+	jsl.l PickRandomTrapType
 	ply
 	plx
 	lda.b wTemp00
@@ -10014,7 +10014,7 @@ NaokiGaibaraEventNPCLayout:
 	.db $B0,$B0,$B0,$00,$00,$00,$00,$00,$00,$B0,$B0,$B0,$B0,$B0,$00,$00   ;C38C59
 	.db $00,$00,$B0,$B0,$B0,$B0,$B0       ;C38C69
 
-func_C38C70:
+SetRoomPickupRestrictions:
 	php
 	sep #$30 ;AXY->8
 	jsl.l Get7ED5EE
@@ -10039,7 +10039,7 @@ func_C38C70:
 	plp
 	rts
 
-func_C38C9F:
+PlaceFixedFloorItems:
 	php
 	rep #$30 ;AXY->16
 	jsl.l Get7ED5EE
@@ -11470,7 +11470,7 @@ func_C39382:
 	rts                                     ;C396F0
 .INDEX 8
 
-func_C396F1:
+SpawnFloorNPCs:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -11696,7 +11696,7 @@ func_C396F1:
 	plp                                     ;C39889
 	rts                                     ;C3988A
 
-func_C3988B:
+SpawnFloorItemsInRoom:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -11729,7 +11729,7 @@ func_C3988B:
 	plp
 	rts
 
-func_C398C4:
+SpawnFloorTraps:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -11762,7 +11762,7 @@ func_C398C4:
 	sta.b wTemp00
 	phx
 	phy
-	jsl.l func_C3D3AB
+	jsl.l PickRandomTrapType
 	ply
 	plx
 	lda.b wTemp00
@@ -11919,9 +11919,9 @@ Jumptable_C39A17:
 	.dw func_C39A31
 
 func_C39A1D:
-	jsr.w func_C396F1
-	jsr.w func_C3988B
-	jsr.w func_C398C4
+	jsr.w SpawnFloorNPCs
+	jsr.w SpawnFloorItemsInRoom
+	jsr.w SpawnFloorTraps
 	rts
 
 func_C39A27:
@@ -12148,7 +12148,7 @@ func_C39AAA:
 	sta.b wTemp02
 	lda.b #$B0
 	sta.b wTemp03
-	jsl.l func_C35FE7
+	jsl.l FillTileRow
 	lda.b wTemp04,s
 	sta.b wTemp00
 	lda.b wTemp01,s
@@ -12157,7 +12157,7 @@ func_C39AAA:
 	sta.b wTemp02
 	lda.b #$B0
 	sta.b wTemp03
-	jsl.l func_C35FE7
+	jsl.l FillTileRow
 	lda.b wTemp04,s
 	sta.b wTemp00
 	lda.b wTemp02,s
@@ -12166,7 +12166,7 @@ func_C39AAA:
 	sta.b wTemp02
 	lda.b #$B0
 	sta.b wTemp03
-	jsl.l func_C3601D
+	jsl.l FillTileColumn
 	lda.b wTemp03,s
 	sta.b wTemp00
 	lda.b wTemp02,s
@@ -12175,7 +12175,7 @@ func_C39AAA:
 	sta.b wTemp02
 	lda.b #$B0
 	sta.b wTemp03
-	jsl.l func_C3601D
+	jsl.l FillTileColumn
 	lda.b wTemp04,s
 	inc a
 	sta.b wTemp00
@@ -13160,7 +13160,7 @@ DATA8_C3D39E:
 	.db $04,$06,$08,$05,$09,$0A,$16,$0E   ;C3D39E
 	.db $12,$0D,$0F,$13,$17               ;C3D3A6
 
-func_C3D3AB:
+PickRandomTrapType:
 	php
 	sep #$30 ;AXY->8
 	lda.b wTemp00
@@ -13827,7 +13827,7 @@ func_C3D772:
 	pha
 @lbl_C3D8D5:
 	phy
-	jsl.l func_C36287
+	jsl.l FindRandomEmptyTileForNPC
 	ply
 	cpy.b wTemp00
 	beq @lbl_C3D8D5
@@ -13837,7 +13837,7 @@ func_C3D772:
 	jsl.l GetCurrentFloor
 	phx
 	phy
-	jsl.l func_C3D3AB
+	jsl.l PickRandomTrapType
 	ply
 	plx
 	lda.b wTemp00

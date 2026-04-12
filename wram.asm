@@ -1703,7 +1703,15 @@ wItemCoordY:
 
 ;c166
 wTileTypeFlags:
-    dsb 16
+    dsb 14
+
+;c174
+wStaircaseRoomIndex:
+    db
+
+;c175
+wSpawnRoomIndex:
+    db
 
 ;c176
 wStaircasePlacedFlag:

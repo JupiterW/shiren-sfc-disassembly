@@ -3256,7 +3256,7 @@ func_C22E2D:
 	sta.b wTemp00
 	lda.l $7E8982
 	sta.b wTemp01
-	jsl.l func_C3631A
+	jsl.l FindEmptyAdjacentTileForItem
 	lda.b wTemp00
 	bmi @lbl_C230CE
 	lda.b #$18
@@ -6067,7 +6067,7 @@ func_C24458:
 	sta.b wTemp00
 	phx
 	phy
-	jsl.l func_C3631A
+	jsl.l FindEmptyAdjacentTileForItem
 	ply
 	plx
 	lda.b wTemp00
@@ -7819,7 +7819,7 @@ func_C25152:
 	cmp.b #$80
 	bne @lbl_C25214
 @lbl_C251E3:
-	jsl.l func_C3D3AB
+	jsl.l PickRandomTrapType
 	lda.b wTemp00
 	ora.b #$E0
 	sta.b wTemp02
@@ -10791,7 +10791,7 @@ func_C2816C:
 	lda.l wCharYPos,x
 	sta.b wTemp01
 	phx
-	jsl.l func_C3631A
+	jsl.l FindEmptyAdjacentTileForItem
 	plx
 	lda.b wTemp00
 	bpl @lbl_C2818B
@@ -14850,7 +14850,7 @@ func_C2D469:
 	rep #$30 ;AXY->16
 	lda.b wTemp06
 	pha
-	jsl.l func_C3601D
+	jsl.l FillTileColumn
 	pla
 	sta.b wTemp06
 	sep #$30 ;AXY->8
@@ -14865,7 +14865,7 @@ func_C2D469:
 	rep #$30 ;AXY->16
 	lda.b wTemp06
 	pha
-	jsl.l func_C35FE7
+	jsl.l FillTileRow
 	pla
 	sta.b wTemp06
 	sep #$30 ;AXY->8
@@ -14877,7 +14877,7 @@ func_C2D469:
 	sta.b wTemp02
 	lda.b #$30
 	sta.b wTemp03
-	jsl.l func_C3601D
+	jsl.l FillTileColumn
 	brl func_C2D688
 	lda $07                                 ;C39EFD
 	cmp $04                                 ;C39EFF
@@ -15121,7 +15121,7 @@ func_C2D68E:
 	rep #$30 ;AXY->16
 	lda.b wTemp06
 	pha
-	jsl.l func_C35FE7
+	jsl.l FillTileRow
 	pla
 	sta.b wTemp06
 	sep #$30 ;AXY->8
@@ -15136,7 +15136,7 @@ func_C2D68E:
 	rep #$30 ;AXY->16
 	lda.b wTemp06
 	pha
-	jsl.l func_C3601D
+	jsl.l FillTileColumn
 	pla
 	sta.b wTemp06
 	sep #$30 ;AXY->8
@@ -15148,7 +15148,7 @@ func_C2D68E:
 	sta.b wTemp02
 	lda.b #$30
 	sta.b wTemp03
-	jsl.l func_C35FE7
+	jsl.l FillTileRow
 	brl func_C2D8B1
 	lda $07                                 ;C3A11D
 	cmp $04                                 ;C3A11F

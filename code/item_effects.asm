@@ -2007,7 +2007,7 @@ TrapScrollUseEffect:
 	lda.b #$1E                          ;C317B6
 @lbl_C317B8:
 	pha                                 ;C317B8
-	jsl.l func_C36287                   ;C317B9
+	jsl.l FindRandomEmptyTileForNPC                   ;C317B9
 	ldx.b wTemp00                       ;C317BD
 	bmi @lbl_C317DF                     ;C317BF
 	jsl.l $C62771                       ;C317C1
@@ -2015,7 +2015,7 @@ TrapScrollUseEffect:
 	stx.b wTemp00                       ;C317C7
 	sta.b wTemp02                       ;C317C9
 	phx                                 ;C317CB
-	jsl.l func_C3D3AB                   ;C317CC
+	jsl.l PickRandomTrapType                   ;C317CC
 	plx                                 ;C317D0
 	lda.b wTemp00                       ;C317D1
 	bmi @lbl_C317DF                     ;C317D3
@@ -3166,7 +3166,7 @@ PostponeStaffThrowEffect:
 	jsl.l GetTargetTile
 	lda.b wTemp00
 	bmi @lbl_C320A8
-	jsl.l func_C3631A
+	jsl.l FindEmptyAdjacentTileForItem
 	lda.b wTemp00
 	bmi @lbl_C320A8
 	plx

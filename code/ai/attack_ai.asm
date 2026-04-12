@@ -477,7 +477,7 @@ func_C215AB:
 	cmp.b #$80
 	bne @lbl_C21790
 	phx
-	jsl.l func_C3D3AB
+	jsl.l PickRandomTrapType
 	plx
 	lda.b wTemp00
 	ora.b #$E0
@@ -567,7 +567,7 @@ func_C215AB:
 	tax
 	phx
 	phy
-	jsl.l func_C3631A
+	jsl.l FindEmptyAdjacentTileForItem
 	ply
 	plx
 	lda.b wTemp00
@@ -964,7 +964,7 @@ func_C21A99:
 	sta.b wTemp00
 	lda.l wCharYPos,x
 	sta.b wTemp01
-	jsl.l func_C3631A
+	jsl.l FindEmptyAdjacentTileForItem
 	lda.b wTemp00
 	bpl @lbl_C21AD6
 	jmp.w @lbl_C21B67
