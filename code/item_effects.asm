@@ -5901,13 +5901,27 @@ ExecutePreparedThrowEffect:
 	plp
 	rtl
 
-; 16-bit flat map index deltas for 8 directions (E/NE/N/NW/W/SW/S/SE).
-; Two sections: first 8 words use map stride 256, second 8 words use stride 60 ($3C).
+; Direction offset tables for thrown item / character search routines.
+; All three sub-tables are indexed by direction (0=E, 1=NE, 2=N, 3=NW, 4=W, 5=SW, 6=S, 7=SE).
+
+; 16-bit flat map position deltas for stride-256 map. Indexed as direction*2.   ;C334CD
 MapDirectionOffsets:
-	.db $01,$00,$01,$FF,$00,$FF,$FF,$FE   ;C334CD
-	.db $FF,$FF,$FF,$00,$00,$01           ;C334D5
-	.db $01,$01,$3C,$3C,$00,$C4,$C4,$C4,$00,$3C,$00,$C4,$C4,$C4,$00,$3C   ;C334DB  
-	.db $3C,$3C   ;C334EB
+	.dw $0001  ; E  (+1)
+	.dw $FF01  ; NE (+1 col, -1 row)
+	.dw $FF00  ; N  (-256)
+	.dw $FEFF  ; NW (-1 col, -1 row)
+	.dw $FFFF  ; W  (-1)
+	.dw $00FF  ; SW (-1 col, +1 row)
+	.dw $0100  ; S  (+256)
+	.dw $0101  ; SE (+1 col, +1 row)
+
+; Signed X-deltas for stride-60 map. Indexed by direction (byte).              ;C334DD
+MapDirectionDeltaX:
+	.db $3C, $3C, $00, $C4, $C4, $C4, $00, $3C  ; E/NE/N/NW/W/SW/S/SE
+
+; Signed Y-deltas for stride-60 map. Indexed by direction (byte).              ;C334E5
+MapDirectionDeltaY:
+	.db $00, $C4, $C4, $C4, $00, $3C, $3C, $3C  ; E/NE/N/NW/W/SW/S/SE
 
 ; Executes a thrown item's flight trajectory from the thrower's position.
 ; Computes the target tile using the item's throw class ($C341BB) and direction deltas
@@ -5932,14 +5946,14 @@ ExecuteItemThrowTrajectory:
 	sta $04                                 ;C33509
 	sep #$20                                ;C3350B
 	clc                                     ;C3350D
-	adc $C334DD,x                           ;C3350E
+	adc.l MapDirectionDeltaX,x             ;C3350E
 	sta $06                                 ;C33512
 	bpl @lbl_C33518                         ;C33514
 	stz $06                                 ;C33516
 @lbl_C33518:
 	xba                                     ;C33518
 	clc                                     ;C33519
-	adc $C334E5,x                           ;C3351A
+	adc.l MapDirectionDeltaY,x             ;C3351A
 	sta $07                                 ;C3351E
 	bpl @lbl_C33524                         ;C33520
 	stz $07                                 ;C33522
