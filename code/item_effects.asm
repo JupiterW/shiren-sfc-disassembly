@@ -279,7 +279,7 @@ AmnesiaHerbUseEffect:
 @lbl_C30A46:
 	lda.l wItemIdentified,x
 	beq @lbl_C30A72
-	lda.l DATA8_C341BB,x
+	lda.l ItemCategoryByType,x
 	cmp.b #$00
 	beq @lbl_C30A64
 	cmp.b #$01
@@ -367,7 +367,7 @@ ExecuteSelectedItemActionByCategory:
 	sta.l $7E935E
 	ldy.b wTemp00
 	ldx.w wItemType,y
-	lda.l DATA8_C341BB,x
+	lda.l ItemCategoryByType,x
 	; Register the selected item into its category shortcut slot:
 	; $03=weapons, $05=shields, $06=armbands, $04=arrows.
 	; For equip categories, assigning the slot also applies the item's effect,
@@ -415,7 +415,7 @@ ExecuteSelectedItemActionByCategory:
 	bne @lbl_C30B5F
 	lda.b #$AC
 	sta.b wTemp00
-	lda.l DATA8_C341BB,x
+	lda.l ItemCategoryByType,x
 	cmp.b #$06
 	bne @lbl_C30B55
 ;C30B51
@@ -430,7 +430,7 @@ ExecuteSelectedItemActionByCategory:
 @lbl_C30B5F:
 	lda.b #$01
 	sta.w wItemTimesIdentified,y
-	lda.l DATA8_C341BB,x
+	lda.l ItemCategoryByType,x
 	cmp.b #$06
 	beq @lbl_C30B80
 	lda.b #$19
@@ -715,7 +715,7 @@ func_C30D11:
 	jsl.l DisplayMessage
 	.db $80,$D9   ;C30D71
 @lbl_C30D73:
-	lda.l DATA8_C341BB,x
+	lda.l ItemCategoryByType,x
 	cmp.b #$00
 	bne @lbl_C30DB1
 	lda.b #$18
@@ -3920,7 +3920,7 @@ JarUseEffect:
 	lda.l wItemType,x
 	phx
 	tax
-	lda.l DATA8_C341BB,x
+	lda.l ItemCategoryByType,x
 	plx
 	cmp.b #$0B
 	bne @lbl_C326FC
@@ -5258,7 +5258,7 @@ func_C3303C:
 	bmi @lbl_C3307D
 	lda.l wItemType,x
 	tax
-	lda.l DATA8_C341BB,x
+	lda.l ItemCategoryByType,x
 	cmp.b #$0B
 	beq @lbl_C3307D
 	ldx.b wTemp01
@@ -5299,7 +5299,7 @@ func_C330DA:
 	ldx.b wTemp00
 	lda.l wItemType,x
 	tax
-	lda.l DATA8_C341BB,x
+	lda.l ItemCategoryByType,x
 	cmp.b #$0B
 	bne @lbl_C330F8
 	jsl.l func_C33170
@@ -5707,7 +5707,7 @@ ExecutePreparedThrowEffect:
 	ldy.b #$84
 	lda.b wTemp05,s
 	tax
-	lda.l DATA8_C341BB,x
+	lda.l ItemCategoryByType,x
 	cmp.b #$04
 	bne @lbl_C333C2
 	ldy.b #$83
@@ -5743,7 +5743,7 @@ ExecutePreparedThrowEffect:
 	sta.b wTemp00
 	lda.b wTemp05,s
 	tax
-	lda.l DATA8_C341BB,x
+	lda.l ItemCategoryByType,x
 	sta.b wTemp01
 	lda.b #$44
 	sta.b wTemp02
@@ -5767,7 +5767,7 @@ ExecutePreparedThrowEffect:
 	beq @lbl_C33489
 	lda.b wTemp05,s
 	tax
-	lda.l DATA8_C341BB,x
+	lda.l ItemCategoryByType,x
 	cmp.b #$00
 	beq @lbl_C33440
 	cmp.b #$07
@@ -5789,7 +5789,7 @@ ExecutePreparedThrowEffect:
 	sta.b wTemp02
 	lda.b wTemp05,s
 	tax
-	lda.l DATA8_C341BB,x
+	lda.l ItemCategoryByType,x
 	ldx.b #$14 ;print Text20
 	cmp.b #$04
 	bne @lbl_C33463
@@ -6037,7 +6037,7 @@ func_C335FE:
 	sta.b wTemp03
 	lda.l wItemType,x
 	tax
-	lda.l DATA8_C341BB,x
+	lda.l ItemCategoryByType,x
 	sta.b wTemp01
 	phx
 	phy

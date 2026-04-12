@@ -1,6 +1,18 @@
 .bank $03
 .org $0000 ;$C30000
 
+; Item category constants for ItemCategoryByType table
+CATEGORY_NONE    = $00
+CATEGORY_USABLE  = $01
+CATEGORY_WEAPON  = $03
+CATEGORY_ARROW   = $04
+CATEGORY_SHIELD  = $05
+CATEGORY_ARMBAND = $06
+CATEGORY_SCROLL  = $07
+CATEGORY_FOOD    = $08
+CATEGORY_STAFF   = $0A
+CATEGORY_POT     = $0B
+
 ClearItemTable:
 	php
 	sep #$20 ;A->8
@@ -216,7 +228,7 @@ IdentifyItem:
 	pha
 	lda.b #$01
 	sta.l wItemIdentified,x
-	lda.l DATA8_C341BB,x
+	lda.l ItemCategoryByType,x
 	cmp.b #$06
 	beq @lbl_C301BC
 	cmp.b #$03
@@ -374,7 +386,7 @@ InitFloorItemSlot:
 	lda.b #$FF
 	sta.w wItemModification1,y
 @lbl_C302D0:
-	lda.l DATA8_C341BB,x
+	lda.l ItemCategoryByType,x
 	cmp.b #$06
 	bne @lbl_C302DD
 	lda.b #$00
@@ -906,7 +918,7 @@ GetItemDisplayInfo:
 	stx.b wTemp05
 	cpx.b #$E7
 	beq @lbl_C30773
-	lda.l DATA8_C341BB,x
+	lda.l ItemCategoryByType,x
 	sta.b wTemp00
 	lda.l DATA8_C342A3,x
 	clc
@@ -1118,7 +1130,7 @@ PrepareSelectedThrowableItem:
 	bankswitch 0x7E
 	ldy.b wTemp00
 	ldx.w wItemType,y
-	lda.l DATA8_C341BB,x
+	lda.l ItemCategoryByType,x
 	cmp.b #$04
 	bne @lbl_C33A8E
 	lda.w wItemModification1,y
@@ -1152,7 +1164,7 @@ SetItemGoods:
 	cmp.b #$E7
 	beq @lbl_C33AB0
 	tax
-	lda.l DATA8_C341BB,x
+	lda.l ItemCategoryByType,x
 	cmp.b #$08
 	beq @lbl_C33AB0
 	ldx.b wTemp00
@@ -1171,7 +1183,7 @@ SetContainedItemsGoods:
 	txy
 	lda.l wItemType,x
 	tax
-	lda.l DATA8_C341BB,x
+	lda.l ItemCategoryByType,x
 	tyx
 	cmp.b #$08
 	beq @lbl_C33ACD
@@ -1978,7 +1990,7 @@ TryCurseEquippableItem:
 	ldx $00                                 ;C34017
 	lda $7E8B8C,x                           ;C34019
 	tax                                     ;C3401D
-	lda $C341BB,x                           ;C3401E
+	lda.l ItemCategoryByType,x                           ;C3401E
 	cmp #$03                                ;C34022
 	beq @lbl_C3402E                         ;C34024
 	cmp #$05                                ;C34026
@@ -2225,75 +2237,61 @@ RepairOrphanedPotItems:
 	rtl                                     ;C341BA
 
 
-DATA8_C341BB:
-	.db $03,$03,$03,$03,$03,$03
-	.db $03,$03,$03,$03,$03,$03
-	.db $03,$03,$03,$03
-	.db $04,$04,$04,$04,$04,$04
-	.db $05,$05,$05,$05,$05
-	.db $05,$05,$05
-	.db $05
-	.db $05,$05,$05,$05
-	.db $05,$05
-	.db $05,$05,$05
-	.db $00,$00
-	.db $00
-	.db $00,$00
-	.db $00,$00
-	.db $00
-	.db $00,$00,$00,$00,$00,$00,$00
-	.db $00,$00
-	.db $00,$00,$00
-	.db $00
-	.db $00,$00,$00
-	.db $00
-	.db $00,$00,$00,$00,$00,$00,$00,$00
-	.db $00,$00,$00,$00,$00,$00,$00,$00
-	.db $00,$00,$00,$00,$00
-	.db $01,$01,$01
-	.db $01,$01,$01,$01,$01
-	.db $01
-	.db $01
-	.db $01
-	.db $01,$01,$01,$01,$01
-	.db $01
-	.db $01
-	.db $01
-	.db $01
-	.db $01,$01
-	.db $01,$01,$01,$01,$01,$01,$01,$01
-	.db $01,$01,$01,$01,$01,$01,$01,$01
-	.db $07
-	.db $07
-	.db $07
-	.db $07,$07,$07,$07,$07,$07
-	.db $07
-	.db $07
-	.db $07,$07,$07,$07,$07,$07,$07,$07
-	.db $07,$07,$07,$07,$06,$06,$06,$06
-	.db $06
-	.db $06
-	.db $06,$06,$06,$06,$06,$06
-	.db $06,$06
-	.db $06,$06,$06,$06,$06,$06,$06,$06
-	.db $06,$06,$06,$06,$06
-	.db $02,$02
-	.db $02,$02,$02,$02
-	.db $0B,$0B
-	.db $0B,$0B
-	.db $0B,$0B,$0B
-	.db $0B,$0B,$0B,$0B
-	.db $0B
-	.db $0B
-	.db $0B,$0B
-	.db $0B,$0B,$0B,$0D,$0D,$0D,$0D,$0D
-	.db $0D,$0D,$0D,$0D,$0D,$0D,$0D,$0D
-	.db $0D,$0D,$0D,$0D,$0D,$0D,$0D,$0D
-	.db $0D,$0D,$0D,$0D,$0D
+; Maps item type (index) to item category ID.
+; Used to determine equipment slots, UI categories, and item behavior.
+ItemCategoryByType:
+	; $00-$0F (16 types): Weapons
+	.rept 16
+		.db CATEGORY_WEAPON
+	.endr
+	; $10-$15 (6 types): Arrows
+	.rept 6
+		.db CATEGORY_ARROW
+	.endr
+	; $16-$27 (18 types): Shields
+	.rept 18
+		.db CATEGORY_SHIELD
+	.endr
+	; $28-$55 (46 types): Unused/None
+	.rept 46
+		.db CATEGORY_NONE
+	.endr
+	; $56-$7B (38 types): Usable items
+	.rept 38
+		.db CATEGORY_USABLE
+	.endr
+	; $7C-$92 (23 types): Scrolls
+	.rept 23
+		.db CATEGORY_SCROLL
+	.endr
+	; $93-$AD (27 types): Armbands
+	.rept 27
+		.db CATEGORY_ARMBAND
+	.endr
+	; $AE-$B3 (6 types): Unknown ($02)
+	.rept 6
+		.db $02
+	.endr
+	; $B4-$C5 (18 types): Pots
+	.rept 18
+		.db CATEGORY_POT
+	.endr
+	; $C6-$DF (26 types): Unknown ($0D)
+	.rept 26
+		.db $0D
+	.endr
+	; $E0: Unknown ($09)
 	.db $09
-	.db $0A,$0A,$0A,$0A
-	.db $08
-	.db $00,$00
+	; $E1-$E4 (4 types): Staves
+	.rept 4
+		.db CATEGORY_STAFF
+	.endr
+	; $E5: Food
+	.db CATEGORY_FOOD
+	; $E6-$E7: Unused
+	.rept 2
+		.db CATEGORY_NONE
+	.endr
 
 DATA8_C342A3:
 	.db $02,$04
