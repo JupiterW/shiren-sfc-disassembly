@@ -78,7 +78,7 @@ func_808009:
 	jsl.l func_C4854D
 	jsl.l SaveNoop
 	jsl.l SaveLoadNoop
-	jsl.l func_C3D2CB
+	jsl.l SpawnFloorTrapsNoop
 	jsl.l func_C60000
 	plp
 	jsl.l func_81CD61

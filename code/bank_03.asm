@@ -3572,7 +3572,7 @@ FindFreeItemSlot:
 	ldy.w #$0980
 FindFreeItemSlotInner:
 	tya
-func_C35A5A:
+FindItemSlotWrap:
 	sec
 	sbc.w #$0040
 	tay
@@ -3615,7 +3615,7 @@ FindOccupiedItemSlot:
 	rep #$20 ;A->16
 	tya
 	and.w #$FFC0
-	bra func_C35A5A
+	bra FindItemSlotWrap
 @lbl_C35AA1:
 	sep #$20 ;A->8
 	lda.w wTileEntitySlot,y
@@ -13037,7 +13037,7 @@ func_C3D219:
 	plp                                     ;C3D2C9
 	rtl                                     ;C3D2CA
 
-func_C3D2CB:
+SpawnFloorTrapsNoop:
 	rtl
 
 ;something related to spawning traps
@@ -14338,7 +14338,7 @@ ScrollEffectCheckShortcutItems:
 	bne @lbl_C3DCCD
 	lda.b wTemp01,s
 	sta.b wTemp00
-	jsr.w func_C3DD85
+	jsr.w ApplyKnockbackDamage
 	bra @lbl_C3DCF8
 @lbl_C3DCCD:
 	cmp.b #$1A
@@ -14442,7 +14442,7 @@ ApplyLevelScaledDamage:
 	jsl.l ApplyDamageFixed
 	rts
 
-func_C3DD85:
+ApplyKnockbackDamage:
 	jsl.l func_C2816C
 	rts
 	lda $00                                 ;C3DD8A
