@@ -127,8 +127,8 @@ func_C10189:
 	php
 	sep #$30 ;AXY->8
 	jsl.l func_C28A92
-	jsl.l func_C3001F
-	jsl.l func_C300D2
+	jsl.l RandomizeItemAppearances
+	jsl.l PreIdentifyDungeonItems
 	plp
 	rts
 	php                                     ;C1019A
@@ -203,7 +203,7 @@ func_C10189:
 .ACCU 8
 	jsl.l DisplayMessage
 	sep #$20                                ;C10248
-	jsl $C21167                             ;C1024A
+	jsl GetShirenCoreStatus                             ;C1024A
 	lda $00                                 ;C1024E
 	cmp $01                                 ;C10250
 	.db $D0,$1F   ;C10252
@@ -215,10 +215,10 @@ func_C10189:
 	jsl.l DisplayMessage
 	lda #$01                                ;C10262
 	sta $00                                 ;C10264
-	jsl $C232BF                             ;C10266
+	jsl ModifyShirenMaxStrength                             ;C10266
 	lda #$01                                ;C1026A
 	sta $00                                 ;C1026C
-	jsl $C23271                             ;C1026E
+	jsl ModifyShirenStrength                             ;C1026E
 	rts                                     ;C10272
 	lda #$9E                                ;C10273
 	sta $00                                 ;C10275
@@ -228,7 +228,7 @@ func_C10189:
 	jsl.l DisplayMessage
 	lda #$01                                ;C10281
 	sta $00                                 ;C10283
-	jsl $C23271                             ;C10285
+	jsl ModifyShirenStrength                             ;C10285
 	rts                                     ;C10289
 	sep #$30                                ;C1028A
 	ldx $00                                 ;C1028C
@@ -265,10 +265,10 @@ func_C10189:
 	ply                                     ;C102CD
 	sty $00                                 ;C102CE
 	phy                                     ;C102D0
-	jsl $C282EB                             ;C102D1
+	jsl ShowDamageEffect                             ;C102D1
 	ply                                     ;C102D5
 	sty $00                                 ;C102D6
-	jsl $C20F35                             ;C102D8
+	jsl HandleCharacterDeath                             ;C102D8
 	lda #$0901                              ;C102DC
 	sta $00                                 ;C102DF
 .ACCU 8
@@ -347,10 +347,10 @@ func_C10189:
 	ply                                     ;C1037F
 	sty $00                                 ;C10380
 	phy                                     ;C10382
-	jsl $C282EB                             ;C10383
+	jsl ShowDamageEffect                             ;C10383
 	ply                                     ;C10387
 	sty $00                                 ;C10388
-	jsl $C20F35                             ;C1038A
+	jsl HandleCharacterDeath                             ;C1038A
 	rts                                     ;C1038E
 	sep #$20                                ;C1038F
 	rep #$10                                ;C10391
@@ -375,7 +375,7 @@ func_C10189:
 	sty $00                                 ;C103BF
 	stx $02                                 ;C103C1
 	jsl.l DisplayMessage
-	jsl $C33FF7                             ;C103C7
+	jsl.l ApplyBlessingScrollEffect                 ;C103C7
 	rts                                     ;C103CB
 	sep #$30                                ;C103CC
 	lda $7E8871,x                           ;C103CE
@@ -430,7 +430,7 @@ func_C10189:
 	sep #$10                                ;C10439
 	lda #$FFFF                              ;C1043B
 	sta $00                                 ;C1043E
-	jsl $C23271                             ;C10440
+	jsl ModifyShirenStrength                             ;C10440
 	ldy $00                                 ;C10444
 	.db $F0,$0B   ;C10446
 	sty $02                                 ;C10448
@@ -669,7 +669,7 @@ func_C104AB:
 	jsl.l DisplayMessage
 	plx
 	stx.b wTemp00
-	jsl.l func_C20F35
+	jsl.l HandleCharacterDeath
 	lda.b #$13
 	sta.b wTemp00
 	lda.b #$32
@@ -749,7 +749,7 @@ func_C104AB:
 	rts                                     ;C10700
 	stx $00                                 ;C10701
 	phx                                     ;C10703
-	jsl $C21128                             ;C10704
+	jsl.l GetCharacterStats                             ;C10704
 	plx                                     ;C10708
 	lda $01                                 ;C10709
 	lsr a                                   ;C1070B
@@ -978,7 +978,7 @@ func_C108B1:
 	ldy.w #$06E1
 	sty.b wTemp00
 	jsl.l DisplayMessage
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	lda.b wTemp03,s
 	sta.b wTemp00
 	ldy.w #$0FE8
@@ -988,7 +988,7 @@ func_C108B1:
 	jsl.l func_C2938C
 	lda.b wTemp03,s
 	sta.b wTemp00
-	jsl.l func_C21591
+	jsl.l PlayConfusionEffect
 	lda.b wTemp03,s
 	sta.b wTemp00
 	lda.b #$C2
@@ -996,11 +996,11 @@ func_C108B1:
 	lda.b #$05
 	sta.b wTemp02
 	jsl.l func_C2942A
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	ldy.w #$06E2
 	sty.b wTemp00
 	jsl.l DisplayMessage
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	lda.b wTemp03,s
 	inc a
 	sta.b wTemp00
@@ -1023,7 +1023,7 @@ func_C108B1:
 	ldy.w #$06E3
 	sty.b wTemp00
 	jsl.l DisplayMessage
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	lda.b wTemp03,s
 	inc a
 	sta.b wTemp00
@@ -1439,18 +1439,18 @@ func_C108B1:
 	sta $00                                 ;C10D69
 	ldy #$0003                              ;C10D6B
 	sty $02                                 ;C10D6E
-	jsl $C62550                             ;C10D70
+	jsl PlayVisualEffect                             ;C10D70
 	lda $03,s                               ;C10D74
 	sta $00                                 ;C10D76
 	ldy #$0082                              ;C10D78
 	sty $02                                 ;C10D7B
-	jsl $C62550                             ;C10D7D
+	jsl PlayVisualEffect                             ;C10D7D
 	lda $03,s                               ;C10D81
 	inc a                                   ;C10D83
 	sta $00                                 ;C10D84
 	ldy #$0082                              ;C10D86
 	sty $02                                 ;C10D89
-	jsl $C62550                             ;C10D8B
+	jsl PlayVisualEffect                             ;C10D8B
 	jsl $C625CE                             ;C10D8F
 	lda $03,s                               ;C10D93
 	inc a                                   ;C10D95
@@ -1527,7 +1527,7 @@ func_C10E35:
 @lbl_C10E3A:
 	sta.b wTemp00
 	phx
-	jsl.l func_C30710
+	jsl.l GetItemDisplayInfo
 	plx
 	lda.b wTemp00
 	cmp.b #$0B
@@ -1549,7 +1549,7 @@ func_C10E5D:
 	lda.b #$47
 	sta.b wTemp00
 	jsl.l func_C23BA6
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	lda.b wTemp05,s
 	inc a
 	sta.b wTemp00
@@ -1561,14 +1561,14 @@ func_C10E5D:
 	lda.b wTemp05,s
 	inc a
 	sta.b wTemp00
-	jsl.l func_C21591
+	jsl.l PlayConfusionEffect
 	lda.b #$13
 	sta.b wTemp00
 	lda.b wTemp05,s
 	inc a
 	sta.b wTemp01
 	jsl.l func_C2444B
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	lda.b wTemp05,s
 	inc a
 	sta.b wTemp00
@@ -1950,7 +1950,7 @@ func_C111EA:
 	ldy.w #$012F
 	sty.b wTemp00
 	jsl.l DisplayMessage
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	lda.b #$13
 	sta.b wTemp00
 	jsl.l GetCharacterMapInfo
@@ -1965,13 +1965,13 @@ func_C111EA:
 	jsl.l func_C2721B
 	lda.b wTemp03,s
 	sta.b wTemp00
-	jsl.l func_C21591
+	jsl.l PlayConfusionEffect
 	ldy.w #$0708
 	sty.b wTemp00
 	jsl.l DisplayMessage
 	lda.b wTemp03,s
 	sta.b wTemp00
-	jsl.l func_C21591
+	jsl.l PlayConfusionEffect
 	jsr.w func_C1173F
 	bcs @lbl_C112DD
 	ldy #$070B                              ;C112AC
@@ -2126,10 +2126,10 @@ func_C111EA:
 	pla                                     ;C11411
 	sta $00                                 ;C11412
 	pha                                     ;C11414
-	jsl $C282EB                             ;C11415
+	jsl ShowDamageEffect                             ;C11415
 	pla                                     ;C11419
 	sta $00                                 ;C1141A
-	jsl $C20F35                             ;C1141C
+	jsl HandleCharacterDeath                             ;C1141C
 	jsl $C62405                             ;C11420
 	lda $03,s                               ;C11424
 	sta $00                                 ;C11426
@@ -2153,10 +2153,10 @@ func_C111EA:
 	pla                                     ;C11452
 	sta $00                                 ;C11453
 	pha                                     ;C11455
-	jsl $C282EB                             ;C11456
+	jsl ShowDamageEffect                             ;C11456
 	pla                                     ;C1145A
 	sta $00                                 ;C1145B
-	jsl $C20F35                             ;C1145D
+	jsl HandleCharacterDeath                             ;C1145D
 	jsl $C62405                             ;C11461
 	lda $03,s                               ;C11465
 	sta $00                                 ;C11467
@@ -2180,10 +2180,10 @@ func_C111EA:
 	pla                                     ;C11492
 	sta $00                                 ;C11493
 	pha                                     ;C11495
-	jsl $C282EB                             ;C11496
+	jsl ShowDamageEffect                             ;C11496
 	pla                                     ;C1149A
 	sta $00                                 ;C1149B
-	jsl $C20F35                             ;C1149D
+	jsl HandleCharacterDeath                             ;C1149D
 	jsl $C62405                             ;C114A1
 	lda $03,s                               ;C114A5
 	sta $00                                 ;C114A7
@@ -2206,10 +2206,10 @@ func_C111EA:
 	pla                                     ;C114D1
 	sta $00                                 ;C114D2
 	pha                                     ;C114D4
-	jsl $C282EB                             ;C114D5
+	jsl ShowDamageEffect                             ;C114D5
 	pla                                     ;C114D9
 	sta $00                                 ;C114DA
-	jsl $C20F35                             ;C114DC
+	jsl HandleCharacterDeath                             ;C114DC
 	lda #$85                                ;C114E0
 	sta $00                                 ;C114E2
 	lda #$02                                ;C114E4
@@ -2342,21 +2342,21 @@ func_C111EA:
 	clc                                     ;C11610
 	adc #$04                                ;C11611
 	sta $00                                 ;C11613
-	jsl $C20F35                             ;C11615
+	jsl HandleCharacterDeath                             ;C11615
 	lda $03,s                               ;C11619
 	clc                                     ;C1161B
 	adc #$03                                ;C1161C
 	sta $00                                 ;C1161E
-	jsl $C20F35                             ;C11620
+	jsl HandleCharacterDeath                             ;C11620
 	lda $03,s                               ;C11624
 	inc a                                   ;C11626
 	inc a                                   ;C11627
 	sta $00                                 ;C11628
-	jsl $C20F35                             ;C1162A
+	jsl HandleCharacterDeath                             ;C1162A
 	lda $03,s                               ;C1162E
 	inc a                                   ;C11630
 	sta $00                                 ;C11631
-	jsl $C20F35                             ;C11633
+	jsl HandleCharacterDeath                             ;C11633
 	jsl $C62405                             ;C11637
 	lda #$05                                ;C1163B
 	sta $00                                 ;C1163D
@@ -2443,7 +2443,7 @@ func_C111EA:
 	rts                                     ;C11700
 	lda $03,s                               ;C11701
 	sta $00                                 ;C11703
-	jsl $C21128                             ;C11705
+	jsl.l GetCharacterStats                             ;C11705
 	lda $01                                 ;C11709
 	lsr a                                   ;C1170B
 	lsr a                                   ;C1170C
@@ -2475,7 +2475,7 @@ func_C1173F:
 	jsl.l DisplayMessage
 	lda.b wTemp05,s
 	sta.b wTemp00
-	jsl.l func_C21591
+	jsl.l PlayConfusionEffect
 	ldy.w #$090C
 	sty.b wTemp00
 	jsl.l DisplayMessage
@@ -2487,14 +2487,14 @@ func_C1173F:
 	ldy.w #$012F
 	sty.b wTemp00
 	jsl.l DisplayMessage
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	lda.b #$13
 	sta.b wTemp00
-	jsl.l func_C21128
+	jsl.l GetCharacterStats
 	lda.b wTemp00
 	cmp.b wTemp01
 	bne @lbl_C1178A
-	jsl $C21167                             ;C11780
+	jsl.l GetShirenCoreStatus                             ;C11780
 	lda $00                                 ;C11784
 	cmp $01                                 ;C11786
 	.db $F0,$0A   ;C11788
@@ -2516,13 +2516,13 @@ func_C1173F:
 	sta $00                                 ;C117B0
 	ldy #$FFF6                              ;C117B2
 	sty $02                                 ;C117B5
-	jsl $C23209                             ;C117B7
+	jsl ModifyCharacterHP                             ;C117B7
 	lda #$FC                                ;C117BB
 	sta $00                                 ;C117BD
-	jsl $C23271                             ;C117BF
+	jsl ModifyShirenStrength                             ;C117BF
 	ldy #$FED4                              ;C117C3
 	sty $00                                 ;C117C6
-	jsl $C233BE                             ;C117C8
+	jsl ModifyShirenHunger                             ;C117C8
 	ldy #$012F                              ;C117CC
 	sty $00                                 ;C117CF
 	jsl.l DisplayMessage
@@ -2530,7 +2530,7 @@ func_C1173F:
 	clc                                     ;C117D9
 	rts                                     ;C117DA
 @lbl_C117DB:
-	jsl.l func_C312FF
+	jsl.l PoisonHerbUseCommon
 	sec
 	rts
 	.db $14,$FF,$15,$FF,$16,$FF,$17,$FF,$02,$10,$FF,$03,$11,$FF,$03,$12   ;C117E1  
@@ -2715,7 +2715,7 @@ func_C11946:
 	sta.b wTemp04
 	jsl.l func_C2938C
 	jsr.w func_C12244
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	lda.b wTemp03,s
 	inc a
 	sta.b wTemp00
@@ -2742,7 +2742,7 @@ func_C11946:
 	ldy.w #$012F
 	sty.b wTemp00
 	jsl.l DisplayMessage
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	lda.b wTemp03,s
 	inc a
 	sta.b wTemp00
@@ -2752,7 +2752,7 @@ func_C11946:
 	ldy.w #$0726
 	sty.b wTemp00
 	jsl.l DisplayMessage
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	lda.b wTemp03,s
 	inc a
 	sta.b wTemp00
@@ -2998,7 +2998,7 @@ func_C11B11:
 	lda #$C1                                ;C11C40
 	sta $04                                 ;C11C42
 	jsl $C2938C                             ;C11C44
-	jsl $C21167                             ;C11C48
+	jsl GetShirenCoreStatus                             ;C11C48
 	ldy $04                                 ;C11C4C
 	bne @lbl_C11C57                         ;C11C4E
 	ldy $02                                 ;C11C50
@@ -3023,7 +3023,7 @@ func_C11B11:
 	jsl $C2938C                             ;C11C7E
 	lda $03,s                               ;C11C82
 	sta $00                                 ;C11C84
-	jsl $C20F35                             ;C11C86
+	jsl HandleCharacterDeath                             ;C11C86
 	lda #$02                                ;C11C8A
 	sta $01                                 ;C11C8C
 	jsl $C62AEE                             ;C11C8E
@@ -3069,7 +3069,7 @@ func_C11B11:
 	jsl $C2938C                             ;C11CFB
 	lda $03,s                               ;C11CFF
 	sta $00                                 ;C11D01
-	jsl $C20F35                             ;C11D03
+	jsl HandleCharacterDeath                             ;C11D03
 	lda #$02                                ;C11D07
 	sta $01                                 ;C11D09
 	jsl $C62AEE                             ;C11D0B
@@ -3339,7 +3339,7 @@ func_C11B11:
 	jsl $C2938C                             ;C11FA7
 	lda $03,s                               ;C11FAB
 	sta $00                                 ;C11FAD
-	jsl $C20F35                             ;C11FAF
+	jsl HandleCharacterDeath                             ;C11FAF
 	lda #$02                                ;C11FB3
 	sta $01                                 ;C11FB5
 	jsl $C62AEE                             ;C11FB7
@@ -3452,7 +3452,7 @@ func_C11B11:
 	.db $D0,$42   ;C120B8
 	lda $03,s                               ;C120BA
 	sta $00                                 ;C120BC
-	jsl $C21128                             ;C120BE
+	jsl.l GetCharacterStats                             ;C120BE
 	lda $01                                 ;C120C2
 	lsr a                                   ;C120C4
 	lsr a                                   ;C120C5
@@ -3635,7 +3635,7 @@ func_C12244:
 	sta.b wTemp00
 	ldy.b #$15
 	sty.b wTemp02
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	lda.w #$0004
 @lbl_C12258:
 	pha
@@ -3644,7 +3644,7 @@ func_C12244:
 	jsl.l GetCharacterMapInfo
 	lda.b wTemp00
 	pha
-	jsl.l func_C36410
+	jsl.l FindEmptyTileNearCoord
 	lda.b wTemp00
 	pha
 	bpl @lbl_C1227B
@@ -3672,7 +3672,7 @@ func_C12244:
 	lda.b wTemp01,s
 	sta.b wTemp02
 	stx.b wTemp00
-	jsl.l func_C330DA
+	jsl.l ThrowItemOrAbsorbIntoJar
 	jsl.l func_C62545
 	pla
 	pla
@@ -3686,7 +3686,7 @@ func_C122A5:
 	phy
 	stx.b wTemp00
 	phx
-	jsl.l func_C30710
+	jsl.l GetItemDisplayInfo
 	plx
 	ldy.b wTemp00
 	stx.b wTemp00
@@ -3710,13 +3710,13 @@ func_C122CA:
 	ldx.b wTemp00
 	lda.l DATA8_C122EB,x
 	sta.b wTemp00
-	jsl.l func_C3035D
+	jsl.l SpawnFloorItemWithRandomMod
 	ldx.b wTemp00
 	bmi @lbl_C122E7
 	lda.b #$01
 	sta.b wTemp01
 	phx
-	jsl.l func_C33A92
+	jsl.l SetItemGoods
 	plx
 @lbl_C122E7:
 	stx.b wTemp00
@@ -3940,7 +3940,7 @@ func_C124BB:
 	sta.b wTemp00
 	stz.b wTemp01
 	stz.b wTemp02
-	jsl.l func_C30295
+	jsl.l SpawnFloorItem
 	lda.b wTemp00
 	bmi @lbl_C12510
 	pha
@@ -3950,7 +3950,7 @@ func_C124BB:
 	pla
 	sta.b wTemp00
 	pha
-	jsl.l func_C30192
+	jsl.l IdentifyItem
 	pla
 	sta.b wTemp00
 	jsl.l func_C10157
@@ -3982,7 +3982,7 @@ func_C124BB:
 	stx.b wTemp00
 	lda.b #$81
 	sta.b wTemp02
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	SetEvent Event_Naoki_88 $03
 	SetEvent Event_Naoki $01
 	ldy.w #$076B
@@ -3997,19 +3997,19 @@ func_C124BB:
 @lbl_C12574:
 	lda.b #$03
 	sta.b wTemp00
-	jsl.l func_C232BF
+	jsl.l ModifyShirenMaxStrength
 	lda.b #$13
 	sta.b wTemp00
 	ldy.w #$0005
 	sty.b wTemp02
-	jsl.l func_C2323C
+	jsl.l ModifyCharacterMaxHP
 	ldy.w #$2710
 	sty.b wTemp00
-	jsl.l func_C233BE
+	jsl.l ModifyShirenHunger
 	ldy.w #$076E
 	sty.b wTemp00
 	jsl.l DisplayMessage
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	ldy.w #$076F
 	sty.b wTemp00
 	jsl.l DisplayMessage
@@ -4372,12 +4372,12 @@ func_C124BB:
 	sty $00                                 ;C128DB
 	jsl.l DisplayMessage
 	rts                                     ;C128E1
-	jsl $C21167                             ;C128E2
+	jsl GetShirenCoreStatus                             ;C128E2
 	lsr $04                                 ;C128E6
 	ror $03                                 ;C128E8
 	ror $02                                 ;C128EA
 	bra @lbl_C128F2                         ;C128EC
-	jsl $C21167                             ;C128EE
+	jsl GetShirenCoreStatus                             ;C128EE
 @lbl_C128F2:
 	lda $04                                 ;C128F2
 	bne @lbl_C128FF                         ;C128F4
@@ -4556,7 +4556,7 @@ func_C12ABD:
 @lbl_C12AC2:
 	sta.b wTemp00
 	phx
-	jsl.l func_C30710
+	jsl.l GetItemDisplayInfo
 	plx
 	lda.b wTemp01
 	cmp.b #$E0
@@ -4578,7 +4578,7 @@ func_C12ABD:
 	jsl.l RemoveItemFromCategoryShortcutSlots
 	pla
 	sta.b wTemp00
-	jsl.l func_C306F4
+	jsl.l FreeFloorItemSlot
 	sec
 	rts
 
@@ -4835,18 +4835,18 @@ func_C12ABD:
 	jsl.l DisplayMessage
 	lda #$FD                                ;C12D38
 	sta $00                                 ;C12D3A
-	jsl $C23271                             ;C12D3C
+	jsl ModifyShirenStrength                             ;C12D3C
 	lda #$13                                ;C12D40
 	sta $00                                 ;C12D42
 	ldy #$FFF6                              ;C12D44
 	sty $02                                 ;C12D47
-	jsl $C2323C                             ;C12D49
+	jsl ModifyCharacterMaxHP                             ;C12D49
 	ldy #$D8F0                              ;C12D4D
 	sty $00                                 ;C12D50
-	jsl $C233BE                             ;C12D52
+	jsl ModifyShirenHunger                             ;C12D52
 	ldy #$0064                              ;C12D56
 	sty $00                                 ;C12D59
-	jsl $C233BE                             ;C12D5B
+	jsl ModifyShirenHunger                             ;C12D5B
 	ldy #$0788                              ;C12D5F
 	sty $00                                 ;C12D62
 	jsl.l DisplayMessage
@@ -5413,16 +5413,16 @@ func_C13228:
 	jsl.l DisplayMessage
 	rts                                     ;C13269
 @lbl_C1326A:
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	ldy.w #$0050
 	sty.b wTemp00
 	jsl.l func_C62B19
 	ldy.w #$2710
 	sty.b wTemp00
-	jsl.l func_C233BE
+	jsl.l ModifyShirenHunger
 	lda.b #$63
 	sta.b wTemp00
-	jsl.l func_C23271
+	jsl.l ModifyShirenStrength
 	lda.b #$13
 	pha
 	bra @lbl_C132A6
@@ -5430,7 +5430,7 @@ func_C13228:
 	pha
 	lda.b wTemp01,s
 	sta.b wTemp00
-	jsl.l func_C21128
+	jsl.l GetCharacterStats
 	lda.b wTemp00
 	beq @lbl_C132DB
 	lda.b wTemp01,s
@@ -5443,7 +5443,7 @@ func_C13228:
 	sta.b wTemp00
 	ldy.w #$00FA
 	sty.b wTemp02
-	jsl.l func_C23209
+	jsl.l ModifyCharacterHP
 	lda.b wTemp01,s
 	sta.b wTemp00
 	stz.b wTemp01
@@ -5469,7 +5469,7 @@ func_C13228:
 	lda.b #$19
 	sta.b wTemp02
 	jsl.l func_C626F6
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	ldy.w #$07CF
 	sty.b wTemp00
 	jsl.l DisplayMessage
@@ -5522,7 +5522,7 @@ func_C13304:
 	lda.b wTemp00
 	cmp.b #$FF
 	beq @lbl_C1339B
-	jsl $C30671                             ;C13353
+	jsl.l CreateFloorItem                             ;C13353
 	lda $00                                 ;C13357
 	.db $30,$40   ;C13359
 	pha                                     ;C1335B
@@ -5577,7 +5577,7 @@ func_C13304:
 	jsl.l DisplayMessage
 	rts                                     ;C133CD
 @lbl_C133CE:
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	ldy.w #$0050
 	sty.b wTemp00
 	jsl.l func_C62B19
@@ -5592,7 +5592,7 @@ func_C13304:
 	ldy.w #$0000
 	sty.b wTemp02
 	jsl.l func_C25BE0
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	ldy.w #$07D7
 	sty.b wTemp00
 	jsl.l DisplayMessage
@@ -5604,7 +5604,7 @@ func_C13304:
 	lda.l wShirenStatus.itemAmounts,x
 	phx
 	sta.b wTemp00
-	jsl.l func_C30710
+	jsl.l GetItemDisplayInfo
 	lda.b wTemp02
 	cmp.b #$63
 	bne @lbl_C1341F
@@ -5673,7 +5673,7 @@ func_C13304:
 @lbl_C1349D:
 	lda.b wTemp01,s
 	sta.b wTemp00
-	jsl.l func_C30710
+	jsl.l GetItemDisplayInfo
 	lda.b wTemp02
 	cmp.b #$63
 	bne @lbl_C134C2
@@ -5695,7 +5695,7 @@ func_C13304:
 	ldy.w #$07D8
 	sty.b wTemp00
 	jsl.l DisplayMessage
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	lda.b wTemp04,s
 	sta.b wTemp00
 	ldy.w #$37C2
@@ -5725,7 +5725,7 @@ func_C13304:
 	bcc @lbl_C1353F
 	lda.b wTemp01,s
 	sta.b wTemp00
-	jsl.l func_C30659
+	jsl.l UpgradeItemModification
 	ldy.w #$07D9
 	sty.b wTemp00
 	jsl.l DisplayMessage
@@ -5973,7 +5973,7 @@ func_C13304:
 	php                                     ;C13793
 	lda $02,s                               ;C13794
 	sta $00                                 ;C13796
-	jsl $C306C9                             ;C13798
+	jsl.l GetItemStatsToTemp                             ;C13798
 	lda $05                                 ;C1379C
 	and #$FD                                ;C1379E
 	sta $05                                 ;C137A0
@@ -6657,7 +6657,7 @@ UNREACH_C13D7C:
 	jsl.l DisplayMessage
 	lda.b #$AF
 	sta.b wTemp00
-	jsl.l func_C3035D
+	jsl.l SpawnFloorItemWithRandomMod
 	lda.b wTemp00
 	bmi @lbl_C13E1D
 	sta.b wTemp02
@@ -6679,7 +6679,7 @@ UNREACH_C13D7C:
 	jsl.l DisplayMessage
 	lda.b #$AF
 	sta.b wTemp00
-	jsl.l func_C3035D
+	jsl.l SpawnFloorItemWithRandomMod
 	lda.b wTemp00
 	bmi @lbl_C13E5E
 	sta.b wTemp02
@@ -6907,7 +6907,7 @@ UNREACH_C13D7C:
 	ldy.w #$084F
 	sty.b wTemp00
 	jsl.l DisplayMessage
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	jsr.w func_C14214
 	SetEvent Event8A $01
 	GetEvent Event16
@@ -6967,7 +6967,7 @@ func_C140E5:
 	ldy #$0001                              ;C1415D
 @lbl_C14160:
 	sty.b wTemp00
-	jsl.l func_C303E9
+	jsl.l SpawnFloorItemFromTable
 	lda.b wTemp00
 	bmi @lbl_C1417D
 	sta.b wTemp02
@@ -8026,7 +8026,7 @@ NPCScriptFunction_C14479:
 	sta $00                                 ;C14AA5
 	lda #$DF                                ;C14AA7
 	sta $02                                 ;C14AA9
-	jsl $C62550                             ;C14AAB
+	jsl PlayVisualEffect                             ;C14AAB
 	jsl $C62405                             ;C14AAF
 	lda #$17                                ;C14AB3
 	sta $00                                 ;C14AB5
@@ -8308,7 +8308,7 @@ NPCScriptFunction_C14479:
 	plx                                     ;C14D0F
 	stx $00                                 ;C14D10
 	phx                                     ;C14D12
-	jsl $C306C9                             ;C14D13
+	jsl.l GetItemStatsToTemp                             ;C14D13
 	plx                                     ;C14D17
 	lda $01,s                               ;C14D18
 	sta $06                                 ;C14D1A
@@ -8564,7 +8564,7 @@ func_C14FD0:
 	ldx.b wTemp00
 	lda.l wShirenStatus.itemAmounts,x
 	sta.b wTemp00
-	jsl.l func_C30710
+	jsl.l GetItemDisplayInfo
 	lda.b wTemp00
 	cmp.b #$02
 	bne @lbl_C1508F

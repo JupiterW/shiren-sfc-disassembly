@@ -76,9 +76,9 @@ func_808009:
 	jsl.l func_818FC3
 	jsl.l func_C063B8
 	jsl.l func_C4854D
-	jsl.l func_C3E8C6
-	jsl.l func_C3E130
-	jsl.l func_C3D2CB
+	jsl.l SaveNoop
+	jsl.l SaveLoadNoop
+	jsl.l SpawnFloorTrapsNoop
 	jsl.l func_C60000
 	plp
 	jsl.l func_81CD61
@@ -3594,7 +3594,7 @@ func_C09E8B:
 	phb
 	stz.b w7f0000
 	jsl.l func_80E3EF
-	jsl.l func_C36BB0
+	jsl.l GetMapNum
 	stz.b w7f0000+1
 	dec.b w7f0000
 	bpl @lbl_80A028
@@ -3608,7 +3608,7 @@ func_C09E8B:
 	jsl.l func_80D5AF
 	plb
 	jsl.l func_80AD9D
-	jsl.l func_C36BB0
+	jsl.l GetMapNum
 	stz.b w7f0000+1
 	lda.b w7f0000
 	jsr.w func_80A74D
@@ -3686,7 +3686,7 @@ func_C0A13F:
 	bpl @lbl_80A16D
 	jsl.l func_80AD59
 	jsl.l func_80ABD8
-	jsl.l func_C3E097
+	jsl.l GetFloorLayoutData2
 	sep #$30 ;AXY->8
 	bankswitch 0x7F
 	ldy.b #$05
@@ -3700,7 +3700,7 @@ func_C0A13F:
 	sta.w $068E,x
 	dey
 	bpl @lbl_80A195
-	jsl.l func_C3E07E
+	jsl.l GetFloorLayoutData
 	ldy.b #$04
 @lbl_80A1AB:
 	ldx.b w7f0000,y
@@ -5503,7 +5503,7 @@ func_80B192:
 	bmi func_80B18A
 	sta.b w7f0000
 @lbl_80B1AD:
-	jsl.l func_C36698
+	jsl.l GetRoomBounds
 	lda.b w7f0000
 	tax
 	and.w #$00FF
@@ -5588,7 +5588,7 @@ func_C0B235:
 @lbl_80B240:
 	ldx.b w0031
 	stx.b wTemp00
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	lda.b wTemp01
 	sta.w $75C1,y
 	lda.b wTemp02
@@ -5797,7 +5797,7 @@ func_80B28D:
 	bcs @lbl_80B4B1
 	ldx.b w0031
 	stx.b wTemp00
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	lda.b wTemp01
 	sta.w $75C1,y
 	lda.b wTemp02
@@ -5860,13 +5860,13 @@ func_80B4DE:
 @lbl_80B50C:
 	sta.b wTemp00
 	phx
-	call_savebank func_C30710
+	call_savebank GetItemDisplayInfo
 	plx
 	lda.b wTemp05
 	cmp.b #$E6
 	beq @lbl_80B54F
 	lda.b wTemp01
-	cmp.b #$7B
+	cmp.b #Item_InvisibleItem
 	beq @lbl_C0B52D
 	lda.b wTemp00
 	cmp.b #$0C
@@ -5934,13 +5934,13 @@ func_80B569:
 @lbl_80B593:
 	sta.b wTemp00
 	phx
-	call_savebank func_C30710
+	call_savebank GetItemDisplayInfo
 	plx
 	lda.b wTemp05
 	cmp.b #$E6
 	beq @lbl_80B5C8
 	lda.b wTemp01
-	cmp.b #$7B
+	cmp.b #Item_InvisibleItem
 	beq @lbl_C0B5B4
 	lda.b wTemp00
 	cmp.b #$0C
@@ -6179,7 +6179,7 @@ func_80B77A:
 	lsr a
 	lsr a
 	tsb.b wTemp04
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	sep #$20 ;A->8
 	lda.b w002e
 	bmi @lbl_80B7A0
@@ -6408,13 +6408,13 @@ func_80B8FE:
 @lbl_80B920:
 	sta.b wTemp00
 	phx
-	call_savebank func_C30710
+	call_savebank GetItemDisplayInfo
 	plx
 	lda.b wTemp05
 	cmp.b #$E6
 	beq @lbl_80B963
 	lda.b wTemp01
-	cmp.b #$7B
+	cmp.b #Item_InvisibleItem
 	beq @lbl_C0B940
 	lda.b wTemp00
 	cmp.b #$0C
@@ -6796,7 +6796,7 @@ func_80BE72:
 	.db $E2,$85,$02,$AD,$6E,$04,$29,$03   ;80BEB5
 	.db $D0,$03,$20,$E5,$BF,$C8           ;80BEBD  
 @lbl_80BEC3:
-	jsl.l func_C35FC8
+	jsl.l GetFloorStateFlags
 	lda.b w002d
 	bpl @lbl_80BEDE
 	lda.w $0462
@@ -6840,7 +6840,7 @@ func_80BE72:
 	lda.b #$13
 	sta.b wTemp00
 	phy
-	jsl.l func_C285A2
+	jsl.l GetCharacterStatusEffects
 	ply
 	lda.w $045E
 	beq @lbl_80BF1D
@@ -11467,7 +11467,7 @@ func_80E7DF:
 	php
 	rep #$30 ;AXY->16
 	jsl.l func_80B5D6
-	jsl.l func_C35A44
+	jsl.l FindFreeItemSlot
 	lda.b wTemp00
 	lsr a
 	tax
@@ -11508,7 +11508,7 @@ func_80E81B:
 	.db $0A,$AA,$BF,$BD,$E8,$80,$85,$02,$A9,$02,$04,$85,$00,$22,$33,$88   ;80E837
 	.db $80                               ;80E847  
 @lbl_80E848:
-	jsl.l func_C21167
+	jsl.l GetShirenCoreStatus
 	lda.b wTemp06
 	bne @lbl_80E863
 	lda.w #$0401
@@ -11524,7 +11524,7 @@ func_80E81B:
 	beq @lbl_80E899
 	lda.w #$0013
 	sta.b wTemp00
-	jsl.l func_C21128
+	jsl.l GetCharacterStats
 	lda.b wTemp00
 	and.w #$00FF
 	sta.b wTemp04
@@ -11581,7 +11581,7 @@ func_80E8ED:
 	rep #$10 ;XY->16
 	lda.b #$13
 	sta.b wTemp00
-	jsl.l func_C21128
+	jsl.l GetCharacterStats
 	bankswitch 0x7F
 	lda.b #$01
 	sta.w $8E42
@@ -11611,7 +11611,7 @@ func_80E8ED:
 	sta.w $8E43
 	stz.w $8E44
 @lbl_80E93A:
-	jsl.l func_C21167
+	jsl.l GetShirenCoreStatus
 	ldx.b w7f0002
 	ldy.b w7f0004
 	cpx.w $8E4C

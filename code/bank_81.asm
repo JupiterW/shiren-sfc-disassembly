@@ -142,11 +142,11 @@ func_81904F:
 func_8190EC:
 	php
 	sep #$20 ;A->8
-	jsl.l func_C3E178
+	jsl.l SaveReadByte
 	lda.b wTemp00
 	cmp.b #$01
 	bne @lbl_81916B
-	jsl.l func_C3E3BC
+	jsl.l SaveStreamBytesRemaining
 	bankswitch 0x7E
 	rep #$30 ;AXY->16
 	lda.b wTemp00
@@ -266,7 +266,7 @@ func_8191BB:
 	ldx.b wTemp00
 	ldy.w $3440
 	beq @lbl_81921E
-	jsl.l func_C3E3BC
+	jsl.l SaveStreamBytesRemaining
 	lda.w #$0168
 	cmp.b wTemp00
 	bcs @lbl_81921E
@@ -4328,7 +4328,7 @@ func_81BF32:
 	cmp.b #$FF
 	beq @lbl_81BF6D
 	sta.b wTemp00
-	call_savebank func_C30710
+	call_savebank GetItemDisplayInfo
 	lda.b wTemp01
 	sec
 	sbc.b #$16
@@ -4353,7 +4353,7 @@ func_81BF32:
 	cpx.b #$0A
 	bne @lbl_81BF9C
 	pha
-	jsl.l func_C36BB0
+	jsl.l GetMapNum
 	pla
 	ldx.b wTemp00
 	cpx.b #$30
@@ -4370,7 +4370,7 @@ func_81BF32:
 	cmp.b #$FF
 	beq @lbl_81BFB8
 	sta.b wTemp00
-	call_savebank func_C30710
+	call_savebank GetItemDisplayInfo
 	lda.b wTemp01
 @lbl_81BFB8:
 	inc a
@@ -5989,7 +5989,7 @@ func_81CDEE:
 	sty.b wTemp00
 	pha
 	phy
-	jsl.l func_C3E5F2
+	jsl.l ValidateSaveBlock
 	ply
 	pla
 	clc
@@ -6030,23 +6030,23 @@ func_81CE34:
 	pha
 	lda.b wTemp02
 	beq @lbl_81CE47
-	jsl.l func_C3E131
+	jsl.l GetDemoScriptPtr
 	stz.b wTemp00
-	jsl.l func_C3E16A
+	jsl.l SaveWriteByte
 @lbl_81CE47:
 	jsl.l func_C48584
 	jsr.w func_81CF37
 	jsl.l func_809D10
 	pla
 	sta.b wTemp00
-	jsl.l func_C3E69F
+	jsl.l SetSaveBlockPtrAndRead
 	lda.b wTemp01
 	pha
 	jsl.l func_C48584
 	jsl.l func_809D10
 	pla
 	sta.b wTemp00
-	jsl.l func_C3E6AB
+	jsl.l InitAndWriteSaveBlock
 	lda.b wTemp01
 	phb
 	pha
@@ -6055,7 +6055,7 @@ func_81CE34:
 	jsl.l func_809D10
 	pla
 	sta.b wTemp00
-	jsl.l func_C3E571
+	jsl.l SelectAndValidateSaveSlot
 	jsr.w func_81CF37
 	jsl.l func_809D84
 	plb
@@ -6063,13 +6063,13 @@ func_81CE34:
 	.db $82,$4E,$FF                       ;81CE8C  
 	lda.b wTemp01
 	sta.b wTemp00
-	jsl.l func_C3E706
+	jsl.l EraseSaveBlock
 @lbl_81CE97:
 	jmp.w func_81CDEE
 	rep #$20 ;A->16
 	lda.b wTemp01
 	sta.b wTemp00
-	jsl.l func_C3E72B
+	jsl.l CopySaveBlock
 	sep #$20 ;A->8
 	bra @lbl_81CE97
 	lda.b wTemp01
@@ -6149,7 +6149,7 @@ func_81CF49:
 	sty.b wTemp00
 	pha
 	phy
-	jsl.l func_C3E629
+	jsl.l LoadOrEraseSaveBlock
 	ply
 	pla
 	clc
@@ -6187,7 +6187,7 @@ func_81CFE0:
 	sep #$30 ;AXY->8
 	lda.b wTemp00
 	bne @lbl_81D009
-	jsl.l func_C3E698
+	jsl.l GetCurrentSaveSlot
 	lda.b wTemp00
 	sta.b wTemp01
 	lda.b #$01
@@ -6261,7 +6261,7 @@ func_81D084:
 	stz.b wTemp03
 	lda.w #$0800
 	sta.b wTemp04
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	lda.w #$0027
 	sta.b wTemp00
 	stz.b wTemp02

@@ -132,7 +132,7 @@ Item_77 = $77 ;unused slot
 Item_78 = $78 ;unused slot
 Item_79 = $79 ;unused slot
 Item_7A = $7A ;unused slot
-Item_7B = $7B ;unused slot
+Item_InvisibleItem = $7B ;invisible floor item; only visible to Shiren when canSeeInvisibleObjects is set
 
 ;staffs
 Item_SlothStaff = $7C  ;封印の杖

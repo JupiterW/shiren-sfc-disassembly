@@ -116,7 +116,7 @@ DATA8_C150F5:
 	bmi @lbl_C1518E
 	sta.b wTemp02
 	stx.b wTemp00
-	jsl.l func_C35B7A
+	jsl.l PlaceSecondaryItemOnTile
 @lbl_C1518E:
 	ply
 	rts
@@ -131,7 +131,7 @@ DATA8_C150F5:
 	iny
 	sta.b wTemp01
 	phy
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 	ply
 	rts
 	lda.w NPCScript,y
@@ -144,7 +144,7 @@ DATA8_C150F5:
 	iny
 	sta.b wTemp01
 	phy
-	jsl.l func_C35C72
+	jsl.l PlaceItemOnTile
 	ply
 	rts
 
@@ -166,7 +166,7 @@ func_C151C3:
 	bmi @lbl_C151E7
 	sta.b wTemp02
 	stx.b wTemp00
-	jsl.l func_C35B7A
+	jsl.l PlaceSecondaryItemOnTile
 @lbl_C151E7:
 	plp
 	rts
@@ -175,13 +175,13 @@ func_C151E9:
 	jsl.l func_C62B37
 	lda.b wTemp00
 	beq @lbl_C151F6
-	jsl.l func_C360D7
+	jsl.l FindRandomEmptyTileNoItem
 	rts
 @lbl_C151F6:
-	jsl.l func_C360D7
+	jsl.l FindRandomEmptyTileNoItem
 	ldx.b wTemp00
 	phx
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	plx
 	lda.b wTemp02
 	bne @lbl_C151F6
@@ -1773,7 +1773,7 @@ func_C1681A:
 @lbl_C16824:
 	stx.b wTemp00
 	phx
-	jsl.l func_C21128
+	jsl.l GetCharacterStats
 	plx
 	lda.b wTemp00
 	beq @lbl_C1685B
@@ -1846,7 +1846,7 @@ NPCScriptFunction_C168C7:
 	stz.b wTemp00
 	lda.b #$07
 	sta.b wTemp01
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	stz.b wTemp01
 	ldx.b wTemp00
 	lda.l UNREACH_C168E0,x
@@ -1875,7 +1875,7 @@ NPCScriptFunction_C168E8:
 	bpl @lbl_C16937
 	lda.b #$AF
 	sta.b wTemp00
-	jsl.l func_C3035D
+	jsl.l SpawnFloorItemWithRandomMod
 	lda.b wTemp00
 	bmi @lbl_C16937
 	jsl.l func_C10157
@@ -2003,7 +2003,7 @@ NPCScriptFunction_C16A7D:
 	lda.b #$02
 	sta.b wTemp00
 	phx
-	jsl.l func_C303E9
+	jsl.l SpawnFloorItemFromTable
 	plx
 	ldy.b wTemp00
 	bmi @lbl_C16AB8
@@ -2011,7 +2011,7 @@ NPCScriptFunction_C16A7D:
 	sta.b wTemp01
 	phx
 	phy
-	jsl.l func_C33A92
+	jsl.l SetItemGoods
 	ply
 	plx
 	lda.l DATA8_C16ABA,x
@@ -2020,7 +2020,7 @@ NPCScriptFunction_C16A7D:
 	sta.b wTemp01
 	sty.b wTemp02
 	phx
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 	plx
 	inx
 	inx
@@ -2054,7 +2054,7 @@ NPCScriptFunction_C16B2B:
 	lda.b #$01
 	sta.b wTemp00
 	phx
-	jsl.l func_C303E9
+	jsl.l SpawnFloorItemFromTable
 	plx
 	ldy.b wTemp00
 	bmi @lbl_C16B66
@@ -2062,7 +2062,7 @@ NPCScriptFunction_C16B2B:
 	sta.b wTemp01
 	phx
 	phy
-	jsl.l func_C33A92
+	jsl.l SetItemGoods
 	ply
 	plx
 	lda.l DATA8_C16B68,x
@@ -2071,7 +2071,7 @@ NPCScriptFunction_C16B2B:
 	sta.b wTemp01
 	sty.b wTemp02
 	phx
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 	plx
 	inx
 	inx
@@ -2127,7 +2127,7 @@ func_C16B75:
 	cmp.b #$FF
 	beq @lbl_C16BDF
 	phx
-	jsl.l func_C30671
+	jsl.l CreateFloorItem
 	plx
 	ldy.b wTemp00
 	bmi @lbl_C16BE8
@@ -2137,7 +2137,7 @@ func_C16B75:
 	sta.b wTemp01
 	sty.b wTemp02
 	phx
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 	plx
 @lbl_C16BDF:
 	inx
@@ -2202,14 +2202,14 @@ func_C16C7D:
 	lda.l DATA8_C16BEC,x
 	sta.b wTemp01
 	phx
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	plx
 	ldy.b wTemp01
 	bmi @lbl_C16D03
 	sty.b wTemp00
 	phy
 	phx
-	jsl.l func_C306C9
+	jsl.l GetItemStatsToTemp
 	plx
 	lda.l DATA8_C16BEA,x
 	sta.b wTemp06
@@ -2219,7 +2219,7 @@ func_C16C7D:
 	ply
 	sty.b wTemp00
 	phx
-	jsl.l func_C306F4
+	jsl.l FreeFloorItemSlot
 	plx
 	lda.l DATA8_C16BEB,x
 	sta.b wTemp00
@@ -2228,7 +2228,7 @@ func_C16C7D:
 	lda.b #$80
 	sta.b wTemp02
 	phx
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 	plx
 	bra @lbl_C16D1D
 @lbl_C16D03:

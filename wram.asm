@@ -703,41 +703,41 @@ w00aa:
 w00ab:
     ds 1
 
-;7e00ac
-w00ac:
+;7e00ac - save stream write position (index into [$AE] buffer)
+wSaveStreamPos:
     ds 1
 
-;7e00ad
-w00ad:
+;7e00ad - save stream checksum (XOR accumulator)
+wSaveStreamChecksum:
     ds 1
 
-;7e00ae
-w00ae:
+;7e00ae - save stream buffer pointer (lo byte, used as [$AE])
+wSaveStreamPtrLo:
     ds 1
 
-;7e00af
-w00af:
+;7e00af - save stream buffer pointer (hi byte)
+wSaveStreamPtrHi:
     ds 1
 
 
-;7e00b0
-w00b0:
+;7e00b0 - save stream buffer pointer (bank byte)
+wSaveStreamPtrBank:
     ds 1
 
-;7e00b1
-w00b1:
+;7e00b1 - save stream page/block advance counter
+wSaveStreamPageCtr:
     ds 1
 
-;7e00b2
-w00b2:
+;7e00b2 - save block data pointer (lo/hi word, used as [$B2])
+wSaveBlockPtrLo:
     ds 1
 
 ;7e00b3
-w00b3:
+wSaveBlockPtrHi:
     ds 1
 
-;7e00b4
-w00b4:
+;7e00b4 - save block bank byte
+wSaveBlockBank:
     ds 1
 
 ;7e00b5
@@ -1597,7 +1597,202 @@ wItemUnidentifiedName:
 wItemCustomNamesBuffer
 	dsb 20*8
 
-. ds 0xc195 - 0x935e
+;935e
+. ds 1
+
+;935f
+wItemScratchSlotIndex:
+    db
+
+;9360
+wItemScratchMod1:
+    db
+
+;9361
+wItemScratchMod2:
+    db
+
+;9362
+wItemScratchFuse1:
+    db
+
+;9363
+wItemScratchFuse2:
+    db
+
+;9364
+wItemScratchCursed:
+    db
+
+;9365
+wItemScratchTimesIdentified:
+    db
+
+;9366
+wItemScratchTerminator:
+    db
+
+; $F8 bytes of unknown scratch space between item scratch buffer and tile arrays
+. ds 0x945f - 0x9367
+
+;945f
+; Tile item slot array: one entry per tile (stride 2), value = item slot index on tile ($80 = none).
+; Size: $A80 bytes (1344 word-entries covering all floor tiles).
+wTileItemSlot:
+    dsb 0xa80
+
+;9edf
+; Tile entity slot array: one entry per tile (stride 2), value = entity/char slot on tile ($80 = none).
+; Size: $A80 bytes.
+wTileEntitySlot:
+    dsb 0xa80
+
+;a95f
+; Tile type array: one entry per tile (stride 2).
+; High nibble = terrain class ($80=wall, $C0=door candidate, $E0=passable corridor).
+; Low nibble = room index.
+; Size: $A80 bytes.
+wTileType:
+    dsb 0xa80
+
+;b3df
+; Tile flags array: one entry per tile (stride 2).
+; Bit 7 = dirty/needs redraw, Bit 0 = door open.
+; Size: $A80 bytes (ends at $BE5F = wEntityStateClearDone).
+wTileFlags:
+    dsb 0xa80
+
+;be5f
+wEntityStateClearDone:
+    db
+
+;be60
+wItemVisibilityScanDone:
+    db
+
+;be61
+wEntityRedrawDone:
+    db
+
+;be62
+wShirenTileIndex:
+    dw
+
+;be64
+wShirenRoomIndex:
+    db
+
+;be65
+wPlacementErrorFlag:
+    db
+
+;be66
+wRoomLeft:
+    dsb 10
+
+;be70
+wRoomTop:
+    dsb 10
+
+;be7a
+wRoomRight:
+    dsb 10
+
+;be84
+wRoomBottom:
+    dsb 10
+
+;be8e
+wRoomCount:
+    db
+
+;be8f
+wCorridorCandidateCount:
+    db
+
+;be90
+wCorridorCandidateX:
+    dsb 256
+
+;bf90
+wCorridorCandidateY:
+    dsb 256
+
+;c090
+wCorridorCandX:
+    db
+
+;c091
+wCorridorCandY:
+    db
+
+;c092
+wCorridorTargetX:
+    db
+
+;c093
+wCorridorTargetY:
+    db
+
+;c094
+wDoorCandidates:
+    dsb 80
+
+;c0e4
+wDoorCandidates2:
+    dsb 80
+
+. ds 0xc134 - 0xc134
+
+;c134
+wRoomDoorCount:
+    dsb 10
+
+;c13e
+wStaircaseX:
+    dsb 10
+
+;c148
+wStaircaseY:
+    dsb 10
+
+;c152
+wItemCoordX:
+    dsb 10
+
+;c15c
+wItemCoordY:
+    dsb 10
+
+;c166
+wTileTypeFlags:
+    dsb 14
+
+;c174
+wStaircaseRoomIndex:
+    db
+
+;c175
+wSpawnRoomIndex:
+    db
+
+;c176
+wStaircasePlacedFlag:
+    db
+
+;c177
+wStaircaseDupGuard:
+    db
+
+;c178
+wSingleRoomFlag:
+    db
+
+;c179
+wDungeonLayoutVariant:
+    db
+
+. ds 0xc195 - 0xc17a
 
 ;c195
 wMapNum:

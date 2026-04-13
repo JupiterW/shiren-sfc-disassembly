@@ -1,7 +1,28 @@
 .bank $03
 .org $0000 ;$C30000
 
-func_C30000:
+; Item category constants for ItemCategoryByType table
+CATEGORY_NONE    = $00
+CATEGORY_USABLE  = $01
+CATEGORY_WEAPON  = $03
+CATEGORY_ARROW   = $04
+CATEGORY_SHIELD  = $05
+CATEGORY_ARMBAND = $06
+CATEGORY_SCROLL  = $07
+CATEGORY_FOOD    = $08
+CATEGORY_STAFF   = $0A
+CATEGORY_POT     = $0B
+
+; Spawn modifier range constants for ItemSpawnModMin/ItemSpawnModMax tables.
+; High bit ($80+) means "use ItemSpawnModDistribution[value & $7F]" instead of raw random range.
+SPAWN_MOD_EQUIP_MIN  = $90  ; weapons and shields: distribution table index $10
+SPAWN_MOD_EQUIP_MAX  = $9F  ; weapons and shields: distribution table index $1F
+SPAWN_MOD_CUDGEL_MIN = $80  ; Item_Cudgel / Item_Pickaxe: distribution table index $00
+SPAWN_MOD_CUDGEL_MAX = $8F  ; Item_Cudgel / Item_Pickaxe: distribution table index $0F
+SPAWN_MOD_ARMBAND_MIN = $A0 ; armbands: distribution table index $20
+SPAWN_MOD_ARMBAND_MAX = $AF ; armbands: distribution table index $2F
+
+ClearItemTable:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -20,7 +41,7 @@ func_C30000:
 	plp
 	rtl
 
-func_C3001F:
+RandomizeItemAppearances:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -84,27 +105,27 @@ func_C3001F:
 	sta.b wTemp00
 	lda.b #$3C
 	sta.b wTemp01
-	jsl.l func_C30142
+	jsl.l ShuffleItemAppearanceRange
 	lda.b #$56
 	sta.b wTemp00
 	lda.b #$6F
 	sta.b wTemp01
-	jsl.l func_C30142
+	jsl.l ShuffleItemAppearanceRange
 	lda.b #$7C
 	sta.b wTemp00
 	lda.b #$86
 	sta.b wTemp01
-	jsl.l func_C30142
+	jsl.l ShuffleItemAppearanceRange
 	lda.b #$93
 	sta.b wTemp00
 	lda.b #$A1
 	sta.b wTemp01
-	jsl.l func_C30142
+	jsl.l ShuffleItemAppearanceRange
 	lda.b #$B4
 	sta.b wTemp00
 	lda.b #$C5
 	sta.b wTemp01
-	jsl.l func_C30142
+	jsl.l ShuffleItemAppearanceRange
 	ldx.b #$E5
 @lbl_C300C3:
 	lda.l wItemHasCustomName,x
@@ -115,7 +136,7 @@ func_C3001F:
 	plp
 	rtl
 
-func_C300D2:
+PreIdentifyDungeonItems:
 	php
 	sep #$30 ;AXY->8
 	jsl.l GetCurrentDungeon
@@ -163,7 +184,7 @@ func_C300D2:
 	plp
 	rtl
 
-func_C30142:
+ShuffleItemAppearanceRange:
 	php
 	sep #$30 ;AXY->8
 	bankswitch 0x7E
@@ -175,7 +196,7 @@ func_C30142:
 	sta.b wTemp00
 	sty.b wTemp01
 	phy
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	ply
 	ldx.b wTemp00
 	lda.w wItemHasCustomName,y
@@ -205,7 +226,7 @@ func_C30142:
 	plp                                     ;C30190
 	rtl                                     ;C30191
 
-func_C30192:
+IdentifyItem:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -216,7 +237,7 @@ func_C30192:
 	pha
 	lda.b #$01
 	sta.l wItemIdentified,x
-	lda.l DATA8_C341BB,x
+	lda.l ItemCategoryByType,x
 	cmp.b #$06
 	beq @lbl_C301BC
 	cmp.b #$03
@@ -233,12 +254,12 @@ func_C30192:
 	pla
 	bne @lbl_C301CC
 	sty.b wTemp00
-	jsl.l func_C33BEE
+	jsl.l ValidateCustomNameSlot
 @lbl_C301CC:
 	plp
 	rtl
 
-func_C301CE:
+FindFreeCustomNameSlot:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -259,15 +280,18 @@ func_C301CE:
 	plp
 	rtl
 
-func_C301F0:
-	php 
+; Sets up scratch buffer for item renaming. Returns buffer pointer in wTemp00/wTemp02.
+; For blank scrolls: uses fixed buffer at $7E9360
+; For other items: allocates slot in wItemCustomNamesBuffer
+SetupItemRenameBuffer:
+	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
 	lda.l wItemType,x
 	cmp.b #$68
 	beq @lbl_C30245
 	phx
-	jsl.l func_C33BEE
+	jsl.l ValidateCustomNameSlot
 	plx
 	lda.l wItemType,x
 	pha
@@ -300,13 +324,13 @@ func_C301F0:
 	plx
 	sta.l wItemHasCustomName,X
 	lda.b #$FF
-	sta.l $7E935F
+	sta.l wItemScratchSlotIndex
 	plp 
 	rtl
 @lbl_C30245:
 	sep #$30 ;AXY->8
 	txa 
-	sta.l $7E935F
+	sta.l wItemScratchSlotIndex
 	lda.b #$7E
 	sta.b wTemp02
 	rep #$20 ;A->16
@@ -314,30 +338,32 @@ func_C301F0:
 	sta wTemp00
 	plp 
 	rtl
-@lbl_C30259:
-	php 
+; Applies item buffer changes from scratch RAM to actual item slot.
+; Reads slot from $7E935F and writes $9360-$9365 back to item fields.
+ApplyItemBufferChanges:
+	php
 	sep #$30 ;AXY->8
-	lda.l $7E935F
+	lda.l wItemScratchSlotIndex
 	bmi @lbl_C30293
 	tax 
-	lda.l $7E9360
+	lda.l wItemScratchMod1
 	sta.l wItemModification1,x
-	lda.l $7E9361
+	lda.l wItemScratchMod2
 	sta.l wItemModification2,x
-	lda.l $7E9362
+	lda.l wItemScratchFuse1
 	sta.l wItemFuseAbility1,x
-	lda.l $7E9363
+	lda.l wItemScratchFuse2
 	sta.l wItemFuseAbility2,x
-	lda.l $7E9364
+	lda.l wItemScratchCursed
 	sta.l wItemIsCursed,x
-	lda.l $7E9365
+	lda.l wItemScratchTimesIdentified
 	sta.l wItemTimesIdentified,x
 @lbl_C30293:
 	plp 
 	rtl
 
 
-func_C30295:
+SpawnFloorItem:
 	php
 	sep #$30 ;AXY->8
 	bankswitch 0x7E
@@ -345,12 +371,12 @@ func_C30295:
 @lbl_C3029E:
 	lda.w wItemType,y
 	cmp.b #$FF
-	beq func_C302AA
+	beq InitFloorItemSlot
 	dey
 	bpl @lbl_C3029E
 ;C302A8
 	.db $80,$53
-func_C302AA:
+InitFloorItemSlot:
 	lda.b #$00
 	sta.w wItemTimesIdentified,y
 	lda.b wTemp00
@@ -369,7 +395,7 @@ func_C302AA:
 	lda.b #$FF
 	sta.w wItemModification1,y
 @lbl_C302D0:
-	lda.l DATA8_C341BB,x
+	lda.l ItemCategoryByType,x
 	cmp.b #$06
 	bne @lbl_C302DD
 	lda.b #$00
@@ -384,18 +410,21 @@ func_C302AA:
 	txa
 	asl a
 	tax
-	lda.l DATA8_C30301,x
+	lda.l ItemDefaultFuseAbility1ByType,x
 	sta.w wItemFuseAbility1,y
-	lda.l DATA8_C30302,x
+	lda.l ItemDefaultFuseAbility2ByType,x
 	sta.w wItemFuseAbility2,y
 	sty.b wTemp00
 	plp
 	rtl
 
-DATA8_C30301:
+; Default fuse-ability bytes per item type, stored as interleaved
+; (ability1, ability2) pairs so callers can read either byte separately
+; or the full 16-bit pair at once.
+ItemDefaultFuseAbility1ByType:
 	.db $00                               ;C30301
 
-DATA8_C30302:
+ItemDefaultFuseAbility2ByType:
 	.db $00,$00,$00,$10,$00,$00,$00,$01   ;C30302
 	.db $00,$00,$00,$00,$00               ;C3030A
 	.db $02,$00,$20,$02,$40,$00,$80,$00   ;C3030F
@@ -414,28 +443,28 @@ DATA8_C30302:
 	.db $00,$04                           ;C30349
 	.db $00,$00,$00,$00,$00,$00           ;C3034B
 
-func_C30351:
+SpawnItemAtTempSlot:
 	php
 	sep #$30 ;AXY->8
 	bankswitch 0x7E
 	ldy.b #$7F
-	jmp.w func_C302AA
+	jmp.w InitFloorItemSlot
 
-func_C3035D:
+SpawnFloorItemWithRandomMod:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
-	lda.l DATA8_C3438B,x
+	lda.l ItemSpawnModMin,x
 	sta.b wTemp00
-	lda.l DATA8_C34473,x
+	lda.l ItemSpawnModMax,x
 	phx
 	sta.b wTemp01
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	lda.b wTemp00
 	bpl @lbl_C3037E
 	and.b #$7F
 	tax
-	lda.l UNREACH_C303A0,x
+	lda.l ItemSpawnModDistribution,x
 @lbl_C3037E:
 	tay
 	bpl @lbl_C3038B
@@ -453,11 +482,14 @@ func_C3035D:
 	stz.b wTemp01
 @lbl_C30398:
 	stx.b wTemp00
-	jsl.l func_C30295
+	jsl.l SpawnFloorItem
 	plp
 	rtl
 
-UNREACH_C303A0:
+; Weighted distribution table for floor item +N modifiers.
+; Indexed by (ItemSpawnModMin[type] & $7F) when high bit is set.
+; Values are signed modifier amounts: 0=unmodified, positive=plus, $FD=-3, $FF=-1.
+ItemSpawnModDistribution:
 	.db $00,$00,$00,$00                   ;C303A0
 	.db $00,$00                           ;C303A4
 	.db $00,$00,$00,$00                   ;C303A6
@@ -476,22 +508,22 @@ UNREACH_C303A0:
 	.db $03,$FD,$FD,$FD                   ;C303CB
 	.db $FD                               ;C303CF  
 
-func_C303D0:
+SpawnRandomFloorItemOrGitan:
 	php
 	sep #$30 ;AXY->8
 	jsl.l Random
 	lda.b wTemp00
 	cmp.b #$40
 	bcc @lbl_C303E3
-	jsl.l func_C3041A
+	jsl.l SpawnRandomDungeonFloorItem
 	plp
 	rtl
 @lbl_C303E3:
-	jsl.l func_C305F3
+	jsl.l SpawnFloorGitan
 	plp
 	rtl
 
-func_C303E9:
+SpawnFloorItemFromTable:
 	php
 	sep #$30 ;AXY->8
 	lda.b wTemp00
@@ -499,45 +531,45 @@ func_C303E9:
 @lbl_C303EF:
 	lda.b wTemp01,s
 	sta.b wTemp00
-	jsr.w func_C30433
+	jsr.w GetDungeonItemRange
 	ldx.b wTemp00
 	cpx.b #$E0
 	beq @lbl_C3040E
 	phx
-	jsr.w func_C3059A
+	jsr.w CheckItemSpawnGated
 	plx
 	lda.b wTemp00
 	beq @lbl_C303EF
 	stx.b wTemp00
-	jsl.l func_C3035D
+	jsl.l SpawnFloorItemWithRandomMod
 	pla
 	plp
 	rtl
 @lbl_C3040E:
 	pla
 	sta.b wTemp00
-	jsr.w func_C3050C
-	jsl.l func_C30295
+	jsr.w PickRandomCategoryItem
+	jsl.l SpawnFloorItem
 	plp
 	rtl
 
-func_C3041A:
+SpawnRandomDungeonFloorItem:
 	php
 	sep #$30 ;AXY->8
 @lbl_C3041D:
-	jsr.w func_C304B4
+	jsr.w RollDungeonItemType
 	ldx.b wTemp00
 	phx
-	jsr.w func_C3059A
+	jsr.w CheckItemSpawnGated
 	plx
 	lda.b wTemp00
 	beq @lbl_C3041D
 	stx.b wTemp00
-	jsl.l func_C3035D
+	jsl.l SpawnFloorItemWithRandomMod
 	plp
 	rtl
 
-func_C30433:
+GetDungeonItemRange:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -574,7 +606,7 @@ func_C30433:
 	.db $A2,$3E,$00,$C9,$02,$F0,$0A,$A2,$5C,$00,$C9,$03,$F0,$03,$A2,$82   ;C3047A
 	.db $00                               ;C3048A
 @lbl_C3048B:
-	bra func_C304DE
+	bra RollRandomItemFromTable
 @lbl_C3048D:
 	jsl.l GetCurrentDungeon
 	lda.b wTemp00
@@ -587,9 +619,9 @@ func_C30433:
 	.db $A2,$45,$00,$C9,$02,$F0,$0A,$A2,$65,$00,$C9,$03,$F0,$03,$A2,$8C   ;C304A1
 	.db $00                               ;C304B1
 @lbl_C304B2:
-	bra func_C304DE
+	bra RollRandomItemFromTable
 
-func_C304B4:
+RollDungeonItemType:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -597,13 +629,13 @@ func_C304B4:
 	lda.b wTemp00
 	ldx.w #$0012
 	cmp.b #$08
-	beq func_C304DE
+	beq RollRandomItemFromTable
 	ldx.w #$0012
 	cmp.b #$01
-	beq func_C304DE
+	beq RollRandomItemFromTable
 	.db $A2,$30,$00,$C9,$02,$F0,$0A,$A2,$4C,$00,$C9,$03,$F0,$03,$A2,$6E   ;C304CD
 	.db $00                               ;C304DD
-func_C304DE:
+RollRandomItemFromTable:
 	jsl.l Random
 	lda.b wTemp00
 @lbl_C304E4:
@@ -628,7 +660,10 @@ func_C304DE:
 	plp
 	rts
 
-func_C3050C:
+; Picks a random item from a dungeon-specific sub-table for the given category.
+; Called when GetDungeonItemRange returns $E0 (sentinel for category-based spawns).
+; Returns item type in wTemp01 and Item_MonsterMeat ($E0) in wTemp00.
+PickRandomCategoryItem:
 	php
 	sep #$30 ;AXY->8
 	ldy.b wTemp00
@@ -646,13 +681,13 @@ func_C3050C:
 	inx
 	inx
 @lbl_C30526:
-	lda.l DATA8_C30559,x
+	lda.l CategoryItemDungeonTable,x
 	bpl @lbl_C3051D
 @lbl_C3052C:
-	lda.l UNREACH_C3055B,x
+	lda.l CategoryItemTableAddr,x
 	pha
 	sep #$20 ;A->8
-	lda.l UNREACH_C3055D,x
+	lda.l CategoryItemTableCount,x
 	pha
 @lbl_C30538:
 	jsl.l Random
@@ -674,13 +709,13 @@ func_C3050C:
 	plp
 	rts
 
-DATA8_C30559:
+CategoryItemDungeonTable:
 	.db $01,$00                           ;C30559
 
-UNREACH_C3055B:
+CategoryItemTableAddr:
 	.db $61,$51                           ;C3055B  
 
-UNREACH_C3055D:
+CategoryItemTableCount:
 	.db $14                               ;C3055D  
 	.db $01,$01,$89,$51,$14,$01,$02,$B1   ;C3055E
 	.db $51,$05                           ;C30566
@@ -689,7 +724,7 @@ UNREACH_C3055D:
 	.db $A7,$52,$27,$04,$01,$F5,$52,$32,$04,$02,$59,$53,$2D,$FF,$FF,$61   ;C30588  
 	.db $51,$14                           ;C30598  
 
-func_C3059A:
+CheckItemSpawnGated:
 	php
 	sep #$30 ;AXY->8
 	lda.b wTemp00
@@ -733,7 +768,7 @@ func_C3059A:
 	.db $B0,$D6   ;C305EF
 	.db $80,$DA   ;C305F1
 
-func_C305F3:
+SpawnFloorGitan:
 	php
 	rep #$20 ;A->16
 	sep #$10 ;XY->8
@@ -744,13 +779,13 @@ func_C305F3:
 	sep #$20 ;A->8
 	lda.b wTemp01,s
 	sta.b wTemp01
-	jsl.l func_C3E3CB
+	jsl.l MultiplyPackedBytesToWord
 	lda.b wTemp01
 	sta.b wTemp01,s
 	stx.b wTemp00
 	lda.b wTemp02,s
 	sta.b wTemp01
-	jsl.l func_C3E3CB
+	jsl.l MultiplyPackedBytesToWord
 	lda.b #$00
 	sta.b wTemp02,s
 	rep #$20 ;A->16
@@ -760,14 +795,15 @@ func_C305F3:
 	sta.b wTemp01
 	ldx.b #$E5
 	stx.b wTemp00
-	jsl.l func_C30295
+	jsl.l SpawnFloorItem
 	plp
 	rtl
 
-func_C30630:
+; Spawns a large Gitan pile with doubled value (mod1/mod2 hold value, shifted left with overflow cap at $FFFF).
+SpawnLargeGitan:
 	php
 	sep #$30 ;AXY->8
-	jsl.l func_C305F3
+	jsl.l SpawnFloorGitan
 	ldx.b wTemp00
 	lda.l wItemModification2,x
 	xba
@@ -786,7 +822,7 @@ func_C30630:
 	plp
 	rtl
 
-func_C30659:
+UpgradeItemModification:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -796,11 +832,11 @@ func_C30659:
 	inc a
 	sta.l wItemModification1,x
 @lbl_C3066B:
-	jsl.l func_C30192
+	jsl.l IdentifyItem
 	plp
 	rtl
 
-func_C30671:
+CreateFloorItem:
 	php
 	sep #$30 ;AXY->8
 	ldx.b #$7E
@@ -840,7 +876,7 @@ func_C30671:
 	plp
 	rtl
 
-func_C306C9:
+GetItemStatsToTemp:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -859,7 +895,7 @@ func_C306C9:
 	plp
 	rtl
 
-func_C306F4:
+FreeFloorItemSlot:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -878,7 +914,7 @@ func_C306F4:
 	plp
 	rtl
 
-func_C30710:
+GetItemDisplayInfo:
 	php
 	sep #$30 ;AXY->8
 	bankswitch 0x7E
@@ -894,9 +930,9 @@ func_C30710:
 	stx.b wTemp05
 	cpx.b #$E7
 	beq @lbl_C30773
-	lda.l DATA8_C341BB,x
+	lda.l ItemCategoryByType,x
 	sta.b wTemp00
-	lda.l DATA8_C342A3,x
+	lda.l ItemBaseStatByType,x
 	clc
 	adc.b wTemp02
 	sta.b wTemp04
@@ -922,7 +958,7 @@ func_C30710:
 @lbl_C30765:
 	sta.b wTemp06
 	lda.b wTemp01
-	cmp.b #$7B
+	cmp.b #Item_InvisibleItem
 	beq @lbl_C3077D
 	cmp.b #$68
 	beq @lbl_C30789
@@ -955,14 +991,17 @@ func_C30710:
 	plp
 	rtl
 
-func_C3079A:
+; Sets special flags on wTemp01 slot index based on item type.
+; Item_InvisibleItem: if canSeeInvisibleObjects==0, sets bit 7 on wTemp01 (hides item from Shiren).
+; Nduba meat ($E7): if wItemIsCursed==$0C, sets wTemp01=$83 (special Nduba state).
+AdjustItemSlotFlags:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp01
 	cpx.b #$7F
 	bcs @lbl_C307C7
 	lda.l wItemType,x
-	cmp.b #$7B
+	cmp.b #Item_InvisibleItem
 	bne @lbl_C307B7
 	lda $7E8975                             ;C307AB
 	bne @lbl_C307B5                         ;C307AF
@@ -980,7 +1019,9 @@ func_C3079A:
 	plp
 	rtl
 
-func_C307C9:
+; Checks if the item at wTemp01 is a blank scroll ($68) named "Sanctuary" (text $04CC).
+; Returns wTemp06=0 if it matches, wTemp06=1 otherwise (including non-blank-scroll items).
+CheckIsNamedSanctuaryScroll:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp01
@@ -995,19 +1036,19 @@ func_C307C9:
 @lbl_C307DC:
 	bankswitch 0x7E
 	lda.w wItemModification1,x
-	sta.w $9360
+	sta.w wItemScratchMod1
 	lda.w wItemModification2,x
-	sta.w $9361
+	sta.w wItemScratchMod2
 	lda.w wItemFuseAbility1,x
-	sta.w $9362
+	sta.w wItemScratchFuse1
 	lda.w wItemFuseAbility2,x
-	sta.w $9363
+	sta.w wItemScratchFuse2
 	lda.w wItemIsCursed,x
-	sta.w $9364
+	sta.w wItemScratchCursed
 	lda.w wItemTimesIdentified,x
-	sta.w $9365
+	sta.w wItemScratchTimesIdentified
 	lda.b #$FF
-	sta.w $9366
+	sta.w wItemScratchTerminator
 	rep #$10 ;XY->16
 	ldx.w #$04CC
 	stx.b wTemp00
@@ -1022,10 +1063,13 @@ func_C307C9:
 	plp                                     ;C30821
 	rtl                                     ;C30822
 
-func_C30823:
-	rtl
+; No-op handler for items that don't need special processing.
+NullItemHandler:
+rtl
 
-func_C30824:
+; Variant of CheckIsNamedSanctuaryScroll using wTemp00 as both item slot and result register.
+; Returns wTemp00=0 if blank scroll ($68) named "Sanctuary", wTemp00=1 otherwise.
+CheckIsNamedSanctuaryScrollAlt:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -1040,19 +1084,19 @@ func_C30824:
 @lbl_C30837:
 	bankswitch 0x7E
 	lda.w wItemModification1,x
-	sta.w $9360
+	sta.w wItemScratchMod1
 	lda.w wItemModification2,x
-	sta.w $9361
+	sta.w wItemScratchMod2
 	lda.w wItemFuseAbility1,x
-	sta.w $9362
+	sta.w wItemScratchFuse1
 	lda.w wItemFuseAbility2,x
-	sta.w $9363
+	sta.w wItemScratchFuse2
 	lda.w wItemIsCursed,x
-	sta.w $9364
+	sta.w wItemScratchCursed
 	lda.w wItemTimesIdentified,x
-	sta.w $9365
+	sta.w wItemScratchTimesIdentified
 	lda.b #$FF
-	sta.w $9366
+	sta.w wItemScratchTerminator
 	rep #$10 ;XY->16
 	ldx.w #$04CC
 	stx.b wTemp00
@@ -1071,10 +1115,10 @@ func_C30824:
 
 .include "code/item_effects.asm"
 
-func_C33A21:
+RestoreItemFromThrowTemp:
 	php
 	sep #$30 ;AXY->8
-	jsl.l func_C30295
+	jsl.l SpawnFloorItem
 	ldy.b wTemp00
 	bmi @lbl_C33A4E
 	bankswitch 0x7E
@@ -1098,7 +1142,7 @@ PrepareSelectedThrowableItem:
 	bankswitch 0x7E
 	ldy.b wTemp00
 	ldx.w wItemType,y
-	lda.l DATA8_C341BB,x
+	lda.l ItemCategoryByType,x
 	cmp.b #$04
 	bne @lbl_C33A8E
 	lda.w wItemModification1,y
@@ -1124,7 +1168,7 @@ PrepareSelectedThrowableItem:
 	plp
 	rtl
 
-func_C33A92:
+SetItemGoods:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -1132,7 +1176,7 @@ func_C33A92:
 	cmp.b #$E7
 	beq @lbl_C33AB0
 	tax
-	lda.l DATA8_C341BB,x
+	lda.l ItemCategoryByType,x
 	cmp.b #$08
 	beq @lbl_C33AB0
 	ldx.b wTemp00
@@ -1142,7 +1186,7 @@ func_C33A92:
 	plp
 	rtl
 
-func_C33AB2:
+SetContainedItemsGoods:
 	php
 	sep #$30 ;AXY->8
 	lda.b wTemp00
@@ -1151,7 +1195,7 @@ func_C33AB2:
 	txy
 	lda.l wItemType,x
 	tax
-	lda.l DATA8_C341BB,x
+	lda.l ItemCategoryByType,x
 	tyx
 	cmp.b #$08
 	beq @lbl_C33ACD
@@ -1163,7 +1207,7 @@ func_C33AB2:
 	plp
 	rtl
 
-func_C33AD5:
+GetItemGoods:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -1172,7 +1216,7 @@ func_C33AD5:
 	plp
 	rtl
 
-func_C33AE2:
+GetPotNextItem:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -1246,7 +1290,7 @@ InsertContainedItemByIndex:
 	plp
 	rtl
 
-func_C33B61:
+MergeItemModifications:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp01
@@ -1262,7 +1306,7 @@ func_C33B61:
 	sta.l wItemModification1,x
 	lda.b wTemp01
 	sta.b wTemp00
-	jsl.l func_C306F4
+	jsl.l FreeFloorItemSlot
 	plp
 	rtl
 	php                                     ;C33B85
@@ -1315,7 +1359,8 @@ func_C33B61:
 	ora ($BA)                               ;C33BEB
 	.db $FF   ;C33BED
 
-func_C33BEE:
+; Validates custom name slot for item. On overflow, writes $FF to wItemCustomNamesBuffer.
+ValidateCustomNameSlot:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -1331,7 +1376,9 @@ func_C33BEE:
 	plp
 	rtl
 
-func_C33C0D:
+; Returns item data to temp registers. For blank scrolls ($68): returns mod/fuse/curse stats.
+; For other items: reads wItemHasCustomName and returns custom name buffer data.
+GetItemOrBlankScrollData:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -1376,7 +1423,7 @@ func_C33C0D:
 	plp
 	rtl
 
-func_C33C6E:
+SerializeItemData:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -1386,11 +1433,11 @@ func_C33C6E:
 	stx.b wTemp02
 	lda.b #$7E
 	sta.b wTemp04
-	jsl.l func_C3E2AB
+	jsl.l SaveStreamWriteBlock
 	plp
 	rtl
 
-func_C33C87:
+DeserializeItemData:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -1400,7 +1447,7 @@ func_C33C87:
 	stx.b wTemp02
 	lda.b #$7E
 	sta.b wTemp04
-	jsl.l func_C3E2DB
+	jsl.l SaveStreamReadBlock
 	plp
 	rtl
 
@@ -1416,7 +1463,7 @@ GetItemBuySellPrice:
 	asl a
 	pha
 	sep #$20 ;A->8
-	jsl.l func_C30710
+	jsl.l GetItemDisplayInfo
 	lda.b wTemp01
 	cmp.b #$E7
 	bne @lbl_C33CC5
@@ -1455,7 +1502,7 @@ ItemBuySellPriceHandler_Herb:
 	xba
 	and.w #$00FF
 	sec
-	sbc.w #$0028
+	sbc.w #Item_MedicinalHerb
 	asl a
 	asl a
 	clc
@@ -1472,7 +1519,7 @@ ItemBuySellPriceHandler_Scroll:
 	xba
 	and.w #$00FF
 	sec
-	sbc.w #$0056
+	sbc.w #Item_BlessingScroll
 	asl a
 	asl a
 	clc
@@ -1489,7 +1536,7 @@ ItemBuySellPriceHandler_RiceBall:
 	xba
 	and.w #$00FF
 	sec
-	sbc.w #$00AE
+	sbc.w #Item_Onigiri
 	asl a
 	asl a
 	clc
@@ -1509,7 +1556,7 @@ ItemBuySellPriceHandler_Weapon:
 	xba
 	and.w #$00FF
 	sec
-	sbc.w #$0000
+	sbc.w #Item_Cudgel
 	asl a
 	asl a
 	clc
@@ -1520,7 +1567,7 @@ ItemBuySellPriceHandler_Weapon:
 	lda.b wTemp03,s
 	sta.b wTemp00
 	phx
-	jsl.l func_C32CCB
+	jsl.l LoadItemFuseAbilitiesAndDefaults
 	plx
 	lda.b wTemp01,s
 	phx
@@ -1530,9 +1577,8 @@ ItemBuySellPriceHandler_Weapon:
 @lbl_C33D67:
 	lsr.b wTemp00
 	bcc @lbl_C33D70
-	;references address for weapon ability info?
-;C33D6B
-	.db $18,$7F,$2C,$A4,$D9
+	clc
+	adc.l WeaponFuseAbilityPriceBonus,x
 @lbl_C33D70:
 	inx
 	inx
@@ -1546,7 +1592,7 @@ ItemBuySellPriceHandler_Weapon:
 	bit.w #$0002
 	beq @lbl_C33D83
 ;C33D81  
-	.db $E6,$04
+	inc.b wTemp04                            ;C33D81
 @lbl_C33D83:
 	lda.b wTemp04
 	bne @lbl_C33D8B
@@ -1557,7 +1603,9 @@ ItemBuySellPriceHandler_Weapon:
 	bit.w #$0080
 	beq @lbl_C33D9A
 ;C33D93
-	.db $49,$FF,$00,$1A,$A0,$00,$80
+	eor #$00FF                              ;C33D93
+	inc a                                   ;C33D96
+	ldy #$8000                              ;C33D97
 @lbl_C33D9A:
 	sta.b wTemp02
 	tya
@@ -1570,7 +1618,8 @@ ItemBuySellPriceHandler_Weapon:
 	adc.l WeaponUpgradePriceBonus,x
 	bcc @lbl_C33DB1
 ;C33DAC
-	.db $A9,$E8,$FD,$80,$2F
+	lda #$FDE8                              ;C33DAC
+	bra @lbl_C33DE0                         ;C33DAF
 @lbl_C33DB1:
 	dec.b wTemp02
 	bne @lbl_C33DA5
@@ -1583,14 +1632,23 @@ ItemBuySellPriceHandler_Weapon:
 	cmp.w #$7D00
 	bcc @lbl_C33DC8
 ;C33DC3
-	.db $A9,$00,$7D,$80,$18
+	lda #$7D00                              ;C33DC3
+	bra @lbl_C33DE0                         ;C33DC6
 @lbl_C33DC8:
 	dec.b wTemp02
 	bne @lbl_C33DB9
 	bra @lbl_C33DE0
 @lbl_C33DCE:
-	.db $A5,$06,$38,$FF,$EC,$A3,$D9,$B0,$05,$A9,$00,$00,$80,$04,$C6,$02   ;C33DCE  
-	.db $D0,$F0                           ;C33DDE  
+	lda.b wTemp06                            ;C33DCE
+@lbl_C33DD0:
+	sec                                     ;C33DD0
+	sbc.l WeaponUpgradePriceBonus,x         ;C33DD1
+	bcs @lbl_C33DDC                         ;C33DD5
+	lda #$0000                              ;C33DD7
+	bra @lbl_C33DE0                         ;C33DDA
+@lbl_C33DDC:
+	dec.b wTemp02                           ;C33DDC
+	bne @lbl_C33DD0                         ;C33DDE
 @lbl_C33DE0:
 	sta.b wTemp00
 	pla
@@ -1606,7 +1664,7 @@ ItemBuySellPriceHandler_Arrow:
 	xba
 	and.w #$00FF
 	sec
-	sbc.w #$0010
+	sbc.w #Item_WoodArrow
 	asl a
 	asl a
 	clc
@@ -1615,7 +1673,7 @@ ItemBuySellPriceHandler_Arrow:
 	lda.l ArrowBuySellPrices,x
 	ora.b wTemp04
 	sta.b wTemp00
-	jsl.l func_C3E3CB
+	jsl.l MultiplyPackedBytesToWord
 	pla
 	pla
 	plp
@@ -1628,7 +1686,7 @@ ItemBuySellPriceHandler_Shield:
 	xba
 	and.w #$00FF
 	sec
-	sbc.w #$0016
+	sbc.w #Item_HideShield
 	asl a
 	asl a
 	clc
@@ -1639,7 +1697,7 @@ ItemBuySellPriceHandler_Shield:
 	lda.b wTemp03,s
 	sta.b wTemp00
 	phx
-	jsl.l func_C32CCB
+	jsl.l LoadItemFuseAbilitiesAndDefaults
 	plx
 	lda.b wTemp01,s
 	phx
@@ -1650,7 +1708,7 @@ ItemBuySellPriceHandler_Shield:
 	lsr.b wTemp00
 	bcc @lbl_C33E47
 	clc
-	adc.l DATA8_D9A504,x
+	adc.l ShieldFuseAbilityPriceBonus,x
 @lbl_C33E47:
 	inx
 	inx
@@ -1664,7 +1722,7 @@ ItemBuySellPriceHandler_Shield:
 	bit.w #$0001
 	beq @lbl_C33E5A
 ;C33E58  
-	.db $E6,$04
+	inc $04                                 ;C33E58
 @lbl_C33E5A:
 	lda.b wTemp04
 	bne @lbl_C33E62
@@ -1675,15 +1733,26 @@ ItemBuySellPriceHandler_Shield:
 	bit.w #$0080
 	beq @lbl_C33E71
 ;C33E6A
-	.db $49,$FF,$00,$1A,$A0,$00,$80
+	eor #$00FF                              ;C33E6A
+	inc a                                   ;C33E6D
+	ldy #$8000                              ;C33E6E
 @lbl_C33E71:
 	sta.b wTemp02
 	tya
 	bmi @lbl_C33EA5
 	lda.b wTemp01,s
 	bne @lbl_C33E8E
-	.db $A5,$06,$18,$7F,$BC,$A4,$D9,$90,$05,$A9,$E8,$FD,$80,$2F,$C6,$02   ;C33E7A  
-	.db $D0,$F0,$80,$29                   ;C33E8A  
+	lda.b wTemp06                            ;C33E7A
+@lbl_C33E7C:
+	clc                                     ;C33E7C
+	adc.l ShieldUpgradePriceBonus,x         ;C33E7D
+	bcc @lbl_C33E88                         ;C33E81
+	lda #$FDE8                              ;C33E83
+	bra @lbl_C33EB7                         ;C33E86
+@lbl_C33E88:
+	dec.b wTemp02                           ;C33E88
+	bne @lbl_C33E7C                         ;C33E8A
+	bra @lbl_C33EB7                         ;C33E8C
 @lbl_C33E8E:
 	lda.b wTemp06
 @lbl_C33E90:
@@ -1692,14 +1761,23 @@ ItemBuySellPriceHandler_Shield:
 	cmp.w #$7D00
 	bcc @lbl_C33E9F
 ;C33E9A
-	.db $A9,$00,$7D,$80,$18
+	lda #$7D00                              ;C33E9A
+	bra @lbl_C33EB7                         ;C33E9D
 @lbl_C33E9F:
 	dec.b wTemp02
 	bne @lbl_C33E90
 	bra @lbl_C33EB7
 @lbl_C33EA5:
-	.db $A5,$06,$38,$FF,$BC,$A4,$D9,$B0,$05,$A9,$00,$00,$80,$04,$C6,$02   ;C33EA5  
-	.db $D0,$F0                           ;C33EB5  
+	lda.b wTemp06                            ;C33EA5
+@lbl_C33EA7:
+	sec                                     ;C33EA7
+	sbc.l ShieldUpgradePriceBonus,x         ;C33EA8
+	bcs @lbl_C33EB3                         ;C33EAC
+	lda #$0000                              ;C33EAE
+	bra @lbl_C33EB7                         ;C33EB1
+@lbl_C33EB3:
+	dec.b wTemp02                           ;C33EB3
+	bne @lbl_C33EA7                         ;C33EB5
 @lbl_C33EB7:
 	sta.b wTemp00
 	pla
@@ -1711,7 +1789,7 @@ ItemBuySellPriceHandler_Armband:
 	xba
 	and.w #$00FF
 	sec
-	sbc.w #$0093
+	sbc.w #Item_PassageArmband
 	asl a
 	asl a
 	clc
@@ -1728,7 +1806,7 @@ ItemBuySellPriceHandler_Staff:
 	xba
 	and.w #$00FF
 	sec
-	sbc.w #$007C
+	sbc.w #Item_SlothStaff
 	asl a
 	asl a
 	clc
@@ -1822,7 +1900,7 @@ ItemBuySellPriceHandler_Jar:
 	xba
 	and.w #$00FF
 	sec
-	sbc.w #$00B4
+	sbc.w #Item_HoldingJar
 	asl a
 	asl a
 	clc
@@ -1859,6 +1937,8 @@ ItemBuySellPriceHandler_Jar:
 	pla
 	plp
 	rtl
+; TODO: purpose unclear - scans unlabeled 262-byte table at $C34E00 backwards for a matching
+; item type and accumulates range-tier flags into $00. No external callers found.
 	php                                     ;C33FB8
 	sep #$20                                ;C33FB9
 	rep #$10                                ;C33FBB
@@ -1898,6 +1978,7 @@ ItemBuySellPriceHandler_Jar:
 	sta $00                                 ;C33FF2
 	pla                                     ;C33FF4
 	bra @lbl_C33FCA                         ;C33FF5
+ApplyBlessingScrollEffect:
 	php                                     ;C33FF7
 	sep #$20                                ;C33FF8
 	lda #$7E                                ;C33FFA
@@ -1906,6 +1987,7 @@ ItemBuySellPriceHandler_Jar:
 	jsr $1C70                               ;C33FFE
 	plp                                     ;C34001
 	rtl                                     ;C34002
+SaveAndClearItemCurseState:
 	php                                     ;C34003
 	sep #$30                                ;C34004
 	ldx $00                                 ;C34006
@@ -1915,11 +1997,12 @@ ItemBuySellPriceHandler_Jar:
 	sta $7E8C0C,x                           ;C34010
 	plp                                     ;C34014
 	rtl                                     ;C34015
+TryCurseEquippableItem:
 	php                                     ;C34016
 	ldx $00                                 ;C34017
 	lda $7E8B8C,x                           ;C34019
 	tax                                     ;C3401D
-	lda $C341BB,x                           ;C3401E
+	lda.l ItemCategoryByType,x                           ;C3401E
 	cmp #$03                                ;C34022
 	beq @lbl_C3402E                         ;C34024
 	cmp #$05                                ;C34026
@@ -1942,7 +2025,7 @@ ItemBuySellPriceHandler_Jar:
 .ACCU 16
 .INDEX 16
 
-func_C34044:
+ConsumeBlastShieldDurability:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -1962,7 +2045,7 @@ func_C34044:
 	lda.b #$28
 	sta.b wTemp01
 	phx
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	plx
 	lda.b wTemp00
 @lbl_C3406D:
@@ -1976,7 +2059,7 @@ func_C34044:
 	plp
 	rtl
 
-func_C3407C:
+RepairOrphanedPotItems:
 	php
 	sep #$30 ;AXY->8
 	bankswitch 0x7E
@@ -2166,245 +2249,270 @@ func_C3407C:
 	rtl                                     ;C341BA
 
 
-DATA8_C341BB:
-	.db $03,$03,$03,$03,$03,$03
-	.db $03,$03,$03,$03,$03,$03
-	.db $03,$03,$03,$03
-	.db $04,$04,$04,$04,$04,$04
-	.db $05,$05,$05,$05,$05
-	.db $05,$05,$05
-	.db $05
-	.db $05,$05,$05,$05
-	.db $05,$05
-	.db $05,$05,$05
-	.db $00,$00
-	.db $00
-	.db $00,$00
-	.db $00,$00
-	.db $00
-	.db $00,$00,$00,$00,$00,$00,$00
-	.db $00,$00
-	.db $00,$00,$00
-	.db $00
-	.db $00,$00,$00
-	.db $00
-	.db $00,$00,$00,$00,$00,$00,$00,$00
-	.db $00,$00,$00,$00,$00,$00,$00,$00
-	.db $00,$00,$00,$00,$00
-	.db $01,$01,$01
-	.db $01,$01,$01,$01,$01
-	.db $01
-	.db $01
-	.db $01
-	.db $01,$01,$01,$01,$01
-	.db $01
-	.db $01
-	.db $01
-	.db $01
-	.db $01,$01
-	.db $01,$01,$01,$01,$01,$01,$01,$01
-	.db $01,$01,$01,$01,$01,$01,$01,$01
-	.db $07
-	.db $07
-	.db $07
-	.db $07,$07,$07,$07,$07,$07
-	.db $07
-	.db $07
-	.db $07,$07,$07,$07,$07,$07,$07,$07
-	.db $07,$07,$07,$07,$06,$06,$06,$06
-	.db $06
-	.db $06
-	.db $06,$06,$06,$06,$06,$06
-	.db $06,$06
-	.db $06,$06,$06,$06,$06,$06,$06,$06
-	.db $06,$06,$06,$06,$06
-	.db $02,$02
-	.db $02,$02,$02,$02
-	.db $0B,$0B
-	.db $0B,$0B
-	.db $0B,$0B,$0B
-	.db $0B,$0B,$0B,$0B
-	.db $0B
-	.db $0B
-	.db $0B,$0B
-	.db $0B,$0B,$0B,$0D,$0D,$0D,$0D,$0D
-	.db $0D,$0D,$0D,$0D,$0D,$0D,$0D,$0D
-	.db $0D,$0D,$0D,$0D,$0D,$0D,$0D,$0D
-	.db $0D,$0D,$0D,$0D,$0D
+; Maps item type (index) to item category ID.
+; Used to determine equipment slots, UI categories, and item behavior.
+ItemCategoryByType:
+	; $00-$0F (16 types): Weapons
+	.rept 16
+		.db CATEGORY_WEAPON
+	.endr
+	; $10-$15 (6 types): Arrows
+	.rept 6
+		.db CATEGORY_ARROW
+	.endr
+	; $16-$27 (18 types): Shields
+	.rept 18
+		.db CATEGORY_SHIELD
+	.endr
+	; $28-$55 (46 types): Unused/None
+	.rept 46
+		.db CATEGORY_NONE
+	.endr
+	; $56-$7B (38 types): Usable items
+	.rept 38
+		.db CATEGORY_USABLE
+	.endr
+	; $7C-$92 (23 types): Scrolls
+	.rept 23
+		.db CATEGORY_SCROLL
+	.endr
+	; $93-$AD (27 types): Armbands
+	.rept 27
+		.db CATEGORY_ARMBAND
+	.endr
+	; $AE-$B3 (6 types): Unknown ($02)
+	.rept 6
+		.db $02
+	.endr
+	; $B4-$C5 (18 types): Pots
+	.rept 18
+		.db CATEGORY_POT
+	.endr
+	; $C6-$DF (26 types): Unknown ($0D)
+	.rept 26
+		.db $0D
+	.endr
+	; $E0: Unknown ($09)
 	.db $09
-	.db $0A,$0A,$0A,$0A
-	.db $08
-	.db $00,$00
+	; $E1-$E4 (4 types): Staves
+	.rept 4
+		.db CATEGORY_STAFF
+	.endr
+	; $E5: Food
+	.db CATEGORY_FOOD
+	; $E6-$E7: Unused
+	.rept 2
+		.db CATEGORY_NONE
+	.endr
 
-DATA8_C342A3:
-	.db $02,$04
-	.db $05
-	.db $06
-	.db $07
-	.db $08
-	.db $0C,$04
+; Base attack (weapons) or defense (shields) stat for each item type, before +N modifier.
+; Non-weapon/shield types are 0 (usables, scrolls, pots, etc. have no base stat).
+ItemBaseStatByType:
+	; Weapons ($00-$0F): base attack stat
+	start_item_table Item_Cudgel
+	item_base_stat Item_Cudgel,        2
+	item_base_stat Item_Nagamaki,      4
+	item_base_stat Item_BufusCleaver,  5
+	item_base_stat Item_Katana,        6
+	item_base_stat Item_Dragonkiller,  7
+	item_base_stat Item_Mastersword,   8
+	item_base_stat Item_KabrasBlade,  12
+	item_base_stat Item_SickleSlayer,  4
+	item_base_stat Item_Pickaxe,       1
+	item_base_stat Item_HomingBlade,   2
+	item_base_stat Item_MinotaursAxe,  4
+	item_base_stat Item_RazorWind,     3
+	item_base_stat Item_CyclopsKiller, 5
+	item_base_stat Item_DrainBuster,   5
+	item_base_stat Item_Firebrand,    30
+	item_base_stat Item_KabraReborn,  50
+	; Arrows ($10-$15): no base stat
+	.rept 6
+		.db 0
+	.endr
+	; Shields ($16-$27): base defense stat
+	start_item_table Item_HideShield
+	item_base_stat Item_HideShield,        2
+	item_base_stat Item_Bronzeward,        4
+	item_base_stat Item_AntiPoisonShield,  0
+	item_base_stat Item_WoodShield,        3
+	item_base_stat Item_IronShield,        7
+	item_base_stat Item_Dragonward,        7
+	item_base_stat Item_Windshield,       12
+	item_base_stat Item_SpikedWard,        5
+	item_base_stat Item_ArmorWard,        10
+	item_base_stat Item_EchoShield,        5
+	item_base_stat Item_EvasiveShield,     5
+	item_base_stat Item_FancyShield,       3
+	item_base_stat Item_FragileShield,    30
+	item_base_stat Item_BlastShield,       3
+	item_base_stat Item_WalrusShield,      3
+	item_base_stat Item_Stormward,        30
+	item_base_stat Item_26,                0
+	item_base_stat Item_27,                0
+	; All remaining types ($28-$E7): no base stat
+	.rept 192
+		.db 0
+	.endr
+
+; Minimum bound for floor item +N modifier RNG, indexed by item type.
+; High bit set = use ItemSpawnModDistribution[value & $7F] instead of raw random range.
+ItemSpawnModMin:
+	; Weapons ($00-$0F): distribution table lookup
+	start_spawn_mod_table Item_Cudgel
+	item_spawn_mod_min Item_Cudgel,        SPAWN_MOD_CUDGEL_MIN  ; uses dist table offset $00
+	item_spawn_mod_min Item_Nagamaki,      SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_BufusCleaver,  SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_Katana,        SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_Dragonkiller,  SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_Mastersword,   SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_KabrasBlade,   SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_SickleSlayer,  SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_Pickaxe,       SPAWN_MOD_CUDGEL_MIN  ; uses dist table offset $00
+	item_spawn_mod_min Item_HomingBlade,   SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_MinotaursAxe,  SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_RazorWind,     SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_CyclopsKiller, $00
+	item_spawn_mod_min Item_DrainBuster,   $00
+	item_spawn_mod_min Item_Firebrand,     $00
+	item_spawn_mod_min Item_KabraReborn,   $00
+	; Arrows ($10-$15): raw random range
+	item_spawn_mod_min Item_WoodArrow,     $0A                   ; range 10-20
+	item_spawn_mod_min Item_IronArrow,     $05                   ; range  5-15
+	item_spawn_mod_min Item_SilverArrow,   $05                   ; range  5-10
+	item_spawn_mod_min Item_13,            $00
+	item_spawn_mod_min Item_14,            $00
+	item_spawn_mod_min Item_15,            $00
+	; Shields ($16-$27): distribution table lookup
+	start_spawn_mod_table Item_HideShield
+	item_spawn_mod_min Item_HideShield,        SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_Bronzeward,        SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_AntiPoisonShield,  SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_WoodShield,        SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_IronShield,        SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_Dragonward,        SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_Windshield,        SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_SpikedWard,        SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_ArmorWard,         SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_EchoShield,        SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_EvasiveShield,     SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_FancyShield,       SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_FragileShield,     SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_BlastShield,       SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_WalrusShield,      SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_Stormward,         SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_26,                SPAWN_MOD_EQUIP_MIN
+	item_spawn_mod_min Item_27,                SPAWN_MOD_EQUIP_MIN
+	; Herbs/unused/scrolls ($28-$7B): no modifier
+	.rept 84
+		.db $00
+	.endr
+	; Staffs ($7C-$92): raw range min 5
+	.rept 23
+		.db $05
+	.endr
+	; Armbands ($93-$AD): distribution table lookup
+	.rept 27
+		.db SPAWN_MOD_ARMBAND_MIN
+	.endr
+	; Onigiri ($AE-$B3): no modifier
+	.rept 6
+		.db $00
+	.endr
+	; Pots ($B4-$C5): raw range 3-6
+	.rept 18
+		.db $03
+	.endr
+	; Unused/misc ($C6-$E4): no modifier
+	.rept 31
+		.db $00
+	.endr
+	; Gitan ($E5): raw range 1-$FF
 	.db $01
-	.db $02,$04
-	.db $03
-	.db $05,$05,$1E,$32
-	.db $00
-	.db $00,$00,$00,$00,$00
-	.db $02,$04
-	.db $00,$03
-	.db $07
-	.db $07,$0C,$05
-	.db $0A
-	.db $05,$05,$03,$1E
-	.db $03,$03
-	.db $1E,$00,$00
-	.db $00,$00
-	.db $00
-	.db $00,$00
-	.db $00,$00
-	.db $00
-	.db $00,$00,$00,$00,$00,$00,$00,$00
-	.db $00
-	.db $00,$00,$00
-	.db $00
-	.db $00,$00,$00
-	.db $00
-	.db $00,$00,$00,$00,$00,$00,$00,$00
-	.db $00,$00,$00,$00,$00,$00,$00,$00
-	.db $00,$00,$00,$00,$00
-	.db $00,$00,$00
-	.db $00,$00,$00,$00,$00
-	.db $00
-	.db $00
-	.db $00
-	.db $00,$00,$00,$00,$00
-	.db $00
-	.db $00
-	.db $00
-	.db $00
-	.db $00,$00
-	.db $00,$00,$00,$00,$00,$00,$00,$00
-	.db $00,$00,$00,$00,$00,$00,$00,$00
-	.db $00
-	.db $00
-	.db $00
-	.db $00,$00,$00,$00,$00,$00
-	.db $00
-	.db $00
-	.db $00,$00,$00,$00,$00,$00,$00,$00
-	.db $00,$00,$00,$00,$00,$00,$00,$00
-	.db $00
-	.db $00
-	.db $00,$00,$00,$00,$00,$00
-	.db $00,$00
-	.db $00,$00,$00,$00,$00,$00,$00,$00
-	.db $00,$00,$00,$00,$00
-	.db $00,$00
-	.db $00,$00,$00,$00
-	.db $00,$00
-	.db $00,$00
-	.db $00,$00
-	.db $00,$00,$00,$00,$00
-	.db $00
-	.db $00
-	.db $00,$00
-	.db $00,$00,$00,$00,$00,$00,$00,$00
-	.db $00,$00,$00,$00,$00,$00,$00,$00
-	.db $00,$00,$00,$00,$00,$00,$00,$00
-	.db $00,$00,$00,$00,$00
-	.db $00
-	.db $00,$00,$00,$00
-	.db $00
-	.db $00,$00
+	; Null/Nduba ($E6-$E7): no modifier
+	.rept 2
+		.db $00
+	.endr
 
-DATA8_C3438B:
-	.db $80,$90
-	.db $90
-	.db $90
-	.db $90
-	.db $90
-	.db $90,$90,$80,$90,$90
-	.db $90
-	.db $00,$00,$00,$00
-	.db $0A
-	.db $05,$05,$00,$00,$00
-	.db $90,$90
-	.db $90,$90
-	.db $90
-	.db $90,$90,$90
-	.db $90
-	.db $90,$90,$90,$90,$90
-	.db $90
-	.db $90,$90,$90
-	.db $00,$00
-	.db $00
-	.db $00,$00
-	.db $00,$00,$00,$00,$00,$00,$00,$00
-	.db $00,$00
-	.db $00,$00
-	.db $00,$00,$00
-	.db $00
-	.db $00,$00,$00
-	.db $00
-	.db $00,$00,$00,$00,$00,$00,$00,$00
-	.db $00,$00,$00,$00,$00,$00,$00,$00
-	.db $00,$00,$00,$00,$00,$00
-	.db $00,$00
-	.db $00,$00,$00,$00,$00
-	.db $00
-	.db $00,$00,$00,$00,$00,$00,$00
-	.db $00
-	.db $00
-	.db $00
-	.db $00
-	.db $00,$00
-	.db $00,$00,$00,$00,$00,$00,$00,$00
-	.db $00,$00,$00,$00,$00,$00,$00,$00
-	.db $05
-	.db $05
-	.db $05
-	.db $05
-	.db $05
-	.db $05
-	.db $05,$05
-	.db $05
-	.db $05
-	.db $05
-	.db $05,$05,$05,$05,$05,$05,$05,$05
-	.db $05,$05,$05,$05,$A0,$A0,$A0,$A0
-	.db $A0,$A0,$A0,$A0,$A0,$A0,$A0,$A0
-	.db $A0,$A0,$A0,$A0,$A0,$A0,$A0,$A0
-	.db $A0,$A0,$A0,$A0,$A0,$A0,$A0
-	.db $00,$00
-	.db $00,$00,$00,$00
-	.db $03
-	.db $03,$03,$03
-	.db $03
-	.db $03
-	.db $03
-	.db $03,$03,$03,$03,$03,$03
-	.db $03
-	.db $03,$03,$03,$03,$00,$00,$00,$00
-	.db $00,$00,$00,$00,$00,$00,$00,$00
-	.db $00,$00,$00,$00,$00,$00,$00,$00
-	.db $00,$00,$00,$00,$00,$00,$00,$00
-	.db $00,$00,$00,$01,$00,$00
-
-DATA8_C34473:
-	.db $8F,$9F,$9F,$9F,$9F,$9F,$9F,$9F,$8F,$9F,$9F,$9F,$00,$00,$00,$00
-	.db $14,$0F,$0A,$00,$00,$00,$9F,$9F,$9F,$9F,$9F,$9F,$9F,$9F,$9F,$9F
-	.db $9F,$9F,$9F,$9F,$9F,$9F,$9F,$9F,$01,$01,$01,$01,$01,$01,$01,$01
-	.db $01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01
-	.db $01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01
-	.db $01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01
-	.db $01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01
-	.db $01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$08,$07,$07,$07
-	.db $07,$07,$07,$07,$07,$07,$07,$07,$07,$07,$07,$07,$07,$07,$07,$07
-	.db $07,$07,$07,$AF,$AF,$AF,$AF,$AF,$AF,$AF,$AF,$AF,$AF,$AF,$AF,$AF
-	.db $AF,$AF,$AF,$AF,$AF,$AF,$AF,$AF,$AF,$AF,$AF,$AF,$AF,$AF,$00,$00
-	.db $00,$00,$00,$00,$06,$06,$06,$06,$06,$06,$06,$06,$06,$06,$06,$06
-	.db $06,$06,$06,$06,$06,$06,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
-	.db $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
-	.db $00,$00,$00,$00,$00,$FF,$00,$00
+; Maximum bound for floor item +N modifier RNG, indexed by item type.
+; High bit set = paired with ItemSpawnModMin for distribution table lookup.
+ItemSpawnModMax:
+	; Weapons ($00-$0F): distribution table lookup
+	start_spawn_mod_table Item_Cudgel
+	item_spawn_mod_max Item_Cudgel,        SPAWN_MOD_CUDGEL_MAX  ; dist table offset $0F
+	item_spawn_mod_max Item_Nagamaki,      SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_BufusCleaver,  SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_Katana,        SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_Dragonkiller,  SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_Mastersword,   SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_KabrasBlade,   SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_SickleSlayer,  SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_Pickaxe,       SPAWN_MOD_CUDGEL_MAX  ; dist table offset $0F
+	item_spawn_mod_max Item_HomingBlade,   SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_MinotaursAxe,  SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_RazorWind,     SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_CyclopsKiller, $00
+	item_spawn_mod_max Item_DrainBuster,   $00
+	item_spawn_mod_max Item_Firebrand,     $00
+	item_spawn_mod_max Item_KabraReborn,   $00
+	; Arrows ($10-$15): raw random range
+	item_spawn_mod_max Item_WoodArrow,     $14                   ; range 10-20
+	item_spawn_mod_max Item_IronArrow,     $0F                   ; range  5-15
+	item_spawn_mod_max Item_SilverArrow,   $0A                   ; range  5-10
+	item_spawn_mod_max Item_13,            $00
+	item_spawn_mod_max Item_14,            $00
+	item_spawn_mod_max Item_15,            $00
+	; Shields ($16-$27): distribution table lookup
+	start_spawn_mod_table Item_HideShield
+	item_spawn_mod_max Item_HideShield,        SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_Bronzeward,        SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_AntiPoisonShield,  SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_WoodShield,        SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_IronShield,        SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_Dragonward,        SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_Windshield,        SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_SpikedWard,        SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_ArmorWard,         SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_EchoShield,        SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_EvasiveShield,     SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_FancyShield,       SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_FragileShield,     SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_BlastShield,       SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_WalrusShield,      SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_Stormward,         SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_26,                SPAWN_MOD_EQUIP_MAX
+	item_spawn_mod_max Item_27,                SPAWN_MOD_EQUIP_MAX
+	; Herbs/unused/scrolls ($28-$7B): max 1
+	.rept 84
+		.db $01
+	.endr
+	; Staffs ($7C-$92): SlothStaff max 8, rest max 7
+	.db $08                               ; Item_SlothStaff
+	.rept 22
+		.db $07
+	.endr
+	; Armbands ($93-$AD): distribution table lookup
+	.rept 27
+		.db SPAWN_MOD_ARMBAND_MAX
+	.endr
+	; Onigiri ($AE-$B3): no modifier
+	.rept 6
+		.db $00
+	.endr
+	; Pots ($B4-$C5): raw range 3-6
+	.rept 18
+		.db $06
+	.endr
+	; Unused/misc ($C6-$E4): no modifier
+	.rept 31
+		.db $00
+	.endr
+	; Gitan ($E5): max $FF (full byte range via distribution)
+	.db $FF
+	; Null/Nduba ($E6-$E7): no modifier
+	.rept 2
+		.db $00
+	.endr
 
 ;c3455b
 ItemUseEffectFunctionTable:
@@ -2455,14 +2563,14 @@ ItemUseEffectFunctionTable:
 	.dw DragonHerbUseEffect-1 ;DragonHerb
 	.dw VictoryHerbUseEffect-1 ;VictoryHerb
 	.dw AngelSeedUseEffect-1 ;AngelSeed
-	.dw $09F0 ;RevivalHerb
+	.dw ShowNothingHappensMessage-1 ;RevivalHerb
 	.dw InvisibilityHerbUseEffect-1 ;InvisibilityHerb
 	.dw BitterHerbUseEffect-1 ;BitterHerb
 	.dw MisfortuneHerbUseEffect-1 ;MisfortuneHerb
 	.dw IllLuckHerbUseEffect-1 ;IllLuckHerb
 	.dw KignyHerbUseEffect ;KignyHerb
 	.dw AmnesiaHerbUseEffect-1 ;AmnesiaHerb
-	.dw $0A94 ;36
+	.dw NullItemEffect-1 ;36
 	.dw LifeHerbUseEffect-1 ;LifeHerb
 	.dw BigBellySeedUseEffect-1 ;BigBellySeed
 	.dw LittleBellySeedUseEffect-1 ;LittleBellySeed
@@ -2472,7 +2580,7 @@ ItemUseEffectFunctionTable:
 	.dw PoisonHerbUseEffect-1 ;PoisonHerb
 	.dw ConfusionHerbUseEffect-1 ;ConfusionHerb
 	.dw SleepHerbUseEffect-1 ;SleepHerb
-	.dw $09F0 ;Weeds
+	.dw ShowNothingHappensMessage-1 ;Weeds
 	.dw UnusedItemUseEffect-1
 	.dw UnusedItemUseEffect-1
 	.dw UnusedItemUseEffect-1
@@ -2500,13 +2608,13 @@ ItemUseEffectFunctionTable:
 	.dw BigpotScrollUseEffect-1 ;BigpotScroll
 	.dw BlastwaveScrollUseEffect-1 ;BlastwaveScroll
 	.dw SilenceScrollUseEffect-1 ;SilenceScroll
-	.dw $1A7A ;5C
+	.dw WeaponUpgradeScrollUseEffect-1 ;5C
 	.dw TrapScrollUseEffect-1 ;TrapScroll
 	.dw NeedScrollUseEffect-1 ;NeedScroll
 	.dw HasteScrollUseEffect-1 ;HasteScroll
 	.dw SleepScrollUseEffect-1 ;SleepScroll
 	.dw PowerupScrollUseEffect-1 ;PowerupScroll
-	.dw $18B8 ;62
+	.dw EventGatedScrollUseEffect-1 ;62
 	.dw ExplosionScrollUseEffect-1 ;ExplosionScroll
 	.dw GreatHallScrollUseEffect-1 ;GreatHallScroll
 	.dw MonsterHouseScrollUseEffect-1 ;MonsterHouseScroll
@@ -2520,7 +2628,7 @@ ItemUseEffectFunctionTable:
 	.dw ExtractionScrollUseEffect-1 ;ExtractionScroll
 	.dw HandsFullScrollUseEffect-1 ;HandsFullScroll
 	.dw UnusedItemUseEffect-1 ;6F
-	.dw $1862 ;70
+	.dw AlreadyNormalFormMessage-1 ;70
 	.dw UnusedItemUseEffect-1
 	.dw UnusedItemUseEffect-1
 	.dw UnusedItemUseEffect-1
@@ -2555,21 +2663,21 @@ ItemUseEffectFunctionTable:
 	.dw UnusedItemUseEffect-1
 	.dw UnusedItemUseEffect-1
 	.dw UnusedItemUseEffect-1
-	.dw $1D3E ;PassageArmband
-	.dw $1DC8 ;DiscountArmband
-	.dw $1D1C ;TrapArmband
-	.dw $1D2D ;Levelholder
-	.dw $1D90 ;RecoveryArmband
-	.dw $1DC8 ;RustlessArmband
-	.dw $1D97 ;CriticalArmband
-	.dw $1D9E ;RegretArmband
-	.dw $1DC8 ;BlessingArmband
-	.dw $1DAC ;PitchersArmband
-	.dw $1D89 ;HappyArmband
-	.dw $1DB3 ;LossArmband
-	.dw $1D82 ;SightArmband
-	.dw $1DBA ;CalmArmband
-	.dw $1DC1 ;IdentityArmband
+	.dw PassageArmbandUseEffect-1 ;PassageArmband
+	.dw DiscountArmbandUseEffect-1 ;DiscountArmband
+	.dw TrapArmbandUseEffect-1 ;TrapArmband
+	.dw LevelholderUseEffect-1 ;Levelholder
+	.dw RecoveryArmbandUseEffect-1 ;RecoveryArmband
+	.dw DiscountArmbandUseEffect-1 ;RustlessArmband
+	.dw CriticalArmbandUseEffect-1 ;CriticalArmband
+	.dw RegretArmbandUseEffect-1 ;RegretArmband
+	.dw DiscountArmbandUseEffect-1 ;BlessingArmband
+	.dw PitchersArmbandUseEffect-1 ;PitchersArmband
+	.dw HappyArmbandUseEffect-1 ;HappyArmband
+	.dw LossArmbandUseEffect-1 ;LossArmband
+	.dw SightArmbandUseEffect-1 ;SightArmband
+	.dw CalmArmbandUseEffect-1 ;CalmArmband
+	.dw IdentityArmbandUseEffect-1 ;IdentityArmband
 	.dw UnusedItemUseEffect-1
 	.dw UnusedItemUseEffect-1
 	.dw UnusedItemUseEffect-1
@@ -2583,9 +2691,9 @@ ItemUseEffectFunctionTable:
 	.dw UnusedItemUseEffect-1
 	.dw UnusedItemUseEffect-1
 	.dw OnigiriUseEffect-1 ;Onigiri
-	.dw $15AD ;BigOnigiri
+	.dw BigOnigiriUseEffect-1 ;BigOnigiri
 	.dw SpoiledOnigiriUseEffect-1 ;SpoiledOnigiri
-	.dw $1579 ;HugeOnigiri
+	.dw HugeOnigiriUseEffect-1 ;HugeOnigiri
 	.dw SpecialOnigiriUseEffect-1 ;SpecialOnigiri
 	.dw UnusedItemUseEffect-1 ;B3
 	.dw JarUseEffect-1 ;HoldingJar
@@ -2593,7 +2701,7 @@ ItemUseEffectFunctionTable:
 	.dw JarUseEffect-1 ;DivisionJar
 	.dw JarUseEffect-1 ;StrengtheningJar
 	.dw JarUseEffect-1 ;IdentityJar
-	.dw $28C3 ;ChiropracticJar
+	.dw ChiropracticJarUseEffect-1 ;ChiropracticJar
 	.dw JarUseEffect-1 ;StorehouseJar
 	.dw JarUseEffect-1 ;WeakeningJar
 	.dw JarUseEffect-1 ;BC
@@ -2643,242 +2751,242 @@ ItemUseEffectFunctionTable:
 
 ;c3472b
 ItemThrowEffectFunctionTable:
-	.dw $364E ;Cudgel
-	.dw $364E ;Nagamaki
-	.dw $364E ;BufusCleaver
-	.dw $364E ;Katana
-	.dw $364E ;Dragonkiller
-	.dw $364E ;Mastersword
-	.dw $364E ;KabrasBlade
-	.dw $364E ;SickleSlayer
-	.dw $364E ;Pickaxe
-	.dw $364E ;HomingBlade
-	.dw $364E ;MinotaursAxe
-	.dw $364E ;RazorWind
-	.dw $364E ;CyclopsKiller
-	.dw $364E ;DrainBuster
-	.dw $364E ;Firebrand
-	.dw $364E ;KabraReborn
-	.dw $3697 ;WoodArrow
-	.dw $36C1 ;IronArrow
-	.dw $36C7 ;SilverArrow
-	.dw $3877 ;13
-	.dw $3877 ;14
-	.dw $3877 ;15
-	.dw $3667 ;HideShield
-	.dw $3667 ;Bronzeward
-	.dw $3667 ;AntiPoisonShield
-	.dw $3667 ;WoodShield
-	.dw $3667 ;IronShield
-	.dw $3667 ;Dragonward
-	.dw $3667 ;Windshield
-	.dw $3667 ;SpikedWard
-	.dw $3667 ;ArmorWard
-	.dw $3667 ;EchoShield
-	.dw $3667 ;EvasiveShield
-	.dw $3667 ;FancyShield
-	.dw $3667 ;FragileShield
-	.dw $3667 ;BlastShield
-	.dw $3667 ;WalrusShield
-	.dw $3667 ;Stormward
-	.dw $3667 ;26
-	.dw $3667 ;27
+	.dw WeaponThrowEffect-1 ;Cudgel
+	.dw WeaponThrowEffect-1 ;Nagamaki
+	.dw WeaponThrowEffect-1 ;BufusCleaver
+	.dw WeaponThrowEffect-1 ;Katana
+	.dw WeaponThrowEffect-1 ;Dragonkiller
+	.dw WeaponThrowEffect-1 ;Mastersword
+	.dw WeaponThrowEffect-1 ;KabrasBlade
+	.dw WeaponThrowEffect-1 ;SickleSlayer
+	.dw WeaponThrowEffect-1 ;Pickaxe
+	.dw WeaponThrowEffect-1 ;HomingBlade
+	.dw WeaponThrowEffect-1 ;MinotaursAxe
+	.dw WeaponThrowEffect-1 ;RazorWind
+	.dw WeaponThrowEffect-1 ;CyclopsKiller
+	.dw WeaponThrowEffect-1 ;DrainBuster
+	.dw WeaponThrowEffect-1 ;Firebrand
+	.dw WeaponThrowEffect-1 ;KabraReborn
+	.dw WoodArrowThrowEffect-1 ;WoodArrow
+	.dw IronArrowThrowEffect-1 ;IronArrow
+	.dw IronArrowThrowEffect_Heavy-1 ;SilverArrow
+	.dw DefaultThrowEffect-1 ;13
+	.dw DefaultThrowEffect-1 ;14
+	.dw DefaultThrowEffect-1 ;15
+	.dw ShieldThrowEffect-1 ;HideShield
+	.dw ShieldThrowEffect-1 ;Bronzeward
+	.dw ShieldThrowEffect-1 ;AntiPoisonShield
+	.dw ShieldThrowEffect-1 ;WoodShield
+	.dw ShieldThrowEffect-1 ;IronShield
+	.dw ShieldThrowEffect-1 ;Dragonward
+	.dw ShieldThrowEffect-1 ;Windshield
+	.dw ShieldThrowEffect-1 ;SpikedWard
+	.dw ShieldThrowEffect-1 ;ArmorWard
+	.dw ShieldThrowEffect-1 ;EchoShield
+	.dw ShieldThrowEffect-1 ;EvasiveShield
+	.dw ShieldThrowEffect-1 ;FancyShield
+	.dw ShieldThrowEffect-1 ;FragileShield
+	.dw ShieldThrowEffect-1 ;BlastShield
+	.dw ShieldThrowEffect-1 ;WalrusShield
+	.dw ShieldThrowEffect-1 ;Stormward
+	.dw ShieldThrowEffect-1 ;26
+	.dw ShieldThrowEffect-1 ;27
 	.dw MedicinalHerbThrowEffect-1 ;MedicinalHerb
 	.dw RestorativeHerbThrowEffect-1 ;RestorativeHerb
 	.dw HappinessHerbThrowEffect-1 ;HappinessHerb
-	.dw $399B ;SightHerb
+	.dw SightHerbThrowEffect-1 ;SightHerb
 	.dw DragonHerbThrowEffect-1 ;DragonHerb
-	.dw $3877 ;VictoryHerb
-	.dw $10CF ;AngelSeed
-	.dw $3877 ;RevivalHerb
+	.dw DefaultThrowEffect-1 ;VictoryHerb
+	.dw AngelSeedThrowEffect-1 ;AngelSeed
+	.dw DefaultThrowEffect-1 ;RevivalHerb
 	.dw InvisibilityHerbThrowEffect-1 ;InvisibilityHerb
 	.dw BitterHerbThrowEffect-1 ;BitterHerb
 	.dw MisfortuneHerbThrowEffect-1 ;MisfortuneHerb
 	.dw IllLuckHerbThrowEffect-1 ;IllLuckHerb
-	.dw $0A19 ;KignyHerb
-	.dw $3877 ;AmnesiaHerb
-	.dw $3877 ;36
-	.dw $11B6 ;LifeHerb
-	.dw $3877 ;BigBellySeed
-	.dw $3877 ;LittleBellySeed
-	.dw $3877 ;TalkSeed
-	.dw $3877 ;StrengthHerb
+	.dw KignyHerbThrowEffect-1 ;KignyHerb
+	.dw DefaultThrowEffect-1 ;AmnesiaHerb
+	.dw DefaultThrowEffect-1 ;36
+	.dw LifeHerbThrowEffect-1 ;LifeHerb
+	.dw DefaultThrowEffect-1 ;BigBellySeed
+	.dw DefaultThrowEffect-1 ;LittleBellySeed
+	.dw DefaultThrowEffect-1 ;TalkSeed
+	.dw DefaultThrowEffect-1 ;StrengthHerb
 	.dw AntidoteHerbThrowEffect-1 ;AntidoteHerb
-	.dw $1309 ;PoisonHerb
-	.dw $1366 ;ConfusionHerb
-	.dw $13C3 ;SleepHerb
-	.dw $37F0 ;Weeds
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3725 ;BlessingScroll
-	.dw $37A1 ;IdentityScroll
-	.dw $3877 ;LightScroll
-	.dw $3877 ;BigpotScroll
-	.dw $3877 ;BlastwaveScroll
-	.dw $3877 ;SilenceScroll
-	.dw $3877 ;5C
-	.dw $3877 ;TrapScroll
-	.dw $3877 ;NeedScroll
-	.dw $3877 ;HasteScroll
-	.dw $3877 ;SleepScroll
-	.dw $3877 ;PowerupScroll
-	.dw $3877 ;62
-	.dw $3877 ;ExplosionScroll
-	.dw $3877 ;GreatHallScroll
-	.dw $3877 ;MonsterHouseScroll
-	.dw $3877 ;ConfusionScroll
-	.dw $395A ;RemovalScroll
+	.dw PoisonHerbThrowEffect-1 ;PoisonHerb
+	.dw ConfusionHerbThrowEffect-1 ;ConfusionHerb
+	.dw SleepHerbThrowEffect-1 ;SleepHerb
+	.dw WeedsThrowEffect-1 ;Weeds
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw BlessingScrollThrowEffect-1 ;BlessingScroll
+	.dw IdentityScrollThrowEffect-1 ;IdentityScroll
+	.dw DefaultThrowEffect-1 ;LightScroll
+	.dw DefaultThrowEffect-1 ;BigpotScroll
+	.dw DefaultThrowEffect-1 ;BlastwaveScroll
+	.dw DefaultThrowEffect-1 ;SilenceScroll
+	.dw DefaultThrowEffect-1 ;5C
+	.dw DefaultThrowEffect-1 ;TrapScroll
+	.dw DefaultThrowEffect-1 ;NeedScroll
+	.dw DefaultThrowEffect-1 ;HasteScroll
+	.dw DefaultThrowEffect-1 ;SleepScroll
+	.dw DefaultThrowEffect-1 ;PowerupScroll
+	.dw DefaultThrowEffect-1 ;62
+	.dw DefaultThrowEffect-1 ;ExplosionScroll
+	.dw DefaultThrowEffect-1 ;GreatHallScroll
+	.dw DefaultThrowEffect-1 ;MonsterHouseScroll
+	.dw DefaultThrowEffect-1 ;ConfusionScroll
+	.dw RemovalScrollThrowEffect-1 ;RemovalScroll
 	.dw BlankScrollThrowEffect-1 ;BlankScroll
-	.dw $3877 ;WanderingScroll
-	.dw $3877 ;AirBlessScroll
-	.dw $3877 ;EarthBlessScroll
-	.dw $3877 ;PlatingScroll
-	.dw $3877 ;ExtractionScroll
-	.dw $3877 ;HandsFullScroll
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $203D ;SlothStaff
-	.dw $1E0B ;KnockbackStaff
-	.dw $1F58 ;HappinessStaff
-	.dw $1F98 ;MisfortuneStaff
-	.dw $1E10 ;DoppelgangerStaff
-	.dw $1E1B ;SwitchingStaff
-	.dw $1E5D ;BufusStaff
-	.dw $1EC2 ;SkullStaff
-	.dw $2047 ;ParalysisStaff
-	.dw $206E ;PostponeStaff
-	.dw $20AF ;PainSplitStaff
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3940 ;PassageArmband
-	.dw $3940 ;DiscountArmband
-	.dw $3940 ;TrapArmband
-	.dw $3940 ;Levelholder
-	.dw $3940 ;RecoveryArmband
-	.dw $3940 ;RustlessArmband
-	.dw $3940 ;CriticalArmband
-	.dw $3940 ;RegretArmband
-	.dw $3940 ;BlessingArmband
-	.dw $3940 ;PitchersArmband
-	.dw $3940 ;HappyArmband
-	.dw $3940 ;LossArmband
-	.dw $3940 ;SightArmband
-	.dw $3940 ;CalmArmband
-	.dw $3940 ;IdentityArmband
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3891 ;Onigiri
-	.dw $3891 ;BigOnigiri
-	.dw $3891 ;SpoiledOnigiri
-	.dw $3891 ;HugeOnigiri
-	.dw $3891 ;SpecialOnigiri
-	.dw $3877 ;B3
-	.dw $36F2 ;HoldingJar
-	.dw $36CD ;HidingJar
-	.dw $36F2 ;DivisionJar
-	.dw $36F2 ;StrengtheningJar
-	.dw $377B ;IdentityJar
-	.dw $36F2 ;ChiropracticJar
-	.dw $36F2 ;StorehouseJar
-	.dw $36F2 ;WeakeningJar
-	.dw $36F2 ;BC
-	.dw $36F2 ;BottomlessJar
-	.dw $36F2 ;MonsterJar
-	.dw $36F2 ;ChangeJar
-	.dw $36F2 ;MeldingJar
-	.dw $36F2 ;WalrusJar
-	.dw $36F2 ;GaibarasJar
-	.dw $36F2 ;PointlessJar
-	.dw $3716 ;UnbreakableJar
-	.dw $36F2 ;VentingJar
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3877
-	.dw $3913 ;MonsterMeat
-	.dw $3940 ;GoldenFeather
-	.dw $3940 ;HappinessBox
-	.dw $3940 ;StrangeBox
-	.dw $3940
-	.dw $38DB ;Gitan
-	.dw $3877 ;Null
-	.dw $3877 ;Nduba
+	.dw DefaultThrowEffect-1 ;WanderingScroll
+	.dw DefaultThrowEffect-1 ;AirBlessScroll
+	.dw DefaultThrowEffect-1 ;EarthBlessScroll
+	.dw DefaultThrowEffect-1 ;PlatingScroll
+	.dw DefaultThrowEffect-1 ;ExtractionScroll
+	.dw DefaultThrowEffect-1 ;HandsFullScroll
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw SlothStaffThrowEffect-1 ;SlothStaff
+	.dw KnockbackStaffThrowEffect-1 ;KnockbackStaff
+	.dw HappinessStaffUseEffect-1 ;HappinessStaff
+	.dw MisfortuneStaffThrowEffect-1 ;MisfortuneStaff
+	.dw DoppelgangerStaffThrowEffect-1 ;DoppelgangerStaff
+	.dw SwitchingStaffThrowEffect-1 ;SwitchingStaff
+	.dw BufusStaffThrowEffect-1 ;BufusStaff
+	.dw SkullStaffThrowEffect-1 ;SkullStaff
+	.dw ParalysisStaffThrowEffect-1 ;ParalysisStaff
+	.dw PostponeStaffThrowEffect-1 ;PostponeStaff
+	.dw PainSplitStaffThrowEffect-1 ;PainSplitStaff
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw ArmbandThrowEffect-1 ;PassageArmband
+	.dw ArmbandThrowEffect-1 ;DiscountArmband
+	.dw ArmbandThrowEffect-1 ;TrapArmband
+	.dw ArmbandThrowEffect-1 ;Levelholder
+	.dw ArmbandThrowEffect-1 ;RecoveryArmband
+	.dw ArmbandThrowEffect-1 ;RustlessArmband
+	.dw ArmbandThrowEffect-1 ;CriticalArmband
+	.dw ArmbandThrowEffect-1 ;RegretArmband
+	.dw ArmbandThrowEffect-1 ;BlessingArmband
+	.dw ArmbandThrowEffect-1 ;PitchersArmband
+	.dw ArmbandThrowEffect-1 ;HappyArmband
+	.dw ArmbandThrowEffect-1 ;LossArmband
+	.dw ArmbandThrowEffect-1 ;SightArmband
+	.dw ArmbandThrowEffect-1 ;CalmArmband
+	.dw ArmbandThrowEffect-1 ;IdentityArmband
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw OnigiriThrowEffect-1 ;Onigiri
+	.dw OnigiriThrowEffect-1 ;BigOnigiri
+	.dw OnigiriThrowEffect-1 ;SpoiledOnigiri
+	.dw OnigiriThrowEffect-1 ;HugeOnigiri
+	.dw OnigiriThrowEffect-1 ;SpecialOnigiri
+	.dw DefaultThrowEffect-1 ;B3
+	.dw JarThrowEffect-1 ;HoldingJar
+	.dw SilverArrowThrowEffect-1 ;HidingJar
+	.dw JarThrowEffect-1 ;DivisionJar
+	.dw JarThrowEffect-1 ;StrengtheningJar
+	.dw IdentityJarThrowEffect-1 ;IdentityJar
+	.dw JarThrowEffect-1 ;ChiropracticJar
+	.dw JarThrowEffect-1 ;StorehouseJar
+	.dw JarThrowEffect-1 ;WeakeningJar
+	.dw JarThrowEffect-1 ;BC
+	.dw JarThrowEffect-1 ;BottomlessJar
+	.dw JarThrowEffect-1 ;MonsterJar
+	.dw JarThrowEffect-1 ;ChangeJar
+	.dw JarThrowEffect-1 ;MeldingJar
+	.dw JarThrowEffect-1 ;WalrusJar
+	.dw JarThrowEffect-1 ;GaibarasJar
+	.dw JarThrowEffect-1 ;PointlessJar
+	.dw UnbreakableJarThrowEffect-1 ;UnbreakableJar
+	.dw JarThrowEffect-1 ;VentingJar
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw DefaultThrowEffect-1
+	.dw MonsterMeatThrowEffect-1 ;MonsterMeat
+	.dw ArmbandThrowEffect-1 ;GoldenFeather
+	.dw ArmbandThrowEffect-1 ;HappinessBox
+	.dw ArmbandThrowEffect-1 ;StrangeBox
+	.dw ArmbandThrowEffect-1
+	.dw GitanThrowEffect-1 ;Gitan
+	.dw DefaultThrowEffect-1 ;Null
+	.dw DefaultThrowEffect-1 ;Nduba
 
 .include "data/dungeon_item_spawn_tables.asm"
 
-func_C353B3:
+InitFloorTileArrays:
 	php
 	sep #$20 ;A->8
 	bankswitch 0x7E
@@ -2886,17 +2994,17 @@ func_C353B3:
 	lda.w #$8080
 	ldx.w #$0A7E
 @lbl_C353C2:
-	sta.w $945F,x
-	sta.w $9EDF,x
-	sta.w $A95F,x
-	sta.w $B3DF,x
+	sta.w wTileItemSlot,x
+	sta.w wTileEntitySlot,x
+	sta.w wTileType,x
+	sta.w wTileFlags,x
 	dex
 	dex
 	bpl @lbl_C353C2
 	plp
 	rtl
 
-func_C353D4:
+ResetFloorData:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -2904,19 +3012,19 @@ func_C353D4:
 	ldy.w #$0A7F
 @lbl_C353E0:
 	lda.b #$80
-	sta.w $945F,y
-	sta.w $B3DF,y
-	lda.w $9EDF,y
+	sta.w wTileItemSlot,y
+	sta.w wTileFlags,y
+	lda.w wTileEntitySlot,y
 	bmi @lbl_C353F5
 	sta.b wTemp00
 	phy
-	jsl.l func_C306F4
+	jsl.l FreeFloorItemSlot
 	ply
 @lbl_C353F5:
 	lda.b #$80
-	sta.w $9EDF,y
+	sta.w wTileEntitySlot,y
 	lda.b #$E0
-	sta.w $A95F,y
+	sta.w wTileType,y
 	dey
 	bpl @lbl_C353E0
 	stz.w $BE5F
@@ -2954,11 +3062,11 @@ func_C353D4:
 	plp
 	rtl
 
-func_C3544E:
+InitFloorOnEntry:
 	php
 	sep #$30 ;AXY->8
-	jsl.l func_C35488
-	jsr.w func_C35561
+	jsl.l DetermineNextFloor
+	jsr.w PickRandomItemTypeForDungeon
 	asl a
 	tax
 	jumptablecall Jumptable_C3546C
@@ -2984,7 +3092,7 @@ Jumptable_C3546C:
 	.dw $596D
 	.dw $5980
 
-func_C35488:
+DetermineNextFloor:
 	php
 	sep #$30 ;AXY->8
 	jsl.l Get7ED5EC
@@ -3038,20 +3146,20 @@ func_C35488:
 	plp
 	rtl
 @lbl_C354E3:
-	lda.l DATA8_C35556,x
+	lda.l ItemTypeWeightStartIndex,x
 	sta.b wTemp00
-	lda.l DATA8_C35557,x
+	lda.l ItemTypeWeightBreakpoints,x
 	dec a
 	sta.b wTemp01
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	ldx.b wTemp00
-	lda.l DATA8_C35501,x
+	lda.l ItemTypeList,x
 	sta.l wMapNum
 	pla
 	plp
 	rtl
 
-DATA8_C35501:
+ItemTypeList:
 	.db $02                               ;C35501
 	.db $16,$17,$18,$19,$52,$53           ;C35502  
 	.db $54                               ;C35508
@@ -3069,21 +3177,21 @@ DATA8_C35501:
 	.db $60,$61,$62,$63,$64,$65,$66,$67,$68,$0E,$24,$25,$26,$27,$23,$41   ;C3553E
 	.db $42,$43,$44,$10,$28,$29,$2A,$2B   ;C3554E
 
-DATA8_C35556:
+ItemTypeWeightStartIndex:
 	.db $00                               ;C35556
 
-DATA8_C35557:
+ItemTypeWeightBreakpoints:
 	.db $0A,$14,$1E,$28,$32               ;C35557
 	.db $3C,$46,$4B,$50,$55               ;C3555C  
 
-func_C35561:
-	jsr.w func_C3575D
+PickRandomItemTypeForDungeon:
+	jsr.w GetDungeonItemTableVariant
 	tya
 	asl a
 	tax
-	lda.l UNREACH_C355BD,x
+	lda.l ItemTypeWeightTablePtrs,x
 	sta.b w00a9
-	lda.l UNREACH_C355BD+1,x
+	lda.l ItemTypeWeightTablePtrs+1,x
 	sta.b w00aa
 	restorebank
 	jsl.l Get7ED5EE
@@ -3122,22 +3230,22 @@ func_C35561:
 	sta.l $7EC179
 	rts
 
-UNREACH_C355BD:
-	.dw Data_c355d7
-	.dw Data_c355d7
-	.dw Data_c35659
-	.dw Data_c356db
-	.dw Data_c35659
-	.dw Data_c355d7
-	.dw Data_c355d7
-	.dw Data_c355d7
-	.dw Data_c355d7
-	.dw Data_c355d7
-	.dw Data_c355d7
-	.dw Data_c355d7
-	.dw Data_c355d7
+ItemTypeWeightTablePtrs:
+	.dw ItemTypeWeightsDefault
+	.dw ItemTypeWeightsDefault
+	.dw ItemTypeWeightsMidGame
+	.dw ItemTypeWeightsLateGame
+	.dw ItemTypeWeightsMidGame
+	.dw ItemTypeWeightsDefault
+	.dw ItemTypeWeightsDefault
+	.dw ItemTypeWeightsDefault
+	.dw ItemTypeWeightsDefault
+	.dw ItemTypeWeightsDefault
+	.dw ItemTypeWeightsDefault
+	.dw ItemTypeWeightsDefault
+	.dw ItemTypeWeightsDefault
 	
-Data_c355d7:
+ItemTypeWeightsDefault:
 	.db $03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03
 	.db $03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03
 	.db $03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03
@@ -3148,7 +3256,7 @@ Data_c355d7:
 	.db $03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03
 	.db $00,$01
 
-Data_c35659:
+ItemTypeWeightsMidGame:
 	.db $03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03
 	.db $03,$03,$03,$03,$03,$03,$03,$03,$04,$04,$03,$03,$03,$03,$03,$03
 	.db $05,$05,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03
@@ -3159,7 +3267,7 @@ Data_c35659:
 	.db $03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03
 	.db $00,$01
 
-Data_c356db:
+ItemTypeWeightsLateGame:
 	.db $03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03
 	.db $03,$03,$03,$03,$03,$03,$03,$03,$04,$04,$03,$03,$03,$03,$03,$03
 	.db $05,$05,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03
@@ -3170,7 +3278,7 @@ Data_c356db:
 	.db $03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03,$03
 	.db $00,$01
 
-func_C3575D:
+GetDungeonItemTableVariant:
 	ldx.b #$01
 	jsl.l GetCurrentDungeon
 	ldy.b wTemp00
@@ -3209,33 +3317,33 @@ func_C3575D:
 	lda.b wTemp00
 	cmp.b #$0A
 	bne @lbl_C357AF
-	jsl.l func_C38D18
-	jsl.l func_C38D72
+	jsl.l LoadRoomBoundsFromMapData
+	jsl.l LoadRoomDoorDataFromMapData
 	bra @lbl_C357D3
 @lbl_C357AF:
 	.db $A9,$01,$8F,$8E,$BE,$7E,$A9,$03,$8F,$66,$BE,$7E,$A9,$03,$8F,$70   ;C357AF
 	.db $BE,$7E,$A9,$3C,$8F,$7A,$BE,$7E,$A9,$26,$8F,$84,$BE,$7E,$A9,$00   ;C357BF  
 	.db $8F,$66,$C1,$7E                   ;C357CF  
 @lbl_C357D3:
-	jsl.l func_C38AD6
-	jsl.l func_C38B2F
-	jsl.l func_C38C9F
-	jsr.w func_C38BAE
-	jsr.w func_C38C70
-	jsl.l func_C3893E
+	jsl.l ClearDungeonTileMap
+	jsl.l LoadDungeonRoomLayout
+	jsl.l PlaceFixedFloorItems
+	jsr.w SetupNaokiGaibaraEventRoom
+	jsr.w SetRoomPickupRestrictions
+	jsl.l PlaceShirenStartingItem
 	jsl.l func_C62B37
 	lda.b wTemp00
 	beq @lbl_C35807
-	jsl.l func_C38981
-	jsl.l func_C389AA
+	jsl.l SpawnFloorMonsterEntities
+	jsl.l SpawnFloorItems
 	jsl.l Get7ED5EC
 	lda.b wTemp00
 	cmp.b #$10
 	beq @lbl_C35807
-	jsl.l func_C38A3C
+	jsl.l SpawnDungeonMonsters
 @lbl_C35807:
 	rts
-	jsl.l func_C38AD6
+	jsl.l ClearDungeonTileMap
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
 	lda.b #$00
@@ -3248,48 +3356,48 @@ func_C3575D:
 	adc.b wTemp00
 	tax
 	phx
-	jsl.l func_C38FB7
+	jsl.l LoadFixedRoomLayout
 	plx
 	phx
-	jsl.l func_C38DD4
+	jsl.l PlaceFixedTerrainTiles
 	plx
 	phx
-	jsl.l func_C38E07
+	jsl.l PlaceFixedMapItems
 	plx
 	phx
-	jsl.l func_C38ECC
+	jsl.l PlaceFixedStaircase
 	plx
 	phx
-	jsl.l func_C38F01
+	jsl.l PlaceFixedTraps
 	plx
-	jsl.l func_C38F34
-	jsl.l func_C371AB
-	jsl.l func_C3893E
+	jsl.l PlaceFixedCharacters
+	jsl.l BuildDoorCandidatesAllRooms
+	jsl.l PlaceShirenStartingItem
 	rts
 
 	;C3584A
 	rts
 	jsl.l func_C2CAF4
-	jsl.l func_C39021
-	jsl.l func_C38AD6
-	jsr.w func_C36FF0
-	jsl.l func_C371AB
-	jsr.w func_C3737C
-	jsr.w func_C39382
-	jsr.w func_C39AAA
-	jsr.w func_C38011
-	jsr.w func_C39C97
-	jsr.w func_C39D8C
-	jsr.w func_C39FB2
-	jsl.l func_C38981
-	jsl.l func_C389AA
-	jsl.l func_C389DB
-	jsl.l func_C3D219
-	jsl.l func_C38A3C
-	jsl.l func_C391FA
-	jsl.l func_C3893E
-	jsr.w func_C399F2
-	jsr.w func_C39E1D
+	jsl.l BackupTileMapAndShrinkRooms
+	jsl.l ClearDungeonTileMap
+	jsr.w GenerateRoomCorridor
+	jsl.l BuildDoorCandidatesAllRooms
+	jsr.w GenerateSpecialCorridors
+	jsr.w SelectAndPlaceStaircaseRoom
+	jsr.w SetupMonsterHouseRoom
+	jsr.w SpawnBoulderClusters
+	jsr.w SetupLargeRoom
+	jsr.w SetupWaterRoom
+	jsr.w SetupShopRoom
+	jsl.l SpawnFloorMonsterEntities
+	jsl.l SpawnFloorItems
+	jsl.l PlaceStaircaseItem
+	jsl.l SpawnSpecialFloorItems
+	jsl.l SpawnDungeonMonsters
+	jsl.l SpawnGuardNPCs
+	jsl.l PlaceShirenStartingItem
+	jsr.w PopulateFloor
+	jsr.w SpawnRoomItems
 	rts
 
 	jsr $858F                               ;C35896
@@ -3372,7 +3480,11 @@ func_C3575D:
 	jsr $99F2                               ;C359AB
 	rts                                     ;C359AE
 
-func_C359AF:
+; Retrieves item data from the item data tables.
+; Input: wTemp00 = packed item ID (high byte in upper 2 bits, low byte in lower 6 bits)
+; Output: wTemp00 = byte from wTileItemSlot, wTemp01 = byte from wTileEntitySlot, wTemp02 = byte from wTileType
+; These tables contain item stats/attributes indexed by packed item ID.
+GetItemData:
 	php
 	rep #$30 ;AXY->16
 	lda.b wTemp00
@@ -3382,16 +3494,16 @@ func_C359AF:
 	and.b #$C0
 	ora.b wTemp00
 	tax
-	lda.l $7E945F,x
+	lda.l wTileItemSlot,x
 	sta.b wTemp00
-	lda.l $7E9EDF,x
+	lda.l wTileEntitySlot,x
 	sta.b wTemp01
-	lda.l $7EA95F,x
+	lda.l wTileType,x
 	sta.b wTemp02
 	plp
 	rtl
 
-func_C359D1:
+ScanAdjacentTiles:
 	php
 	sep #$30 ;AXY->8
 	bankswitch 0x7E
@@ -3416,10 +3528,10 @@ func_C359D1:
 	adc.l DATA8_C35A26,x
 	tay
 	sep #$20 ;A->8
-	lda.w $945F,y
+	lda.w wTileItemSlot,y
 	asl a
 	ror.b wTemp00
-	lda.w $9EDF,y
+	lda.w wTileEntitySlot,y
 	sec
 	bpl @lbl_C35A11
 	cmp.b #$E0
@@ -3431,7 +3543,7 @@ func_C359D1:
 	clc
 @lbl_C35A11:
 	ror.b wTemp01
-	lda.w $A95F,y
+	lda.w wTileType,y
 	asl a
 	ror.b wTemp02
 	inx
@@ -3449,7 +3561,7 @@ DATA8_C35A26:
 	.db $01,$00,$C1,$FF,$C0,$FF,$BF,$FF
 	.db $FF,$FF,$3F,$00,$40,$00
 
-func_C35A44:
+FindFreeItemSlot:
 	php
 	sep #$20 ;A->8
 	bankswitch 0x7E
@@ -3458,14 +3570,14 @@ func_C35A44:
 	sta.w $BE65
 	rep #$30 ;AXY->16
 	ldy.w #$0980
-func_C35A59:
+FindFreeItemSlotInner:
 	tya
-func_C35A5A:
+FindItemSlotWrap:
 	sec
 	sbc.w #$0040
 	tay
 	lda.w $B41A,y
-	bpl func_C35A59
+	bpl FindFreeItemSlotInner
 	cpy.w #$0100
 	bcs @lbl_C35A70
 	ldy.w $BE62
@@ -3477,7 +3589,7 @@ func_C35A5A:
 	iny
 	iny
 
-func_C35A73:
+FindOccupiedItemSlot:
 	dey
 	tyx
 	rep #$20 ;A->16
@@ -3485,17 +3597,17 @@ func_C35A73:
 @lbl_C35A7A:
 	inx
 	inx
-	bit.w $B3DF,x
+	bit.w wTileFlags,x
 	beq @lbl_C35A7A
 	txy
 	sep #$20 ;A->8
-	lda.w $B3DF,y
+	lda.w wTileFlags,y
 	bmi @lbl_C35A8D
 	iny
-	lda.w $B3DF,y
+	lda.w wTileFlags,y
 @lbl_C35A8D:
 	and.b #$7F
-	sta.w $B3DF,y
+	sta.w wTileFlags,y
 	tya
 	and.b #$3F
 	cmp.b #$3C
@@ -3503,24 +3615,24 @@ func_C35A73:
 	rep #$20 ;A->16
 	tya
 	and.w #$FFC0
-	bra func_C35A5A
+	bra FindItemSlotWrap
 @lbl_C35AA1:
 	sep #$20 ;A->8
-	lda.w $9EDF,y
+	lda.w wTileEntitySlot,y
 	sta.b wTemp01
 	phy
-	jsl.l func_C3079A
+	jsl.l AdjustItemSlotFlags
 	ply
-	lda.w $945F,y
+	lda.w wTileItemSlot,y
 	sta.b wTemp00
 	bmi @lbl_C35ABB
 	phy
 	jsl.l func_C20E47
 	ply
 @lbl_C35ABB:
-	lda.w $A95F,y
+	lda.w wTileType,y
 	sta.b wTemp02
-	lda.w $B3DF,y
+	lda.w wTileFlags,y
 	and.b #$01
 	bne @lbl_C35AE5
 	lda.w $BE5F
@@ -3541,17 +3653,17 @@ func_C35A73:
 @lbl_C35AE5:
 	lda.w $BE65
 	beq @lbl_C35AED
-	jmp.w func_C35B68
+	jmp.w PickUpItemAtTileOrClear
 @lbl_C35AED:
 	lda.w $BE60
 	ora.l $7E8983
-	bne func_C35B4D
+	bne PickUpItemAtTile
 	lda.b wTemp00
-	bmi func_C35B4D
+	bmi PickUpItemAtTile
 	lda.w $BE64
 	bit.b #$90
 	bne @lbl_C35B1D
-	lda.w $A95F,y
+	lda.w wTileType,y
 	bmi @lbl_C35B1D
 	bit.b #$40
 	beq @lbl_C35B0C
@@ -3573,7 +3685,7 @@ func_C35A73:
 	sbc.w $BE62
 	ldx.w #$0010
 @lbl_C35B27:
-	cmp.l DATA8_C35DFB,x
+	cmp.l SurroundingTileOffsets,x
 	beq @lbl_C35B33
 	dex
 	dex
@@ -3586,27 +3698,27 @@ func_C35A73:
 	ply
 	sep #$20 ;A->8
 	lda.b wTemp06
-	beq func_C35B4D
+	beq PickUpItemAtTile
 @lbl_C35B41:
 	sep #$20 ;A->8
 	lda.b wTemp00
 	cmp.b #$13
-	beq func_C35B4D
+	beq PickUpItemAtTile
 	lda.b #$80
 	sta.b wTemp00
-func_C35B4D:
+PickUpItemAtTile:
 	sty.b wTemp04
 	jsl.l func_80E704
-	lda.w $9EDF,y
+	lda.w wTileEntitySlot,y
 	sta.b wTemp00
-	lda.w $A95F,y
+	lda.w wTileType,y
 	sta.b wTemp02
 	phy
 	call_savebank func_80B830
 	ply
-	jmp.w func_C35A73
+	jmp.w FindOccupiedItemSlot
 
-func_C35B68:
+PickUpItemAtTileOrClear:
 	sep #$20 ;A->8
 	lda.b wTemp00
 	cmp.b #$13
@@ -3616,9 +3728,9 @@ func_C35B68:
 @lbl_C35B74:
 	lda.b #$80
 	sta.b wTemp01
-	bra func_C35B4D
+	bra PickUpItemAtTile
 
-func_C35B7A:
+PlaceSecondaryItemOnTile:
 	php
 	rep #$30 ;AXY->16
 	lda.b wTemp00
@@ -3633,14 +3745,14 @@ func_C35B7A:
 	ora.b wTemp00
 	tax
 	lda.b wTemp02
-	sta.l $7E945F,x
-	lda.l $7EB3DF,x
+	sta.l wTileItemSlot,x
+	lda.l wTileFlags,x
 	ora.b #$80
-	sta.l $7EB3DF,x
+	sta.l wTileFlags,x
 	plp
 	rtl
 
-func_C35BA2:
+PlaceItemWithCoords:
 	php
 	rep #$30 ;AXY->16
 	lda.b wTemp00
@@ -3654,15 +3766,15 @@ func_C35BA2:
 	txa
 	ora.b wTemp00
 	tax
-	lda.l $7EB3DF,x
+	lda.l wTileFlags,x
 	ora.b #$80
-	sta.l $7EB3DF,x
+	sta.l wTileFlags,x
 	lda.b wTemp02
-	sta.l $7E9EDF,x
+	sta.l wTileEntitySlot,x
 	bmi @lbl_C35BE2
 	lda.b #$00
 	xba
-	lda.l $7EA95F,x
+	lda.l wTileType,x
 	cmp.b #$0A
 	bcs @lbl_C35BE2
 	tax
@@ -3674,7 +3786,7 @@ func_C35BA2:
 	plp
 	rtl
 
-func_C35BE4:
+GetItemCoords:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -3698,7 +3810,7 @@ func_C35BE4:
 	lsr a
 	tax
 	sep #$20 ;A->8
-	lda.l $7E9EDF,x
+	lda.l wTileEntitySlot,x
 	bmi @lbl_C35C12
 	plp
 	rtl
@@ -3719,10 +3831,10 @@ func_C35BE4:
 	inc a
 	tay
 @lbl_C35C2D:
-	lda.w $9EDF,y
+	lda.w wTileEntitySlot,y
 	bpl @lbl_C35C5C
 	iny
-	lda.w $A95F,y
+	lda.w wTileType,y
 	bpl @lbl_C35C2D
 	rep #$20 ;A->16
 	tya
@@ -3733,7 +3845,7 @@ func_C35BE4:
 	ora.w $BE66,x
 	inc a
 	tay
-	lda.w $A95F,y
+	lda.w wTileType,y
 	bpl @lbl_C35C2D
 	lda.b #$FF
 	sta.w $C152,x
@@ -3758,7 +3870,7 @@ func_C35BE4:
 	plp                                     ;C35C70
 	rtl                                     ;C35C71
 
-func_C35C72:
+PlaceItemOnTile:
 	php
 	rep #$30 ;AXY->16
 	lda.b wTemp00
@@ -3773,14 +3885,14 @@ func_C35C72:
 	ora.b wTemp00
 	tax
 	lda.b wTemp02
-	sta.l $7EA95F,x
-	lda.l $7EB3DF,x
+	sta.l wTileType,x
+	lda.l wTileFlags,x
 	ora.b #$80
-	sta.l $7EB3DF,x
+	sta.l wTileFlags,x
 	plp
 	rtl
 
-func_C35C9A:
+PlaceShirenOnFloor:
 	php
 	sep #$20 ;A->8
 	bankswitch 0x7E
@@ -3802,7 +3914,7 @@ func_C35C9A:
 	stx.w $BE62
 	lda.w $BE65
 	beq @lbl_C35CCD
-	jmp.w func_C35DE5
+	jmp.w FinalizeItemPickup
 @lbl_C35CCD:
 	lda.b #$80
 	sta.w $B3DB,y
@@ -3816,18 +3928,18 @@ func_C35C9A:
 	rep #$20 ;A->16
 	lda.w $BE62
 	clc
-	adc.l DATA8_C35DFB,x
+	adc.l SurroundingTileOffsets,x
 	tay
 	sep #$20 ;A->8
-	lda.w $A95F,y
+	lda.w wTileType,y
 	and.b #$F0
 	cmp.b #$C0
 	beq @lbl_C35D01
-	lda.w $B3DF,y
+	lda.w wTileFlags,y
 	ora.b #$81
-	sta.w $B3DF,y
+	sta.w wTileFlags,y
 @lbl_C35D01:
-	lda.w $945F,y
+	lda.w wTileItemSlot,y
 	bmi @lbl_C35D10
 	sta.b wTemp00
 	phx
@@ -3847,7 +3959,7 @@ func_C35C9A:
 	adc $C35DFB,x                           ;C35D1F
 	tay                                     ;C35D23
 	sep #$20                                ;C35D24
-	lda $A95F,y                             ;C35D26
+	lda.w wTileType,y                             ;C35D26
 	and #$F0                                ;C35D29
 	cmp #$C0                                ;C35D2B
 	bne @lbl_C35D47                         ;C35D2D
@@ -3865,10 +3977,10 @@ func_C35C9A:
 	ply                                     ;C35D45
 	plx                                     ;C35D46
 @lbl_C35D47:
-	lda $B3DF,y                             ;C35D47
+	lda.w wTileFlags,y                             ;C35D47
 	ora #$81                                ;C35D4A
-	sta $B3DF,y                             ;C35D4C
-	lda $945F,y                             ;C35D4F
+	sta.w wTileFlags,y                             ;C35D4C
+	lda.w wTileItemSlot,y                             ;C35D4F
 	bmi @lbl_C35D5E                         ;C35D52
 	sta $00                                 ;C35D54
 	phx                                     ;C35D56
@@ -3884,7 +3996,7 @@ func_C35C9A:
 	lda.w $BE64
 	pha
 	ldy.w $BE62
-	lda.w $A95F,y
+	lda.w wTileType,y
 	sta.w $BE64
 	cmp.b wTemp01,s
 	beq @lbl_C35DE2
@@ -3897,13 +4009,13 @@ func_C35C9A:
 @lbl_C35D7F:
 	pha
 	sta.b wTemp00
-	jsl.l func_C366B7
+	jsl.l GetTileTypeFlags
 	lda.b wTemp00
 	bit.b #$01
 	bne @lbl_C35D94
 	lda.b wTemp01,s
 	sta.b wTemp00
-	jsl.l func_C36BDF
+	jsl.l MarkRoomDirty
 @lbl_C35D94:
 	lda.l $7EC175
 	cmp.b wTemp01,s
@@ -3921,15 +4033,15 @@ func_C35C9A:
 @lbl_C35DB6:
 	stz.b wTemp01
 	jsl.l func_C62AEE
-	jsl.l func_C35EF8
+	jsl.l ScanItemVisibility
 	lda.b #$00
 	xba
 	lda.l $7EC176
 	asl a
 	tax
-	lda.l DATA8_C35E0D,x
+	lda.l SpawnRoomMessageId1,x
 	sta.b wTemp00
-	lda.l DATA8_C35E0E,x
+	lda.l SpawnRoomMessageId2,x
 	sta.b wTemp01
 	jsl.l DisplayMessage
 @lbl_C35DD9:
@@ -3937,51 +4049,51 @@ func_C35C9A:
 	bra @lbl_C35DE2
 @lbl_C35DDC:
 	sta.b wTemp00
-	jsl.l func_C3701A
+	jsl.l ClearRoomItems
 @lbl_C35DE2:
 	pla
 	plp
 	rtl
 
-func_C35DE5:
+FinalizeItemPickup:
 	sep #$20 ;A->8
 	lda.b #$80
 	sta.w $B41B,y
-	lda.w $B3DF,x
+	lda.w wTileFlags,x
 	ora.b #$81
-	sta.w $B3DF,x
+	sta.w wTileFlags,x
 	lda.b #$FF
 	sta.w $BE64
 	plp
 	rtl
 
-DATA8_C35DFB:
+SurroundingTileOffsets:
 	.db $BF,$FF,$C0,$FF,$C1,$FF,$FF,$FF,$00,$00,$01,$00,$3F,$00,$40,$00
 	.db $41,$00
 
-DATA8_C35E0D:
+SpawnRoomMessageId1:
 	.db $3A
 
-DATA8_C35E0E:
+SpawnRoomMessageId2:
 	.db $01
 	.db $3B,$01,$3C,$01,$3D,$01,$3E,$01
 	.db $3F,$01,$40,$01
 
-func_C35E1B:
+MarkAllEntitiesDirty:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
 	bankswitch 0x7E
 	ldy.w #$0A7F
 @lbl_C35E27:
-	lda.w $A95F,y
+	lda.w wTileType,y
 	bpl @lbl_C35E41
 	cmp.b #$B0
 	beq @lbl_C35E41
 	lda.b #$80
-	cmp.w $9EDF,y
+	cmp.w wTileEntitySlot,y
 	bne @lbl_C35E41
-	cmp.w $945F,y
+	cmp.w wTileItemSlot,y
 	bne @lbl_C35E41
 @lbl_C35E3C:
 	dey
@@ -3989,9 +4101,9 @@ func_C35E1B:
 	plp
 	rtl
 @lbl_C35E41:
-	lda.w $B3DF,y
+	lda.w wTileFlags,y
 	ora.b #$80
-	sta.w $B3DF,y
+	sta.w wTileFlags,y
 	rep #$20 ;A->16
 	tya
 	sep #$20 ;A->8
@@ -4002,7 +4114,7 @@ func_C35E1B:
 	lda.b #$80
 	bra @lbl_C35E3C
 
-func_C35E5A:
+RefreshEntityTileLayer:
 	php
 	sep #$30 ;AXY->8
 	bankswitch 0x7E
@@ -4017,14 +4129,14 @@ func_C35E5A:
 	bmi @lbl_C35E79
 	stx.b wTemp00
 	phx
-	jsl.l func_C366D5
+	jsl.l ClearTileOccupied
 	plx
 	bra @lbl_C35E6C
 @lbl_C35E79:
 	rep #$10 ;XY->16
 	ldy.w #$0A7F
 @lbl_C35E7E:
-	lda.w $A95F,y
+	lda.w wTileType,y
 	bit.b #$80
 	beq @lbl_C35EA8
 	and.b #$F0
@@ -4043,13 +4155,13 @@ func_C35E5A:
 	ply                                     ;C35EA0
 	.db $80,$05   ;C35EA1
 	lda #$10                                ;C35EA3
-	sta $A95F,y                             ;C35EA5
+	sta.w wTileType,y                             ;C35EA5
 @lbl_C35EA8:
-	lda.w $B3DF,y
+	lda.w wTileFlags,y
 	bit.b #$01
 	bne @lbl_C35EC1
 	ora.b #$80
-	sta.w $B3DF,y
+	sta.w wTileFlags,y
 	rep #$20 ;A->16
 	tya
 	sep #$20 ;A->8
@@ -4067,15 +4179,15 @@ func_C35E5A:
 	rep #$10                                ;C35ECB
 	ldy #$097F                              ;C35ECD
 @lbl_C35ED0:
-	lda $A95F,y                             ;C35ED0
+	lda.w wTileType,y                             ;C35ED0
 	and #$F0                                ;C35ED3
 	cmp #$C0                                ;C35ED5
 	bne @lbl_C35EF3                         ;C35ED7
 	lda #$10                                ;C35ED9
-	sta $A95F,y                             ;C35EDB
-	lda $B3DF,y                             ;C35EDE
+	sta.w wTileType,y                             ;C35EDB
+	lda.w wTileFlags,y                             ;C35EDE
 	ora #$80                                ;C35EE1
-	sta $B3DF,y                             ;C35EE3
+	sta.w wTileFlags,y                             ;C35EE3
 	rep #$20                                ;C35EE6
 	tya                                     ;C35EE8
 	sep #$20                                ;C35EE9
@@ -4089,7 +4201,7 @@ func_C35E5A:
 	plp                                     ;C35EF6
 	rtl                                     ;C35EF7
 
-func_C35EF8:
+ScanItemVisibility:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -4099,13 +4211,13 @@ func_C35EF8:
 	inc.w $BE60
 	ldy.w #$0A7F
 @lbl_C35F0C:
-	lda.w $945F,y
+	lda.w wTileItemSlot,y
 	bpl @lbl_C35F56
-	lda.w $9EDF,y
+	lda.w wTileEntitySlot,y
 	bmi @lbl_C35F26
 	sta.b wTemp00
 	phy
-	call_savebank func_C30710
+	call_savebank GetItemDisplayInfo
 	ply
 	lda.b wTemp01
 	cmp.b #$E7
@@ -4117,13 +4229,13 @@ func_C35EF8:
 	plp
 	rtl
 @lbl_C35F2B:
-	lda $9EDF,y                             ;C35F2B
+	lda.w wTileEntitySlot,y                             ;C35F2B
 	sta $00                                 ;C35F2E
 	phy                                     ;C35F30
 	jsl $C306F4                             ;C35F31
 	ply                                     ;C35F35
 	lda #$80                                ;C35F36
-	sta $9EDF,y                             ;C35F38
+	sta.w wTileEntitySlot,y                             ;C35F38
 	jsl $C36BCE                             ;C35F3B
 	lda #$06                                ;C35F3F
 	sta $02                                 ;C35F41
@@ -4136,11 +4248,11 @@ func_C35EF8:
 	ply                                     ;C35F4E
 	lda $00                                 ;C35F4F
 	.db $30,$03   ;C35F51
-	sta $945F,y                             ;C35F53
+	sta.w wTileItemSlot,y                             ;C35F53
 @lbl_C35F56:
-	lda.w $B3DF,y
+	lda.w wTileFlags,y
 	ora.b #$80
-	sta.w $B3DF,y
+	sta.w wTileFlags,y
 	rep #$20 ;A->16
 	tya
 	sep #$20 ;A->8
@@ -4150,7 +4262,7 @@ func_C35EF8:
 	sta.w $B41B,x
 	bra @lbl_C35F26
 
-func_C35F6D:
+MarkAllItemsDirty:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -4160,7 +4272,7 @@ func_C35F6D:
 	inc.w $BE61
 	ldy.w #$0A7F
 @lbl_C35F81:
-	lda.w $9EDF,y
+	lda.w wTileEntitySlot,y
 	bpl @lbl_C35F8B
 @lbl_C35F86:
 	dey
@@ -4169,9 +4281,9 @@ func_C35F6D:
 	plp
 	rtl
 @lbl_C35F8B:
-	lda.w $B3DF,y
+	lda.w wTileFlags,y
 	ora.b #$80
-	sta.w $B3DF,y
+	sta.w wTileFlags,y
 	rep #$20 ;A->16
 	tya
 	sep #$20 ;A->8
@@ -4181,29 +4293,29 @@ func_C35F6D:
 	sta.w $B41B,x
 	bra @lbl_C35F86
 
-func_C35FA2:
+MarkItemsForPickup:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
 	bankswitch 0x7E
 	ldy.w #$0A7F
 @lbl_C35FAE:
-	lda.w $9EDF,y
+	lda.w wTileEntitySlot,y
 	cmp.b #$80
 	beq @lbl_C35FC3
 	and.b #$C0
 	cmp.b #$C0
 	bne @lbl_C35FC3
-	lda.w $9EDF,y
+	lda.w wTileEntitySlot,y
 	ora.b #$20
-	sta.w $9EDF,y
+	sta.w wTileEntitySlot,y
 @lbl_C35FC3:
 	dey
 	bpl @lbl_C35FAE
 	plp
 	rtl
 
-func_C35FC8:
+GetFloorStateFlags:
 	php
 	sep #$20 ;A->8
 	lda.l $7EBE5F
@@ -4217,7 +4329,7 @@ func_C35FC8:
 	plp
 	rtl
 
-func_C35FE7:
+FillTileRow:
 	php
 	sep #$30 ;AXY->8
 	lda.b wTemp02
@@ -4245,7 +4357,7 @@ func_C35FE7:
 	lda.b wTemp01,s
 	sta.b wTemp02
 	phx
-	jsl.l func_C36CBE
+	jsl.l SetTileTypeAtCoord
 	plx
 	inx
 	bra @lbl_C36003
@@ -4255,7 +4367,7 @@ func_C35FE7:
 	plp
 	rtl
 
-func_C3601D:
+FillTileColumn:
 	php
 	sep #$30 ;AXY->8
 	lda.b wTemp02
@@ -4283,7 +4395,7 @@ func_C3601D:
 	lda.b wTemp01,s
 	sta.b wTemp02
 	phx
-	jsl.l func_C36CBE
+	jsl.l SetTileTypeAtCoord
 	plx
 	iny
 	bra @lbl_C36039
@@ -4293,7 +4405,7 @@ func_C3601D:
 	plp
 	rtl
 
-func_C36053:
+FillTileRect:
 	php
 	sep #$30 ;AXY->8
 	lda.b wTemp01
@@ -4322,7 +4434,7 @@ func_C36053:
 	lda.b wTemp01,s
 	sta.b wTemp02
 	phx
-	jsl.l func_C36CBE
+	jsl.l SetTileTypeAtCoord
 	plx
 	iny
 	bra @lbl_C3606E
@@ -4337,7 +4449,7 @@ func_C36053:
 	plp
 	rtl
 
-func_C3608D:
+FindRandomEmptyTileNoChar:
 	php
 	rep #$10 ;XY->16
 @lbl_C36090:
@@ -4355,7 +4467,7 @@ func_C3608D:
 	bcs @lbl_C36092
 	tax
 	sep #$20 ;A->8
-	lda.l $7EA95F,x
+	lda.l wTileType,x
 	bit.b #$A0
 	bne @lbl_C36090
 	bit.b #$10
@@ -4363,21 +4475,21 @@ func_C3608D:
 	and.b #$0F
 	sta.b wTemp00
 	phx
-	jsl.l func_C366B7
+	jsl.l GetTileTypeFlags
 	plx
 	lda.b wTemp00
 	bit.b #$20
 	bne @lbl_C36090
 @lbl_C360C8:
-	lda.l $7E945F,x
+	lda.l wTileItemSlot,x
 	cmp.b #$80
 	bne @lbl_C36090
 	txy
-	jsl.l func_C36BCE
+	jsl.l TileIndexToCoords
 	plp
 	rtl
 
-func_C360D7:
+FindRandomEmptyTileNoItem:
 	php
 	rep #$10 ;XY->16
 	ldy.w #$0064
@@ -4402,7 +4514,7 @@ func_C360D7:
 	bcs @lbl_C360E7
 	tax
 	sep #$20 ;A->8
-	lda.l $7EA95F,x
+	lda.l wTileType,x
 	bit.b #$A0
 	bne @lbl_C360DD
 	bit.b #$10
@@ -4411,18 +4523,18 @@ func_C360D7:
 	sta.b wTemp00
 	phx
 	phy
-	jsl.l func_C366B7
+	jsl.l GetTileTypeFlags
 	ply
 	plx
 	lda.b wTemp00
 	bit.b #$20
 	bne @lbl_C360DD
 @lbl_C3611F:
-	lda.l $7E945F,x
+	lda.l wTileItemSlot,x
 	cmp.b #$80
 	bne @lbl_C360DD
 	txy
-	jsl.l func_C36BCE
+	jsl.l TileIndexToCoords
 	plp
 	rtl
 @lbl_C3612E:
@@ -4513,10 +4625,10 @@ func_C360D7:
 	adc $C361FB,x                           ;C361CC
 	tay                                     ;C361D0
 	sep #$20                                ;C361D1
-	lda $A95F,y                             ;C361D3
+	lda.w wTileType,y                             ;C361D3
 	bit #$90                                ;C361D6
 	bne @lbl_C361DF                         ;C361D8
-	lda $945F,y                             ;C361DA
+	lda.w wTileItemSlot,y                             ;C361DA
 	bmi @lbl_C361EB                         ;C361DD
 @lbl_C361DF:
 	dex                                     ;C361DF
@@ -4542,7 +4654,7 @@ func_C360D7:
 	rtl                                     ;C361FA
 	.db $01,$00,$FF,$FF,$40,$00,$C0,$FF   ;C361FB
 
-func_C36203:
+FindRandomEmptyTile:
 	php
 	rep #$10 ;XY->16
 @lbl_C36206:
@@ -4560,7 +4672,7 @@ func_C36203:
 	bcs @lbl_C36208
 	tax
 	sep #$20 ;A->8
-	lda.l $7EA95F,x
+	lda.l wTileType,x
 	bit.b #$A0
 	bne @lbl_C36206
 	bit.b #$10
@@ -4568,17 +4680,17 @@ func_C36203:
 	and.b #$0F
 	sta.b wTemp00
 	phx
-	jsl.l func_C366B7
+	jsl.l GetTileTypeFlags
 	plx
 	lda.b wTemp00
 	bit.b #$20
 	bne @lbl_C36206
 @lbl_C3623E:
-	lda.l $7E9EDF,x
+	lda.l wTileEntitySlot,x
 	cmp.b #$80
 	bne @lbl_C36206
 	txy
-	jsl.l func_C36BCE
+	jsl.l TileIndexToCoords
 	plp
 	rtl
 	php                                     ;C3624D
@@ -4612,7 +4724,7 @@ func_C36203:
 	plp                                     ;C36285
 	rtl                                     ;C36286
 
-func_C36287:
+FindRandomEmptyTileForNPC:
 	php
 	rep #$10 ;XY->16
 	ldy.w #$0064
@@ -4637,7 +4749,7 @@ func_C36287:
 	bcs @lbl_C36297
 	tax
 	sep #$20 ;A->8
-	lda.l $7EA95F,x
+	lda.l wTileType,x
 	bit.b #$80
 	bne @lbl_C3628D
 	bit.b #$10
@@ -4645,14 +4757,14 @@ func_C36287:
 	cmp.b #$10
 	bne @lbl_C3628D
 @lbl_C362C1:
-	lda.l $7E9EDF,x
+	lda.l wTileEntitySlot,x
 	cmp.b #$C0
 	bcs @lbl_C362CD
 	cmp.b #$80
 	bne @lbl_C3628D
 @lbl_C362CD:
 	txy
-	jsl.l func_C36BCE
+	jsl.l TileIndexToCoords
 	plp
 	rtl
 @lbl_C362D4:
@@ -4693,14 +4805,14 @@ func_C36287:
 	jsl $C36BCE                             ;C36315
 	rts                                     ;C36319
 
-func_C3631A:
+FindEmptyAdjacentTileForItem:
 	php
 	sep #$30 ;AXY->8
 	lda.b wTemp01
 	pha
 	lda.b wTemp00
 	pha
-	jsr.w func_C3635A
+	jsr.w IsTileValidForItem
 	lda.b wTemp00
 	bpl @lbl_C36356
 @lbl_C3632A:
@@ -4714,13 +4826,13 @@ func_C3631A:
 @lbl_C36339:
 	lda.b wTemp01,s
 	clc
-	adc.l DATA8_C363EC,x
+	adc.l TileAdjacentDeltaX,x
 	sta.b wTemp00
 	lda.b wTemp02,s
 	clc
-	adc.l DATA8_C363FE,x
+	adc.l TileAdjacentDeltaY,x
 	sta.b wTemp01
-	jsr.w func_C3635A
+	jsr.w IsTileValidForItem
 	lda.b wTemp00
 	bpl @lbl_C36356
 	inx
@@ -4732,13 +4844,13 @@ func_C3631A:
 	plp
 	rtl
 
-func_C3635A:
+IsTileValidForItem:
 	lda.b wTemp00
 	sta.b wTemp04
 	lda.b wTemp01
 	sta.b wTemp06
 	phx
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	plx
 	lda.b wTemp02
 	bit.b #$80
@@ -4757,14 +4869,14 @@ func_C3635A:
 	sta.b wTemp01
 	rts
 
-func_C36382:
+FindEmptyAdjacentTileForNPC:
 	php
 	sep #$30 ;AXY->8
 	lda.b wTemp01
 	pha
 	lda.b wTemp00
 	pha
-	jsr.w func_C363C2
+	jsr.w IsTileValidForNPC
 	lda.b wTemp00
 	bpl @lbl_C363BE
 @lbl_C36392:
@@ -4778,13 +4890,13 @@ func_C36382:
 @lbl_C363A1:
 	lda.b wTemp01,s
 	clc
-	adc.l DATA8_C363EC,x
+	adc.l TileAdjacentDeltaX,x
 	sta.b wTemp00
 	lda.b wTemp02,s
 	clc
-	adc.l DATA8_C363FE,x
+	adc.l TileAdjacentDeltaY,x
 	sta.b wTemp01
-	jsr.w func_C363C2
+	jsr.w IsTileValidForNPC
 	lda.b wTemp00
 	bpl @lbl_C363BE
 	inx
@@ -4796,13 +4908,13 @@ func_C36382:
 	plp
 	rtl
 
-func_C363C2:
+IsTileValidForNPC:
 	lda.b wTemp00
 	sta.b wTemp04
 	lda.b wTemp01
 	sta.b wTemp06
 	phx
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	plx
 	lda.b wTemp02
 	bit.b #$80
@@ -4821,31 +4933,31 @@ func_C363C2:
 	sta.b wTemp01
 	rts
 
-DATA8_C363EC:
+TileAdjacentDeltaX:
 	.db $FF,$00,$01,$FF,$00,$01,$FF,$00   ;C363EC
 	.db $01,$FF,$00                       ;C363F4
 	.db $01,$FF,$00,$01,$FF,$00,$01       ;C363F7  
 
-DATA8_C363FE:
+TileAdjacentDeltaY:
 	.db $FF,$FF,$FF,$00,$00,$00,$01,$01   ;C363FE
 	.db $01,$FF,$FF                       ;C36406
 	.db $FF,$00,$00,$00,$01,$01,$01       ;C36409  
 
-func_C36410:
+FindEmptyTileNearCoord:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
-	jsl.l func_C36BBD
+	jsl.l CoordsToTileIndex
 	phy
 	tyx
-	lda.l $7EA95F,x
+	lda.l wTileType,x
 	pha
 	rep #$20 ;A->16
 	lda.b wTemp02
 	and.w #$00FF
 	ora.w #$1400
 	sta.b wTemp00
-	jsl.l func_C3E3CB
+	jsl.l MultiplyPackedBytesToWord
 	lda.b wTemp00
 	pha
 	ldy.w #$0012
@@ -4855,7 +4967,7 @@ func_C36410:
 	clc
 	adc.b wTemp01,s
 	tax
-	lda.l UNREACH_C36488,x
+	lda.l StaircaseCandidateOffsets,x
 	clc
 	adc.b wTemp04,s
 	tax
@@ -4867,11 +4979,11 @@ func_C36410:
 	cmp.w #$0980
 	bcs @lbl_C3646A
 	sep #$20 ;A->8
-	lda.l $7EA95F,x
+	lda.l wTileType,x
 	bmi @lbl_C3646A
 	cmp.b wTemp03,s
 	bne @lbl_C3646A
-	lda.l $7E9EDF,x
+	lda.l wTileEntitySlot,x
 	cmp.b #$80
 	beq @lbl_C36478
 @lbl_C3646A:
@@ -4885,7 +4997,7 @@ func_C36410:
 	bra @lbl_C3647D
 @lbl_C36478:
 	txy
-	jsl.l func_C36BCE
+	jsl.l TileIndexToCoords
 @lbl_C3647D:
 	rep #$20 ;A->16
 	pla
@@ -4896,7 +5008,7 @@ func_C36410:
 	plp
 	rtl
 
-UNREACH_C36488:
+StaircaseCandidateOffsets:
 	.db $04,$00,$83,$00,$83,$FF,$43,$00   ;C36488  
 	.db $C3,$FF,$03,$00                   ;C36490  
 	.db $42,$00,$C2,$FF,$02,$00,$01,$00,$C4,$FF,$01,$FF,$83,$FF,$42,$FF   ;C36494
@@ -4914,7 +5026,7 @@ UNREACH_C36488:
 	.db $08,$E2,$30,$A0,$00,$A6,$00,$BF,$66,$C1,$7E,$89,$08,$F0,$01,$C8   ;C36528
 	.db $84,$00,$28,$6B                   ;C36538  
 
-func_C3653C:
+GetRoomDoorCount:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -4923,7 +5035,7 @@ func_C3653C:
 	plp
 	rtl
 
-func_C36549:
+GetDoorCandidate:
 	php
 	sep #$30 ;AXY->8
 	lda.b wTemp00
@@ -4946,14 +5058,14 @@ func_C36549:
 	plb                                     ;C3656A
 	ldy #$097F                              ;C3656B
 @lbl_C3656E:
-	lda $945F,y                             ;C3656E
+	lda.w wTileItemSlot,y                             ;C3656E
 	bmi @lbl_C3659D                         ;C36571
 	cmp #$13                                ;C36573
 	beq @lbl_C3659D                         ;C36575
 	sta $00                                 ;C36577
 	phy                                     ;C36579
 	phb                                     ;C3657A
-	jsl $C20F35                             ;C3657B
+	jsl HandleCharacterDeath                             ;C3657B
 	plb                                     ;C3657F
 	ply                                     ;C36580
 	jsl $C36BCE                             ;C36581
@@ -4983,7 +5095,7 @@ func_C36549:
 	plb                                     ;C365AA
 	ldy #$097F                              ;C365AB
 @lbl_C365AE:
-	lda $9EDF,y                             ;C365AE
+	lda.w wTileEntitySlot,y                             ;C365AE
 	bmi @lbl_C365EB                         ;C365B1
 	sta $00                                 ;C365B3
 	phy                                     ;C365B5
@@ -5019,7 +5131,7 @@ func_C36549:
 	rtl                                     ;C365EF
 .INDEX 8
 
-func_C365F0:
+GetStaircaseCoords:
 	php
 	sep #$30 ;AXY->8
 	bankswitch 0x7E
@@ -5031,7 +5143,7 @@ func_C365F0:
 	lda.w $C148,x
 	sta.b wTemp01
 	phx
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	plx
 	lda.b wTemp01
 	bmi @lbl_C3662F
@@ -5065,10 +5177,10 @@ func_C365F0:
 	inc a
 	tay
 @lbl_C36641:
-	lda.w $9EDF,y
+	lda.w wTileEntitySlot,y
 	bpl @lbl_C36670
 	iny
-	lda.w $A95F,y
+	lda.w wTileType,y
 	bpl @lbl_C36641
 	rep #$20 ;A->16
 	tya
@@ -5079,7 +5191,7 @@ func_C365F0:
 	ora.w $BE66,x
 	inc a
 	tay
-	lda.w $A95F,y
+	lda.w wTileType,y
 	bpl @lbl_C36641
 @lbl_C36662:
 	lda.b #$FF
@@ -5116,7 +5228,7 @@ func_C365F0:
 	plp                                     ;C36696
 	rtl                                     ;C36697
 
-func_C36698:
+GetRoomBounds:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -5131,7 +5243,11 @@ func_C36698:
 	plp
 	rtl
 
-func_C366B7:
+; Returns the tile-type flags byte for tile type index wTemp00.
+; $7EC166 is a 16-entry table indexed by tile type nibble (0-15).
+; Bit $01 = a character is currently standing on this tile type.
+; Bit $20 = tile type has item-pickup restriction (e.g. inside a jar).
+GetTileTypeFlags:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -5140,7 +5256,9 @@ func_C366B7:
 	plp
 	rtl
 
-func_C366C4:
+; Sets bit $01 in the tile-type flags for tile type index wTemp00.
+; Called when a character moves onto a tile to mark it as occupied.
+SetTileOccupied:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -5150,7 +5268,9 @@ func_C366C4:
 	plp
 	rtl
 
-func_C366D5:
+; Clears bit $01 in the tile-type flags for tile type index wTemp00.
+; If the tile type matches the currently tracked tile ($7EBE64), also calls MarkRoomDirty.
+ClearTileOccupied:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -5162,17 +5282,17 @@ func_C366D5:
 	lda.l $7EBE64
 	cmp.b wTemp00
 	bne @lbl_C366F4
-	jsl.l func_C36BDF
+	jsl.l MarkRoomDirty
 @lbl_C366F4:
 	plp
 	rtl
 
-func_C366F6:
+SetupSingleRoomFloor:
 	php 
 	sep #$30 ;AXY->8
 	lda.b #$01
 	sta.b wTemp00
-	jsr.w func_C38895
+	jsr.w SetupFixedSingleRoom
 	lda.b #$7E
 	pha
 	plb
@@ -5194,12 +5314,12 @@ func_C366F6:
 	plb
 	lda.b #$FF
 	sta.w $BE64
-	jsl.l func_C35C9A
-	jsl.l func_C35E1B
+	jsl.l PlaceShirenOnFloor
+	jsl.l MarkAllEntitiesDirty
 	plp 
 	rtl
 
-func_C36734:
+ResetFloorVisibility:
 	php 
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -5211,25 +5331,25 @@ func_C36734:
 	stz.w $BE61
 	ldx.w #$0A7F
 @lbl_C36749:
-	lda.w $9EDF,x
+	lda.w wTileEntitySlot,x
 	and.b #$C0
 	cmp.b #$C0
 	bne @lbl_C3675A
-	lda.w $9EDF,x
+	lda.w wTileEntitySlot,x
 	and.b #$DF
-	sta.w $9EDF,x
+	sta.w wTileEntitySlot,x
 @lbl_C3675A:
 	lda.b #$80
-	sta.w $B3DF,x
+	sta.w wTileFlags,x
 	dex 
 	bpl @lbl_C36749
 	lda.b #$FF
 	sta.w $BE64
-	jsl.l func_C35C9A
+	jsl.l PlaceShirenOnFloor
 	plp 
 	rtl
 
-func_C3676D:
+SetTargetTile:
 	php 
 	rep #$20 ;A->16
 	lda.b wTemp00
@@ -5238,7 +5358,7 @@ func_C3676D:
 	rtl
 
 
-func_C36778:
+GetTargetTile:
 	php
 	rep #$20 ;A->16
 	lda.l $7EC172
@@ -5246,14 +5366,14 @@ func_C36778:
 	plp
 	rtl
 
-func_C36783:
+FindAdjacentTileForNPCForced:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
 	ldy.b wTemp01
 	phx
 	phy
-	jsl.l func_C36382
+	jsl.l FindEmptyAdjacentTileForNPC
 	ply
 	plx
 	lda.b wTemp00
@@ -5346,7 +5466,7 @@ func_C36783:
 	plp                                     ;C36827
 	rtl                                     ;C36828
 
-func_C36829:
+PlaceDoorOnTile:
 	php
 	rep #$30 ;AXY->16
 	lda.b wTemp02
@@ -5354,7 +5474,7 @@ func_C36829:
 	bcs @lbl_C3687A
 	ldx.b wTemp00
 	phx
-	jsl.l func_C39067
+	jsl.l FindRoomWithDoor
 	plx
 	txa
 	sep #$20 ;A->8
@@ -5381,13 +5501,13 @@ func_C36829:
 	bankswitch 0x7E
 	lda.b wTemp03
 	bne @lbl_C3686D
-	jsr.w func_C3687E
+	jsr.w CheckAndPlaceDoorTile
 	bra @lbl_C36870
 @lbl_C3686D:
-	jsr.w func_C3689A
+	jsr.w CheckAndPlaceStairsOrDoor
 @lbl_C36870:
 	pha
-	jsl.l func_C371AB
+	jsl.l BuildDoorCandidatesAllRooms
 	pla
 	sta.b wTemp00
 	plp
@@ -5397,78 +5517,78 @@ func_C36829:
 	plp
 	rtl
 
-func_C3687E:
-	lda.w $A95F,y
+CheckAndPlaceDoorTile:
+	lda.w wTileType,y
 	and.b #$F0
 	cmp.b #$C0
-	bne func_C36897
+	bne DoorPlaceFailure
 	lda.b wTemp04
-	bne func_C36891
-func_C3688B:
-	jsr.w func_C368BE
+	bne PlaceDoorAlternate
+PlaceDoorHere:
+	jsr.w ScanForDoorCandidateTile
 	lda.b #$01
 	rts
-func_C36891:
+PlaceDoorAlternate:
 	jsr $68ED                               ;C36891
 	lda #$01                                ;C36894
 	rts                                     ;C36896
-func_C36897:
+DoorPlaceFailure:
 	lda.b #$00
 	rts
 
-func_C3689A:
-	lda.w $A95F,y
+CheckAndPlaceStairsOrDoor:
+	lda.w wTileType,y
 	and.b #$F0
 	cmp.b #$C0
-	beq func_C3688B
+	beq PlaceDoorHere
 	bit.b #$40
 	beq @lbl_C368BB
-	lda.w $A95F,y
+	lda.w wTileType,y
 	bit.b #$10
 	bne @lbl_C368BB
 	stx.b wTemp00
 	lda.b #$30
 	sta.b wTemp02
-	jsl.l func_C35C72
+	jsl.l PlaceItemOnTile
 	lda.b #$02
 	rts
 @lbl_C368BB:
 	lda.b #$03
 	rts
 
-func_C368BE:
+ScanForDoorCandidateTile:
 	lda.b #$00
 	xba
 	lda.b wTemp02
 	tax
 @lbl_C368C4:
 	phx
-	jsr.w func_C368ED
+	jsr.w ConvertCandidateToDoor
 	plx
 	rep #$20 ;A->16
 	tya
 	clc
-	adc.l UNREACH_C368E5,x
+	adc.l TileCardinalOffsets,x
 	tay
 	sep #$20 ;A->8
-	lda.w $A95F,y
+	lda.w wTileType,y
 	and.b #$F0
 	cmp.b #$C0
 	bne @lbl_C368E4
-	lda.w $A95F,y
+	lda.w wTileType,y
 	bit.b #$02
 	beq @lbl_C368C4
 @lbl_C368E4:
 	rts
 
-UNREACH_C368E5:
+TileCardinalOffsets:
 	.db $01,$00,$C0,$FF,$FF,$FF,$40,$00   ;C368E5  
 
-func_C368ED:
-	lda.w $A95F,y
+ConvertCandidateToDoor:
+	lda.w wTileType,y
 	bit.b #$01
 	beq @lbl_C368FF
-	jsr.w func_C36928
+	jsr.w FindAdjacentRoomIndex
 	lda.b wTemp00
 	bmi @lbl_C368FF
 	ora.b #$70
@@ -5476,8 +5596,8 @@ func_C368ED:
 @lbl_C368FF:
 	lda.b #$30
 @lbl_C36901:
-	sta.w $A95F,y
-	lda.w $945F,y
+	sta.w wTileType,y
+	lda.w wTileItemSlot,y
 	bmi @lbl_C36911
 ;C36909  
 	sta $00                                 ;C36909
@@ -5492,22 +5612,22 @@ func_C368ED:
 	sep #$20 ;A->8
 	lda.b #$80
 	sta.w $B41B,x
-	lda.w $B3DF,y
+	lda.w wTileFlags,y
 	ora.b #$81
-	sta.w $B3DF,y
+	sta.w wTileFlags,y
 	rts
 
-func_C36928:
+FindAdjacentRoomIndex:
 	phy
 	ldx.w #$0006
 @lbl_C3692C:
 	rep #$20 ;A->16
 	lda.b wTemp01,s
 	clc
-	adc.l UNREACH_C368E5,x
+	adc.l TileCardinalOffsets,x
 	tay
 	sep #$20 ;A->8
-	lda.w $A95F,y
+	lda.w wTileType,y
 	bit.b #$90
 	bne @lbl_C36943
 	and.b #$0F
@@ -5542,13 +5662,13 @@ func_C36928:
 	pha                                     ;C3696A
 	stx $00                                 ;C3696B
 	phx                                     ;C3696D
-	jsl $C21128                             ;C3696E
+	jsl.l GetCharacterStats                             ;C3696E
 	plx                                     ;C36972
 	lda $05                                 ;C36973
 	pha                                     ;C36975
 	stx $00                                 ;C36976
 	phy                                     ;C36978
-	jsl $C20F35                             ;C36979
+	jsl HandleCharacterDeath                             ;C36979
 	ply                                     ;C3697D
 	sty $00                                 ;C3697E
 	jsl $C210AC                             ;C36980
@@ -5659,7 +5779,7 @@ func_C36928:
 	sty $00                                 ;C36A41
 	phx                                     ;C36A43
 	phy                                     ;C36A44
-	jsl $C20F35                             ;C36A45
+	jsl HandleCharacterDeath                             ;C36A45
 	ply                                     ;C36A49
 	plx                                     ;C36A4A
 @lbl_C36A4B:
@@ -5851,7 +5971,7 @@ func_C36928:
 	rts                                     ;C36BAF
 .INDEX 16
 
-func_C36BB0:
+GetMapNum:
 	php
 	sep #$20 ;A->8
 	lda.l wMapNum
@@ -5860,7 +5980,7 @@ func_C36BB0:
 	plp
 	rtl
 
-func_C36BBD:
+CoordsToTileIndex:
 	php
 	sep #$20 ;A->8
 	lda.b wTemp01
@@ -5875,7 +5995,7 @@ func_C36BBD:
 	plp
 	rtl
 
-func_C36BCE:
+TileIndexToCoords:
 	php
 	rep #$30 ;AXY->16
 	tya
@@ -5890,7 +6010,7 @@ func_C36BCE:
 	plp
 	rtl
 
-func_C36BDF:
+MarkRoomDirty:
 	php
 	sep #$30 ;AXY->8
 	bankswitch 0x7E
@@ -5911,13 +6031,13 @@ func_C36BDF:
 	ora.w $BE66,y
 	tax
 @lbl_C36C01:
-	lda.w $B3DF,x
+	lda.w wTileFlags,x
 	bit.b #$01
 	bne @lbl_C36C0D
 	ora.b #$81
-	sta.w $B3DF,x
+	sta.w wTileFlags,x
 @lbl_C36C0D:
-	lda.w $945F,x
+	lda.w wTileItemSlot,x
 	bmi @lbl_C36C1E
 	sta.b wTemp00
 	phx
@@ -6018,7 +6138,7 @@ func_C36BDF:
 	rts                                     ;C36CA4
 .INDEX 16
 
-func_C36CA5:
+GetTileTypeAtCoord:
 	php
 	sep #$20 ;A->8
 	lda.b wTemp01
@@ -6031,12 +6151,12 @@ func_C36CA5:
 	lsr a
 	tax
 	sep #$20 ;A->8
-	lda.l $7EA95F,x
+	lda.l wTileType,x
 	sta.b wTemp00
 	plp
 	rtl
 
-func_C36CBE:
+SetTileTypeAtCoord:
 	php
 	sep #$20 ;A->8
 	lda.b wTemp01
@@ -6050,11 +6170,11 @@ func_C36CBE:
 	tax
 	sep #$20 ;A->8
 	lda.b wTemp02
-	sta.l $7EA95F,x
+	sta.l wTileType,x
 	plp
 	rtl
 
-func_C36CD7:
+PushRoomCandidateToList:
 	ldx.w $BE8F
 	lda.b wTemp00
 	sta.w $BE90,x
@@ -6063,7 +6183,7 @@ func_C36CD7:
 	inc.w $BE8F
 	rts
 
-func_C36CE8:
+PopRandomRoomCandidateFromList:
 	lda.w $BE8F
 	bne @lbl_C36CEF
 	clc
@@ -6074,7 +6194,7 @@ func_C36CE8:
 	lda.w $BE8F
 	dec a
 	sta.b wTemp01
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	ldx.b wTemp00
 	ldy.w $BE8F
 	lda.w $BE90,x
@@ -6088,7 +6208,7 @@ func_C36CE8:
 	sec 
 	rts
 
-func_C36D1D:
+SetupShopFloorTiles:
 	php 
 	sep #$30 ;AXY->8
 	bankswitch 0x7E
@@ -6119,7 +6239,7 @@ func_C36D1D:
 	sta.b wTemp03
 	lda.b #$10
 	sta.b wTemp04
-	jsl.l func_C36053
+	jsl.l FillTileRect
 	lda.b $04,s
 	inc a
 	tax
@@ -6132,14 +6252,14 @@ func_C36D1D:
 	dec a
 	sta.b wTemp01
 	phx
-	jsr.w func_C36CD7
+	jsr.w PushRoomCandidateToList
 	plx
 	stx.b wTemp00
 	lda.b $01,s
 	inc a
 	sta.b wTemp01
 	phx
-	jsr.w func_C36CD7
+	jsr.w PushRoomCandidateToList
 	plx
 	inx 
 	inx 
@@ -6156,12 +6276,12 @@ func_C36D1D:
 	dec a
 	sta.b wTemp00
 	sty.b wTemp01
-	jsr.w func_C36CD7
+	jsr.w PushRoomCandidateToList
 	lda.b $02,s
 	inc a
 	sta.b wTemp00
 	sty.b wTemp01
-	jsr.w func_C36CD7
+	jsr.w PushRoomCandidateToList
 	iny 
 	iny 
 	bra @lbl_C36D86
@@ -6171,7 +6291,7 @@ func_C36D1D:
 	pla
 	pla
 @lbl_C36DA7:
-	jsr.w func_C36CE8
+	jsr.w PopRandomRoomCandidateFromList
 	bcs @lbl_C36DAE
 	plp 
 	rts
@@ -6179,7 +6299,7 @@ func_C36D1D:
 	stz.b wTemp00
 	lda.b #$17
 	sta.b wTemp01
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	lda.b wTemp00
 	asl a
 	asl a
@@ -6191,19 +6311,19 @@ func_C36D1D:
 	clc 
 	adc.b $01,s
 	tax 
-	lda.l Data_c36e38+8,x
+	lda.l CorridorDirectionPermutations,x
 	tax 
 	lda.w $C090
 	clc 
-	adc.l Data_c36e38,x
+	adc.l CorridorDirectionDeltaX,x
 	sta.w $C092
 	sta.b wTemp00
 	lda.w $C091
 	clc 
-	adc.l Data_c36e38+4,x
+	adc.l CorridorDirectionDeltaY,x
 	sta.w $C093
 	sta.b wTemp01
-	jsl.l func_C36CA5
+	jsl.l GetTileTypeAtCoord
 	lda.b wTemp00
 	cmp.b #$10
 	bne @lbl_C36DF1
@@ -6227,7 +6347,7 @@ func_C36D1D:
 	sta.b wTemp01
 	lda.b #$E0
 	sta.b wTemp02
-	jsl.l func_C36CBE
+	jsl.l SetTileTypeAtCoord
 	ldx.w $C092
 	stx.w $C090
 	stx.b wTemp00
@@ -6237,17 +6357,25 @@ func_C36D1D:
 	lda.b #$E0
 	sta.b wTemp02
 	phx
-	jsl.l func_C36CBE
+	jsl.l SetTileTypeAtCoord
 	plx
 	stx.b wTemp00
 	sty.b wTemp01
-	jsr.w func_C36CD7
+	jsr.w PushRoomCandidateToList
 	brl @lbl_C36DAE
 
 	
-Data_c36e38:
+; Signed X-deltas for 4 cardinal directions used in corridor carving: E, S, W, N.  ;C36E38
+CorridorDirectionDeltaX:
 	.db $02,$00,$FE,$00
+
+; Signed Y-deltas for 4 cardinal directions used in corridor carving: E, S, W, N.  ;C36E3C
+CorridorDirectionDeltaY:
 	.db $00,$02,$00,$FE
+
+; 24 permutations of {0,1,2,3}, each group of 4 bytes = one shuffled direction order.
+; Indexed by GetRandomInRange(0,$17)*4 to pick a random corridor-search order.      ;C36E40
+CorridorDirectionPermutations:
 	.db $00,$01,$02,$03,$00,$01,$03
 	.db $02,$00,$02,$01,$03,$00,$02,$03,$01,$00,$03,$01,$02,$00,$03,$02
 	.db $01,$01,$00,$02,$03,$01,$00,$03,$02,$01,$02,$00,$03,$01,$02,$03
@@ -6256,7 +6384,7 @@ Data_c36e38:
 	.db $00,$03,$00,$01,$02,$03,$00,$02,$01,$03,$01,$00,$02,$03,$01,$02
 	.db $00,$03,$02,$00,$01,$03,$02,$01,$00
 
-func_C36EA0:
+FindLargeRoomForCorridor:
 	php
 	sep #$30 ;AXY->8
 	lda.l $7EBE8E
@@ -6284,7 +6412,7 @@ func_C36EA0:
 	plp
 	rts
 
-func_C36ED9:
+PlaceRoomDoors:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -6314,7 +6442,7 @@ func_C36ED9:
 	bcs @lbl_C36F33
 	stx.b wTemp00
 	sty.b wTemp01
-	jsr.w func_C3A114
+	jsr.w IsTilePassable
 	lda.b wTemp00
 	beq @lbl_C36F30
 	stx.b wTemp00
@@ -6322,7 +6450,7 @@ func_C36ED9:
 	lda.b #$30
 	sta.b wTemp02
 	phx
-	jsl.l func_C36CBE
+	jsl.l SetTileTypeAtCoord
 	plx
 	stx.b wTemp00
 	sty.b wTemp01
@@ -6330,7 +6458,7 @@ func_C36ED9:
 	lda.b #$10
 	sta.b wTemp02
 	phx
-	jsl.l func_C36CBE
+	jsl.l SetTileTypeAtCoord
 	plx
 @lbl_C36F30:
 	inx
@@ -6350,7 +6478,7 @@ func_C36ED9:
 	bcs @lbl_C36F70
 	stx.b wTemp00
 	sty.b wTemp01
-	jsr.w func_C3A114
+	jsr.w IsTilePassable
 	lda.b wTemp00
 	beq @lbl_C36F6D
 	stx.b wTemp00
@@ -6358,7 +6486,7 @@ func_C36ED9:
 	lda.b #$30
 	sta.b wTemp02
 	phx
-	jsl.l func_C36CBE
+	jsl.l SetTileTypeAtCoord
 	plx
 	stx.b wTemp00
 	sty.b wTemp01
@@ -6366,7 +6494,7 @@ func_C36ED9:
 	lda.b #$10
 	sta.b wTemp02
 	phx
-	jsl.l func_C36CBE
+	jsl.l SetTileTypeAtCoord
 	plx
 @lbl_C36F6D:
 	inx
@@ -6386,7 +6514,7 @@ func_C36ED9:
 	bcs @lbl_C36FAD
 	stx.b wTemp00
 	sty.b wTemp01
-	jsr.w func_C3A114
+	jsr.w IsTilePassable
 	lda.b wTemp00
 	beq @lbl_C36FAA
 	stx.b wTemp00
@@ -6394,7 +6522,7 @@ func_C36ED9:
 	lda.b #$30
 	sta.b wTemp02
 	phx
-	jsl.l func_C36CBE
+	jsl.l SetTileTypeAtCoord
 	plx
 	stx.b wTemp00
 	inc.b $00
@@ -6402,7 +6530,7 @@ func_C36ED9:
 	lda.b #$10
 	sta.b wTemp02
 	phx
-	jsl.l func_C36CBE
+	jsl.l SetTileTypeAtCoord
 	plx
 @lbl_C36FAA:
 	iny
@@ -6422,7 +6550,7 @@ func_C36ED9:
 	bcs @lbl_C36FEA
 	stx.b wTemp00
 	sty.b wTemp01
-	jsr.w func_C3A114
+	jsr.w IsTilePassable
 	lda.b wTemp00
 	beq @lbl_C36FE7
 	stx.b wTemp00
@@ -6430,7 +6558,7 @@ func_C36ED9:
 	lda.b #$30
 	sta.b wTemp02
 	phx
-	jsl.l func_C36CBE
+	jsl.l SetTileTypeAtCoord
 	plx
 	stx.b wTemp00
 	dec.b $00
@@ -6438,7 +6566,7 @@ func_C36ED9:
 	lda.b #$10
 	sta.b wTemp02
 	phx
-	jsl.l func_C36CBE
+	jsl.l SetTileTypeAtCoord
 	plx
 @lbl_C36FE7:
 	iny
@@ -6451,7 +6579,7 @@ func_C36ED9:
 	plp
 	rts
 
-func_C36FF0:
+GenerateRoomCorridor:
 	php
 	sep #$20 ;A->8
 	jsl.l GetCurrentDungeon
@@ -6463,7 +6591,7 @@ func_C36FF0:
 	cmp.b #$11
 	bcc @lbl_C37018
 @lbl_C37007:
-	jsr.w func_C36EA0
+	jsr.w FindLargeRoomForCorridor
 	lda.b wTemp00
 	bmi @lbl_C37018
 	pha                                     ;C3700E
@@ -6475,7 +6603,7 @@ func_C36FF0:
 	plp
 	rts
 
-func_C3701A:
+ClearRoomItems:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -6502,7 +6630,7 @@ func_C3701A:
 	stx.b wTemp00
 	sty.b wTemp01
 	phx
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	plx
 	lda.b wTemp00
 	bmi @lbl_C37058
@@ -6571,7 +6699,7 @@ func_C3701A:
 	plp                                     ;C370AA
 	rtl                                     ;C370AB
 
-func_C370AC:
+ScanRoomDoorCandidates:
 	php
 	sep #$30 ;AXY->8
 	lda.b wTemp00
@@ -6603,7 +6731,7 @@ func_C370AC:
 	bcs @lbl_C37101
 	stx.b wTemp00
 	sty.b wTemp01
-	jsr.w func_C3A114
+	jsr.w IsTilePassable
 	lda.b wTemp00
 	beq @lbl_C370FE
 	inc.b wTemp06
@@ -6633,7 +6761,7 @@ func_C370AC:
 	bcs @lbl_C37133
 	stx.b wTemp00
 	sty.b wTemp01
-	jsr.w func_C3A114
+	jsr.w IsTilePassable
 	lda.b wTemp00
 	beq @lbl_C37130
 	inc.b wTemp06
@@ -6663,7 +6791,7 @@ func_C370AC:
 	bcs @lbl_C37165
 	stx.b wTemp00
 	sty.b wTemp01
-	jsr.w func_C3A114
+	jsr.w IsTilePassable
 	lda.b wTemp00
 	beq @lbl_C37162
 	inc.b wTemp06
@@ -6693,7 +6821,7 @@ func_C370AC:
 	bcs @lbl_C37197
 	stx.b wTemp00
 	sty.b wTemp01
-	jsr.w func_C3A114
+	jsr.w IsTilePassable
 	lda.b wTemp00
 	beq @lbl_C37194
 	inc.b wTemp06
@@ -6726,7 +6854,7 @@ func_C370AC:
 	plp
 	rtl
 
-func_C371AB:
+BuildDoorCandidatesAllRooms:
 	php
 	sep #$30 ;AXY->8
 	lda.l $7EBE8E
@@ -6735,14 +6863,14 @@ func_C371AB:
 @lbl_C371B4:
 	stx.b wTemp00
 	phx
-	jsl.l func_C370AC
+	jsl.l ScanRoomDoorCandidates
 	plx
 	dex
 	bpl @lbl_C371B4
 	plp
 	rtl
 
-func_C371C1:
+FindEmptyTileInRoom:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -6767,7 +6895,7 @@ func_C371C1:
 	sta.b wTemp01
 	lda.b wTemp06
 	pha
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	pla
 	sta.b wTemp06
 	ldx.b wTemp00
@@ -6778,7 +6906,7 @@ func_C371C1:
 	lda.b wTemp06
 	pha
 	phx
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	plx
 	pla
 	sta.b wTemp06
@@ -6786,7 +6914,7 @@ func_C371C1:
 	stx.b wTemp00
 	sty.b wTemp01
 	phx
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	plx
 	lda.b wTemp02
 	bit.b #$80
@@ -6809,7 +6937,7 @@ func_C371C1:
 	plp
 	rtl
 
-func_C37234:
+FindEmptyTileInRoom2:
 	php
 	sep #$30 ;AXY->8
 	ldx.b wTemp00
@@ -6834,7 +6962,7 @@ func_C37234:
 	sta.b wTemp01
 	lda.b wTemp06
 	pha
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	pla
 	sta.b wTemp06
 	ldx.b wTemp00
@@ -6845,7 +6973,7 @@ func_C37234:
 	lda.b wTemp06
 	pha
 	phx
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	plx
 	pla
 	sta.b wTemp06
@@ -6853,7 +6981,7 @@ func_C37234:
 	stx.b wTemp00
 	sty.b wTemp01
 	phx
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	plx
 	lda.b wTemp02
 	bit.b #$80
@@ -6885,7 +7013,7 @@ func_C37234:
 	sta $7EC170                             ;C372B5
 @lbl_C372B9:
 	tyx                                     ;C372B9
-	lda $C372FB,x                           ;C372BA
+	lda $C372FB,x                           ;C372BA (ActiveCompanionSlotList)
 	bmi @lbl_C372F2                         ;C372BE
 	tax                                     ;C372C0
 	lda $7E89C3,x                           ;C372C1
@@ -6916,6 +7044,11 @@ func_C37234:
 @lbl_C372F8:
 	iny                                     ;C372F8
 	bra @lbl_C372B9                         ;C372F9
+
+; Character data slot indices for up to 8 companion candidates, $FF-terminated.
+; Each byte is loaded as x to index wChar arrays ($7E89C3 etc.) to find an active
+; companion. The 4 slots are listed twice to allow wrap-around searching.     ;C372FB
+ActiveCompanionSlotList:
 	ora ($12),y                             ;C372FB
 	ora ($14,s),y                           ;C372FD
 	and ($22,x)                             ;C372FF
@@ -6980,7 +7113,7 @@ func_C37234:
 	plp                                     ;C3737A
 	rts                                     ;C3737B
 
-func_C3737C:
+GenerateSpecialCorridors:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -8637,7 +8770,7 @@ func_C3737C:
 	rts                                     ;C37FC6
 	.db $FF,$00,$01,$FE,$FF,$00,$01,$02,$FD,$FE,$FF,$00,$01,$02,$03,$FD,$FE,$FF,$00,$01,$02,$03,$FD,$FE,$FF,$00,$01,$02,$03,$FE,$FF,$00,$01,$02,$FF,$00,$01,$FD,$FD,$FD,$FE,$FE,$FE,$FE,$FE,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$00,$00,$00,$00,$00,$00,$00,$01,$01,$01,$01,$01,$01,$01,$02,$02,$02,$02,$02,$03,$03,$03   ;C37FC7
 
-func_C38011:
+SpawnBoulderClusters:
 	php
 	sep #$30 ;AXY->8
 	jsl.l GetCurrentDungeon
@@ -8709,21 +8842,21 @@ func_C38011:
 	pla
 	sta.b wTemp00
 	rep #$10 ;XY->16
-	jsl.l func_C36BBD
+	jsl.l CoordsToTileIndex
 	phy
 	ldx.w #$0901
 	stx.b wTemp00
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	stz.b wTemp01
 	ldx.b wTemp00
 	stz.b wTemp00
-	lda.l UNREACH_C380F1,x
+	lda.l BoulderClusterSizeTable,x
 	sta.b wTemp01
 	phx
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	plx
 	stx.b wTemp01
-	jsl.l func_C3E3CB
+	jsl.l MultiplyPackedBytesToWord
 	asl.b wTemp00
 	stz.b wTemp01
 	rep #$20 ;A->16
@@ -8731,7 +8864,7 @@ func_C38011:
 	dec a
 	asl a
 	tax
-	lda.l UNREACH_C380FB,x
+	lda.l BoulderClusterShapePtrs,x
 	clc
 	adc.b wTemp00
 	sta.b w00a9
@@ -8745,7 +8878,7 @@ func_C38011:
 	tax
 	sep #$20 ;A->8
 	lda.b #$B0
-	sta.l $7EA95F,x
+	sta.l wTileType,x
 	dey
 	dey
 	bpl @lbl_C380DA
@@ -8753,10 +8886,10 @@ func_C38011:
 	plp
 	rts
 
-UNREACH_C380F1:
+BoulderClusterSizeTable:
 	.db $00,$08,$0B,$15,$23,$13,$07,$07,$03,$00
 
-UNREACH_C380FB:
+BoulderClusterShapePtrs:
 	.dw Data_c3810d
 	.dw Data_c3811f
 	.dw Data_c3814f
@@ -8879,7 +9012,7 @@ Data_c384cb:
 	.dw $FFBF,$FFC0,$FFC1,$FFFF,$0000,$0001,$003F,$0040,$0041
 
 
-func_C384DD:
+DrawRoomBorderPartA:
 	phx
 	phy
 	php 
@@ -8902,7 +9035,7 @@ func_C384DD:
 	sta.b wTemp02
 	lda.b #$30
 	sta.b wTemp03
-	jsl.l func_C35FE7
+	jsl.l FillTileRow
 	lda.b $04,s
 	sta.b wTemp00
 	lda.b $02,s
@@ -8911,7 +9044,7 @@ func_C384DD:
 	sta.b wTemp02
 	lda.b #$30
 	sta.b wTemp03
-	jsl.l func_C3601D
+	jsl.l FillTileColumn
 	lda.b $04,s
 	sta.b wTemp00
 	lda.b $01,s
@@ -8920,7 +9053,7 @@ func_C384DD:
 	sta.b wTemp02
 	lda.b #$30
 	sta.b wTemp03
-	jsl.l func_C35FE7
+	jsl.l FillTileRow
 	pla
 	pla
 	pla
@@ -8931,7 +9064,7 @@ func_C384DD:
 	plx
 	rts
 
-func_C38536:
+DrawRoomBorderPartB:
 	phx
 	phy
 	php 
@@ -8954,7 +9087,7 @@ func_C38536:
 	sta.b wTemp02
 	lda.b #$30
 	sta.b wTemp03
-	jsl.l func_C3601D
+	jsl.l FillTileColumn
 	lda.b $05,s
 	sta.b wTemp00
 	lda.b $02,s
@@ -8963,7 +9096,7 @@ func_C38536:
 	sta.b wTemp02
 	lda.b #$30
 	sta.b wTemp03
-	jsl.l func_C35FE7
+	jsl.l FillTileRow
 	lda.b $04,s
 	sta.b wTemp00
 	lda.b $02,s
@@ -8972,7 +9105,7 @@ func_C38536:
 	sta.b wTemp02
 	lda.b #$30
 	sta.b wTemp03
-	jsl.l func_C3601D
+	jsl.l FillTileColumn
 	pla
 	pla
 	pla
@@ -8983,7 +9116,7 @@ func_C38536:
 	plx
 	rts
 
-func_C3858F:
+SetupFourRoomFloor:
 	php 
 	sep #$30 ;AXY->8
 	lda.b #$04
@@ -8995,7 +9128,7 @@ func_C3858F:
 	lda.l Data_c3873b,x
 	sta.b wTemp01
 	phx
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	plx
 	lda.b wTemp00
 	pha
@@ -9006,7 +9139,7 @@ func_C3858F:
 	lda.l Data_c38743,x
 	sta.b wTemp01
 	phx
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	plx
 	lda.b wTemp00
 	pha
@@ -9017,7 +9150,7 @@ func_C3858F:
 	lda.l Data_c3874b,x
 	sta.b wTemp01
 	phx
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	plx
 	lda.b wTemp00
 	pha
@@ -9028,7 +9161,7 @@ func_C3858F:
 	lda.l Data_c38753,x
 	sta.b wTemp01
 	phx
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	plx
 	lda.b wTemp00
 	pha
@@ -9046,7 +9179,7 @@ func_C3858F:
 	pla
 	sta.b wTemp00
 	phx
-	jsl.l func_C36053
+	jsl.l FillTileRect
 	plx
 	dex 
 	bmi @lbl_C3861F
@@ -9061,7 +9194,7 @@ func_C3858F:
 	dec a
 	sta.b wTemp01
 	phx
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	plx
 	lda.b wTemp00
 	sta.b wTemp01
@@ -9075,7 +9208,7 @@ func_C3858F:
 	ora.b #$70
 	sta.b wTemp02
 	phx
-	jsl.l func_C36CBE
+	jsl.l SetTileTypeAtCoord
 	plx
 	lda.l $7EBE7A,x
 	inc a
@@ -9084,7 +9217,7 @@ func_C3858F:
 	dec a
 	sta.b wTemp01
 	phx
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	plx
 	lda.b wTemp00
 	pha
@@ -9095,7 +9228,7 @@ func_C3858F:
 	dec a
 	sta.b wTemp01
 	phx
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	plx
 	lda.b wTemp00
 	sta.b wTemp01
@@ -9110,7 +9243,7 @@ func_C3858F:
 	ora.b #$70
 	sta.b wTemp02
 	phx
-	jsl.l func_C36CBE
+	jsl.l SetTileTypeAtCoord
 	plx
 	pla
 	sta.b wTemp02
@@ -9122,7 +9255,7 @@ func_C3858F:
 	sta.b wTemp00
 	pla
 	sta.b wTemp03
-	jsr.w func_C384DD
+	jsr.w DrawRoomBorderPartA
 	dex 
 	dex 
 	bmi @lbl_C386AC
@@ -9137,7 +9270,7 @@ func_C3858F:
 	dec a
 	sta.b wTemp01
 	phx
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	plx
 	lda.b wTemp00
 	pha
@@ -9150,7 +9283,7 @@ func_C3858F:
 	ora.b #$70
 	sta.b wTemp02
 	phx
-	jsl.l func_C36CBE
+	jsl.l SetTileTypeAtCoord
 	plx
 	lda.l $7EBE84,x
 	inc a
@@ -9159,7 +9292,7 @@ func_C3858F:
 	dec a
 	sta.b wTemp01
 	phx
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	plx
 	lda.b wTemp00
 	pha
@@ -9170,7 +9303,7 @@ func_C3858F:
 	dec a
 	sta.b wTemp01
 	phx
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	plx
 	lda.b wTemp00
 	pha
@@ -9185,7 +9318,7 @@ func_C3858F:
 	ora.b #$70
 	sta.b wTemp02
 	phx
-	jsl.l func_C36CBE
+	jsl.l SetTileTypeAtCoord
 	plx
 	pla
 	sta.b wTemp04
@@ -9197,7 +9330,7 @@ func_C3858F:
 	sta.b wTemp02
 	pla
 	sta.b wTemp00
-	jsr.w func_C38536
+	jsr.w DrawRoomBorderPartB
 	dex 
 	bmi @lbl_C38735
 	brl @lbl_C386AE
@@ -9237,7 +9370,7 @@ Data_c38753:
 	.db $22   ;C38755
 	.db $22   ;C38756
 	
-func_C38757:
+SetupTwoRoomFloor:
 	php
 	sep #$30 ;AXY->8
 	lda.b #$02
@@ -9248,7 +9381,7 @@ func_C38757:
 	sta.b wTemp00
 	lda.l Data_c38855+2,x
 	sta.b wTemp01
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	lda.b wTemp00
 	pha
 	dec a
@@ -9257,7 +9390,7 @@ func_C38757:
 	sta.b wTemp00
 	lda.l Data_c38855+6,x
 	sta.b wTemp01
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	lda.b wTemp00
 	pha
 	dec a
@@ -9266,7 +9399,7 @@ func_C38757:
 	sta.b wTemp00
 	lda.l Data_c38855+10,x
 	sta.b wTemp01
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	lda.b wTemp00
 	pha
 	inc a
@@ -9275,7 +9408,7 @@ func_C38757:
 	sta.b wTemp00
 	lda.l Data_c38855+14,x
 	sta.b wTemp01
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	lda.b wTemp00
 	pha
 	inc a
@@ -9292,7 +9425,7 @@ func_C38757:
 	pla
 	sta.b wTemp00
 	phx
-	jsl.l func_C36053
+	jsl.l FillTileRect
 	plx
 	dex 
 	bpl @lbl_C38762
@@ -9302,7 +9435,7 @@ func_C38757:
 	lda.l $7EBE84
 	dec a
 	sta.b wTemp01
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	lda.b wTemp00
 	sta.b wTemp01
 	pha
@@ -9313,14 +9446,14 @@ func_C38757:
 	sta.b wTemp00
 	lda.b #$70
 	sta.b wTemp02
-	jsl.l func_C36CBE
+	jsl.l SetTileTypeAtCoord
 	lda.l $7EBE7A
 	inc a
 	sta.b wTemp00
 	lda.l $7EBE67
 	dec a
 	sta.b wTemp01
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	lda.b wTemp00
 	pha
 	lda.l $7EBE71
@@ -9329,7 +9462,7 @@ func_C38757:
 	lda.l $7EBE85
 	dec a
 	sta.b wTemp01
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	lda.b wTemp00
 	sta.b wTemp01
 	pha
@@ -9340,7 +9473,7 @@ func_C38757:
 	sta.b wTemp00
 	lda.b #$71
 	sta.b wTemp02
-	jsl.l func_C36CBE
+	jsl.l SetTileTypeAtCoord
 	pla
 	sta.b wTemp02
 	pla
@@ -9351,7 +9484,7 @@ func_C38757:
 	sta.b wTemp00
 	pla
 	sta.b wTemp03
-	jsr.w func_C384DD
+	jsr.w DrawRoomBorderPartA
 	plp 
 	rts
 
@@ -9367,7 +9500,7 @@ Data_c38855:
 	asl $221E,x                             ;C38861
 	.db $22   ;C38864
 
-func_C38865:
+SetupShopFloor:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -9379,24 +9512,24 @@ func_C38865:
 	lda.w #$E0E0
 	ldx.w #$097E
 @lbl_C38876:
-	sta.w $A95F,x
+	sta.w wTileType,x
 	dex 
 	dex 
 	bpl @lbl_C38876
-	jsr.w func_C38757
+	jsr.w SetupTwoRoomFloor
 	sep #$20 ;A->8
-	jsr.w func_C36EA0
+	jsr.w FindLargeRoomForCorridor
 	lda.b wTemp00
 	bmi @lbl_C3886E
 	pha
-	jsr.w func_C36D1D
+	jsr.w SetupShopFloorTiles
 	pla
 	sta.b wTemp00
-	jsr.w func_C36ED9
+	jsr.w PlaceRoomDoors
 	plp 
 	rts
 
-func_C38895:
+SetupFixedSingleRoom:
 	php 
 	sep #$20 ;A->8
 	lda.b wTemp00
@@ -9424,7 +9557,7 @@ func_C38895:
 	sta.l $7EBE84
 	lda.b #$00
 	sta.b wTemp04
-	jsl.l func_C36053
+	jsl.l FillTileRect
 	pla
 	bne @lbl_C38914
 	lda.b #$04
@@ -9435,7 +9568,7 @@ func_C38895:
 	sta.b wTemp02
 	lda.b #$E0
 	sta.b wTemp03
-	jsl.l func_C35FE7
+	jsl.l FillTileRow
 	lda.l $7EBE84
 	dec a
 	sta.l $7EBE84
@@ -9447,7 +9580,7 @@ func_C38895:
 	sta.b wTemp02
 	lda.b #$E0
 	sta.b wTemp03
-	jsl.l func_C3601D
+	jsl.l FillTileColumn
 	lda.l $7EBE7A
 	dec a
 	sta.l $7EBE7A
@@ -9456,7 +9589,7 @@ func_C38895:
 	rts
 
 
-func_C38916:
+SetupSingleLargeRoom:
 	php 
 	sep #$20 ;A->8
 	lda.b #$01
@@ -9470,12 +9603,12 @@ func_C38916:
 	lda.b #$24
 	sta.l $7EBE84
 	stz.b wTemp00
-	jsr.w func_C36D1D
+	jsr.w SetupShopFloorTiles
 	plp 
 	rts
 
 
-func_C3893E:
+PlaceShirenStartingItem:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -9493,7 +9626,7 @@ func_C3893E:
 	jsl.l GetTransitionDestX
 	bra @lbl_C38967
 @lbl_C38963:
-	jsl.l func_C3608D
+	jsl.l FindRandomEmptyTileNoChar
 @lbl_C38967:
 	ldx.b wTemp00
 	lda.b #$13
@@ -9505,18 +9638,18 @@ func_C3893E:
 	stx.b wTemp00
 	lda.b #$13
 	sta.b wTemp02
-	jsl.l func_C35B7A
+	jsl.l PlaceSecondaryItemOnTile
 	plp
 	rtl
 
-func_C38981:
+SpawnFloorMonsterEntities:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
 	ldy.w #$0007
 @lbl_C38989:
 	phy
-	jsl.l func_C3608D
+	jsl.l FindRandomEmptyTileNoChar
 	ply
 	ldx.b wTemp00
 	phx
@@ -9528,14 +9661,14 @@ func_C38981:
 	bmi @lbl_C389A5
 	stx.b wTemp00
 	sta.b wTemp02
-	jsl.l func_C35B7A
+	jsl.l PlaceSecondaryItemOnTile
 @lbl_C389A5:
 	dey
 	bne @lbl_C38989
 	plp
 	rtl
 
-func_C389AA:
+SpawnFloorItems:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -9545,19 +9678,19 @@ func_C389AA:
 	ldy.w #$0003
 @lbl_C389BA:
 	phy
-	jsl.l func_C36203
+	jsl.l FindRandomEmptyTile
 	ply
 	ldx.b wTemp00
 	phx
 	phy
-	jsl.l func_C303D0
+	jsl.l SpawnRandomFloorItemOrGitan
 	ply
 	plx
 	lda.b wTemp00
 	bmi @lbl_C389D6
 	stx.b wTemp00
 	sta.b wTemp02
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 @lbl_C389D6:
 	dey
 	bpl @lbl_C389BA
@@ -9565,7 +9698,7 @@ func_C389AA:
 	plp
 	rtl
 
-func_C389DB:
+PlaceStaircaseItem:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -9575,9 +9708,9 @@ func_C389DB:
 	cmp.b #$08
 	beq @lbl_C38A36
 @lbl_C389EC:
-	jsl.l func_C36203
+	jsl.l FindRandomEmptyTile
 	ldy.b wTemp00
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	lda.b #$00
 	xba
 	lda.b wTemp02
@@ -9596,7 +9729,7 @@ func_C389DB:
 	sta.l $7EC173
 	lda.b #$83
 	sta.b wTemp02
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 	plp
 	rtl
 	lda $00                                 ;C38A22
@@ -9613,7 +9746,7 @@ func_C389DB:
 	jsl $C36203                             ;C38A36
 	.db $80,$E6   ;C38A3A
 
-func_C38A3C:
+SpawnDungeonMonsters:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -9626,9 +9759,9 @@ func_C38A3C:
 	lda.b wTemp00
 	asl a
 	tax
-	lda.l UNREACH_C38AA7,x
+	lda.l MonsterSpawnTableBank,x
 	sta.b w00a9
-	lda.l UNREACH_C38AA8,x
+	lda.l MonsterSpawnTablePtrs,x
 	sta.b w00aa
 	restorebank
 	ldy.w #$0000
@@ -9647,36 +9780,36 @@ func_C38A3C:
 	iny
 	lda.b ($A9),y
 	sta.b wTemp01
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	stz.b wTemp01
 	ldy.b wTemp00
 @lbl_C38A81:
 	phy
-	jsl.l func_C36287
+	jsl.l FindRandomEmptyTileForNPC
 	ply
 	ldx.b wTemp00
 	lda.b wTemp01,s
 	sta.b wTemp00
 	phx
 	phy
-	jsl.l func_C3D3AB
+	jsl.l PickRandomTrapType
 	ply
 	plx
 	lda.b wTemp00
 	ora.b #$C0
 	stx.b wTemp00
 	sta.b wTemp02
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 	dey
 	bne @lbl_C38A81
 	pla
 	plp
 	rtl
 
-UNREACH_C38AA7:
+MonsterSpawnTableBank:
 	.db $C1                               ;C38AA7  
 
-UNREACH_C38AA8:
+MonsterSpawnTablePtrs:
 	.db $8A                               ;C38AA8
 	.db $C7,$8A                           ;C38AA9
 	.db $C7,$8A,$D3,$8A,$C7,$8A,$C7,$8A,$C7,$8A,$C7,$8A,$C7,$8A,$C7,$8A   ;C38AAB  
@@ -9686,7 +9819,7 @@ UNREACH_C38AA8:
 	.db $07                               ;C38ACF
 	.db $63,$07,$09,$63,$07,$09           ;C38AD0  
 
-func_C38AD6:
+ClearDungeonTileMap:
 	php
 	sep #$20 ;A->8
 	stz.b wTemp00
@@ -9697,7 +9830,7 @@ func_C38AD6:
 	sta.b wTemp03
 	lda.b #$F0
 	sta.b wTemp04
-	jsl.l func_C36053
+	jsl.l FillTileRect
 	stz.b wTemp00
 	lda.b #$26
 	sta.b wTemp01
@@ -9707,7 +9840,7 @@ func_C38AD6:
 	sta.b wTemp03
 	lda.b #$F0
 	sta.b wTemp04
-	jsl.l func_C36053
+	jsl.l FillTileRect
 	stz.b wTemp00
 	stz.b wTemp01
 	lda.b #$03
@@ -9716,7 +9849,7 @@ func_C38AD6:
 	sta.b wTemp03
 	lda.b #$F0
 	sta.b wTemp04
-	jsl.l func_C36053
+	jsl.l FillTileRect
 	lda.b #$3C
 	sta.b wTemp00
 	stz.b wTemp01
@@ -9726,11 +9859,11 @@ func_C38AD6:
 	sta.b wTemp03
 	lda.b #$F0
 	sta.b wTemp04
-	jsl.l func_C36053
+	jsl.l FillTileRect
 	plp
 	rtl
 
-func_C38B2F:
+LoadDungeonRoomLayout:
 	php
 	rep #$30 ;AXY->16
 	jsl.l Get7ED5EE
@@ -9743,7 +9876,7 @@ func_C38B2F:
 	clc
 	adc.b wTemp00
 	tax
-	jsl.l func_C36BB0
+	jsl.l GetMapNum
 	lda.b wTemp00
 	dec a
 	sta.b wTemp00
@@ -9779,7 +9912,7 @@ func_C38B2F:
 @lbl_C38B8A:
 	pha
 	lda.b wTemp02,s
-	sta.w $A95F,x
+	sta.w wTileType,x
 	inx
 	pla
 	dec a
@@ -9802,7 +9935,7 @@ func_C38B2F:
 	plp
 	rtl
 
-func_C38BAE:
+SetupNaokiGaibaraEventRoom:
 	php
 	sep #$30 ;AXY->8
 	jsl.l Get7ED5EE
@@ -9829,11 +9962,11 @@ func_C38BAE:
 	.db $A5,$00   ;C38BEF  
 	.db $F0,$03                           ;C38BF7  
 @lbl_C38BF9:
-	jsr.w func_C38BFE
+	jsr.w PlaceNaokiGaibaraNPCs
 	plp
 	rts
 
-func_C38BFE:
+PlaceNaokiGaibaraNPCs:
 	lda.b #$36
 	ldy.b #$08
 @lbl_C38C02:
@@ -9846,13 +9979,13 @@ func_C38BFE:
 	pha
 	phx
 	tax
-	lda.l DATA8_C38C39,x
+	lda.l NaokiGaibaraEventNPCLayout,x
 	sta.b wTemp02
 	sty.b wTemp01
 	plx
 	stx.b wTemp00
 	phx
-	jsl.l func_C36CBE
+	jsl.l SetTileTypeAtCoord
 	plx
 	pla
 	dec a
@@ -9868,16 +10001,20 @@ func_C38BFE:
 	sta.b wTemp01
 	lda.b #$80
 	sta.b wTemp02
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 	rts
 
-DATA8_C38C39:
+; NPC layout for the Naoki/Gaibara story event dungeon room.
+; 55 bytes mapped across an 11-wide x 5-tall grid (x=$31-$3B, y=$08-$04), iterated
+; with a decrementing counter A ($36->$00) as the table index.
+; $B0 (Char_B0, "musuko/son") = place NPC on tile; $00 = leave tile empty.
+NaokiGaibaraEventNPCLayout:
 	.db $B0,$B0,$B0,$00,$00,$00,$B0,$B0,$B0,$B0,$B0,$B0,$B0,$B0,$00,$00   ;C38C39
 	.db $B0,$B0,$B0,$B0,$B0,$B0,$B0,$B0,$B0,$00,$00,$00,$00,$B0,$B0,$B0   ;C38C49
 	.db $B0,$B0,$B0,$00,$00,$00,$00,$00,$00,$B0,$B0,$B0,$B0,$B0,$00,$00   ;C38C59
 	.db $00,$00,$B0,$B0,$B0,$B0,$B0       ;C38C69
 
-func_C38C70:
+SetRoomPickupRestrictions:
 	php
 	sep #$30 ;AXY->8
 	jsl.l Get7ED5EE
@@ -9902,7 +10039,7 @@ func_C38C70:
 	plp
 	rts
 
-func_C38C9F:
+PlaceFixedFloorItems:
 	php
 	rep #$30 ;AXY->16
 	jsl.l Get7ED5EE
@@ -9915,7 +10052,7 @@ func_C38C9F:
 	clc
 	adc.b wTemp00
 	tax
-	jsl.l func_C36BB0
+	jsl.l GetMapNum
 	lda.b wTemp00
 	dec a
 	sta.b wTemp00
@@ -9958,17 +10095,17 @@ func_C38C9F:
 	lda.b wTemp01
 	sta.l $7EC173
 @lbl_C38D0F:
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 	iny
 	bra @lbl_C38CE9
 @lbl_C38D16:
 	plp
 	rtl
 
-func_C38D18:
+LoadRoomBoundsFromMapData:
 	php
 	rep #$30 ;AXY->16
-	jsl.l func_C36BB0
+	jsl.l GetMapNum
 	lda.b wTemp00
 	dec a
 	sta.b wTemp00
@@ -10012,10 +10149,10 @@ func_C38D18:
 	plp
 	rtl
 
-func_C38D72:
+LoadRoomDoorDataFromMapData:
 	php
 	rep #$30 ;AXY->16
-	jsl.l func_C36BB0
+	jsl.l GetMapNum
 	lda.b wTemp00
 	dec a
 	sta.b wTemp00
@@ -10068,7 +10205,7 @@ func_C38D72:
 	plp
 	rtl
 
-func_C38DD4:
+PlaceFixedTerrainTiles:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -10089,14 +10226,14 @@ func_C38DD4:
 	iny
 	lda.b [$A9],y
 	sta.b wTemp02
-	jsl.l func_C35C72
+	jsl.l PlaceItemOnTile
 	iny
 	bra @lbl_C38DEE
 @lbl_C38E05:
 	plp
 	rtl
 
-func_C38E07:
+PlaceFixedMapItems:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -10216,7 +10353,7 @@ func_C38E07:
 	iny                                     ;C38EC8
 	.db $82,$55,$FF   ;C38EC9
 
-func_C38ECC:
+PlaceFixedStaircase:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -10236,11 +10373,11 @@ func_C38ECC:
 	sta.l $7EC173
 	lda.b #$83
 	sta.b wTemp02
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 	plp
 	rtl
 
-func_C38F01:
+PlaceFixedTraps:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -10267,7 +10404,7 @@ func_C38F01:
 	plp
 	rtl
 
-func_C38F34:
+PlaceFixedCharacters:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -10343,7 +10480,7 @@ func_C38F34:
 	iny                                     ;C38FB3
 	.db $82,$97,$FF   ;C38FB4
 
-func_C38FB7:
+LoadFixedRoomLayout:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -10385,7 +10522,7 @@ func_C38FB7:
 	sta.b wTemp04
 	phx
 	phy
-	jsl.l func_C36053
+	jsl.l FillTileRect
 	ply
 	plx
 	iny
@@ -10400,14 +10537,14 @@ func_C38FB7:
 	plp
 	rtl
 
-func_C39021:
+BackupTileMapAndShrinkRooms:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
 	bankswitch 0x7E
 	ldx.w #$0877
 @lbl_C3902D:
-	lda.w $A95F,x
+	lda.w wTileType,x
 	sta.w $AA63,x
 	dex
 	bpl @lbl_C3902D
@@ -10438,7 +10575,7 @@ func_C39021:
 	plp
 	rtl
 
-func_C39067:
+FindRoomWithDoor:
 	php
 	sep #$30 ;AXY->8
 	lda.l $7EBE8E
@@ -10456,7 +10593,7 @@ func_C39067:
 	plp
 	rtl
 
-func_C3909E:
+FindRoomContainingCoord:
 	php
 	sep #$30 ;AXY->8
 	lda.l $7EBE8E
@@ -10669,7 +10806,7 @@ func_C3909E:
 	rtl                                     ;C391F9
 .INDEX 16
 
-func_C391FA:
+SpawnGuardNPCs:
 	php
 	sep #$30 ;AXY->8
 	jsl.l GetCurrentDungeon
@@ -10872,7 +11009,7 @@ func_C391FA:
 	plp                                     ;C39380
 	rtl                                     ;C39381
 
-func_C39382:
+SelectAndPlaceStaircaseRoom:
 	php
 	sep #$30 ;AXY->8
 	jsl.l GetCurrentDungeon
@@ -11333,7 +11470,7 @@ func_C39382:
 	rts                                     ;C396F0
 .INDEX 8
 
-func_C396F1:
+SpawnFloorNPCs:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -11341,14 +11478,14 @@ func_C396F1:
 	sta.b wTemp00
 	lda.b #$0F
 	sta.b wTemp01
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	stz.b wTemp01
 	ldy.b wTemp00
 @lbl_C39706:
 	lda.l $7EC175
 	sta.b wTemp00
 	phy
-	jsl.l func_C37234
+	jsl.l FindEmptyTileInRoom2
 	ply
 	ldx.b wTemp00
 	bmi @lbl_C39734
@@ -11362,7 +11499,7 @@ func_C396F1:
 	stx.b wTemp00
 	sta.b wTemp02
 	pha
-	jsl.l func_C35B7A
+	jsl.l PlaceSecondaryItemOnTile
 	pla
 	sta.b wTemp00
 	phy
@@ -11559,7 +11696,7 @@ func_C396F1:
 	plp                                     ;C39889
 	rts                                     ;C3988A
 
-func_C3988B:
+SpawnFloorItemsInRoom:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -11571,20 +11708,20 @@ func_C3988B:
 	lda.l $7EC175
 	sta.b wTemp00
 	phy
-	jsl.l func_C371C1
+	jsl.l FindEmptyTileInRoom
 	ply
 	ldx.b wTemp00
 	bmi @lbl_C398BF
 	phx
 	phy
-	jsl.l func_C303D0
+	jsl.l SpawnRandomFloorItemOrGitan
 	ply
 	plx
 	lda.b wTemp00
 	bmi @lbl_C398BF
 	stx.b wTemp00
 	sta.b wTemp02
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 @lbl_C398BF:
 	dey
 	bpl @lbl_C3989B
@@ -11592,7 +11729,7 @@ func_C3988B:
 	plp
 	rts
 
-func_C398C4:
+SpawnFloorTraps:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -11610,14 +11747,14 @@ func_C398C4:
 @lbl_C398DF:
 	ldx.w #$0503
 	stx.b wTemp00
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	stz.b wTemp01
 	ldy.b wTemp00
 @lbl_C398EC:
 	lda.l $7EC175
 	sta.b wTemp00
 	phy
-	jsl.l func_C371C1
+	jsl.l FindEmptyTileInRoom
 	ply
 	ldx.b wTemp00
 	bmi @lbl_C39916
@@ -11625,7 +11762,7 @@ func_C398C4:
 	sta.b wTemp00
 	phx
 	phy
-	jsl.l func_C3D3AB
+	jsl.l PickRandomTrapType
 	ply
 	plx
 	lda.b wTemp00
@@ -11633,7 +11770,7 @@ func_C398C4:
 	ora.b wTemp01,s
 	stx.b wTemp00
 	sta.b wTemp02
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 @lbl_C39916:
 	dey
 	bne @lbl_C398EC
@@ -11642,7 +11779,7 @@ func_C398C4:
 	plp
 	rts
 
-func_C3991D:
+PickFloorPopulationVariant:
 	php
 	sep #$30 ;AXY->8
 	jsl.l func_C62B58
@@ -11706,7 +11843,7 @@ func_C3991D:
 	plp
 	rts
 
-func_C3999D:
+SetSpawnRoomIndex:
 	php
 	sep #$30 ;AXY->8
 	lda.l $7EC175
@@ -11753,13 +11890,13 @@ func_C3999D:
 	sta.l $7EC175
 	bra @lbl_C399A6
 
-func_C399F2:
+PopulateFloor:
 	php
 	sep #$30 ;AXY->8
-	jsr.w func_C3991D
+	jsr.w PickFloorPopulationVariant
 	ldy.b wTemp00
 	beq @lbl_C39A0F
-	jsr.w func_C3999D
+	jsr.w SetSpawnRoomIndex
 	lda.l $7EC175
 	bmi @lbl_C39A0F
 	tya
@@ -11777,23 +11914,23 @@ func_C399F2:
 	rts
 
 Jumptable_C39A17:
-	.dw func_C39A1D
-	.dw func_C39A27
-	.dw func_C39A31
+	.dw PopulateFloorVariantA
+	.dw PopulateFloorVariantB
+	.dw PopulateFloorVariantC
 
-func_C39A1D:
-	jsr.w func_C396F1
-	jsr.w func_C3988B
-	jsr.w func_C398C4
+PopulateFloorVariantA:
+	jsr.w SpawnFloorNPCs
+	jsr.w SpawnFloorItemsInRoom
+	jsr.w SpawnFloorTraps
 	rts
 
-func_C39A27:
+PopulateFloorVariantB:
 	jsr $9797                               ;C39A27
 	jsr $988B                               ;C39A2A
 	jsr $98C4                               ;C39A2D
 	rts                                     ;C39A30
 	
-func_C39A31:
+PopulateFloorVariantC:
 	jsr $982D                               ;C39A31
 	jsr $988B                               ;C39A34
 	jsr $98C4                               ;C39A37
@@ -11856,7 +11993,7 @@ func_C39A31:
 	plp                                     ;C39AA8
 	rts                                     ;C39AA9
 
-func_C39AAA:
+SetupMonsterHouseRoom:
 	php
 	sep #$30 ;AXY->8
 	jsl.l GetCurrentDungeon
@@ -11919,7 +12056,7 @@ func_C39AAA:
 	lda.b wTemp04
 	pha
 	phx
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	plx
 	pla
 	sta.b wTemp04
@@ -11969,7 +12106,7 @@ func_C39AAA:
 	lda.b wTemp04
 	pha
 	phx
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	plx
 	pla
 	sta.b wTemp04
@@ -12011,7 +12148,7 @@ func_C39AAA:
 	sta.b wTemp02
 	lda.b #$B0
 	sta.b wTemp03
-	jsl.l func_C35FE7
+	jsl.l FillTileRow
 	lda.b wTemp04,s
 	sta.b wTemp00
 	lda.b wTemp01,s
@@ -12020,7 +12157,7 @@ func_C39AAA:
 	sta.b wTemp02
 	lda.b #$B0
 	sta.b wTemp03
-	jsl.l func_C35FE7
+	jsl.l FillTileRow
 	lda.b wTemp04,s
 	sta.b wTemp00
 	lda.b wTemp02,s
@@ -12029,7 +12166,7 @@ func_C39AAA:
 	sta.b wTemp02
 	lda.b #$B0
 	sta.b wTemp03
-	jsl.l func_C3601D
+	jsl.l FillTileColumn
 	lda.b wTemp03,s
 	sta.b wTemp00
 	lda.b wTemp02,s
@@ -12038,14 +12175,14 @@ func_C39AAA:
 	sta.b wTemp02
 	lda.b #$B0
 	sta.b wTemp03
-	jsl.l func_C3601D
+	jsl.l FillTileColumn
 	lda.b wTemp04,s
 	inc a
 	sta.b wTemp00
 	lda.b wTemp03,s
 	dec a
 	sta.b wTemp01
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	ldx.b wTemp00
 	lda.b wTemp02,s
 	inc a
@@ -12054,14 +12191,14 @@ func_C39AAA:
 	dec a
 	sta.b wTemp01
 	phx
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	plx
 	ldy.b wTemp00
 	stx.b wTemp00
 	sty.b wTemp01
 	lda.b #$86
 	sta.b wTemp02
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 	lda.b wTemp02,s
 	inc a
 	tay
@@ -12079,7 +12216,7 @@ func_C39AAA:
 	stx.b wTemp00
 	sty.b wTemp01
 	phx
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	plx
 	lda.b wTemp01
 	cmp.b #$80
@@ -12092,14 +12229,14 @@ func_C39AAA:
 	bmi @lbl_C39C73
 	phx
 	phy
-	jsl.l func_C305F3
+	jsl.l SpawnFloorGitan
 	ply
 	plx
 	bra @lbl_C39C7B
 @lbl_C39C73:
 	phx
 	phy
-	jsl.l func_C3041A
+	jsl.l SpawnRandomDungeonFloorItem
 	ply
 	plx
 @lbl_C39C7B:
@@ -12109,7 +12246,7 @@ func_C39AAA:
 	stx.b wTemp00
 	sty.b wTemp01
 	phx
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 	plx
 @lbl_C39C8B:
 	inx
@@ -12125,7 +12262,7 @@ func_C39AAA:
 	plp
 	rts
 
-func_C39C97:
+SetupLargeRoom:
 	php
 	sep #$30 ;AXY->8
 	jsl.l GetCurrentDungeon
@@ -12256,7 +12393,7 @@ func_C39C97:
 	plx                                     ;C39D8A
 	rts                                     ;C39D8B
 
-func_C39D8C:
+SetupWaterRoom:
 	php
 	sep #$30 ;AXY->8
 	jsl.l GetCurrentDungeon
@@ -12338,7 +12475,7 @@ func_C39D8C:
 	plp                                     ;C39E1B
 	rts                                     ;C39E1C
 
-func_C39E1D:
+SpawnRoomItems:
 	php
 	sep #$30 ;AXY->8
 	jsl.l GetCurrentDungeon
@@ -12358,7 +12495,7 @@ func_C39E1D:
 	ldy.b #$0E
 @lbl_C39E42:
 	tyx
-	lda.l DATA8_C39F85,x
+	lda.l ShopFloorTileTypes,x
 	tax
 	lda.l $7E89C3,x
 	cmp.b #$10
@@ -12376,13 +12513,13 @@ func_C39E1D:
 	rts
 @lbl_C39E61:
 	tyx
-	lda.l UNREACH_C39F94,x
+	lda.l ShopItemXPositions,x
 	sta.b wTemp00
 	clc
 	adc.b #$06
 	sta.b wTemp01
 	phx
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	plx
 	lda.b wTemp00
 	dec a
@@ -12390,13 +12527,13 @@ func_C39E1D:
 	clc
 	adc.b #$05
 	pha
-	lda.l UNREACH_C39FA3,x
+	lda.l ShopItemXWeights,x
 	sta.b wTemp00
 	clc
 	adc.b #$06
 	sta.b wTemp01
 	phx
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	plx
 	lda.b wTemp00
 	dec a
@@ -12427,7 +12564,7 @@ func_C39E1D:
 	sta.b wTemp03
 	stx.b wTemp04
 	phx
-	jsl.l func_C36053
+	jsl.l FillTileRect
 	plx
 	txa
 	inc a
@@ -12438,7 +12575,7 @@ func_C39E1D:
 	lda.b wTemp03,s
 	dec a
 	sta.b wTemp01
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	ldx.b wTemp00
 	lda.b wTemp02,s
 	inc a
@@ -12447,14 +12584,14 @@ func_C39E1D:
 	dec a
 	sta.b wTemp01
 	phx
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	plx
 	ldy.b wTemp00
 	stx.b wTemp00
 	sty.b wTemp01
 	lda.b #$86
 	sta.b wTemp02
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 	lda.b wTemp02,s
 	inc a
 	tay
@@ -12472,14 +12609,14 @@ func_C39E1D:
 	stx.b wTemp00
 	sty.b wTemp01
 	phx
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	plx
 	lda.b wTemp01
 	cmp.b #$80
 	bne @lbl_C39F3D
 	phx
 	phy
-	jsl.l func_C305F3
+	jsl.l SpawnFloorGitan
 	ply
 	plx
 	lda.b wTemp00
@@ -12488,7 +12625,7 @@ func_C39E1D:
 	stx.b wTemp00
 	sty.b wTemp01
 	phx
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 	plx
 @lbl_C39F3D:
 	inx
@@ -12503,7 +12640,7 @@ func_C39E1D:
 	lda.b wTemp03,s
 	dec a
 	sta.b wTemp01
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	ldx.b wTemp00
 	lda.b wTemp02,s
 	inc a
@@ -12512,7 +12649,7 @@ func_C39E1D:
 	dec a
 	sta.b wTemp01
 	phx
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	plx
 	ldy.b wTemp00
 	stx.b wTemp00
@@ -12527,7 +12664,7 @@ func_C39E1D:
 	stx.b wTemp00
 	sty.b wTemp01
 	sta.b wTemp02
-	jsl.l func_C35B7A
+	jsl.l PlaceSecondaryItemOnTile
 @lbl_C39F7F:
 	pla
 	pla
@@ -12536,23 +12673,23 @@ func_C39E1D:
 	plp
 	rts
 
-DATA8_C39F85:
+ShopFloorTileTypes:
 	.db $11,$12,$13,$14,$15,$21,$22,$23   ;C39F85
 	.db $24,$25,$31,$32,$33,$34,$35       ;C39F8D
 
-UNREACH_C39F94:
+ShopItemXPositions:
 	.db $05,$10,$1B,$26,$31,$05,$10,$1B   ;C39F94  
 	.db $26                               ;C39F9C  
 	.db $31                               ;C39F9D
 	.db $05,$10,$1B,$26,$31               ;C39F9E  
 
-UNREACH_C39FA3:
+ShopItemXWeights:
 	.db $05,$05,$05,$05,$05,$10,$10,$10   ;C39FA3  
 	.db $10                               ;C39FAB  
 	.db $10                               ;C39FAC
 	.db $1B,$1B,$1B,$1B,$1B               ;C39FAD
 
-func_C39FB2:
+SetupShopRoom:
 	php
 	sep #$30 ;AXY->8
 	jsl.l GetCurrentDungeon
@@ -12748,13 +12885,13 @@ func_C39FB2:
 @lbl_C3A113:
 	rts                                     ;C3A113
 
-func_C3A114:
+IsTilePassable:
 	phx
 	phy
 	php
 	sep #$30 ;AXY->8
 	ldy.b #$01
-	jsl.l func_C36CA5
+	jsl.l GetTileTypeAtCoord
 	lda.b wTemp00
 	bit.b #$80
 	bne @lbl_C3A129
@@ -12802,7 +12939,7 @@ func_C3A114:
 .include "data/unknown_data_bank3_c3a15f.asm"
 .include "data/maps/feis_problems.asm"
 
-func_C3D219:
+SpawnSpecialFloorItems:
 	rtl
 	php                                     ;C3D21A
 	sep #$30                                ;C3D21B
@@ -12900,11 +13037,11 @@ func_C3D219:
 	plp                                     ;C3D2C9
 	rtl                                     ;C3D2CA
 
-func_C3D2CB:
+SpawnFloorTrapsNoop:
 	rtl
 
 ;something related to spawning traps
-func_C3D2CC:
+InitializeTrapSpawnList:
 	php
 	sep #$30 ;AXY->8
 	bankswitch 0x7E
@@ -12969,7 +13106,7 @@ func_C3D2CC:
 	cmp.b #$06
 	bcs @lbl_C3D33B
 	tax
-	lda.l DATA8_C3D398,x
+	lda.l RareTrapTypeTable,x
 	ldx.b wTemp06
 	beq @lbl_C3D358
 	ldx.b wTemp04
@@ -12997,7 +13134,7 @@ func_C3D2CC:
 	cmp.b #$0D
 	bcs @lbl_C3D36C
 	tax
-	lda.l DATA8_C3D39E,x
+	lda.l CommonTrapTypeTable,x
 	ldx.b wTemp06
 	beq @lbl_C3D385
 	cmp #Trap_HungerTrap
@@ -13016,14 +13153,14 @@ func_C3D2CC:
 	plp
 	rtl
 
-DATA8_C3D398:
+RareTrapTypeTable:
 	.db $01,$02,$11,$07,$14,$10           ;C3D398
 
-DATA8_C3D39E:
+CommonTrapTypeTable:
 	.db $04,$06,$08,$05,$09,$0A,$16,$0E   ;C3D39E
 	.db $12,$0D,$0F,$13,$17               ;C3D3A6
 
-func_C3D3AB:
+PickRandomTrapType:
 	php
 	sep #$30 ;AXY->8
 	lda.b wTemp00
@@ -13090,7 +13227,7 @@ func_C3D3AB:
 	plp                                     ;C3D41D
 	rtl                                     ;C3D41E
 
-func_C3D41F:
+UseScrollOnTarget:
 	php
 	sep #$30 ;AXY->8
 	lda.b wTemp00
@@ -13104,9 +13241,9 @@ func_C3D41F:
 	jsl.l func_C62735
 	plx
 	rep #$30 ;AXY->16
-	jmp.w func_C3D479
+	jmp.w DispatchScrollEffect
 
-func_C3D43B:
+UseScrollSelf:
 	php
 	sep #$30 ;AXY->8
 	lda.b wTemp00
@@ -13124,19 +13261,19 @@ func_C3D43B:
 	rep #$30 ;AXY->16
 	lda.b wTemp00
 	and.w #$0001
-	beq func_C3D479
-	lda.l UNREACH_C3D4C4,x
+	beq DispatchScrollEffect
+	lda.l ScrollUseMessageId1,x
 	sta.b wTemp00
 	phx
 	jsl.l DisplayMessage
 	plx
-	lda.l UNREACH_C3D4F6,x
+	lda.l ScrollUseMessageId2,x
 	sta.b wTemp00
 	jsl.l DisplayMessage
 	plp
 	rtl
-func_C3D479:
-	lda.l UNREACH_C3D4C4,x
+DispatchScrollEffect:
+	lda.l ScrollUseMessageId1,x
 	sta.b wTemp00
 	phx
 	jsl.l DisplayMessage
@@ -13170,11 +13307,11 @@ Jumptable_C3D492:
 	.dw $D9C1
 	.dw $DC29
 	.dw $D9E6
-	.dw $DA2E
+	.dw ScrollEffectCheckShortcutItems
 	.dw $DA76
 	.dw $E0AE
 
-UNREACH_C3D4C4:
+ScrollUseMessageId1:
 	.dw $0141
 	.dw $0142
 	.dw $0143
@@ -13201,7 +13338,7 @@ UNREACH_C3D4C4:
 	.dw $014D
 	.dw $014D
 
-UNREACH_C3D4F6:
+ScrollUseMessageId2:
 	.dw $014F
 	.dw $0150
 	.dw $0151
@@ -13228,7 +13365,7 @@ UNREACH_C3D4F6:
 	.dw $0151
 	.dw $0151
 
-func_C3D528:
+UseWeaponScrollEffect:
 	php
 	sep #$30 ;AXY->8
 	lda.b wTemp00
@@ -13290,7 +13427,7 @@ Jumptable_C3D555:
 	sta.b wTemp00
 	lda.b #$18
 	sta.b wTemp02
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	rts
 	sep #$20                                ;C3D59E
 	lda #$C3                                ;C3D5A0
@@ -13304,7 +13441,7 @@ Jumptable_C3D555:
 	sta $00                                 ;C3D5B4
 	lda #$13                                ;C3D5B6
 	sta $02                                 ;C3D5B8
-	jsl $C62550                             ;C3D5BA
+	jsl PlayVisualEffect                             ;C3D5BA
 	lda #$13                                ;C3D5BE
 	sta $00                                 ;C3D5C0
 	sta $01                                 ;C3D5C2
@@ -13330,16 +13467,16 @@ Jumptable_C3D555:
 	sta.b wTemp00
 	lda.b #$14
 	sta.b wTemp02
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	lda.b #$13
 	sta.b wTemp00
 	sta.b wTemp01
 	lda.b #$08
 	sta.b wTemp02
-	jsl.l func_C228EF
+	jsl.l CalculateAndApplyDamage
 	lda.b #$FF
 	sta.b wTemp00
-	jsl.l func_C23271
+	jsl.l ModifyShirenStrength
 	lda.b wTemp00
 	beq @lbl_C3D622
 	sta.b wTemp02
@@ -13352,7 +13489,7 @@ Jumptable_C3D555:
 	sep #$20 ;A->8
 	lda.b #$19
 	sta.b wTemp02
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	jsl.l GetCategoryShortcutItemIds
 	lda.b wTemp01
 	bmi @lbl_C3D63A
@@ -13374,7 +13511,7 @@ Jumptable_C3D555:
 	sta $00                                 ;C3D655
 	lda #$1A                                ;C3D657
 	sta $02                                 ;C3D659
-	jsl $C62550                             ;C3D65B
+	jsl PlayVisualEffect                             ;C3D65B
 	lda #$13                                ;C3D65F
 	sta $00                                 ;C3D661
 	lda #$05                                ;C3D663
@@ -13405,7 +13542,7 @@ Jumptable_C3D555:
 	sty.b wTemp00
 	ldy.b #$15
 	sty.b wTemp02
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	ldx.b #$13
 	stx.b wTemp00
 	jsl.l GetCharacterMapInfo
@@ -13422,7 +13559,7 @@ Jumptable_C3D555:
 	sta.b wTemp00
 	lda.b wTemp05,s
 	sta.b wTemp02
-	jsl.l func_C36410
+	jsl.l FindEmptyTileNearCoord
 	lda.b wTemp00
 	pha
 	bpl @lbl_C3D6D3
@@ -13440,10 +13577,10 @@ Jumptable_C3D555:
 	jsl.l func_C23B1C
 	ldx.b wTemp00
 	bmi @lbl_C3D6C6
-	jsr.w func_C3D772
+	jsr.w DropItemWithDisplay
 	stx.b wTemp00
 	phx
-	jsl.l func_C30710
+	jsl.l GetItemDisplayInfo
 	plx
 	ldy.b wTemp00
 	cpy.b #$0B
@@ -13527,10 +13664,10 @@ Jumptable_C3D555:
 	jsl $C33170                             ;C3D76A
 	rts                                     ;C3D76E
 
-func_C3D772:
+DropItemWithDisplay:
 	stx.b wTemp00
 	phx
-	jsl.l func_C30710
+	jsl.l GetItemDisplayInfo
 	plx
 	ldy.b wTemp00
 	stx.b wTemp00
@@ -13550,7 +13687,7 @@ func_C3D772:
 	sta.b wTemp02
 	stx.b wTemp00
 	phx
-	jsl.l func_C330D1
+	jsl.l DropItemOnFloor
 	plx
 	rts
 	sep #$20 ;A->8
@@ -13580,7 +13717,7 @@ func_C3D772:
 	sta $00                                 ;C3D7D9
 	lda #$20                                ;C3D7DB
 	sta $02                                 ;C3D7DD
-	jsl $C62550                             ;C3D7DF
+	jsl PlayVisualEffect                             ;C3D7DF
 	lda #$F1                                ;C3D7E3
 	sta $00                                 ;C3D7E5
 	stz $01                                 ;C3D7E7
@@ -13609,7 +13746,7 @@ func_C3D772:
 	sep #$20                                ;C3D81E
 	lda #$1E                                ;C3D820
 	sta $02                                 ;C3D822
-	jsl $C62550                             ;C3D824
+	jsl PlayVisualEffect                             ;C3D824
 	jsl $C2433A                             ;C3D828
 	lda #$EA                                ;C3D82C
 	sta $00                                 ;C3D82E
@@ -13621,7 +13758,7 @@ func_C3D772:
 	sta $00                                 ;C3D83C
 	lda #$01                                ;C3D83E
 	sta $02                                 ;C3D840
-	jsl $C62550                             ;C3D842
+	jsl PlayVisualEffect                             ;C3D842
 	rts                                     ;C3D846
 	sep #$30 ;AXY->8
 	lda.b #$EB
@@ -13634,7 +13771,7 @@ func_C3D772:
 	sta.b wTemp00
 	lda.b #$1B
 	sta.b wTemp02
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	lda.b #$13
 	sta.b wTemp00
 	lda.b #$0A
@@ -13651,7 +13788,7 @@ func_C3D772:
 	rep #$20                                ;C3D87C
 	lda #$FF9C                              ;C3D87E
 	sta $00                                 ;C3D880
-	jsl $C233BE                             ;C3D882
+	jsl ModifyShirenHunger                             ;C3D882
 	lda #$0051                              ;C3D886
 	sta $00                                 ;C3D888
 .ACCU 8
@@ -13661,7 +13798,7 @@ func_C3D772:
 	sta $00                                 ;C3D892
 	lda #$1D                                ;C3D894
 	sta $02                                 ;C3D896
-	jsl $C62550                             ;C3D898
+	jsl PlayVisualEffect                             ;C3D898
 	rts                                     ;C3D89C
 	sep #$20 ;A->8
 	lda.b #$0A
@@ -13671,7 +13808,7 @@ func_C3D772:
 	sta.b wTemp00
 	lda.b #$1C
 	sta.b wTemp02
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	lda.b #$EC
 	sta.b wTemp00
 	stz.b wTemp01
@@ -13690,7 +13827,7 @@ func_C3D772:
 	pha
 @lbl_C3D8D5:
 	phy
-	jsl.l func_C36287
+	jsl.l FindRandomEmptyTileForNPC
 	ply
 	cpy.b wTemp00
 	beq @lbl_C3D8D5
@@ -13700,7 +13837,7 @@ func_C3D772:
 	jsl.l GetCurrentFloor
 	phx
 	phy
-	jsl.l func_C3D3AB
+	jsl.l PickRandomTrapType
 	ply
 	plx
 	lda.b wTemp00
@@ -13712,7 +13849,7 @@ func_C3D772:
 	stx.b wTemp00
 	ora.b #$C0
 	sta.b wTemp02
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 @lbl_C3D905:
 	pla
 	dec a
@@ -13742,7 +13879,7 @@ func_C3D772:
 	sta.b wTemp00
 	lda.b #$23
 	sta.b wTemp02
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	lda.b #$C9
 	sta.b wTemp00
 	jsl.l func_C23BA6
@@ -13750,13 +13887,13 @@ func_C3D772:
 	sta.b wTemp00
 	lda.b #$09
 	sta.b wTemp01
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	lda.b wTemp00
 	sta.b wTemp02
 	lda.b #$13
 	sta.b wTemp00
 	sta.b wTemp01
-	jsl.l func_C228DF
+	jsl.l ApplyDamageFixed
 	rts
 	.db $E2,$30,$A9,$DC,$85,$00,$64,$01
 	jsl.l DisplayMessage
@@ -13764,7 +13901,7 @@ func_C3D772:
 	sta $00                                 ;C3D975
 	lda #$1F                                ;C3D977
 	sta $02                                 ;C3D979
-	jsl $C62550                             ;C3D97B
+	jsl PlayVisualEffect                             ;C3D97B
 	ldy #$8400                              ;C3D97F
 	.db $00   ;C3D982
 	phy                                     ;C3D983
@@ -13811,7 +13948,7 @@ func_C3D772:
 	sta.b wTemp00
 	lda.b #$21
 	sta.b wTemp02
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	lda.b #$13
 	sta.b wTemp00
 	jsl.l func_C240D6
@@ -13842,9 +13979,16 @@ func_C3D772:
 	plp                                     ;C3DA1A
 	rtl                                     ;C3DA1B
 
-DATA8_C3DA1C:
+; 9 signed 16-bit map position offsets covering a 3x3 area (8 neighbours + center).
+; Used to scan/place items on adjacent tiles. Indexed as word pairs (x*2).
+AdjacentTileOffsets:
 	.db $01,$00,$01,$FF,$00,$FF,$FF,$FE,$FF,$FF,$FF,$00,$00,$01,$01,$01   ;C3DA1C
 	.db $00,$00                           ;C3DA2C
+
+; Scroll use effect: checks if any category-shortcut item slot is occupied.
+; If all four shortcut categories are empty: plays visual $33 and shows "no effect" message.
+; Otherwise: plays visual $22, applies effect via $C34153, shows success message.
+ScrollEffectCheckShortcutItems:
 	sep #$20 ;A->8
 	jsl.l GetCategoryShortcutItemIds
 	lda.b wTemp00
@@ -13859,7 +14003,7 @@ DATA8_C3DA1C:
 	sta.b wTemp00
 	lda.b #$33
 	sta.b wTemp02
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	lda.b #$EF
 	sta.b wTemp00
 	stz.b wTemp01
@@ -13870,7 +14014,7 @@ DATA8_C3DA1C:
 	sta $00                                 ;C3DA5D
 	lda #$22                                ;C3DA5F
 	sta $02                                 ;C3DA61
-	jsl $C62550                             ;C3DA63
+	jsl PlayVisualEffect                             ;C3DA63
 	jsl $C34153                             ;C3DA67
 	lda #$DE                                ;C3DA6B
 	sta $00                                 ;C3DA6D
@@ -14022,7 +14166,7 @@ DATA8_C3DA1C:
 	rep #$20                                ;C3DB82
 	tya                                     ;C3DB84
 	clc                                     ;C3DB85
-	adc $C3DA1C,x                           ;C3DB86
+	adc.l AdjacentTileOffsets,x            ;C3DB86
 	sta $00                                 ;C3DB88
 	sta $06                                 ;C3DB8A
 	phx                                     ;C3DB8C
@@ -14092,12 +14236,12 @@ DATA8_C3DA1C:
 	lda $01,s                               ;C3DC01
 	sta $00                                 ;C3DC03
 	phx                                     ;C3DC05
-	jsl $C282EB                             ;C3DC06
+	jsl ShowDamageEffect                             ;C3DC06
 	plx                                     ;C3DC0A
 	lda $01,s                               ;C3DC0B
 	sta $00                                 ;C3DC0D
 	phx                                     ;C3DC0F
-	jsl $C20F35                             ;C3DC10
+	jsl HandleCharacterDeath                             ;C3DC10
 	plx                                     ;C3DC14
 	stx $00                                 ;C3DC15
 	lda #$80                                ;C3DC17
@@ -14137,11 +14281,11 @@ DATA8_C3DA1C:
 	rep #$20 ;A->16
 	tya
 	clc
-	adc.l DATA8_C3DA1C,x
+	adc.l AdjacentTileOffsets,x
 	sta.b wTemp00
 	sta.b wTemp06
 	phx
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	plx
 	sep #$20 ;A->8
 	lda.b wTemp00
@@ -14154,7 +14298,7 @@ DATA8_C3DA1C:
 	rep #$20 ;A->16
 	phx
 	phy
-	jsl.l func_C306F4
+	jsl.l FreeFloorItemSlot
 	ply
 	plx
 	lda.b wTemp06
@@ -14163,7 +14307,7 @@ DATA8_C3DA1C:
 	lda.b #$80
 	sta.b wTemp02
 	phx
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 	plx
 @lbl_C3DC92:
 	dex
@@ -14187,14 +14331,14 @@ DATA8_C3DA1C:
 	lda.b wTemp03
 	cmp.b #$00
 	bne @lbl_C3DCC0
-	jsr.w func_C3DD57
+	jsr.w ApplyLevelScaledDamage
 	bra @lbl_C3DCF8
 @lbl_C3DCC0:
 	cmp.b #$08
 	bne @lbl_C3DCCD
 	lda.b wTemp01,s
 	sta.b wTemp00
-	jsr.w func_C3DD85
+	jsr.w ApplyKnockbackDamage
 	bra @lbl_C3DCF8
 @lbl_C3DCCD:
 	cmp.b #$1A
@@ -14207,17 +14351,17 @@ DATA8_C3DA1C:
 	lda.b wTemp01,s
 	sta.b wTemp00
 	phx
-	jsl.l func_C282EB
+	jsl.l ShowDamageEffect
 	plx
 	lda.b wTemp01,s
 	sta.b wTemp00
 	phx
-	jsl.l func_C20F35
+	jsl.l HandleCharacterDeath
 	plx
 	stx.b wTemp00
 	lda.b #$80
 	sta.b wTemp02
-	jsl.l func_C35B7A
+	jsl.l PlaceSecondaryItemOnTile
 @lbl_C3DCF8:
 	pla
 @lbl_C3DCF9:
@@ -14227,7 +14371,7 @@ DATA8_C3DA1C:
 	rts
 	lda $00                                 ;C3DCFF
 	pha                                     ;C3DD01
-	jsl $C21128                             ;C3DD02
+	jsl.l GetCharacterStats                             ;C3DD02
 	lda $00                                 ;C3DD06
 	dec a                                   ;C3DD08
 	beq @lbl_C3DD17                         ;C3DD09
@@ -14241,10 +14385,10 @@ DATA8_C3DA1C:
 	pla                                     ;C3DD17
 	sta $00                                 ;C3DD18
 	pha                                     ;C3DD1A
-	jsl $C282EB                             ;C3DD1B
+	jsl ShowDamageEffect                             ;C3DD1B
 	pla                                     ;C3DD1F
 	sta $00                                 ;C3DD20
-	jsl $C20F35                             ;C3DD22
+	jsl HandleCharacterDeath                             ;C3DD22
 	rts                                     ;C3DD26
 	ldy #$0001                              ;C3DD27
 	phy                                     ;C3DD2A
@@ -14256,7 +14400,7 @@ DATA8_C3DA1C:
 @lbl_C3DD35:
 	lda #$13                                ;C3DD35
 	sta $00                                 ;C3DD37
-	jsl $C21128                             ;C3DD39
+	jsl.l GetCharacterStats                             ;C3DD39
 	lda $00                                 ;C3DD3D
 	lsr a                                   ;C3DD3F
 	adc #$00                                ;C3DD40
@@ -14272,7 +14416,7 @@ DATA8_C3DA1C:
 	jsl $C228DF                             ;C3DD52
 	rts                                     ;C3DD56
 
-func_C3DD57:
+ApplyLevelScaledDamage:
 	ldy.w #$0001
 	phy
 	jsl.l func_C28588
@@ -14283,7 +14427,7 @@ func_C3DD57:
 @lbl_C3DD65:
 	lda.b #$13
 	sta.b wTemp00
-	jsl.l func_C21128
+	jsl.l GetCharacterStats
 	lda.b wTemp00
 	dec a
 	cpy.w #$0001
@@ -14295,28 +14439,28 @@ func_C3DD57:
 	lda.b #$13
 	sta.b wTemp00
 	sta.b wTemp01
-	jsl.l func_C228DF
+	jsl.l ApplyDamageFixed
 	rts
 
-func_C3DD85:
+ApplyKnockbackDamage:
 	jsl.l func_C2816C
 	rts
 	lda $00                                 ;C3DD8A
 	pha                                     ;C3DD8C
 	phx                                     ;C3DD8D
-	jsl $C21128                             ;C3DD8E
+	jsl.l GetCharacterStats                             ;C3DD8E
 	plx                                     ;C3DD92
 	lda $05                                 ;C3DD93
 	pha                                     ;C3DD95
 	lda $02,s                               ;C3DD96
 	sta $00                                 ;C3DD98
 	phx                                     ;C3DD9A
-	jsl $C282EB                             ;C3DD9B
+	jsl ShowDamageEffect                             ;C3DD9B
 	plx                                     ;C3DD9F
 	lda $02,s                               ;C3DDA0
 	sta $00                                 ;C3DDA2
 	phx                                     ;C3DDA4
-	jsl $C20F35                             ;C3DDA5
+	jsl HandleCharacterDeath                             ;C3DDA5
 	plx                                     ;C3DDA9
 	lda #$E0                                ;C3DDAA
 	sta $00                                 ;C3DDAC
@@ -14340,10 +14484,10 @@ func_C3DD85:
 	pha
 	lda.b #$16
 	sta.b wTemp02
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	pla
 	sta.b wTemp00
-	jsl.l func_C20F35
+	jsl.l HandleCharacterDeath
 	rts
 	sep #$30                                ;C3DDDE
 	ldx $00                                 ;C3DDE0
@@ -14352,7 +14496,7 @@ func_C3DD85:
 	sta $02                                 ;C3DDE6
 	phx                                     ;C3DDE8
 	phy                                     ;C3DDE9
-	jsl $C62550                             ;C3DDEA
+	jsl PlayVisualEffect                             ;C3DDEA
 	ply                                     ;C3DDEE
 	plx                                     ;C3DDEF
 	stx $00                                 ;C3DDF0
@@ -14376,7 +14520,7 @@ func_C3DD85:
 @lbl_C3DE13:
 	stx $00                                 ;C3DE13
 	phx                                     ;C3DE15
-	jsl $C21128                             ;C3DE16
+	jsl.l GetCharacterStats                             ;C3DE16
 	plx                                     ;C3DE1A
 	stx $00                                 ;C3DE1B
 	lda $06                                 ;C3DE1D
@@ -14398,23 +14542,23 @@ func_C3DD85:
 @lbl_C3DE38:
 	stx $00                                 ;C3DE38
 	phx                                     ;C3DE3A
-	jsl $C282EB                             ;C3DE3B
+	jsl ShowDamageEffect                             ;C3DE3B
 	plx                                     ;C3DE3F
 	stx $00                                 ;C3DE40
-	jsl $C20F35                             ;C3DE42
+	jsl HandleCharacterDeath                             ;C3DE42
 	rts                                     ;C3DE46
 @lbl_C3DE47:
 	stx $00                                 ;C3DE47
 	lda #$01                                ;C3DE49
 	sta $01                                 ;C3DE4B
-	jsl $C23579                             ;C3DE4D
+	jsl ApplyCharacterLevelGains                             ;C3DE4D
 	rts                                     ;C3DE51
 	sep #$30                                ;C3DE52
 	ldx $00                                 ;C3DE54
 	lda #$1D                                ;C3DE56
 	sta $02                                 ;C3DE58
 	phx                                     ;C3DE5A
-	jsl $C62550                             ;C3DE5B
+	jsl PlayVisualEffect                             ;C3DE5B
 	plx                                     ;C3DE5F
 	stx $00                                 ;C3DE60
 	phx                                     ;C3DE62
@@ -14425,16 +14569,16 @@ func_C3DD85:
 	beq @lbl_C3DE7D                         ;C3DE6C
 	stx $00                                 ;C3DE6E
 	phx                                     ;C3DE70
-	jsl $C282EB                             ;C3DE71
+	jsl ShowDamageEffect                             ;C3DE71
 	plx                                     ;C3DE75
 	stx $00                                 ;C3DE76
-	jsl $C20F35                             ;C3DE78
+	jsl HandleCharacterDeath                             ;C3DE78
 	rts                                     ;C3DE7C
 @lbl_C3DE7D:
 	stx $00                                 ;C3DE7D
 	lda #$01                                ;C3DE7F
 	sta $01                                 ;C3DE81
-	jsl $C23579                             ;C3DE83
+	jsl ApplyCharacterLevelGains                             ;C3DE83
 	rts                                     ;C3DE87
 	sep #$20                                ;C3DE88
 	rep #$10                                ;C3DE8A
@@ -14460,7 +14604,7 @@ func_C3DD85:
 	sta $02                                 ;C3DEB2
 	lda $00                                 ;C3DEB4
 	pha                                     ;C3DEB6
-	jsl $C62550                             ;C3DEB7
+	jsl PlayVisualEffect                             ;C3DEB7
 	pla                                     ;C3DEBB
 	sta $00                                 ;C3DEBC
 	jsl $C28305                             ;C3DEBE
@@ -14476,7 +14620,7 @@ func_C3DD85:
 	pha                                     ;C3DED5
 	lda #$1F                                ;C3DED6
 	sta $02                                 ;C3DED8
-	jsl $C62550                             ;C3DEDA
+	jsl PlayVisualEffect                             ;C3DEDA
 	lda $01,s                               ;C3DEDE
 	sta $00                                 ;C3DEE0
 	jsl $C210AC                             ;C3DEE2
@@ -14484,7 +14628,7 @@ func_C3DD85:
 	lda $01,s                               ;C3DEE8
 	sta $00                                 ;C3DEEA
 	phx                                     ;C3DEEC
-	jsl $C282EB                             ;C3DEED
+	jsl ShowDamageEffect                             ;C3DEED
 	plx                                     ;C3DEF1
 	lda #$B0                                ;C3DEF2
 	sta $00                                 ;C3DEF4
@@ -14498,7 +14642,7 @@ func_C3DD85:
 @lbl_C3DF06:
 	pla                                     ;C3DF06
 	sta $00                                 ;C3DF07
-	jsl $C20F35                             ;C3DF09
+	jsl HandleCharacterDeath                             ;C3DF09
 	rts                                     ;C3DF0D
 	sep #$20                                ;C3DF0E
 	lda #$13                                ;C3DF10
@@ -14512,7 +14656,7 @@ func_C3DD85:
 	pha                                     ;C3DF21
 	lda #$15                                ;C3DF22
 	sta $02                                 ;C3DF24
-	jsl $C62550                             ;C3DF26
+	jsl PlayVisualEffect                             ;C3DF26
 	pla                                     ;C3DF2A
 	sta $00                                 ;C3DF2B
 	lda #$13                                ;C3DF2D
@@ -14526,7 +14670,7 @@ func_C3DD85:
 	pha
 	lda.b #$18
 	sta.b wTemp02
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	pla
 	sta.b wTemp00
 	jsl.l func_C27EB7
@@ -14536,7 +14680,7 @@ func_C3DD85:
 	pha                                     ;C3DF53
 	lda #$13                                ;C3DF54
 	sta $02                                 ;C3DF56
-	jsl $C62550                             ;C3DF58
+	jsl PlayVisualEffect                             ;C3DF58
 	lda $01,s                               ;C3DF5C
 	sta $00                                 ;C3DF5E
 	jsl $C210AC                             ;C3DF60
@@ -14577,7 +14721,7 @@ func_C3DD85:
 	sta $00                                 ;C3DFA9
 	lda #$1A                                ;C3DFAB
 	sta $02                                 ;C3DFAD
-	jsl $C62550                             ;C3DFAF
+	jsl PlayVisualEffect                             ;C3DFAF
 	pla                                     ;C3DFB3
 	sta $02                                 ;C3DFB4
 	lda #$ED                                ;C3DFB6
@@ -14595,19 +14739,19 @@ func_C3DD85:
 	sta.b wTemp00
 	lda.b #$23
 	sta.b wTemp02
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	lda.b #$05
 	sta.b wTemp00
 	lda.b #$09
 	sta.b wTemp01
-	jsl.l func_C3F69F
+	jsl.l GetRandomInRange
 	lda.b wTemp00
 	sta.b wTemp02
 	pla
 	sta.b wTemp00
 	lda.b #$13
 	sta.b wTemp01
-	jsl.l func_C228DF
+	jsl.l ApplyDamageFixed
 	rts
 	sep #$20                                ;C3DFF6
 	lda $00                                 ;C3DFF8
@@ -14635,7 +14779,7 @@ func_C3DD85:
 	sta $00                                 ;C3E027
 	lda #$1B                                ;C3E029
 	sta $02                                 ;C3E02B
-	jsl $C62550                             ;C3E02D
+	jsl PlayVisualEffect                             ;C3E02D
 	rts                                     ;C3E031
 	sep #$20 ;A->8
 	lda.b wTemp00
@@ -14647,7 +14791,7 @@ func_C3DD85:
 	sta.b wTemp00
 	lda.b #$1C
 	sta.b wTemp02
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	lda.b #$35
 	sta.b wTemp00
 	stz.b wTemp01
@@ -14667,13 +14811,13 @@ func_C3DD85:
 	sta.b wTemp00
 	lda.b #$21
 	sta.b wTemp02
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	pla
 	sta.b wTemp00
 	jsl.l func_C240D6
 	rts
 
-func_C3E07E:
+GetFloorLayoutData:
 	php
 	rep #$20 ;A->16
 	lda.l $7EC196
@@ -14686,7 +14830,7 @@ func_C3E07E:
 	plp
 	rtl
 
-func_C3E097:
+GetFloorLayoutData2:
 	php
 	rep #$20 ;A->16
 	lda.l $7EC19B
@@ -14702,7 +14846,7 @@ func_C3E097:
 	sta $00                                 ;C3E0B3
 	lda #$00CF                              ;C3E0B5
 	sta $02                                 ;C3E0B8
-	jsl $C62550                             ;C3E0BA
+	jsl PlayVisualEffect                             ;C3E0BA
 	lda #$0105                              ;C3E0BE
 	sta $00                                 ;C3E0C1
 	jsl.l DisplayMessage
@@ -14710,15 +14854,15 @@ func_C3E097:
 	rts                                     ;C3E0CB
 	rts                                     ;C3E0CC
 
-func_C3E0CD:
+LoadSaveData:
 	sep #$30 ;AXY->8
-	jsl.l func_C3E178
+	jsl.l SaveReadByte
 	lda.b wTemp00
 	beq @lbl_C3E0DC
 	bmi @lbl_C3E0DC
-	brl func_C3E104
+	brl ApplySaveData
 @lbl_C3E0DC:
-	jsl.l func_C3E768
+	jsl.l ReadSaveSlotFlags
 	lda.b wTemp00
 	cmp.b #$FF
 	bne @lbl_C3E100
@@ -14731,9 +14875,9 @@ func_C3E0CD:
 	jsl.l func_C48584
 	jsl.l func_C4014D
 @lbl_C3E100:
-	jsl.l func_C3E11A
+	jsl.l IncrementSaveCounter
 
-func_C3E104:
+ApplySaveData:
 	lda.b #$01
 	sta.b wTemp00
 	jsl.l func_C60003
@@ -14743,23 +14887,23 @@ func_C3E104:
 	stz.b wTemp00
 	jsl.l func_81CFE0
 
-func_C3E11A:
+IncrementSaveCounter:
 	php
 	rep #$20 ;A->16
-	jsl.l func_C3E7DA
+	jsl.l ReadSaveField0A
 	inc.b wTemp00
 	bne @lbl_C3E12A
 ;C3E125
 	.db $A9,$FF,$FF,$85,$00
 @lbl_C3E12A:
-	jsl.l func_C3E7E6
+	jsl.l WriteSaveField0A
 	plp
 	rtl
 
-func_C3E130:
+SaveLoadNoop:
 	rtl
 
-func_C3E131:
+GetDemoScriptPtr:
 	php
 	sep #$30 ;AXY->8
 	lda.b wTemp00
@@ -14767,19 +14911,19 @@ func_C3E131:
 	clc
 	adc.b wTemp00
 	tax
-	lda.l DATA8_C3E14F,x
-	sta.b w00ae
-	lda.l DATA8_C3E150,x
-	sta.b w00af
+	lda.l DemoTableAddrLo,x
+	sta.b wSaveStreamPtrLo
+	lda.l DemoTableAddrHi,x
+	sta.b wSaveStreamPtrHi
 	lda.l DemoTable,x
-	sta.b w00b0
+	sta.b wSaveStreamPtrBank
 	plp
 	rtl
 
-DATA8_C3E14F:
+DemoTableAddrLo:
 	.db $00
 
-DATA8_C3E150:
+DemoTableAddrHi:
 	.db $60
 
 ;c3e151
@@ -14797,7 +14941,7 @@ DemoTable:
 	.dl Demo5
 	.dl Demo6
 
-func_C3E16A:
+SaveWriteByte:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -14807,7 +14951,7 @@ func_C3E16A:
 	plp
 	rtl
 
-func_C3E178:
+SaveReadByte:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -14852,21 +14996,21 @@ func_C3E178:
 	plp
 	rtl
 
-func_C3E1C7:
+SaveStreamInit:
 	php
 	rep #$20 ;A->16
 	lda.w #$0004
-	sta.b w00ac
+	sta.b wSaveStreamPos
 	sep #$20 ;A->8
-	stz.b w00b1
+	stz.b wSaveStreamPageCtr
 	plp
 	rtl
 
-func_C3E1D5:
+SaveStreamAdvance:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
-	ldy.b w00ac
+	ldy.b wSaveStreamPos
 	cpy.w #$12D4
 	bcc @lbl_C3E203
 	cpy #$1374                              ;C3E1E1
@@ -14890,7 +15034,7 @@ func_C3E1D5:
 	lda.b wTemp00
 	cmp.b #$1C
 	beq @lbl_C3E232
-	stz.b w00b1
+	stz.b wSaveStreamPageCtr
 	cmp.b #$A0
 	bcc @lbl_C3E229
 	ldx.w #$0001
@@ -14936,7 +15080,7 @@ func_C3E1D5:
 @lbl_C3E258:
 	lda.b #$FF
 	sta.b [$AE],y
-	sty.b w00ac
+	sty.b wSaveStreamPos
 	rep #$20 ;A->16
 	tya
 	ldy.w #$0002
@@ -14945,13 +15089,13 @@ func_C3E1D5:
 	plp
 	rtl
 
-func_C3E26C:
+SaveStreamReadNext:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
-	lda.b w00b1
+	lda.b wSaveStreamPageCtr
 	bne @lbl_C3E2A3
-	ldy.b w00ac
+	ldy.b wSaveStreamPos
 	lda.b [$AE],y
 	sta.b wTemp00
 	cmp.b #$FF
@@ -14970,27 +15114,27 @@ func_C3E26C:
 ;C3E293  
 	.db $B7,$AE,$85,$02,$C8
 @lbl_C3E298:
-	sty.b w00ac
+	sty.b wSaveStreamPos
 @lbl_C3E29A:
 	plp
 	rtl
 @lbl_C3E29C:
 	lda.b [$AE],y
 	iny
-	sty.b w00ac
-	sta.b w00b1
+	sty.b wSaveStreamPos
+	sta.b wSaveStreamPageCtr
 @lbl_C3E2A3:
-	dec.b w00b1
+	dec.b wSaveStreamPageCtr
 	lda.b #$1C
 	sta.b wTemp00
 	plp
 	rtl
 
-func_C3E2AB:
+SaveStreamWriteBlock:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
-	ldy.b w00ac
+	ldy.b wSaveStreamPos
 	cpy.w #$1374
 	bcs @lbl_C3E2D9
 	ldx.w #$0000
@@ -15008,7 +15152,7 @@ func_C3E2AB:
 	bcc @lbl_C3E2BA
 	lda.b #$FF
 	sta.b [$AE],y
-	sty.b w00ac
+	sty.b wSaveStreamPos
 	rep #$20 ;A->16
 	tya
 	ldy.w #$0002
@@ -15017,11 +15161,11 @@ func_C3E2AB:
 	plp
 	rtl
 
-func_C3E2DB:
+SaveStreamReadBlock:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
-	ldy.b w00ac
+	ldy.b wSaveStreamPos
 	ldx.w #$0000
 @lbl_C3E2E5:
 	lda.b [$AE],y
@@ -15034,11 +15178,11 @@ func_C3E2DB:
 	iny
 	cpx.b wTemp00
 	bne @lbl_C3E2E5
-	sty.b w00ac
+	sty.b wSaveStreamPos
 	plp
 	rtl
 
-func_C3E2F7:
+CopySaveBlockToDemoSlot:
 	php
 	sep #$30 ;AXY->8
 	lda.b wTemp01
@@ -15046,9 +15190,9 @@ func_C3E2F7:
 	clc
 	adc.b wTemp01
 	tax
-	lda.l DATA8_C3E14F,x
+	lda.l DemoTableAddrLo,x
 	sta.b wTemp04
-	lda.l DATA8_C3E150,x
+	lda.l DemoTableAddrHi,x
 	sta.b wTemp05
 	lda.l DemoTable,x
 	sta.b wTemp06
@@ -15057,9 +15201,9 @@ func_C3E2F7:
 	clc
 	adc.b wTemp00
 	tax
-	lda.l DATA8_C3E14F,x
+	lda.l DemoTableAddrLo,x
 	sta.b wTemp00
-	lda.l DATA8_C3E150,x
+	lda.l DemoTableAddrHi,x
 	sta.b wTemp01
 	lda.l DemoTable,x
 	sta.b wTemp02
@@ -15081,18 +15225,18 @@ func_C3E2F7:
 	plp
 	rtl
 
-func_C3E34B:
+SaveStreamDeleteLast:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
-	ldy.b w00ac
+	ldy.b wSaveStreamPos
 	dey
 	lda.b [$AE],y
 	eor.b [$AE]
 	sta.b [$AE]
 	lda.b #$FF
 	sta.b [$AE],y
-	sty.b w00ac
+	sty.b wSaveStreamPos
 	rep #$20 ;A->16
 	tya
 	ldy.w #$0002
@@ -15100,7 +15244,7 @@ func_C3E34B:
 	plp
 	rtl
 
-func_C3E369:
+SaveStreamReset:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -15117,11 +15261,11 @@ func_C3E369:
 	plp
 	rtl
 
-func_C3E385:
+SaveStreamWriteByte:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
-	ldy.b w00ac
+	ldy.b wSaveStreamPos
 	cpy.w #$1374
 	bcs @lbl_C3E3A6
 	sta.b [$AE],y
@@ -15130,7 +15274,7 @@ func_C3E385:
 	iny
 	lda.b #$FF
 	sta.b [$AE],y
-	sty.b w00ac
+	sty.b wSaveStreamPos
 	rep #$20 ;A->16
 	tya
 	ldy.w #$0002
@@ -15139,33 +15283,33 @@ func_C3E385:
 	plp
 	rtl
 
-func_C3E3A8:
+SaveStreamPeekByte:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
-	ldy.b w00ac
+	ldy.b wSaveStreamPos
 	lda.b [$AE],y
 	sta.b wTemp00
 	cmp.b #$FF
 	beq @lbl_C3E3BA
 	iny
-	sty.b w00ac
+	sty.b wSaveStreamPos
 @lbl_C3E3BA:
 	plp
 	rtl
 
-func_C3E3BC:
+SaveStreamBytesRemaining:
 	php
 	rep #$30 ;AXY->16
 	ldy.w #$0002
 	lda.b [$AE],y
 	sec
-	sbc.b w00ac
+	sbc.b wSaveStreamPos
 	sta.b wTemp00
 	plp
 	rtl
 
-func_C3E3CB:
+MultiplyPackedBytesToWord:
 	php
 	sep #$20 ;A->8
 	lda.b wTemp01
@@ -15210,7 +15354,7 @@ func_C3E3CB:
 	plp
 	rtl
 
-func_C3E405:
+Multiply16BitNegated:
 	php
 	rep #$20 ;A->16
 	lda.b wTemp02
@@ -15330,7 +15474,7 @@ func_C3E405:
 	plp
 	rtl
 
-func_C3E4C1:
+Multiply16Bit:
 	php
 	sep #$20 ;A->8
 	lda.b wTemp02
@@ -15395,7 +15539,10 @@ func_C3E4C1:
 	plp
 	rtl
 
-func_C3E526:
+; 16-bit unsigned division using shift-and-subtract algorithm.
+; Input: wTemp00 = dividend, wTemp02 = divisor
+; Output: wTemp00 = quotient, wTemp01 = remainder
+Divide16Bit:
 	php
 	sep #$20 ;A->8
 	lda.b wTemp02
@@ -15449,7 +15596,7 @@ func_C3E526:
 	plp
 	rtl
 
-func_C3E571:
+SelectAndValidateSaveSlot:
 	php
 	sep #$20 ;A->8
 	lda.b wTemp00
@@ -15483,10 +15630,10 @@ func_C3E571:
 @lbl_C3E5AB:
 	sta.b wTemp00
 	phy
-	jsl.l func_C3E66B
+	jsl.l LoadSaveBlockPtr
 	ply
 	sty.b wTemp00
-	jsl.l func_C3E131
+	jsl.l GetDemoScriptPtr
 	jsl.l func_C60037
 	lda.b wTemp00
 	cmp.b #$FF
@@ -15500,18 +15647,18 @@ func_C3E571:
 	plp
 	rtl
 
-func_C3E5CD:
+WriteValidationString:
 	php
 	sep #$20 ;A->8
-	lda.b w00b4
+	lda.b wSaveBlockBank
 	pha
 	plb
 	rep #$30 ;AXY->16
-	ldy.b w00b2
+	ldy.b wSaveBlockPtrLo
 	ldx.w #$0000
 	sep #$20 ;A->8
 @lbl_C3E5DD:
-	lda.l DATA8_C3E5EC,x
+	lda.l SaveValidationString,x
 	beq @lbl_C3E5EA
 	sta.w wTemp01,y
 	inx
@@ -15521,22 +15668,22 @@ func_C3E5CD:
 	plp
 	rtl
 
-DATA8_C3E5EC:
+SaveValidationString:
 	.db $56,$41,$4C,$49,$44,$00
 
-func_C3E5F2:
+ValidateSaveBlock:
 	php
-	jsl.l func_C3E66B
+	jsl.l LoadSaveBlockPtr
 	sep #$20 ;A->8
-	lda.b w00b4
+	lda.b wSaveBlockBank
 	pha
 	plb
 	rep #$30 ;AXY->16
-	ldy.b w00b2
+	ldy.b wSaveBlockPtrLo
 	ldx.w #$0000
 	sep #$20 ;A->8
 @lbl_C3E606:
-	lda.l DATA8_C3E5EC,x
+	lda.l SaveValidationString,x
 	beq @lbl_C3E615
 	cmp.w wTemp01,y
 	bne @lbl_C3E625
@@ -15544,7 +15691,7 @@ func_C3E5F2:
 	iny
 	bra @lbl_C3E606
 @lbl_C3E615:
-	jsl.l func_C3E768
+	jsl.l ReadSaveSlotFlags
 	lda.b wTemp00
 	cmp.b #$FF
 	beq @lbl_C3E625
@@ -15557,23 +15704,23 @@ func_C3E5F2:
 	plp
 	rtl
 
-func_C3E629:
+LoadOrEraseSaveBlock:
 	php
 	sep #$30 ;AXY->8
 	lda.b wTemp00
 	pha
-	jsl.l func_C3E5F2
+	jsl.l ValidateSaveBlock
 	pla
 	ldy.b wTemp00
 	bne @lbl_C3E642
 	sta.b wTemp00
-	jsl.l func_C3E706
+	jsl.l EraseSaveBlock
 	stz.b wTemp00
 	plp
 	rtl
 @lbl_C3E642:
 	sta.b wTemp00
-	jsl.l func_C3E66B
+	jsl.l LoadSaveBlockPtr
 	rep #$10 ;XY->16
 	ldy.w #$0367
 	lda.b #$00
@@ -15585,7 +15732,7 @@ func_C3E629:
 	plp
 	rtl
 
-func_C3E658:
+WriteSaveBlockChecksum:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -15599,62 +15746,62 @@ func_C3E658:
 	plp
 	rtl
 
-func_C3E66B:
+LoadSaveBlockPtr:
 	php
 	sep #$30 ;AXY->8
 	lda.b wTemp00
 	sta.b w00b5
-	jsl.l func_C3E131
+	jsl.l GetDemoScriptPtr
 	lda.b w00b5
 	asl a
 	clc
 	adc.b w00b5
 	tax
 	rep #$20 ;A->16
-	lda.l DATA8_C3E68F,x
-	sta.b w00b2
+	lda.l SaveBlockAddrTable,x
+	sta.b wSaveBlockPtrLo
 	sep #$20 ;A->8
-	lda.l DATA8_C3E691,x
-	sta.b w00b4
+	lda.l SaveBlockBankTable,x
+	sta.b wSaveBlockBank
 	plp
 	rtl
 
-DATA8_C3E68F:
+SaveBlockAddrTable:
 	.db $58,$7B                           ;C3E68F
 
-DATA8_C3E691:
+SaveBlockBankTable:
 	.db $B0,$58,$7B,$B1,$58,$7B,$B2       ;C3E691
 
-func_C3E698:
+GetCurrentSaveSlot:
 	php
 	lda.b w00b5
 	sta.b wTemp00
 	plp
 	rtl
 
-func_C3E69F:
+SetSaveBlockPtrAndRead:
 	sep #$30 ;AXY->8
 	lda.b wTemp00
-	jsl.l func_C3E66B
-	jsl.l func_C3E0CD
+	jsl.l LoadSaveBlockPtr
+	jsl.l LoadSaveData
 
-func_C3E6AB:
+InitAndWriteSaveBlock:
 	sep #$30 ;AXY->8
 	lda.b wTemp00
 	pha
-	jsl.l func_C3E66B
+	jsl.l LoadSaveBlockPtr
 	pla
 	sta.b wTemp00
-	jsl.l func_C3E1C7
+	jsl.l SaveStreamInit
 	lda.b #$FF
 	sta.b wTemp00
-	jsl.l func_C3E16A
-	jsl.l func_C3E6D3
-	jsl.l func_C3E5CD
-	jsl.l func_C3E658
-	jsl.l func_C3E0CD
+	jsl.l SaveWriteByte
+	jsl.l ClearSaveBlockFields
+	jsl.l WriteValidationString
+	jsl.l WriteSaveBlockChecksum
+	jsl.l LoadSaveData
 
-func_C3E6D3:
+ClearSaveBlockFields:
 	php
 	sep #$20 ;A->8
 	lda.b #$FF
@@ -15662,35 +15809,35 @@ func_C3E6D3:
 	sta.b wTemp01
 	sta.b wTemp02
 	sta.b wTemp03
-	jsl.l func_C3E77A
+	jsl.l WriteSaveSlotFlags
 	stz.b wTemp00
 	stz.b wTemp01
-	jsl.l func_C3E7E6
+	jsl.l WriteSaveField0A
 	lda.b #$17
 	sta.b wTemp00
 	stz.b wTemp02
-	jsl.l func_C3E826
+	jsl.l WriteSaveFieldIndexed
 	stz.b wTemp00
-	jsl.l func_C3E7D1
+	jsl.l WriteSaveField0C
 	lda.b #$01
 	sta.b wTemp00
-	jsl.l func_C3E80B
+	jsl.l WriteSaveField0F
 	plp
 	rtl
 
-func_C3E706:
+EraseSaveBlock:
 	php
-	jsl.l func_C3E66B
+	jsl.l LoadSaveBlockPtr
 	sep #$20 ;A->8
-	lda.b w00b4
+	lda.b wSaveBlockBank
 	pha
 	plb
 	rep #$30 ;AXY->16
-	ldy.b w00b2
+	ldy.b wSaveBlockPtrLo
 	ldx.w #$0000
 	sep #$20 ;A->8
 @lbl_C3E71A:
-	lda.l DATA8_C3E5EC,x
+	lda.l SaveValidationString,x
 	beq @lbl_C3E729
 	lda.b #$00
 	sta.w wTemp01,y
@@ -15701,27 +15848,27 @@ func_C3E706:
 	plp
 	rtl
 
-func_C3E72B:
+CopySaveBlock:
 	php
 	rep #$20 ;A->16
 	sep #$10 ;XY->8
 	lda.b wTemp00
 	pha
-	jsl.l func_C3E2F7
+	jsl.l CopySaveBlockToDemoSlot
 	pla
 	sta.b wTemp00
 	ldx.b wTemp01
 	ldy.b wTemp00
 	stx.b wTemp00
 	phy
-	jsl.l func_C3E66B
+	jsl.l LoadSaveBlockPtr
 	ply
-	lda.b w00b2
-	ldx.b w00b4
+	lda.b wSaveBlockPtrLo
+	ldx.b wSaveBlockBank
 	sty.b wTemp00
 	pha
 	phx
-	jsl.l func_C3E66B
+	jsl.l LoadSaveBlockPtr
 	plx
 	pla
 	sta.b wTemp04
@@ -15737,7 +15884,7 @@ func_C3E72B:
 	plp
 	rtl
 
-func_C3E768:
+ReadSaveSlotFlags:
 	php
 	rep #$30 ;AXY->16
 	ldy.w #$0006
@@ -15750,7 +15897,7 @@ func_C3E768:
 	plp
 	rtl
 
-func_C3E77A:
+WriteSaveSlotFlags:
 	php
 	rep #$30 ;AXY->16
 	ldy.w #$0006
@@ -15775,12 +15922,12 @@ func_C3E77A:
 	plp
 	rtl
 
-func_C3E7A4:
+ReadSaveField0D:
 	php
 	rep #$10 ;XY->16
 	ldy.w #$000D
 
-func_C3E7AA:
+ReadSaveFieldAtY:
 	sep #$20 ;A->8
 	lda.b [$B2],y
 	sta.b wTemp00
@@ -15788,7 +15935,7 @@ func_C3E7AA:
 	rtl
 	.db $08,$C2,$10,$A0,$0D,$00           ;C3E7B2
 
-func_C3E7B8:
+WriteSaveFieldAtY:
 	sep #$20 ;A->8
 	lda.b wTemp00
 	eor.b [$B2],y
@@ -15799,19 +15946,19 @@ func_C3E7B8:
 	plp
 	rtl
 
-func_C3E7C8:
+ReadSaveField0C:
 	php
 	rep #$10 ;XY->16
 	ldy.w #$000C
-	jmp.w func_C3E7AA
+	jmp.w ReadSaveFieldAtY
 
-func_C3E7D1:
+WriteSaveField0C:
 	php
 	rep #$10 ;XY->16
 	ldy.w #$000C
-	jmp.w func_C3E7B8
+	jmp.w WriteSaveFieldAtY
 
-func_C3E7DA:
+ReadSaveField0A:
 	php
 	rep #$30 ;AXY->16
 	ldy.w #$000A
@@ -15820,7 +15967,7 @@ func_C3E7DA:
 	plp
 	rtl
 
-func_C3E7E6:
+WriteSaveField0A:
 	php
 	rep #$30 ;AXY->16
 	ldy.w #$000A
@@ -15837,31 +15984,31 @@ func_C3E7E6:
 	plp
 	rtl
 
-func_C3E802:
+ReadSaveField0F:
 	php
 	rep #$10 ;XY->16
 	ldy.w #$000F
-	jmp.w func_C3E7AA
+	jmp.w ReadSaveFieldAtY
 
-func_C3E80B:
+WriteSaveField0F:
 	php
 	rep #$10 ;XY->16
 	ldy.w #$000F
-	jmp.w func_C3E7B8
+	jmp.w WriteSaveFieldAtY
 
-func_C3E814:
+ReadSaveField0E:
 	php
 	rep #$10 ;XY->16
 	ldy.w #$000E
-	jmp.w func_C3E7AA
+	jmp.w ReadSaveFieldAtY
 
-func_C3E81D:
+WriteSaveField0E:
 	php
 	rep #$10 ;XY->16
 	ldy.w #$000E
-	jmp.w func_C3E7B8
+	jmp.w WriteSaveFieldAtY
 
-func_C3E826:
+WriteSaveFieldIndexed:
 	php
 	sep #$20 ;A->8
 	lda.b #$00
@@ -15881,7 +16028,7 @@ func_C3E826:
 	plp
 	rtl
 
-func_C3E845:
+ReadSaveFieldIndexed:
 	php
 	sep #$20 ;A->8
 	lda.b #$00
@@ -15897,7 +16044,7 @@ func_C3E845:
 	plp
 	rtl
 
-func_C3E85C:
+ReadSaveItemRecord:
 	php
 	sep #$20 ;A->8
 	stz.b wTemp07
@@ -15923,7 +16070,7 @@ func_C3E85C:
 	plp
 	rtl
 
-func_C3E881:
+WriteSaveItemRecord:
 	php
 	sep #$20 ;A->8
 	stz.b wTemp07
@@ -15965,10 +16112,10 @@ func_C3E881:
 	plp
 	rtl
 
-func_C3E8C6:
+SaveNoop:
 	rtl
 
-func_C3E8C7:
+SelectSaveSlotForLoad:
 	php
 	rep #$30 ;AXY->16
 	lda.w #$0002
@@ -15987,7 +16134,7 @@ func_C3E8C7:
 	ldx.w #$0004
 	bra @lbl_C3E90B
 @lbl_C3E8F5:
-	jsl.l func_C3E802
+	jsl.l ReadSaveField0F
 	stz.b wTemp01
 	lda.b wTemp00
 	sta.l $7F9CE2
@@ -16015,7 +16162,7 @@ GetLivePlayerActionCommand:
 	beq @lbl_C3E94A
 	cmp.w #$0083
 	bne @lbl_C3E93A
-	jsl.l func_C3ED51
+	jsl.l GetThrowableItemAction
 	lda.b wTemp00
 	bmi @lbl_C3E968
 	pla
@@ -16024,7 +16171,7 @@ GetLivePlayerActionCommand:
 @lbl_C3E93A:
 	lda.w #$0000
 	sta.l $7F9CD8
-	jsl.l func_C3EB97
+	jsl.l OpenGroundItemMenuWithItem
 	bcs @lbl_C3E951
 	pla
 	plp
@@ -16036,7 +16183,7 @@ GetLivePlayerActionCommand:
 	lda.w #$0013
 	sta.b wTemp00
 	jsl.l GetCharacterMapInfo
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	lda.b wTemp01
 	and.w #$00FF
 	cmp.w #$0083
@@ -16090,7 +16237,7 @@ GetLivePlayerActionCommand:
 	jsl.l func_C07CC7
 @lbl_C3E9BC:
 	; Poll controller state and derive the next live player action command.
-	jsl.l func_C3F3E7
+	jsl.l HandleItemDetailInput
 	ldx.w #$0000
 	stx.b wTemp00
 	phx
@@ -16193,7 +16340,7 @@ GetLivePlayerActionCommand:
 @lbl_C3EA91:
 	bit.w #$0020
 	beq @lbl_C3EA9D
-	jsl.l func_C3F3B6
+	jsl.l WaitForButtonRelease
 @lbl_C3EA9A:
 	jmp.w @lbl_C3E9B8
 @lbl_C3EA9D:
@@ -16218,7 +16365,7 @@ GetLivePlayerActionCommand:
 @lbl_C3EAC2:
 	tdc
 	sta.l $7F9CDA
-	jsl.l func_C3EBA3
+	jsl.l OpenGroundItemMenuEmpty
 	bcs @lbl_C3EA9A
 	plp
 	rtl
@@ -16305,9 +16452,9 @@ MapDPadBitsToDirection:
 	lda.b wTemp00
 	and.w #$000F
 @lbl_C3EB63:
-	cmp.w DATA8_C3EB77,x
+	cmp.w ItemActionPriorityTableA,x
 	bne @lbl_C3EB70
-	lda.w DATA8_C3EB87,x
+	lda.w ItemActionPriorityTableB,x
 	sta.b wTemp00
 	plp
 	clc
@@ -16320,48 +16467,48 @@ MapDPadBitsToDirection:
 	sec
 	rtl
 
-DATA8_C3EB77:
+ItemActionPriorityTableA:
 	.db $09,$00,$05,$00,$0A,$00,$06,$00,$08,$00,$01,$00,$04,$00,$02,$00   ;C3EB77
 
-DATA8_C3EB87:
+ItemActionPriorityTableB:
 	.db $01,$00,$07,$00,$03,$00,$05,$00,$02,$00,$00,$00,$06,$00,$04,$00   ;C3EB87
 
-func_C3EB97:
+OpenGroundItemMenuWithItem:
 	php
 	rep #$30 ;AXY->16
 	lda.w #$0001
 	sta.l $7F9CE0
-	bra func_C3EBAD
+	bra OpenGroundItemMenuDispatch
 
-func_C3EBA3:
+OpenGroundItemMenuEmpty:
 	php
 	rep #$30 ;AXY->16
 	lda.w #$0000
 	sta.l $7F9CE0
-func_C3EBAD:
+OpenGroundItemMenuDispatch:
 	jsl.l func_C07D19
 	jsl.l func_C4854E
 	lda.l $7F9CE0
-	beq func_C3EBBE
+	beq GroundItemMenuHandleInput
 	jmp.w BuildGroundItemActionCommand
-func_C3EBBE:
+GroundItemMenuHandleInput:
 	lda.l $7F9CE0
-	bne func_C3EBF9
+	bne GroundItemMenuCancel
 	jsl.l func_C49602
-	bcs func_C3EBF9
+	bcs GroundItemMenuCancel
 	lda.b wTemp00
 	asl a
 	tax
-	lda.l DATA8_C3EBD4,x
+	lda.l GroundItemActionHandlers,x
 	pha
 	rts
 
-DATA8_C3EBD4:
+GroundItemActionHandlers:
 	.db $FF,$EB,$07,$EC,$AD,$EC,$B4,$EC   ;C3EBD4
 	.db $BC,$EC                           ;C3EBDC  
 	.db $28,$EC                           ;C3EBDE
 	.db $3F,$EC,$49,$EC,$07,$EC           ;C3EBE0  
-func_C3EBE6:
+GroundItemMenuSuccess:
 	lda.b wTemp00
 	pha
 	lda.b wTemp02
@@ -16374,19 +16521,19 @@ func_C3EBE6:
 	plp
 	clc
 	rtl
-func_C3EBF9:
+GroundItemMenuCancel:
 	jsl.l func_C48584
 	plp
 	sec
 	rtl
-	jsl.l func_C3F123
-	bcs func_C3EBBE
-	bra func_C3EBE6
+	jsl.l OpenContainerActionMenu
+	bcs GroundItemMenuHandleInput
+	bra GroundItemMenuSuccess
 	lda.l $7F9CD8
 	bne @lbl_C3EC15
 	lda.w #$005F
 	sta.b wTemp00
-	bra func_C3EBE6
+	bra GroundItemMenuSuccess
 @lbl_C3EC15:
 	jsl $C4A29D                             ;C3EC15
 	lda $00                                 ;C3EC19
@@ -16400,7 +16547,7 @@ func_C3EBF9:
 
 BuildGroundItemActionCommand:
 	jsl.l OpenGroundItemActionMenu
-	bcs func_C3EBBE
+	bcs GroundItemMenuHandleInput
 	lda.b wTemp02
 	bne @lbl_C3EC40
 	; Ground-container special case: choose an item to put inside the container.
@@ -16466,13 +16613,13 @@ BuildGroundItemActionCommand:
 	; Fall back to the context-sensitive underfoot pickup action ($5F).
 	lda.w #$005F
 	sta.b wTemp00
-	jmp.w func_C3EBE6
+	jmp.w GroundItemMenuSuccess
 	; Toggle the ground-item details display.
 	jsl.l ToggleGroundItemDetailsView
-	jmp.w func_C3EBF9
+	jmp.w GroundItemMenuCancel
 	lda.w #$00F0
 	sta.b wTemp00
-	jmp.w func_C3EBE6
+	jmp.w GroundItemMenuSuccess
 	lda #$00F1                              ;C3ECBD
 	sta $00                                 ;C3ECC0
 	jmp $EBE6                               ;C3ECC2
@@ -16536,7 +16683,7 @@ BuildGroundItemActionCommand:
 	rtl                                     ;C3ED3A
 	.db $BF,$01,$03,$00,$09,$04,$02,$02,$21,$10,$00,$C0,$01,$03,$00,$04,$06,$01,$03,$21,$10,$00   ;C3ED3B
 
-func_C3ED51:
+GetThrowableItemAction:
 	php
 	rep #$30 ;AXY->16
 	jsl.l func_C07D19
@@ -16554,7 +16701,7 @@ func_C3ED51:
 	plp
 	rtl
 
-func_C3ED74:
+GetContainerItemAction:
 	php
 	rep #$30 ;AXY->16
 	lda.b wTemp00
@@ -16568,7 +16715,7 @@ func_C3ED74:
 	cmp.w #$06BF
 	bne @lbl_C3ED92
 @lbl_C3ED8F:
-	jmp.w func_C3EE0C
+	jmp.w GetEmptyPotAction
 @lbl_C3ED92:
 	cmp.w #$0949
 	beq @lbl_C3EDBD
@@ -16614,7 +16761,7 @@ func_C3ED74:
 	adc.w #$000D
 	tax
 @lbl_C3EDE2:
-	lda.l DATA8_C3EE2E,x
+	lda.l ContainerSlotDescriptors,x
 	bmi @lbl_C3EDEC
 	cmp.b wTemp00
 	bne @lbl_C3EDDC
@@ -16637,7 +16784,7 @@ func_C3ED74:
 	plp
 	rtl
 
-func_C3EE0C:
+GetEmptyPotAction:
 	sep #$30 ;AXY->8
 	lda.b #$1F
 	sta.b wTemp00
@@ -16657,7 +16804,7 @@ func_C3EE0C:
 	plp
 	rtl
 
-DATA8_C3EE2E:
+ContainerSlotDescriptors:
 	.db $8D,$06,$A9,$01,$16,$00,$08,$04   ;C3EE2E
 	.db $01,$02,$25,$10,$00,$3E,$09       ;C3EE36
 	.db $AC,$01,$03,$00,$08,$0A,$02,$05   ;C3EE3D  
@@ -16818,12 +16965,12 @@ DATA8_C3EE2E:
 	.db $A5,$02,$48,$22,$84,$85,$C4,$68,$85,$02,$68,$85,$00,$28,$18,$6B   ;C3F10C  
 	.db $22,$84,$85,$C4,$28,$38,$6B       ;C3F11C  
 
-func_C3F123:
+OpenContainerActionMenu:
 	php
 	rep #$30 ;AXY->16
-func_C3F126:
+OpenContainerActionMenuLoop:
 	jsl.l func_C49B38
-	bcs func_C3F17A
+	bcs ContainerActionCancel
 	lda.b wTemp00
 	cmp.w #$001F
 	bne @lbl_C3F138
@@ -16833,34 +16980,34 @@ func_C3F126:
 	lda.b wTemp02
 	asl a
 	tax
-	lda.l DATA8_C3F142,x
+	lda.l ContainerActionHandlers,x
 	pha
 	rts
 
-DATA8_C3F142:
+ContainerActionHandlers:
 	.db $4D,$F1,$5C,$F1,$65,$F1           ;C3F142
 	.db $6C,$F1,$65,$F1,$55,$F1           ;C3F148  
 	jsl.l BuildGroundContainerInsertCommand
-	bcs func_C3F126
-	bra func_C3F177
+	bcs OpenContainerActionMenuLoop
+	bra ContainerActionSuccess
 	jsr.w BuildContainedItemActionCommand
-	bcs func_C3F126
+	bcs OpenContainerActionMenuLoop
 	.db $80,$1A                           ;C3F15B  
 	lda.b wTemp00
 	ora.w #$0080
 	sta.b wTemp00
-	bra func_C3F177
+	bra ContainerActionSuccess
 	lda.w #$0040
 	tsb.b wTemp00
-	bra func_C3F177
+	bra ContainerActionSuccess
 	jsl.l func_C23B7C
-	jsl.l func_C3F336
-	bra func_C3F126
-func_C3F177:
+	jsl.l TryAssignItemCustomName
+	bra OpenContainerActionMenuLoop
+ContainerActionSuccess:
 	plp
 	clc
 	rtl
-func_C3F17A:
+ContainerActionCancel:
 	plp
 	sec
 	rtl
@@ -16882,57 +17029,57 @@ BuildGroundContainerInsertCommand:
 	lda $01                                 ;C3F199
 	sta $00                                 ;C3F19B
 @lbl_C3F19D:
-	jsl.l func_C3F2FD
+	jsl.l ResolveBlankScrollContents
 	lda.b wTemp00
 	cmp.b #$0B
-	bne func_C3F1BA
+	bne CheckMergeableInsert
 	lda.b wTemp01
 	ldx.b #$03
 @lbl_C3F1AB:
-	cmp.l UNREACH_C3F1B6,x
-	beq func_C3F1C7
+	cmp.l ContainerItemTypes,x
+	beq EncodeInsertCommand
 	dex
 	bpl @lbl_C3F1AB
 	.db $80,$1B                           ;C3F1B4  
 
-UNREACH_C3F1B6:
+ContainerItemTypes:
 	.db $B9,$BE,$B5,$C1                   ;C3F1B6  
-func_C3F1BA:
+CheckMergeableInsert:
 	lda.b wTemp01
 	ldx.b #$02
 @lbl_C3F1BE:
-	cmp.l DATA8_C3F1CE,x
-	beq func_C3F1D1
+	cmp.l MergeableItemTypes,x
+	beq EncodeMergeCommand
 	dex
 	bpl @lbl_C3F1BE
-func_C3F1C7:
+EncodeInsertCommand:
 	pla
 	ora.b #$60
 	sta.b wTemp00
-	bra func_C3F1F0
+	bra ContainerInsertSuccess
 
-DATA8_C3F1CE:
+MergeableItemTypes:
 	.db $57,$59,$6D                       ;C3F1CE
-func_C3F1D1:
+EncodeMergeCommand:
 	stz.b wTemp00
 	jsl.l func_C23B7C
 	lda.b wTemp00
-	bmi func_C3F1F3
+	bmi ContainerInsertCancel
 	lda.b wTemp01,s
 	sta.b wTemp00
 	jsl.l func_C4A0B1
-	bcs func_C3F1F3
+	bcs ContainerInsertCancel
 	lda.b wTemp00
 	sta.b wTemp01
 	pla
 	ora.b #$A0
 	sta.b wTemp00
-	bra func_C3F177
-func_C3F1F0:
+	bra ContainerActionSuccess
+ContainerInsertSuccess:
 	plp
 	clc
 	rtl
-func_C3F1F3:
+ContainerInsertCancel:
 	pla                                     ;C3F1F3
 	plp                                     ;C3F1F4
 	sec                                     ;C3F1F5
@@ -17100,12 +17247,12 @@ BuildContainedItemActionCommand:
 	clc                                     ;C3F2FB
 	rts                                     ;C3F2FC
 
-func_C3F2FD:
+ResolveBlankScrollContents:
 	php
 	sep #$30 ;AXY->8
 	ldy.b wTemp00
 	phy
-	jsl.l func_C30710
+	jsl.l GetItemDisplayInfo
 	ply
 	lda.b wTemp01
 	cmp.b #$68
@@ -17138,12 +17285,12 @@ func_C3F2FD:
 	rtl                                     ;C3F335
 .ACCU 8
 
-func_C3F336:
+TryAssignItemCustomName:
 	php
 	sep #$30 ;AXY->8
 	ldy.b wTemp00
 	phy
-	jsl.l func_C30710
+	jsl.l GetItemDisplayInfo
 	ply
 	lda.b wTemp01
 	cmp.b #$68
@@ -17155,7 +17302,7 @@ func_C3F336:
 	bit.b #$04
 	bne @lbl_C3F35D
 	phy
-	jsl.l func_C301CE
+	jsl.l FindFreeCustomNameSlot
 	ply
 	lda.b wTemp00
 	bmi @lbl_C3F385
@@ -17197,14 +17344,14 @@ ToggleGroundItemDetailsView:
 	tdc
 	sta.l $7F9CE2
 	sta.b wTemp00
-	jsl.l func_C3E80B
+	jsl.l WriteSaveField0F
 	lda.w #$0006
 	bra @lbl_C3F3AE
 @lbl_C3F3A0:
 	inc a
 	sta.l $7F9CE2
 	sta.b wTemp00
-	jsl.l func_C3E80B
+	jsl.l WriteSaveField0F
 	lda.w #$0004
 @lbl_C3F3AE:
 	sta.b wTemp00
@@ -17212,7 +17359,7 @@ ToggleGroundItemDetailsView:
 	plp
 	rtl
 
-func_C3F3B6:
+WaitForButtonRelease:
 	php
 	sep #$30 ;AXY->8
 	lda.l debugMode
@@ -17236,7 +17383,7 @@ func_C3F3B6:
 	plp
 	rtl
 
-func_C3F3E7:
+HandleItemDetailInput:
 	php
 	rep #$30 ;AXY->16
 	lda.l debugMode

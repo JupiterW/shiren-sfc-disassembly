@@ -170,7 +170,7 @@ func_C260DB:
 	lda.b #$01
 	sta.b wTemp03
 	sta.b wTemp04
-	jsl.l func_C36829
+	jsl.l PlaceDoorOnTile
 	stz.b wTemp00
 	plp
 	rtl
@@ -353,7 +353,7 @@ func_C262D5:
 	ldx.b wTemp00
 	lda.l wCharUnderfootTerrainType,x
 	sta.b wTemp00
-	jsl.l func_C366C4
+	jsl.l SetTileOccupied
 	lda.b #$01
 	sta.b wTemp00
 	plp
@@ -434,7 +434,7 @@ func_C262D5:
 	sta.b wTemp00
 	pha
 	phx
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	plx
 	pla
 	ldy.b wTemp00
@@ -499,7 +499,7 @@ func_C262D5:
 	bne @lbl_C26568
 	sta.b wTemp00
 	phx
-	jsl.l func_C365F0
+	jsl.l GetStaircaseCoords
 	plx
 	lda.b wTemp00
 	bpl @lbl_C2659C
@@ -580,7 +580,7 @@ func_C262D5:
 	bmi @lbl_C2670D
 	sta.b wTemp00
 	phx
-	jsl.l func_C306F4
+	jsl.l FreeFloorItemSlot
 	plx
 @lbl_C2670D:
 	lda.l wCharXPos,x
@@ -588,7 +588,7 @@ func_C262D5:
 	lda.l wCharYPos,x
 	sta.b wTemp01
 	phx
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	plx
 	lda.b wTemp01
 	sta.l wCharHeldItem,x
@@ -596,7 +596,7 @@ func_C262D5:
 	lda.b #$00
 	sta.b wTemp01
 	phx
-	jsl.l func_C33AB2
+	jsl.l SetContainedItemsGoods
 	plx
 	lda.l wCharXPos,x
 	sta.b wTemp00
@@ -605,7 +605,7 @@ func_C262D5:
 	lda.b #$80
 	sta.b wTemp02
 	phx
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 	plx
 	lda.b #$53
 	sta.l wCharAttackTarget,x
@@ -622,7 +622,7 @@ func_C26757:
 	lda.l wCharYPos,x
 	sta.b wTemp01
 	phx
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	plx
 	lda.b wTemp01
 	bmi @lbl_C2677C
@@ -642,7 +642,7 @@ func_C26757:
 	and.b #$0F
 	sta.b wTemp00
 	phx
-	jsl.l func_C35BE4
+	jsl.l GetItemCoords
 	plx
 	rts
 @lbl_C26797:
@@ -732,17 +732,17 @@ func_C2679E:
 	lda.l wCharYPos,x
 	sta.b wTemp01
 	phx
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	plx
 	lda.b wTemp01
 	sta.b wTemp00
 	phx
-	jsl.l func_C306F4
+	jsl.l FreeFloorItemSlot
 	plx
 	lda.b #$40
 	sta.b wTemp00
 	phx
-	jsl.l func_C3035D
+	jsl.l SpawnFloorItemWithRandomMod
 	plx
 	lda.b wTemp00
 	sta.b wTemp02
@@ -751,7 +751,7 @@ func_C2679E:
 	lda.l wCharYPos,x
 	sta.b wTemp01
 	phx
-	jsl.l func_C35BA2
+	jsl.l PlaceItemWithCoords
 	plx
 	stz.b wTemp00
 	plp
@@ -1438,7 +1438,7 @@ func_C27226:
 	stx.b wTemp00
 	lda.b #$01
 	sta.b wTemp02
-	jsl.l func_C62550
+	jsl.l PlayVisualEffect
 	plp
 	rtl
 

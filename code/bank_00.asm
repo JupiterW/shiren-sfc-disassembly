@@ -731,7 +731,7 @@ func_C0697C:
 	cmp.b #$FF
 	beq @lbl_C069BD
 	phx
-	jsl.l func_C30710
+	jsl.l GetItemDisplayInfo
 	plx
 	lda.b wTemp00
 	inc a
@@ -755,7 +755,7 @@ func_C0697C:
 	sta.b wTemp00
 	sep #$20 ;A->8
 	phx
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	plx
 	lda.b wTemp01
 	cmp.b #$80
@@ -928,7 +928,7 @@ func_C06AC9:
 	sta.b wTemp00
 	lda.b wTemp01,s
 	sta.b wTemp01
-	jsl.l func_C3909E
+	jsl.l FindRoomContainingCoord
 	lda.b wTemp00
 	sta.l $7E80D4
 	lda.l $7E843E
@@ -971,13 +971,13 @@ func_C06B49:
 	sta.w $833C,x
 	sep #$20 ;A->8
 	phx
-	call_savebank func_C30710
+	call_savebank GetItemDisplayInfo
 	plx
 	lda.b wTemp05
 	cmp.b #$E6
 	beq @lbl_C06B8D
 	lda.b wTemp01
-	cmp.b #$7B
+	cmp.b #Item_InvisibleItem
 	bne @lbl_C06B95
 ;C06B86
 	lda #$0D                                ;C06B86
@@ -2073,7 +2073,7 @@ func_C07339:
 	lsr a
 	lsr a
 	sta.b wTemp01
-	jsl.l func_C3909E
+	jsl.l FindRoomContainingCoord
 	lda.b wTemp00
 	sta.l $7E80D4
 	lda.l $7E843E
@@ -2406,7 +2406,7 @@ func_C076E9:
 @lbl_C07712:
 	lda.b #$13
 	sta.b wTemp00
-	jsl.l func_C285A2
+	jsl.l GetCharacterStatusEffects
 	stz.b wTemp01
 	stz.b wTemp00
 	lda.b wTemp02
@@ -2486,7 +2486,7 @@ func_C076E9:
 	sta.b wTemp00
 	lda.w $80C6
 	sta.b wTemp01
-	jsl.l func_C3909E
+	jsl.l FindRoomContainingCoord
 	lda.b wTemp00
 	bpl @lbl_C077D5
 	ldx.w $80C8
@@ -2756,7 +2756,7 @@ func_C079F6:
 	lda.b wTemp00
 	pha
 	dec.b wTemp01
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	ldy.b wTemp01
 	lda.b wTemp01,s
 	sta.b wTemp00
@@ -2775,7 +2775,7 @@ func_C079F6:
 	ldx #$06                                ;C07A3C
 	.db $80,$5A   ;C07A3E
 @lbl_C07A40:
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	lda.b wTemp02
 	bit.b #$80
 	bne @lbl_C07A54
@@ -2790,7 +2790,7 @@ func_C079F6:
 	sta.b wTemp00
 	lda.b wTemp02,s
 	sta.b wTemp01
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	ldy.b wTemp01
 	lda.b wTemp01,s
 	inc a
@@ -2802,14 +2802,14 @@ func_C079F6:
 	bne @lbl_C07A84
 	cpy.b #$83
 	beq @lbl_C07A98
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	lda.b wTemp02
 	bit.b #$80
 	beq @lbl_C07A98
 	ldx.b #$00
 	bra @lbl_C07A9A
 @lbl_C07A84:
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	lda.b wTemp02
 	bit.b #$80
 	bne @lbl_C07A98
@@ -2960,7 +2960,7 @@ func_C07BB3:
 	jsl.l func_80B5D6
 	lda.b #$13
 	sta.b wTemp00
-	jsl.l func_C285A2
+	jsl.l GetCharacterStatusEffects
 	lda.b wTemp02
 	bne @lbl_C07BCE
 	lda.b wTemp03
@@ -3021,7 +3021,7 @@ func_C07C05:
 	stz.w $80D2
 	lda.w #$0001
 	sta.w $80BC
-	jsl.l func_C3909E
+	jsl.l FindRoomContainingCoord
 	lda.b wTemp00
 	sta.w $80D4
 	lda.w $80CC
@@ -3072,7 +3072,7 @@ func_C07CC7:
 	sep #$20 ;A->8
 	lda.b #$13
 	sta.b wTemp00
-	jsl.l func_C285A2
+	jsl.l GetCharacterStatusEffects
 	lda.b wTemp02
 	bne func_C07C8A
 	lda.b wTemp03
@@ -3133,7 +3133,7 @@ func_C07D52:
 	sta.b wTemp00
 	lda.l $7E814D
 	sta.b wTemp01
-	jsl.l func_C3909E
+	jsl.l FindRoomContainingCoord
 	lda.b wTemp00
 	sta.l $7E80D4
 	lda.l $7E80CC

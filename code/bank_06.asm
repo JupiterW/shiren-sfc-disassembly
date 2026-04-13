@@ -18,9 +18,9 @@ func_C60003:
 	lda.b wTemp00
 	pha
 	stz.b wTemp00
-	jsl.l func_C3E16A
+	jsl.l SaveWriteByte
 	stz.b wTemp00
-	jsl.l func_C3E7D1
+	jsl.l WriteSaveField0C
 	jsl.l func_80DF35
 	pla
 	sta.b wTemp00
@@ -30,7 +30,7 @@ func_C60003:
 func_C60037:
 	php
 	sep #$20 ;A->8
-	jsl.l func_C3E178
+	jsl.l SaveReadByte
 	lda.b wTemp00
 	bmi @lbl_C60058
 	lda.b #$00
@@ -133,7 +133,7 @@ func_C600E4:
 	lda.b #$13
 	sta.b wTemp00
 	jsl.l GetCharacterMapInfo
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	lda.b wTemp01
 	cmp.l $7ED604
 	beq @lbl_C60119
@@ -157,7 +157,7 @@ func_C600E4:
 	cmp.w #$00F0
 	beq @lbl_C6018C
 	pha
-	jsl.l func_C3E1D5
+	jsl.l SaveStreamAdvance
 	pla
 	sta.b wTemp00
 	sep #$20 ;A->8
@@ -173,7 +173,7 @@ func_C600E4:
 	rtl
 @lbl_C6015F:
 	.db $A0,$10,$5A,$22,$89,$7C,$C0,$7A   ;C6015F
-	.db $22,$4A,$85,$80,$88,$D0,$F3       ;C60167  
+	.db $22,$4A,$85,$80,$88,$D0,$F3      ;C6016A
 @lbl_C6016E:
 	rep #$20 ;A->16
 	stz.b wTemp00
@@ -251,7 +251,7 @@ func_C601FA:
 	jsl.l func_C28B23
 	ldy.b wTemp00
 	bne func_C601E3
-	jsl.l func_C3E26C
+	jsl.l SaveStreamReadNext
 	lda.b wTemp02
 	sta.l $7ED60B
 	ldx.b wTemp00
@@ -297,7 +297,7 @@ func_C6025C:
 	stz.b wTemp01
 	jsl.l func_818049
 	jsl.l func_C064D8
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	jsl.l func_C0656C
 	lda.b #$FF
 	sta.l $7ED60A
@@ -352,7 +352,7 @@ func_C602C1:
 func_C602DC:
 	php
 	sep #$20 ;A->8
-	jsl.l func_C3407C
+	jsl.l RepairOrphanedPotItems
 	lda.b wTemp00
 	bne @lbl_C602E9
 	plp
@@ -367,12 +367,12 @@ func_C6030D:
 	sep #$20 ;A->8
 	lda.b #$FF
 	sta.b wTemp00
-	jsl.l func_C3E16A
-	jsl.l func_C3E1C7
-	jsl.l func_C3E369
+	jsl.l SaveWriteByte
+	jsl.l SaveStreamInit
+	jsl.l SaveStreamReset
 	jsl.l func_C3F6BE
 	jsl.l func_C28F4F
-	jsl.l func_C33C6E
+	jsl.l SerializeItemData
 	lda.b #$6B
 	sta.b wTemp00
 	lda.b #$03
@@ -383,20 +383,20 @@ func_C6030D:
 	sta.b wTemp03
 	lda.b #$7E
 	sta.b wTemp04
-	jsl.l func_C3E2AB
+	jsl.l SaveStreamWriteBlock
 	lda.b #$01
 	sta.b wTemp00
-	jsl.l func_C3E16A
+	jsl.l SaveWriteByte
 	plp
 	rtl
 
 func_C6034E:
 	php
 	sep #$20 ;A->8
-	jsl.l func_C3E1C7
+	jsl.l SaveStreamInit
 	jsl.l func_C3F6D5
 	jsl.l func_C28F86
-	jsl.l func_C33C87
+	jsl.l DeserializeItemData
 	lda.b #$6B
 	sta.b wTemp00
 	lda.b #$03
@@ -407,15 +407,15 @@ func_C6034E:
 	sta.b wTemp03
 	lda.b #$7E
 	sta.b wTemp04
-	jsl.l func_C3E2DB
+	jsl.l SaveStreamReadBlock
 	plp
 	rtl
 
 func_C6037B:
 	php
 	sep #$30 ;AXY->8
-	jsl.l func_C3E1C7
-	jsl.l func_C3E178
+	jsl.l SaveStreamInit
+	jsl.l SaveReadByte
 	lda.b wTemp00
 	bmi @lbl_C6039A
 	beq @lbl_C6039F
@@ -431,7 +431,7 @@ func_C6037B:
 @lbl_C6039F:
 	jsr.w func_C60494
 @lbl_C603A2:
-	jsl.l func_C3E7DA
+	jsl.l ReadSaveField0A
 	ldy.b wTemp01
 	lda.b wTemp00
 	sta.b wTemp02
@@ -444,7 +444,7 @@ func_C6037B:
 	lda.b #Event0E
 	sta.b wTemp00
 	jsl.l _SetEvent
-	jsl.l func_C3001F
+	jsl.l RandomizeItemAppearances
 	lda.b #$00
 	sta.l wShowMessageEffects
 	lda.b #$01
@@ -512,7 +512,7 @@ _SetEvent:
 	;is the event 0x80 or above?
 	cpx.b #$80
 	bcs @lbl_C60492 ;yes
-	jsl.l func_C3E826
+	jsl.l WriteSaveFieldIndexed
 @lbl_C60492:
 	plp
 	rtl
@@ -526,7 +526,7 @@ func_C60494:
 	cpx.b #$80
 	bcs @lbl_C604A7
 	stx.b wTemp00
-	jsl.l func_C3E845
+	jsl.l ReadSaveFieldIndexed
 	lda.b wTemp00
 @lbl_C604A7:
 	sta.l wEventStateArray,x
@@ -536,7 +536,7 @@ func_C60494:
 	ldx.b #$63
 @lbl_C604B2:
 	stx.b wTemp06
-	jsl.l func_C3E85C
+	jsl.l ReadSaveItemRecord
 	lda.b wTemp00
 	sta.l $7ED394,x
 	lda.b wTemp01
@@ -634,7 +634,7 @@ func_C6054A:
 	sta.l $7ED588,x
 	lda.l wPlaying
 	beq @lbl_C6057D
-	jsl.l func_C3E881
+	jsl.l WriteSaveItemRecord
 @lbl_C6057D:
 	plp
 	rtl
@@ -660,12 +660,12 @@ func_C6059A:
 	sep #$30 ;AXY->8
 	lda.b #$01
 	sta.l wShowMessageEffects
-	jsl.l func_C353B3
-	jsl.l func_C30000
+	jsl.l InitFloorTileArrays
+	jsl.l ClearItemTable
 	jsl.l func_C20000
 	jsl.l func_80DF10
 	jsl.l func_80F2FE
-	jsl.l func_C3E8C7
+	jsl.l SelectSaveSlotForLoad
 	lda.b #$00
 	sta.l wLoading
 	lda.l wPlaying
@@ -689,15 +689,15 @@ func_C605DC:
 func_C605FB:
 	lda.b #$FF
 	sta.l $7ED606
-	jsl.l func_C353D4
+	jsl.l ResetFloorData
 	jsl.l func_C602C1
-	jsl.l func_C3D2CC
+	jsl.l InitializeTrapSpawnList
 	lda.l wFloorNum
 	cmp.b #$01
 	bne @lbl_C60619
-	jsl.l func_C300D2
+	jsl.l PreIdentifyDungeonItems
 @lbl_C60619:
-	jsl.l func_C332D7
+	jsl.l ClearJarContentsOnFloorChange
 	lda.l $7ED5ED
 	sec
 	sbc.l wFloorNum
@@ -726,17 +726,17 @@ func_C605FB:
 	beq @lbl_C60678
 	lda.l wFloorNum
 	sta.b wTemp00
-	jsl.l func_C3E7D1
+	jsl.l WriteSaveField0C
 	lda.l $7ED5F9
 	sta.b wTemp00
-	jsl.l func_C3E81D
+	jsl.l WriteSaveField0E
 @lbl_C60678:
 	lda.l wd5ec
 	sta.b wTemp00
-	jsl.l func_C3544E
+	jsl.l InitFloorOnEntry
 	jsr.w func_C622A5
 	jsl.l func_C22D3B
-	jsl.l func_C35C9A
+	jsl.l PlaceShirenOnFloor
 	jsl.l func_C0641C
 	rep #$10 ;XY->16
 	ldx.w #$0002
@@ -753,7 +753,7 @@ func_C605FB:
 	jsl.l func_C07BB3
 	jsl.l func_C0656C
 @lbl_C606B9:
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	lda.b #$00
 	sta.l $7ED5EF
 func_C606C3:
@@ -789,17 +789,17 @@ func_C606C3:
 @lbl_C60708:
 	cmp.b #$00
 	bne @lbl_C60710
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 @lbl_C60710:
 	jsl.l func_C211E4
 	lda.b wTemp00
 	beq @lbl_C6071C
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 @lbl_C6071C:
 	jsl.l func_C25CA8
 	jsl.l func_C22E2D
 	jsl.l func_C22D3B
-	jsl.l func_C35C9A
+	jsl.l PlaceShirenOnFloor
 	jsl.l func_C6028B
 	lda.l wLoading
 	bne func_C6073A
@@ -813,7 +813,7 @@ func_C6073A:
 	jsl.l func_C28B52
 	lda.b wTemp00
 	beq @lbl_C60754
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 @lbl_C60754:
 	jsl.l func_C28E6F
 	lda.b wTemp00
@@ -832,7 +832,7 @@ func_C6073A:
 	jsl.l func_C2121A
 	pla
 	pha
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	pla
 	bra @lbl_C60768
 @lbl_C60782:
@@ -863,7 +863,7 @@ func_C60788:
 	beq @lbl_C607B6
 	jsl.l func_80E68E
 @lbl_C607B6:
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	pla
 	cmp.b #$02
 	bne @lbl_C607C2
@@ -875,7 +875,7 @@ func_C60788:
 	jsl.l func_C25CA8
 	jsl.l func_C22E2D
 	jsl.l func_C22D3B
-	jsl.l func_C35C9A
+	jsl.l PlaceShirenOnFloor
 	jsl.l func_C28B23
 	lda.b wTemp00
 	bne @lbl_C607FB
@@ -886,7 +886,7 @@ func_C60788:
 	pla
 	cmp.b #$03
 	beq @lbl_C607F4
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	jmp.w func_C6073A
 @lbl_C607F4:
 	jsl.l func_C076E9
@@ -922,17 +922,17 @@ func_C6080E:
 	sta.b wTemp03
 	jsl.l func_C27951
 	jsl.l func_C22D3B
-	jsl.l func_C35C9A
+	jsl.l PlaceShirenOnFloor
 	jsl.l func_C16C7D
 	jsl.l func_C16B75
-	jsl.l func_C35488
+	jsl.l DetermineNextFloor
 	lda.l wShuffleDungeonIndex
 	cmp.b #$0A
 	bne @lbl_C60891
 	lda.b #$13
 	sta.b wTemp00
 	jsl.l GetCharacterMapInfo
-	jsl.l func_C359AF
+	jsl.l GetItemData
 	lda.b wTemp02
 	bne @lbl_C60878
 	lda.b #$02
@@ -956,7 +956,7 @@ func_C6080E:
 	lda.l wLoading
 	bne @lbl_C608A7
 	jsl.l func_C06505
-	jsl.l func_C35E1B
+	jsl.l MarkAllEntitiesDirty
 	jsl.l func_80E7DF
 	jsl.l func_C0654D
 @lbl_C608A7:
@@ -1993,7 +1993,10 @@ Data_c62326:
 	.db $14,$14,$14,$14,$14,$14,$14,$14,$14,$14,$14,$14,$14,$14,$14,$14   ;C623F2  
 	.db $14,$14,$14                       ;C62402  
 
-func_C62405:
+; Main per-frame update dispatcher. Calls core system update functions.
+; Only runs when wLoading is false (not in loading state).
+; Chains: Input, Audio, Graphics, System updates via sub-functions.
+UpdateGameSystems:
 	php
 	sep #$20 ;A->8
 	lda.l wLoading
@@ -2048,7 +2051,7 @@ func_C62456:
 ;C62471  
 	.db $22,$E9,$76,$C0
 @lbl_C62475:
-	jsl.l func_C62405
+	jsl.l UpdateGameSystems
 	lda.l wd5ee
 	cmp.b #$08
 	bne @lbl_C62484
@@ -2127,7 +2130,10 @@ func_C62545:
 	plp
 	rtl
 
-func_C62550:
+; Plays visual effects for characters with effects enabled check.
+; Input: wTemp00 = character index, wTemp02 = effect type
+; Checks wLoading and wShowMessageEffects flags before displaying.
+PlayVisualEffect:
 	php
 	sep #$20 ;A->8
 	lda.l wLoading
@@ -2139,7 +2145,9 @@ func_C62550:
 	plp
 	rtl
 
-func_C62565:
+; Plays visual effects on characters (damage numbers, heal sparkles, etc.).
+; Input: wTemp00 = character index, wTemp02 = effect type
+PlayCharacterEffect:
 	php
 	sep #$20 ;A->8
 	lda.l wLoading
@@ -2448,7 +2456,7 @@ func_C627FC:
 	rep #$20 ;A->16
 	lda.w #$001B
 	sta.b wTemp00
-	jsl.l func_C3E1D5
+	jsl.l SaveStreamAdvance
 	jsl.l SortShirenInventory
 	plp
 	rtl
@@ -2666,15 +2674,15 @@ DisplayMessage1:
 	stx.b wTemp00
 	lda.b #$80
 	trb.b wTemp01
-	jsl.l func_C3ED74
+	jsl.l GetContainerItemAction
 	pha
-	jsl.l func_C3E385
+	jsl.l SaveStreamWriteByte
 	pla
 	sta.b wTemp00
 	plp
 	rtl
 @lbl_C62BB1:
-	jsl.l func_C3E3A8
+	jsl.l SaveStreamPeekByte
 	lda.b wTemp00
 	cmp.b #$FF
 	beq @lbl_C62BBD
@@ -2690,7 +2698,7 @@ DisplayMessage1:
 	phx
 	ldx.b wTemp04
 	phx
-	jsl.l func_C3E3A8
+	jsl.l SaveStreamPeekByte
 	lda.b wTemp00
 	cmp.b #$FF
 	beq @lbl_C62BE4
@@ -2781,14 +2789,14 @@ func_C62D0F:
 	jsl.l GetCurrentFloor
 	lda.b wTemp00
 	sta.l $7ED623
-	jsl.l func_C21167
+	jsl.l GetShirenCoreStatus
 	lda.b wTemp02
 	pha
 	lda.b wTemp03
 	pha
 	lda.b wTemp04
 	pha
-	jsl.l func_C3E7DA
+	jsl.l ReadSaveField0A
 	ldy.b wTemp00
 	sty.b wTemp04
 	stz.b wTemp03
@@ -2826,7 +2834,7 @@ func_C62D0F:
 	stx.b wTemp00
 	phx
 	phy
-	call_savebank func_C30710
+	call_savebank GetItemDisplayInfo
 	ply
 	plx
 	lda.b wTemp00
@@ -2855,7 +2863,7 @@ func_C62D0F:
 	stx.b wTemp00
 	phx
 	phy
-	jsl.l func_C33AE2
+	jsl.l GetPotNextItem
 	ply
 	plx
 	ldx.b wTemp00
@@ -2885,7 +2893,7 @@ func_C62D0F:
 	lda.b wTemp04
 	sta.l $7ED620
 	rep #$20 ;A->16
-	jsl.l func_C3E768
+	jsl.l ReadSaveSlotFlags
 	lda.b wTemp00
 	sta.l $7ED614
 	lda.b wTemp02
@@ -2954,7 +2962,7 @@ func_C62D0F:
 @lbl_C62F28:
 	sta.l $7ED624
 	sep #$20 ;A->8
-	jsl.l func_C21167
+	jsl.l GetShirenCoreStatus
 	lda.b wTemp00
 	sta.l $7ED62F
 	lda.b wTemp01
@@ -2962,7 +2970,7 @@ func_C62D0F:
 	sep #$20 ;A->8
 	lda.b #$13
 	sta.b wTemp00
-	call_savebank func_C21128
+	call_savebank GetCharacterStats
 	lda.b wTemp01
 	sta.l $7ED62D
 	lda.b #$00
@@ -2991,7 +2999,7 @@ func_C62D0F:
 	lda.l $7ED637
 	bmi @lbl_C62FCC
 	sta.b wTemp00
-	jsl.l func_C32CCB
+	jsl.l LoadItemFuseAbilitiesAndDefaults
 	rep #$20 ;A->16
 	lda.b wTemp00
 	eor.b wTemp02
@@ -3000,7 +3008,7 @@ func_C62D0F:
 	sep #$20 ;A->8
 	lda.l $7ED637
 	sta.b wTemp00
-	call_savebank func_C30710
+	call_savebank GetItemDisplayInfo
 	lda.b wTemp01
 	sta.l $7ED637
 	lda.b wTemp02
@@ -3015,7 +3023,7 @@ func_C62D0F:
 	lda.l $7ED63C
 	bmi @lbl_C63010
 	sta.b wTemp00
-	jsl.l func_C32CCB
+	jsl.l LoadItemFuseAbilitiesAndDefaults
 	rep #$20 ;A->16
 	lda.b wTemp00
 	eor.b wTemp02
@@ -3024,7 +3032,7 @@ func_C62D0F:
 	sep #$20 ;A->8
 	lda.l $7ED63C
 	sta.b wTemp00
-	call_savebank func_C30710
+	call_savebank GetItemDisplayInfo
 	lda.b wTemp01
 	sta.l $7ED63C
 	lda.b wTemp02
@@ -3254,7 +3262,7 @@ func_C6324C:
 	rep #$20 ;A->16
 	lda.w #$5800
 	sta.b wTemp04
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	rep #$20 ;A->16
 	lda.w #$0006
 	sta.b wTemp00
@@ -3278,7 +3286,7 @@ func_C6324C:
 	rep #$20 ;A->16
 	lda.w #$3000
 	sta.b wTemp04
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	rep #$20 ;A->16
 	lda.w #$0004
 	sta.b wTemp00
@@ -3728,7 +3736,7 @@ func_C636D4:
 	rep #$20 ;A->16
 	lda.w #$5800
 	sta.b wTemp04
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	rep #$20 ;A->16
 	lda.w #$0006
 	sta.b wTemp00
@@ -3752,7 +3760,7 @@ func_C636D4:
 	rep #$20 ;A->16
 	lda.w #$3000
 	sta.b wTemp04
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	rep #$20 ;A->16
 	lda.w #$0004
 	sta.b wTemp00
@@ -3904,14 +3912,14 @@ func_C63874:
 	lda.w #$5800
 	sta.b wTemp04
 	phx
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	plx
 	lda.w #$5800
 	sta.b wTemp04
 	sep #$20 ;A->8
 	lda.b #$01
 	sta.b wTemp03
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	jsl.l func_80854A
 	ldx.w #$0019
 
@@ -3931,7 +3939,7 @@ func_C63943:
 	lda.w #$5800
 	sta.b wTemp04
 	phx
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	plx
 	jsl.l func_80854A
 	dex
@@ -5001,13 +5009,13 @@ func_C64E06:
 	rep #$20 ;A->16
 	lda.w #$5800
 	sta.b wTemp04
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	lda.w #$0001
 	sta.b wTemp03
 	rep #$20 ;A->16
 	lda.w #$5C00
 	sta.b wTemp04
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	lda.w #$0004
 	sta.b wTemp00
 	sep #$20 ;A->8
@@ -5036,7 +5044,7 @@ func_C64E06:
 	rep #$20 ;A->16
 	lda.w #$3400
 	sta.b wTemp04
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	lda.w #$0002
 	sta.b wTemp00
 	sep #$20 ;A->8
@@ -5065,13 +5073,13 @@ func_C64E06:
 	rep #$20 ;A->16
 	lda.w #$3800
 	sta.b wTemp04
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	lda.w #$0001
 	sta.b wTemp03
 	rep #$20 ;A->16
 	lda.w #$3C00
 	sta.b wTemp04
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	lda.w #$0003
 	sta.b wTemp00
 	sep #$20 ;A->8
@@ -5290,7 +5298,7 @@ func_C64E06:
 	rep #$20 ;A->16
 	lda.w #$3000
 	sta.b wTemp04
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	rep #$20 ;A->16
 	lda.w #$0005
 	sta.b wTemp00
@@ -5319,7 +5327,7 @@ func_C64E06:
 	lda.w #$3000
 	sta.b wTemp04
 	phx
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	plx
 	jsl.l func_80854A
 	sep #$20 ;A->8
@@ -5331,7 +5339,7 @@ func_C64E06:
 	rep #$20 ;A->16
 	lda.w #$3000
 	sta.b wTemp04
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	lda.w #$0008
 	clc
 	adc.l $7ED712
@@ -8180,7 +8188,7 @@ func_C6732E:
 	sep #$20 ;A->8
 	lda.b #$00
 	sta.b wTemp03
-	jsl.l func_C484CB
+	jsl.l TransferTileData
 	rep #$20 ;A->16
 	lda.w #$0001
 	sta.b wTemp00

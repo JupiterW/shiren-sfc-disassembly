@@ -64,7 +64,11 @@ func_C3F683:
 	plp
 	rtl
 
-func_C3F69F:
+; Returns a random integer in the range [wTemp00, wTemp01] (inclusive).
+; Input: wTemp00 = minimum value, wTemp01 = maximum value
+; Output: wTemp00 = random result
+; Uses the game's RNG to generate a value within the specified bounds.
+GetRandomInRange:
 	php
 	sep #$30 ;AXY->8
 	lda.b wTemp01
@@ -76,7 +80,7 @@ func_C3F69F:
 	jsl.l Random
 	pla
 	sta.b wTemp01
-	jsl.l func_C3E3CB
+	jsl.l MultiplyPackedBytesToWord
 	tya
 	clc
 	adc.b wTemp01
@@ -94,7 +98,7 @@ func_C3F6BE:
 	sta.b wTemp02
 	stz.b wTemp03
 	stz.b wTemp04
-	jsl.l func_C3E2AB
+	jsl.l SaveStreamWriteBlock
 	plp
 	rtl
 
@@ -108,7 +112,7 @@ func_C3F6D5:
 	sta.b wTemp02
 	stz.b wTemp03
 	stz.b wTemp04
-	jsl.l func_C3E2DB
+	jsl.l SaveStreamReadBlock
 	plp
 	rtl
 
