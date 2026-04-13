@@ -3392,7 +3392,7 @@ GetDungeonItemTableVariant:
 	jsl.l SpawnFloorMonsterEntities
 	jsl.l SpawnFloorItems
 	jsl.l PlaceStaircaseItem
-	jsl.l func_C3D219
+	jsl.l SpawnSpecialFloorItems
 	jsl.l SpawnDungeonMonsters
 	jsl.l SpawnGuardNPCs
 	jsl.l PlaceShirenStartingItem
@@ -12939,7 +12939,7 @@ IsTilePassable:
 .include "data/unknown_data_bank3_c3a15f.asm"
 .include "data/maps/feis_problems.asm"
 
-func_C3D219:
+SpawnSpecialFloorItems:
 	rtl
 	php                                     ;C3D21A
 	sep #$30                                ;C3D21B
@@ -16162,7 +16162,7 @@ GetLivePlayerActionCommand:
 	beq @lbl_C3E94A
 	cmp.w #$0083
 	bne @lbl_C3E93A
-	jsl.l func_C3ED51
+	jsl.l GetThrowableItemAction
 	lda.b wTemp00
 	bmi @lbl_C3E968
 	pla
@@ -16237,7 +16237,7 @@ GetLivePlayerActionCommand:
 	jsl.l func_C07CC7
 @lbl_C3E9BC:
 	; Poll controller state and derive the next live player action command.
-	jsl.l func_C3F3E7
+	jsl.l HandleItemDetailInput
 	ldx.w #$0000
 	stx.b wTemp00
 	phx
@@ -16340,7 +16340,7 @@ GetLivePlayerActionCommand:
 @lbl_C3EA91:
 	bit.w #$0020
 	beq @lbl_C3EA9D
-	jsl.l func_C3F3B6
+	jsl.l WaitForButtonRelease
 @lbl_C3EA9A:
 	jmp.w @lbl_C3E9B8
 @lbl_C3EA9D:
@@ -16526,7 +16526,7 @@ func_C3EBF9:
 	plp
 	sec
 	rtl
-	jsl.l func_C3F123
+	jsl.l OpenContainerActionMenu
 	bcs func_C3EBBE
 	bra func_C3EBE6
 	lda.l $7F9CD8
@@ -16683,7 +16683,7 @@ BuildGroundItemActionCommand:
 	rtl                                     ;C3ED3A
 	.db $BF,$01,$03,$00,$09,$04,$02,$02,$21,$10,$00,$C0,$01,$03,$00,$04,$06,$01,$03,$21,$10,$00   ;C3ED3B
 
-func_C3ED51:
+GetThrowableItemAction:
 	php
 	rep #$30 ;AXY->16
 	jsl.l func_C07D19
@@ -16701,7 +16701,7 @@ func_C3ED51:
 	plp
 	rtl
 
-func_C3ED74:
+GetContainerItemAction:
 	php
 	rep #$30 ;AXY->16
 	lda.b wTemp00
@@ -16715,7 +16715,7 @@ func_C3ED74:
 	cmp.w #$06BF
 	bne @lbl_C3ED92
 @lbl_C3ED8F:
-	jmp.w func_C3EE0C
+	jmp.w GetEmptyPotAction
 @lbl_C3ED92:
 	cmp.w #$0949
 	beq @lbl_C3EDBD
@@ -16784,7 +16784,7 @@ func_C3ED74:
 	plp
 	rtl
 
-func_C3EE0C:
+GetEmptyPotAction:
 	sep #$30 ;AXY->8
 	lda.b #$1F
 	sta.b wTemp00
@@ -16965,12 +16965,12 @@ ContainerSlotDescriptors:
 	.db $A5,$02,$48,$22,$84,$85,$C4,$68,$85,$02,$68,$85,$00,$28,$18,$6B   ;C3F10C  
 	.db $22,$84,$85,$C4,$28,$38,$6B       ;C3F11C  
 
-func_C3F123:
+OpenContainerActionMenu:
 	php
 	rep #$30 ;AXY->16
-func_C3F126:
+OpenContainerActionMenuLoop:
 	jsl.l func_C49B38
-	bcs func_C3F17A
+	bcs ContainerActionCancel
 	lda.b wTemp00
 	cmp.w #$001F
 	bne @lbl_C3F138
@@ -16988,26 +16988,26 @@ ContainerActionHandlers:
 	.db $4D,$F1,$5C,$F1,$65,$F1           ;C3F142
 	.db $6C,$F1,$65,$F1,$55,$F1           ;C3F148  
 	jsl.l BuildGroundContainerInsertCommand
-	bcs func_C3F126
-	bra func_C3F177
+	bcs OpenContainerActionMenuLoop
+	bra ContainerActionSuccess
 	jsr.w BuildContainedItemActionCommand
-	bcs func_C3F126
+	bcs OpenContainerActionMenuLoop
 	.db $80,$1A                           ;C3F15B  
 	lda.b wTemp00
 	ora.w #$0080
 	sta.b wTemp00
-	bra func_C3F177
+	bra ContainerActionSuccess
 	lda.w #$0040
 	tsb.b wTemp00
-	bra func_C3F177
+	bra ContainerActionSuccess
 	jsl.l func_C23B7C
-	jsl.l func_C3F336
-	bra func_C3F126
-func_C3F177:
+	jsl.l TryAssignItemCustomName
+	bra OpenContainerActionMenuLoop
+ContainerActionSuccess:
 	plp
 	clc
 	rtl
-func_C3F17A:
+ContainerActionCancel:
 	plp
 	sec
 	rtl
@@ -17029,7 +17029,7 @@ BuildGroundContainerInsertCommand:
 	lda $01                                 ;C3F199
 	sta $00                                 ;C3F19B
 @lbl_C3F19D:
-	jsl.l func_C3F2FD
+	jsl.l ResolveBlankScrollContents
 	lda.b wTemp00
 	cmp.b #$0B
 	bne func_C3F1BA
@@ -17074,7 +17074,7 @@ func_C3F1D1:
 	pla
 	ora.b #$A0
 	sta.b wTemp00
-	bra func_C3F177
+	bra ContainerActionSuccess
 func_C3F1F0:
 	plp
 	clc
@@ -17247,7 +17247,7 @@ BuildContainedItemActionCommand:
 	clc                                     ;C3F2FB
 	rts                                     ;C3F2FC
 
-func_C3F2FD:
+ResolveBlankScrollContents:
 	php
 	sep #$30 ;AXY->8
 	ldy.b wTemp00
@@ -17285,7 +17285,7 @@ func_C3F2FD:
 	rtl                                     ;C3F335
 .ACCU 8
 
-func_C3F336:
+TryAssignItemCustomName:
 	php
 	sep #$30 ;AXY->8
 	ldy.b wTemp00
@@ -17359,7 +17359,7 @@ ToggleGroundItemDetailsView:
 	plp
 	rtl
 
-func_C3F3B6:
+WaitForButtonRelease:
 	php
 	sep #$30 ;AXY->8
 	lda.l debugMode
@@ -17383,7 +17383,7 @@ func_C3F3B6:
 	plp
 	rtl
 
-func_C3F3E7:
+HandleItemDetailInput:
 	php
 	rep #$30 ;AXY->16
 	lda.l debugMode

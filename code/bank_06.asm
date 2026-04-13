@@ -2674,7 +2674,7 @@ DisplayMessage1:
 	stx.b wTemp00
 	lda.b #$80
 	trb.b wTemp01
-	jsl.l func_C3ED74
+	jsl.l GetContainerItemAction
 	pha
 	jsl.l func_C3E385
 	pla
