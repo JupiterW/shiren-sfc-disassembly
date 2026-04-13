@@ -5523,12 +5523,12 @@ CheckAndPlaceDoorTile:
 	cmp.b #$C0
 	bne DoorPlaceFailure
 	lda.b wTemp04
-	bne func_C36891
-func_C3688B:
+	bne PlaceDoorAlternate
+PlaceDoorHere:
 	jsr.w ScanForDoorCandidateTile
 	lda.b #$01
 	rts
-func_C36891:
+PlaceDoorAlternate:
 	jsr $68ED                               ;C36891
 	lda #$01                                ;C36894
 	rts                                     ;C36896
@@ -5540,7 +5540,7 @@ CheckAndPlaceStairsOrDoor:
 	lda.w wTileType,y
 	and.b #$F0
 	cmp.b #$C0
-	beq func_C3688B
+	beq PlaceDoorHere
 	bit.b #$40
 	beq @lbl_C368BB
 	lda.w wTileType,y
@@ -17032,54 +17032,54 @@ BuildGroundContainerInsertCommand:
 	jsl.l ResolveBlankScrollContents
 	lda.b wTemp00
 	cmp.b #$0B
-	bne func_C3F1BA
+	bne CheckMergeableInsert
 	lda.b wTemp01
 	ldx.b #$03
 @lbl_C3F1AB:
 	cmp.l ContainerItemTypes,x
-	beq func_C3F1C7
+	beq EncodeInsertCommand
 	dex
 	bpl @lbl_C3F1AB
 	.db $80,$1B                           ;C3F1B4  
 
 ContainerItemTypes:
 	.db $B9,$BE,$B5,$C1                   ;C3F1B6  
-func_C3F1BA:
+CheckMergeableInsert:
 	lda.b wTemp01
 	ldx.b #$02
 @lbl_C3F1BE:
 	cmp.l MergeableItemTypes,x
-	beq func_C3F1D1
+	beq EncodeMergeCommand
 	dex
 	bpl @lbl_C3F1BE
-func_C3F1C7:
+EncodeInsertCommand:
 	pla
 	ora.b #$60
 	sta.b wTemp00
-	bra func_C3F1F0
+	bra ContainerInsertSuccess
 
 MergeableItemTypes:
 	.db $57,$59,$6D                       ;C3F1CE
-func_C3F1D1:
+EncodeMergeCommand:
 	stz.b wTemp00
 	jsl.l func_C23B7C
 	lda.b wTemp00
-	bmi func_C3F1F3
+	bmi ContainerInsertCancel
 	lda.b wTemp01,s
 	sta.b wTemp00
 	jsl.l func_C4A0B1
-	bcs func_C3F1F3
+	bcs ContainerInsertCancel
 	lda.b wTemp00
 	sta.b wTemp01
 	pla
 	ora.b #$A0
 	sta.b wTemp00
 	bra ContainerActionSuccess
-func_C3F1F0:
+ContainerInsertSuccess:
 	plp
 	clc
 	rtl
-func_C3F1F3:
+ContainerInsertCancel:
 	pla                                     ;C3F1F3
 	plp                                     ;C3F1F4
 	sec                                     ;C3F1F5
