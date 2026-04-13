@@ -703,41 +703,41 @@ w00aa:
 w00ab:
     ds 1
 
-;7e00ac
-w00ac:
+;7e00ac - save stream write position (index into [$AE] buffer)
+wSaveStreamPos:
     ds 1
 
-;7e00ad
-w00ad:
+;7e00ad - save stream checksum (XOR accumulator)
+wSaveStreamChecksum:
     ds 1
 
-;7e00ae
-w00ae:
+;7e00ae - save stream buffer pointer (lo byte, used as [$AE])
+wSaveStreamPtrLo:
     ds 1
 
-;7e00af
-w00af:
+;7e00af - save stream buffer pointer (hi byte)
+wSaveStreamPtrHi:
     ds 1
 
 
-;7e00b0
-w00b0:
+;7e00b0 - save stream buffer pointer (bank byte)
+wSaveStreamPtrBank:
     ds 1
 
-;7e00b1
-w00b1:
+;7e00b1 - save stream page/block advance counter
+wSaveStreamPageCtr:
     ds 1
 
-;7e00b2
-w00b2:
+;7e00b2 - save block data pointer (lo/hi word, used as [$B2])
+wSaveBlockPtrLo:
     ds 1
 
 ;7e00b3
-w00b3:
+wSaveBlockPtrHi:
     ds 1
 
-;7e00b4
-w00b4:
+;7e00b4 - save block bank byte
+wSaveBlockBank:
     ds 1
 
 ;7e00b5

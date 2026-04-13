@@ -14912,11 +14912,11 @@ GetDemoScriptPtr:
 	adc.b wTemp00
 	tax
 	lda.l DemoTableAddrLo,x
-	sta.b w00ae
+	sta.b wSaveStreamPtrLo
 	lda.l DemoTableAddrHi,x
-	sta.b w00af
+	sta.b wSaveStreamPtrHi
 	lda.l DemoTable,x
-	sta.b w00b0
+	sta.b wSaveStreamPtrBank
 	plp
 	rtl
 
@@ -15000,9 +15000,9 @@ SaveStreamInit:
 	php
 	rep #$20 ;A->16
 	lda.w #$0004
-	sta.b w00ac
+	sta.b wSaveStreamPos
 	sep #$20 ;A->8
-	stz.b w00b1
+	stz.b wSaveStreamPageCtr
 	plp
 	rtl
 
@@ -15010,7 +15010,7 @@ SaveStreamAdvance:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
-	ldy.b w00ac
+	ldy.b wSaveStreamPos
 	cpy.w #$12D4
 	bcc @lbl_C3E203
 	cpy #$1374                              ;C3E1E1
@@ -15034,7 +15034,7 @@ SaveStreamAdvance:
 	lda.b wTemp00
 	cmp.b #$1C
 	beq @lbl_C3E232
-	stz.b w00b1
+	stz.b wSaveStreamPageCtr
 	cmp.b #$A0
 	bcc @lbl_C3E229
 	ldx.w #$0001
@@ -15080,7 +15080,7 @@ SaveStreamAdvance:
 @lbl_C3E258:
 	lda.b #$FF
 	sta.b [$AE],y
-	sty.b w00ac
+	sty.b wSaveStreamPos
 	rep #$20 ;A->16
 	tya
 	ldy.w #$0002
@@ -15093,9 +15093,9 @@ SaveStreamReadNext:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
-	lda.b w00b1
+	lda.b wSaveStreamPageCtr
 	bne @lbl_C3E2A3
-	ldy.b w00ac
+	ldy.b wSaveStreamPos
 	lda.b [$AE],y
 	sta.b wTemp00
 	cmp.b #$FF
@@ -15114,17 +15114,17 @@ SaveStreamReadNext:
 ;C3E293  
 	.db $B7,$AE,$85,$02,$C8
 @lbl_C3E298:
-	sty.b w00ac
+	sty.b wSaveStreamPos
 @lbl_C3E29A:
 	plp
 	rtl
 @lbl_C3E29C:
 	lda.b [$AE],y
 	iny
-	sty.b w00ac
-	sta.b w00b1
+	sty.b wSaveStreamPos
+	sta.b wSaveStreamPageCtr
 @lbl_C3E2A3:
-	dec.b w00b1
+	dec.b wSaveStreamPageCtr
 	lda.b #$1C
 	sta.b wTemp00
 	plp
@@ -15134,7 +15134,7 @@ SaveStreamWriteBlock:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
-	ldy.b w00ac
+	ldy.b wSaveStreamPos
 	cpy.w #$1374
 	bcs @lbl_C3E2D9
 	ldx.w #$0000
@@ -15152,7 +15152,7 @@ SaveStreamWriteBlock:
 	bcc @lbl_C3E2BA
 	lda.b #$FF
 	sta.b [$AE],y
-	sty.b w00ac
+	sty.b wSaveStreamPos
 	rep #$20 ;A->16
 	tya
 	ldy.w #$0002
@@ -15165,7 +15165,7 @@ SaveStreamReadBlock:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
-	ldy.b w00ac
+	ldy.b wSaveStreamPos
 	ldx.w #$0000
 @lbl_C3E2E5:
 	lda.b [$AE],y
@@ -15178,7 +15178,7 @@ SaveStreamReadBlock:
 	iny
 	cpx.b wTemp00
 	bne @lbl_C3E2E5
-	sty.b w00ac
+	sty.b wSaveStreamPos
 	plp
 	rtl
 
@@ -15229,14 +15229,14 @@ SaveStreamDeleteLast:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
-	ldy.b w00ac
+	ldy.b wSaveStreamPos
 	dey
 	lda.b [$AE],y
 	eor.b [$AE]
 	sta.b [$AE]
 	lda.b #$FF
 	sta.b [$AE],y
-	sty.b w00ac
+	sty.b wSaveStreamPos
 	rep #$20 ;A->16
 	tya
 	ldy.w #$0002
@@ -15265,7 +15265,7 @@ SaveStreamWriteByte:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
-	ldy.b w00ac
+	ldy.b wSaveStreamPos
 	cpy.w #$1374
 	bcs @lbl_C3E3A6
 	sta.b [$AE],y
@@ -15274,7 +15274,7 @@ SaveStreamWriteByte:
 	iny
 	lda.b #$FF
 	sta.b [$AE],y
-	sty.b w00ac
+	sty.b wSaveStreamPos
 	rep #$20 ;A->16
 	tya
 	ldy.w #$0002
@@ -15287,13 +15287,13 @@ SaveStreamPeekByte:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
-	ldy.b w00ac
+	ldy.b wSaveStreamPos
 	lda.b [$AE],y
 	sta.b wTemp00
 	cmp.b #$FF
 	beq @lbl_C3E3BA
 	iny
-	sty.b w00ac
+	sty.b wSaveStreamPos
 @lbl_C3E3BA:
 	plp
 	rtl
@@ -15304,7 +15304,7 @@ SaveStreamBytesRemaining:
 	ldy.w #$0002
 	lda.b [$AE],y
 	sec
-	sbc.b w00ac
+	sbc.b wSaveStreamPos
 	sta.b wTemp00
 	plp
 	rtl
@@ -15650,11 +15650,11 @@ SelectAndValidateSaveSlot:
 WriteValidationString:
 	php
 	sep #$20 ;A->8
-	lda.b w00b4
+	lda.b wSaveBlockBank
 	pha
 	plb
 	rep #$30 ;AXY->16
-	ldy.b w00b2
+	ldy.b wSaveBlockPtrLo
 	ldx.w #$0000
 	sep #$20 ;A->8
 @lbl_C3E5DD:
@@ -15675,11 +15675,11 @@ ValidateSaveBlock:
 	php
 	jsl.l LoadSaveBlockPtr
 	sep #$20 ;A->8
-	lda.b w00b4
+	lda.b wSaveBlockBank
 	pha
 	plb
 	rep #$30 ;AXY->16
-	ldy.b w00b2
+	ldy.b wSaveBlockPtrLo
 	ldx.w #$0000
 	sep #$20 ;A->8
 @lbl_C3E606:
@@ -15759,10 +15759,10 @@ LoadSaveBlockPtr:
 	tax
 	rep #$20 ;A->16
 	lda.l SaveBlockAddrTable,x
-	sta.b w00b2
+	sta.b wSaveBlockPtrLo
 	sep #$20 ;A->8
 	lda.l SaveBlockBankTable,x
-	sta.b w00b4
+	sta.b wSaveBlockBank
 	plp
 	rtl
 
@@ -15829,11 +15829,11 @@ EraseSaveBlock:
 	php
 	jsl.l LoadSaveBlockPtr
 	sep #$20 ;A->8
-	lda.b w00b4
+	lda.b wSaveBlockBank
 	pha
 	plb
 	rep #$30 ;AXY->16
-	ldy.b w00b2
+	ldy.b wSaveBlockPtrLo
 	ldx.w #$0000
 	sep #$20 ;A->8
 @lbl_C3E71A:
@@ -15863,8 +15863,8 @@ CopySaveBlock:
 	phy
 	jsl.l LoadSaveBlockPtr
 	ply
-	lda.b w00b2
-	ldx.b w00b4
+	lda.b wSaveBlockPtrLo
+	ldx.b wSaveBlockBank
 	sty.b wTemp00
 	pha
 	phx
