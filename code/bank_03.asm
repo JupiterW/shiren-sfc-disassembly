@@ -15225,7 +15225,7 @@ CopySaveBlockToDemoSlot:
 	plp
 	rtl
 
-func_C3E34B:
+SaveStreamDeleteLast:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -15244,7 +15244,7 @@ func_C3E34B:
 	plp
 	rtl
 
-func_C3E369:
+SaveStreamReset:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -15261,7 +15261,7 @@ func_C3E369:
 	plp
 	rtl
 
-func_C3E385:
+SaveStreamWriteByte:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -15283,7 +15283,7 @@ func_C3E385:
 	plp
 	rtl
 
-func_C3E3A8:
+SaveStreamPeekByte:
 	php
 	sep #$20 ;A->8
 	rep #$10 ;XY->16
@@ -15298,7 +15298,7 @@ func_C3E3A8:
 	plp
 	rtl
 
-func_C3E3BC:
+SaveStreamBytesRemaining:
 	php
 	rep #$30 ;AXY->16
 	ldy.w #$0002
@@ -15354,7 +15354,7 @@ MultiplyPackedBytesToWord:
 	plp
 	rtl
 
-func_C3E405:
+Multiply16BitNegated:
 	php
 	rep #$20 ;A->16
 	lda.b wTemp02
@@ -15474,7 +15474,7 @@ func_C3E405:
 	plp
 	rtl
 
-func_C3E4C1:
+Multiply16Bit:
 	php
 	sep #$20 ;A->8
 	lda.b wTemp02
@@ -15596,7 +15596,7 @@ Divide16Bit:
 	plp
 	rtl
 
-func_C3E571:
+SelectAndValidateSaveSlot:
 	php
 	sep #$20 ;A->8
 	lda.b wTemp00
@@ -16171,7 +16171,7 @@ GetLivePlayerActionCommand:
 @lbl_C3E93A:
 	lda.w #$0000
 	sta.l $7F9CD8
-	jsl.l func_C3EB97
+	jsl.l OpenGroundItemMenuWithItem
 	bcs @lbl_C3E951
 	pla
 	plp
@@ -16365,7 +16365,7 @@ GetLivePlayerActionCommand:
 @lbl_C3EAC2:
 	tdc
 	sta.l $7F9CDA
-	jsl.l func_C3EBA3
+	jsl.l OpenGroundItemMenuEmpty
 	bcs @lbl_C3EA9A
 	plp
 	rtl
@@ -16473,29 +16473,29 @@ ItemActionPriorityTableA:
 ItemActionPriorityTableB:
 	.db $01,$00,$07,$00,$03,$00,$05,$00,$02,$00,$00,$00,$06,$00,$04,$00   ;C3EB87
 
-func_C3EB97:
+OpenGroundItemMenuWithItem:
 	php
 	rep #$30 ;AXY->16
 	lda.w #$0001
 	sta.l $7F9CE0
-	bra func_C3EBAD
+	bra OpenGroundItemMenuDispatch
 
-func_C3EBA3:
+OpenGroundItemMenuEmpty:
 	php
 	rep #$30 ;AXY->16
 	lda.w #$0000
 	sta.l $7F9CE0
-func_C3EBAD:
+OpenGroundItemMenuDispatch:
 	jsl.l func_C07D19
 	jsl.l func_C4854E
 	lda.l $7F9CE0
-	beq func_C3EBBE
+	beq GroundItemMenuHandleInput
 	jmp.w BuildGroundItemActionCommand
-func_C3EBBE:
+GroundItemMenuHandleInput:
 	lda.l $7F9CE0
-	bne func_C3EBF9
+	bne GroundItemMenuCancel
 	jsl.l func_C49602
-	bcs func_C3EBF9
+	bcs GroundItemMenuCancel
 	lda.b wTemp00
 	asl a
 	tax
@@ -16508,7 +16508,7 @@ GroundItemActionHandlers:
 	.db $BC,$EC                           ;C3EBDC  
 	.db $28,$EC                           ;C3EBDE
 	.db $3F,$EC,$49,$EC,$07,$EC           ;C3EBE0  
-func_C3EBE6:
+GroundItemMenuSuccess:
 	lda.b wTemp00
 	pha
 	lda.b wTemp02
@@ -16521,19 +16521,19 @@ func_C3EBE6:
 	plp
 	clc
 	rtl
-func_C3EBF9:
+GroundItemMenuCancel:
 	jsl.l func_C48584
 	plp
 	sec
 	rtl
 	jsl.l OpenContainerActionMenu
-	bcs func_C3EBBE
-	bra func_C3EBE6
+	bcs GroundItemMenuHandleInput
+	bra GroundItemMenuSuccess
 	lda.l $7F9CD8
 	bne @lbl_C3EC15
 	lda.w #$005F
 	sta.b wTemp00
-	bra func_C3EBE6
+	bra GroundItemMenuSuccess
 @lbl_C3EC15:
 	jsl $C4A29D                             ;C3EC15
 	lda $00                                 ;C3EC19
@@ -16547,7 +16547,7 @@ func_C3EBF9:
 
 BuildGroundItemActionCommand:
 	jsl.l OpenGroundItemActionMenu
-	bcs func_C3EBBE
+	bcs GroundItemMenuHandleInput
 	lda.b wTemp02
 	bne @lbl_C3EC40
 	; Ground-container special case: choose an item to put inside the container.
@@ -16613,13 +16613,13 @@ BuildGroundItemActionCommand:
 	; Fall back to the context-sensitive underfoot pickup action ($5F).
 	lda.w #$005F
 	sta.b wTemp00
-	jmp.w func_C3EBE6
+	jmp.w GroundItemMenuSuccess
 	; Toggle the ground-item details display.
 	jsl.l ToggleGroundItemDetailsView
-	jmp.w func_C3EBF9
+	jmp.w GroundItemMenuCancel
 	lda.w #$00F0
 	sta.b wTemp00
-	jmp.w func_C3EBE6
+	jmp.w GroundItemMenuSuccess
 	lda #$00F1                              ;C3ECBD
 	sta $00                                 ;C3ECC0
 	jmp $EBE6                               ;C3ECC2

@@ -5884,7 +5884,7 @@ func_C45BCE:
 	sta.l $7FA57B
 	sta.b wTemp00
 	phy
-	jsl.l func_C3E571
+	jsl.l SelectAndValidateSaveSlot
 	ply
 	lda.b wTemp00
 	sta.b wTemp02
@@ -15202,7 +15202,7 @@ func_C4AD8D:
 	lda.l $7FAC21,x
 	and.w #$00FF
 	sta.b wTemp00
-	jsl.l func_C3E405
+	jsl.l Multiply16BitNegated
 	lda.b wTemp00
 	clc
 	adc.w $AC26

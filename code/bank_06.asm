@@ -369,7 +369,7 @@ func_C6030D:
 	sta.b wTemp00
 	jsl.l SaveWriteByte
 	jsl.l SaveStreamInit
-	jsl.l func_C3E369
+	jsl.l SaveStreamReset
 	jsl.l func_C3F6BE
 	jsl.l func_C28F4F
 	jsl.l SerializeItemData
@@ -2676,13 +2676,13 @@ DisplayMessage1:
 	trb.b wTemp01
 	jsl.l GetContainerItemAction
 	pha
-	jsl.l func_C3E385
+	jsl.l SaveStreamWriteByte
 	pla
 	sta.b wTemp00
 	plp
 	rtl
 @lbl_C62BB1:
-	jsl.l func_C3E3A8
+	jsl.l SaveStreamPeekByte
 	lda.b wTemp00
 	cmp.b #$FF
 	beq @lbl_C62BBD
@@ -2698,7 +2698,7 @@ DisplayMessage1:
 	phx
 	ldx.b wTemp04
 	phx
-	jsl.l func_C3E3A8
+	jsl.l SaveStreamPeekByte
 	lda.b wTemp00
 	cmp.b #$FF
 	beq @lbl_C62BE4

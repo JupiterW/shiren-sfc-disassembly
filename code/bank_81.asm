@@ -146,7 +146,7 @@ func_8190EC:
 	lda.b wTemp00
 	cmp.b #$01
 	bne @lbl_81916B
-	jsl.l func_C3E3BC
+	jsl.l SaveStreamBytesRemaining
 	bankswitch 0x7E
 	rep #$30 ;AXY->16
 	lda.b wTemp00
@@ -266,7 +266,7 @@ func_8191BB:
 	ldx.b wTemp00
 	ldy.w $3440
 	beq @lbl_81921E
-	jsl.l func_C3E3BC
+	jsl.l SaveStreamBytesRemaining
 	lda.w #$0168
 	cmp.b wTemp00
 	bcs @lbl_81921E
@@ -6055,7 +6055,7 @@ func_81CE34:
 	jsl.l func_809D10
 	pla
 	sta.b wTemp00
-	jsl.l func_C3E571
+	jsl.l SelectAndValidateSaveSlot
 	jsr.w func_81CF37
 	jsl.l func_809D84
 	plb

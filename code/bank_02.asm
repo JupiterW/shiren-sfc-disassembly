@@ -12765,8 +12765,8 @@ func_C28FBC:
 	plp
 	rtl
 @lbl_C28FD7:
-	jsl.l func_C3E34B
-	jsl.l func_C3E34B
+	jsl.l SaveStreamDeleteLast
+	jsl.l SaveStreamDeleteLast
 	lda.l $7E85F0
 	ora.b #$10
 	sta.b wTemp00
